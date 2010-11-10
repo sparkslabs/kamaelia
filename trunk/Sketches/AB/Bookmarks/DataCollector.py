@@ -84,28 +84,32 @@ class DataCollector(threadedcomponent):
                                     keywords = row[0].split("^")
                                     if len(keywords) == 2:
                                         if string.lower(keywords[0]) in string.lower(newdata['text']) and string.lower(keywords[1]) in string.lower(newdata['text']):
-                                            cursor.execute("""SELECT * FROM programmes WHERE pid = %s""",(pid))
-                                            if cursor.fetchone() != None:
+                                            cursor.execute("""SELECT timestamp,timediff FROM programmes WHERE pid = %s""",(pid))
+                                            progdata = cursor.fetchone()
+                                            if progdata != None:
                                                 # Ensure the user hasn't already tweeted for this programme in this minute
                                                 # Muppet - this will only check for same second tweets - duh
                                                 cursor.execute("""SELECT * FROM rawdata WHERE pid = %s AND text = %s AND user = %s""",(pid,newdata['text'],newdata['user']['screen_name']))
                                                 if cursor.fetchone() == None:
                                                     print ("Storing tweet for pid " + pid)
                                                     timestamp = time2.mktime(parse(newdata['created_at']).timetuple())
-                                                    cursor.execute("""INSERT INTO rawdata (tweet_id,pid,timestamp,text,user) VALUES (%s,%s,%s,%s,%s)""", (tweetid,pid,timestamp,newdata['text'],newdata['user']['screen_name']))
+                                                    progposition = timestamp - progdata[0] + progdata[1]
+                                                    cursor.execute("""INSERT INTO rawdata (tweet_id,pid,timestamp,text,user,programme_position) VALUES (%s,%s,%s,%s,%s,%s)""", (tweetid,pid,timestamp,newdata['text'],newdata['user']['screen_name'],progposition))
                                                     break # Break out of this loop and back to check the same tweet against the next programme
                                                 else:
                                                     print ("Duplicate user for current minute - ignoring")
                                     if string.lower(row[0]) in string.lower(newdata['text']):
-                                        cursor.execute("""SELECT * FROM programmes WHERE pid = %s""",(pid))
-                                        if cursor.fetchone() != None:
+                                        cursor.execute("""SELECT timestamp,timediff FROM programmes WHERE pid = %s""",(pid))
+                                        progdata = cursor.fetchone()
+                                        if progdata != None:
                                             # Ensure the user hasn't already tweeted for this programme in this minute
                                             # Muppet - this will only check for same second tweets - duh
                                             cursor.execute("""SELECT * FROM rawdata WHERE pid = %s AND text = %s AND user = %s""",(pid,newdata['text'],newdata['user']['screen_name']))
                                             if cursor.fetchone() == None:
                                                 print ("Storing tweet for pid " + pid)
                                                 timestamp = time2.mktime(parse(newdata['created_at']).timetuple())
-                                                cursor.execute("""INSERT INTO rawdata (tweet_id,pid,timestamp,text,user) VALUES (%s,%s,%s,%s,%s)""", (tweetid,pid,timestamp,newdata['text'],newdata['user']['screen_name']))
+                                                progposition = timestamp - progdata[0] + progdata[1]
+                                                cursor.execute("""INSERT INTO rawdata (tweet_id,pid,timestamp,text,user,programme_position) VALUES (%s,%s,%s,%s,%s,%s)""", (tweetid,pid,timestamp,newdata['text'],newdata['user']['screen_name'],progposition))
                                                 break # Break out of this loop and back to check the same tweet against the next programme
                                             else:
                                                 print ("Duplicate user for current minute - ignoring")
