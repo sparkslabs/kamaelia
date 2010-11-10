@@ -79,7 +79,7 @@ class Requester(threadedcomponent):
             "b006mg74" : ["bbcwatchdog"], # Watchdog
             "b006v5tb" : ['bbcbreakfast'], # Breakfast
             "b006mkw3" : ["hignfy","bbchignfy"], # Have I Got News For You
-
+            "b008dk4b" : ["childreninneed","bbccin","#cin","#pudsey","pudseybear"], # Children in Need
         }
         # Series PIDs associated with programmes. ONLY used where prog doesn't have a brand
         self.officialseriestags = {
