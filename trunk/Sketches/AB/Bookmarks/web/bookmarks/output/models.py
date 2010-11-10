@@ -44,7 +44,7 @@ class keywords(models.Model):
         db_table = 'keywords'
 
 class rawdata(models.Model):
-    tweet_id = models.FloatField(db_column="tweet_id")
+    tweet_id = models.DecimalField(max_digits=22,decimal_places=0,db_column="tweet_id")
     tid = models.IntegerField(primary_key=True,db_column="tid")
     pid = models.ForeignKey(programmes,db_column="pid")
     timestamp = models.FloatField(db_column="timestamp",default=0)
@@ -57,7 +57,7 @@ class rawdata(models.Model):
         db_table = 'rawdata'
 
 class rawtweets(models.Model):
-    tweet_id = models.FloatField(primary_key=True,db_column="tweet_id")
+    tweet_id = models.DecimalField(max_digits=22,decimal_places=0,primary_key=True,db_column="tweet_id")
     tweet_json = models.CharField(max_length=16000,db_column="tweet_json")
     tweet_stored_seconds = models.IntegerField(db_column="tweet_stored_seconds")
     tweet_stored_fraction = models.FloatField(db_column="tweet_stored_fraction")
