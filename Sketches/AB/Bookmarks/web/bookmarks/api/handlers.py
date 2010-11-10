@@ -128,12 +128,13 @@ class TweetHandler(BaseHandler):
         # Need to add full tweet dicts to this once the model has been added
         data = rawdata.objects.filter(pid=pid).order_by('timestamp').all()
         for tweet in data:
+            tweetid = int(tweet.tweet_id)
             try:
-                rawtweetquery = rawtweets.objects.get(tweet_id = tweet.tweet_id)
+                rawtweetquery = rawtweets.objects.get(tweet_id = tweetid)
                 tweetjson = rawtweetquery.tweet_json
             except ObjectDoesNotExist, e:
-                tweetjson = "{}"
-            retdata['tweets'].append({"id" : tweet.tweet_id,"timestamp" : tweet.timestamp,"programme_position" : tweet.programme_position,"json" : tweetjson})
+                tweetjson = None
+            retdata['tweets'].append({"id" : tweetid,"timestamp" : tweet.timestamp,"programme_position" : tweet.programme_position,"json" : tweetjson})
         return retdata
 
 class TimestampHandler(BaseHandler):
@@ -146,10 +147,11 @@ class TimestampHandler(BaseHandler):
         timestamp2 = timestamp + 60
         data = rawdata.objects.filter(pid=pid,timestamp__gte=timestamp,timestamp__lt=timestamp2).order_by('timestamp').all()
         for tweet in data:
+            tweetid = int(tweet.tweet_id)
             try:
-                rawtweetquery = rawtweets.objects.get(tweet_id = tweet.tweet_id)
+                rawtweetquery = rawtweets.objects.get(tweet_id = tweetid)
                 tweetjson = rawtweetquery.tweet_json
             except ObjectDoesNotExist, e:
-                tweetjson = "{}"
-            retdata['tweets'].append({"id" : tweet.tweet_id,"timestamp" : tweet.timestamp,"programme_position" : tweet.programme_position,"json" : tweetjson})
+                tweetjson = None
+            retdata['tweets'].append({"id" : tweetid,"timestamp" : tweet.timestamp,"programme_position" : tweet.programme_position,"json" : tweetjson})
         return retdata
