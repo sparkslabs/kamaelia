@@ -2,6 +2,7 @@ from piston.handler import BaseHandler
 from bookmarks.output.models import programmes, keywords, analyseddata, rawdata, rawtweets
 from datetime import timedelta,datetime
 from django.core.exceptions import ObjectDoesNotExist
+import locale
 
 tvchannels = ["bbcone","bbctwo","bbcthree","bbcfour","cbbc","cbeebies","bbcnews","bbcparliament"]
 
