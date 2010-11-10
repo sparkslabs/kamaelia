@@ -74,7 +74,6 @@ class DataCollector(threadedcomponent):
                             file.close()
                         else:
                             tweetid = newdata['new_id']
-                            print tweetid
                             print "New tweet! @" + newdata['user']['screen_name'] + ": " + newdata['text']
                             for pid in tweet[1]:
                                 # Cycle through possible pids, grabbing that pid's keywords from the DB
@@ -167,7 +166,6 @@ class RawDataCollector(threadedcomponent):
                             print "Discarding tweet instruction - captured by other component"
                         else:
                             tweetid = newdata['new_id']
-                            print tweetid
                             tweetstamp = time()
                             tweetsecs = int(tweetstamp)
                             tweetfrac = tweetstamp - tweetsecs

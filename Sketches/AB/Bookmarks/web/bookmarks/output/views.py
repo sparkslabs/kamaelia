@@ -43,7 +43,8 @@ def index(request):
 
     normaliser = 1/float(largeststdev)
 
-    output += "<h2>Note:</h2><p>- Some programme durations are currently identified incorrectly. Despite this, all data for the period will have been collected.</p><div style=\"display: inline; position: relative\"><h2>TV</h2>"
+    #output += "<h2>Note:</h2><p>- Some programme durations are currently identified incorrectly. Despite this, all data for the period will have been collected.</p>
+    output += "<div style=\"display: inline; position: relative\"><h2>TV</h2>"
     for channel in tvchannels:
         data = programmes.objects.filter(channel=channel).latest('timestamp')
         if isinstance(data,object):
