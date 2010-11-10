@@ -73,7 +73,7 @@ class DataCollector(threadedcomponent):
                             file.write(filecontents + "\n" + str(datetime.utcnow()) + " " + cjson.encode(newdata))
                             file.close()
                         else:
-                            tweetid = newdata['new_id']
+                            tweetid = newdata['id']
                             print "New tweet! @" + newdata['user']['screen_name'] + ": " + newdata['text']
                             for pid in tweet[1]:
                                 # Cycle through possible pids, grabbing that pid's keywords from the DB
@@ -165,7 +165,7 @@ class RawDataCollector(threadedcomponent):
                         if newdata.has_key('delete') or newdata.has_key('scrub_geo') or newdata.has_key('limit'):
                             print "Discarding tweet instruction - captured by other component"
                         else:
-                            tweetid = newdata['new_id']
+                            tweetid = newdata['id']
                             tweetstamp = time()
                             tweetsecs = int(tweetstamp)
                             tweetfrac = tweetstamp - tweetsecs
