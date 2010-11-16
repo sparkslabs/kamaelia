@@ -452,6 +452,10 @@ class LiveAnalysisNLTK(component):
                 # There is a possibility at this point that the tweet won't yet be in the DB.
                 # We'll have to stall for now if that happens but eventually it should be ensured tweets will be in the DB first
 
+                # Issue #TODO - Words that appear as part of a keyword but not the whole thing won't get marked as being a keyword (e.g. Blue Peter - two diff words)
+                # Need to check for each word if it forms part of a phrase which is also a keyword
+                # If so, don't count is as a word, count the whole thing as a phrase and remember not to count it more than once
+
                 tweetdata = None
                 while tweetdata == None:
                     cursor.execute("""SELECT tweet_json FROM rawtweets WHERE tweet_id = %s""",(tweetid))
