@@ -206,6 +206,11 @@ class LiveAnalysis(threadedcomponent):
                     wfudict = cjson.encode(itemdicts[1])
 
                     cursor.execute("""INSERT INTO analyseddata (pid,wordfreqexpected,wordfrequnexpected,totaltweets,timestamp) VALUES (%s,%s,%s,%s,%s)""", (pid,wfdict,wfudict,minutetweets,dbtimestamp))
+                    for word in nltkdata:
+                        if nltkdata[word][0] == 1:
+                            cursor.execute("""INSERT INTO wordanalysis (pid,timestamp,phrase,count,is_keyword,is_entity,is_common) VALUES (%s,%s,%s,%s,%s,%s,%s)""", (pid,dbtimestamp,word,nltkdata[word][1],nltkdata[word][2],nltkdata[word][3],nltkdata[word][4]))
+                        else:
+                            cursor.execute("""INSERT INTO wordanalysis (pid,timestamp,word,count,is_keyword,is_entity,is_common) VALUES (%s,%s,%s,%s,%s,%s,%s)""", (pid,dbtimestamp,word,nltkdata[word][1],nltkdata[word][2],nltkdata[word][3],nltkdata[word][4]))
                 else:
                     did = analyseddata[0]
                     minutetweets = analyseddata[1] # Get current number of tweets for this minute
@@ -240,6 +245,21 @@ class LiveAnalysis(threadedcomponent):
                     else:
                         cursor.execute("""UPDATE analyseddata SET totaltweets = %s, wordfreqexpected = %s, wordfrequnexpected = %s WHERE did = %s""",(minutetweets,wfexpected,wfunexpected,did))
 
+                    for word in nltkdata:
+                        if nltkdata[word][0] == 1:
+                            cursor.execute("""SELECT wid,count FROM wordanalysis WHERE pid = %s AND timestamp = %s AND phrase LIKE %s""",(pid,dbtimestamp,word))
+                            wordcheck = cursor.fetchone()
+                            if wordcheck == None:
+                                cursor.execute("""INSERT INTO wordanalysis (pid,timestamp,phrase,count,is_keyword,is_entity,is_common) VALUES (%s,%s,%s,%s,%s,%s,%s)""", (pid,dbtimestamp,word,nltkdata[word][1],nltkdata[word][2],nltkdata[word][3],nltkdata[word][4]))
+                            else:
+                                cursor.execute("""UPDATE wordanalysis SET count = %s WHERE wid = %s""",(nltkdata[word][1] + wordcheck[1],wordcheck[0]))
+                        else:
+                            cursor.execute("""SELECT wid,count FROM wordanalysis WHERE pid = %s AND timestamp = %s AND word LIKE %s""",(pid,dbtimestamp,word))
+                            wordcheck = cursor.fetchone()
+                            if wordcheck == None:
+                                cursor.execute("""INSERT INTO wordanalysis (pid,timestamp,word,count,is_keyword,is_entity,is_common) VALUES (%s,%s,%s,%s,%s,%s,%s)""", (pid,dbtimestamp,word,nltkdata[word][1],nltkdata[word][2],nltkdata[word][3],nltkdata[word][4]))
+                            else:
+                                cursor.execute("""UPDATE wordanalysis SET count = %s WHERE wid = %s""",(nltkdata[word][1] + wordcheck[1],wordcheck[0]))
                 # Averages / stdev are calculated roughly based on the programme's running time at this point
                 progdate = datetime.utcfromtimestamp(timestamp) + timedelta(seconds=utcoffset)
                 actualstart = progdate - timedelta(seconds=timediff)
@@ -454,10 +474,9 @@ class LiveAnalysisNLTK(component):
                     self.pause()
                     yield 1
                 tweetjson = self.recv("tweetfixer")
-
-                print tweetjson
                 
                 # Format: {"word" : [is_phrase,count,is_keyword,is_entity,is_common]}
+                # Need to change this for retweets as they should include all the text content if truncated - need some clever merging FIXME TODO
                 wordfreqdata = dict()
                 for item in tweetjson['entities']['user_mentions']:
                     if wordfreqdata.has_key("@" + item['screen_name']):
@@ -483,12 +502,15 @@ class LiveAnalysisNLTK(component):
 
                 tweettext = tweetjson['filtered_text'].split()
                 for word in tweettext:
+                    # This will accidentally filter our smilies - FIXME TODO
                     if word[0] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""":
                         word = word[1:]
                     if word != "":
                         if word[len(word)-1] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""":
                             word = word[:len(word)-1]
-                    print word
+                    if word != "":
+                        if word in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""":
+                            word = ""
 
                     if word != "":
                         if wordfreqdata.has_key(word):
@@ -503,10 +525,8 @@ class LiveAnalysisNLTK(component):
                             else:
                                 wordfreqdata[word] = [0,1,0,1,exclude]
 
-                print wordfreqdata
 
-
-                self.send("Done","outbox")
+                self.send(wordfreqdata,"outbox")
 
             self.pause()
             yield 1
