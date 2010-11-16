@@ -172,18 +172,20 @@ class LiveAnalysis(threadedcomponent):
                 dbtime = dbtime.replace(second=0)
                 print "Analysis component: Analysing new tweet for pid", pid, "(" + str(dbtime) + "):"
                 print "Analysis component: '" + tweettext + "'"
-                cursor.execute("""SELECT duration,totaltweets,meantweets,mediantweets,modetweets,stdevtweets,timediff,timestamp,utcoffset FROM programmes WHERE pid = %s ORDER BY timestamp DESC""",(pid))
+                cursor.execute("""SELECT duration FROM programmes_unique WHERE pid = %s""",(pid))
                 progdata = cursor.fetchone()
+                cursor.execute("""SELECT totaltweets,meantweets,mediantweets,modetweets,stdevtweets,timediff,timestamp,utcoffset FROM programmes WHERE pid = %s ORDER BY timestamp DESC""",(pid))
+                progdata2 = cursor.fetchone()
                 duration = progdata[0]
-                totaltweets = progdata[1]
+                totaltweets = progdata2[0]
                 totaltweets += 1
-                meantweets = progdata[2]
-                mediantweets = progdata[3]
-                modetweets = progdata[4]
-                stdevtweets = progdata[5]
-                timediff = progdata[6]
-                timestamp = progdata[7]
-                utcoffset = progdata[8]
+                meantweets = progdata2[1]
+                mediantweets = progdata2[2]
+                modetweets = progdata2[3]
+                stdevtweets = progdata2[4]
+                timediff = progdata2[5]
+                timestamp = progdata2[6]
+                utcoffset = progdata2[7]
                 dbtimestamp = time.mktime(dbtime.timetuple()) + utcoffset
                 cursor.execute("""SELECT did,totaltweets,wordfreqexpected,wordfrequnexpected FROM analyseddata WHERE pid = %s AND timestamp = %s""",(pid,dbtimestamp))
                 analyseddata = cursor.fetchone()
@@ -292,19 +294,21 @@ class LiveAnalysis(threadedcomponent):
                 print "Analysis component: Done!"
 
             # Stage 2: If all raw tweets analysed and imported = 1, finalise the analysis - could do bookmark identification here too?
-            cursor.execute("""SELECT pid,duration,totaltweets,meantweets,mediantweets,modetweets,stdevtweets,title,timestamp,timediff FROM programmes WHERE imported = 1 AND analysed = 0 LIMIT 5000""")
+            cursor.execute("""SELECT pid,totaltweets,meantweets,mediantweets,modetweets,stdevtweets,timestamp,timediff FROM programmes WHERE imported = 1 AND analysed = 0 LIMIT 5000""")
             data = cursor.fetchall()
             for result in data:
                 pid = result[0]
-                duration = result[1]
-                totaltweets = result[2]
-                meantweets = result[3]
-                mediantweets = result[4]
-                modetweets = result[5]
-                stdevtweets = result[6]
-                title = result[7]
-                timestamp = result[8]
-                timediff = result[9]
+                cursor.execute("""SELECT duration,title FROM programmes_unique WHERE pid = %s""",(pid))
+                data2 = cursor.fetchone()
+                duration = data2[0]
+                totaltweets = result[1]
+                meantweets = result[2]
+                mediantweets = result[3]
+                modetweets = result[4]
+                stdevtweets = result[5]
+                title = data2[1]
+                timestamp = result[6]
+                timediff = result[7]
                 # Cycle through checking if all tweets for this programme have been analysed - if so finalise the stats
                 cursor.execute("""SELECT tid FROM rawdata WHERE analysed = 0 AND pid = %s""", (pid))
                 if cursor.fetchone() == None:

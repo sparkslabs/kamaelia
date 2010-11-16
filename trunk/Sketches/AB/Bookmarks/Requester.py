@@ -441,19 +441,21 @@ class Requester(threadedcomponent):
                     timestamp = data[1][4]
                     utcoffset = data[1][5]
                     cursor.execute("""UPDATE programmes SET imported = 1 WHERE pid != %s AND channel = %s""",(pid,self.channel))
-                    cursor.execute("""SELECT duration FROM programmes WHERE pid = %s AND timestamp = %s""",(pid,timestamp))
+                    cursor.execute("""SELECT channel FROM programmes WHERE pid = %s AND timestamp = %s""",(pid,timestamp))
                     progentrytest = cursor.fetchone()
-                    cursor.execute("""SELECT duration FROM programmes WHERE pid = %s""",(pid))
+                    cursor.execute("""SELECT duration FROM programmes_unique WHERE pid = %s""",(pid))
                     progtest2 = cursor.fetchone()
                     if progentrytest == None:
                         cursor.execute("""INSERT INTO programmes (pid,title,timediff,duration,timestamp,utcoffset,channel) VALUES (%s,%s,%s,%s,%s)""", (pid,title,offset,duration,timestamp,utcoffset,self.channel))
                         if progtest2 == None:
+                            cursor.execute("""INSERT INTO programmes_unique (pid,title,duration) VALUES (%s,%s,%s)""", (pid,title,duration))
                             for word in keywords:
                                 cursor.execute("""INSERT INTO keywords (pid,keyword,type) VALUES (%s,%s,%s)""", (pid,word,keywords[word]))
                     else:
                         # Fix for programmes where the duration is changed last minute
-                        if progentrytest.duration[0] < duration:
+                        if progtest2[0] < duration:
                             cursor.execute("""UPDATE programmes SET duration = %s WHERE pid = %s AND timestamp = %s""",(duration,pid,timestamp))
+                            cursor.execute("""UPDATE programmes_unique SET duration = %s WHERE pid = %s""",(duration,pid))
                     keywords = list()
                 else:
                     keywords = None
@@ -490,19 +492,21 @@ class Requester(threadedcomponent):
                         timestamp = data[1][4]
                         utcoffset = data[1][5]
                         cursor.execute("""UPDATE programmes SET imported = 1 WHERE pid != %s AND channel = %s""",(pid,channel))
-                        cursor.execute("""SELECT duration FROM programmes WHERE pid = %s AND timestamp = %s""",(pid,timestamp))
+                        cursor.execute("""SELECT channel FROM programmes WHERE pid = %s AND timestamp = %s""",(pid,timestamp))
                         progentrytest = cursor.fetchone()
-                        cursor.execute("""SELECT duration FROM programmes WHERE pid = %s""",(pid))
+                        cursor.execute("""SELECT duration FROM programmes_unique WHERE pid = %s""",(pid))
                         progtest2 = cursor.fetchone()
                         if progentrytest == None:
                             cursor.execute("""INSERT INTO programmes (pid,title,timediff,duration,timestamp,utcoffset,channel) VALUES (%s,%s,%s,%s,%s,%s,%s)""", (pid,title,offset,duration,timestamp,utcoffset,channel))
                             if progtest2 == None:
+                                cursor.execute("""INSERT INTO programmes_unique (pid,title,duration) VALUES (%s,%s,%s)""", (pid,title,duration))
                                 for word in keywordappender:
                                     cursor.execute("""INSERT INTO keywords (pid,keyword,type) VALUES (%s,%s,%s)""", (pid,word,keywordappender[word]))
                         else:
                             # Fix for programmes where the duration is changed last minute
-                            if progentrytest[0] < duration:
+                            if progtest2[0] < duration:
                                 cursor.execute("""UPDATE programmes SET duration = %s WHERE pid = %s AND timestamp = %s""",(duration,pid,timestamp))
+                                cursor.execute("""UPDATE programmes_unique SET duration = %s WHERE pid = %s""",(duration,pid))
 
                 currentpids = list()
                 for channel in self.channels:
