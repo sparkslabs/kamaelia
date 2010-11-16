@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Nov 16, 2010 at 12:37 PM
+-- Generation Time: Nov 16, 2010 at 04:45 PM
 -- Server version: 5.1.41
 -- PHP Version: 5.3.2-1ubuntu4.5
 
@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS `analyseddata` (
   `totaltweets` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`did`),
   KEY `pid_refs_pid_5901525b` (`pid`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=275426 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=276425 ;
 
 -- --------------------------------------------------------
 
@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS `keywords` (
   `type` varchar(100) NOT NULL,
   PRIMARY KEY (`uid`),
   KEY `pid_refs_pid_38b0e356` (`pid`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=117631 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=118298 ;
 
 -- --------------------------------------------------------
 
@@ -120,7 +120,7 @@ CREATE TABLE IF NOT EXISTS `rawdata` (
   PRIMARY KEY (`tid`),
   KEY `pid_refs_pid_458415f9` (`pid`),
   KEY `ANALYSED` (`analysed`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1501514 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1504146 ;
 
 -- --------------------------------------------------------
 
@@ -146,8 +146,11 @@ CREATE TABLE IF NOT EXISTS `wordanalysis` (
   `wid` int(11) NOT NULL AUTO_INCREMENT,
   `pid` varchar(10) NOT NULL,
   `timestamp` double NOT NULL,
-  `word` varchar(30) NOT NULL,
-  `phrase` varchar(200) NOT NULL,
+  `word` varchar(200) CHARACTER SET utf8 NOT NULL DEFAULT '',
+  `phrase` varchar(200) CHARACTER SET utf8 NOT NULL DEFAULT '',
   `count` int(11) NOT NULL DEFAULT '0',
+  `is_keyword` tinyint(1) NOT NULL DEFAULT '0',
+  `is_entity` tinyint(1) NOT NULL DEFAULT '0',
+  `is_common` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`wid`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1323 ;
