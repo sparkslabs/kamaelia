@@ -172,7 +172,7 @@ class LiveAnalysis(threadedcomponent):
                 dbtime = dbtime.replace(second=0)
                 print "Analysis component: Analysing new tweet for pid", pid, "(" + str(dbtime) + "):"
                 print "Analysis component: '" + tweettext + "'"
-                cursor.execute("""SELECT duration,totaltweets,meantweets,mediantweets,modetweets,stdevtweets,timediff,timestamp,utcoffset FROM programmes WHERE pid = %s""",(pid))
+                cursor.execute("""SELECT duration,totaltweets,meantweets,mediantweets,modetweets,stdevtweets,timediff,timestamp,utcoffset FROM programmes WHERE pid = %s ORDER BY timestamp DESC""",(pid))
                 progdata = cursor.fetchone()
                 duration = progdata[0]
                 totaltweets = progdata[1]
@@ -246,7 +246,7 @@ class LiveAnalysis(threadedcomponent):
                 except ZeroDivisionError, e:
                     meantweets = 0
 
-                cursor.execute("""SELECT totaltweets FROM analyseddata WHERE pid = %s""",(pid))
+                cursor.execute("""SELECT totaltweets FROM analyseddata WHERE pid = %s AND timestamp >= %s AND timestamp < %s""",(pid,timestamp,timestamp+duration))
                 analyseddata = cursor.fetchall()
 
                 runningtime = int(runningtime)
@@ -287,12 +287,12 @@ class LiveAnalysis(threadedcomponent):
                     stdevtweets = 0
 
                 # Finished analysis
-                cursor.execute("""UPDATE programmes SET totaltweets = %s, meantweets = %s, mediantweets = %s, modetweets = %s, stdevtweets = %s WHERE pid = %s""",(totaltweets,meantweets,mediantweets,modetweets,stdevtweets,pid))
+                cursor.execute("""UPDATE programmes SET totaltweets = %s, meantweets = %s, mediantweets = %s, modetweets = %s, stdevtweets = %s WHERE pid = %s AND timestamp = %s""",(totaltweets,meantweets,mediantweets,modetweets,stdevtweets,pid,timestamp))
                 cursor.execute("""UPDATE rawdata SET analysed = 1 WHERE tid = %s""",(tid))
                 print "Analysis component: Done!"
 
             # Stage 2: If all raw tweets analysed and imported = 1, finalise the analysis - could do bookmark identification here too?
-            cursor.execute("""SELECT pid,duration,totaltweets,meantweets,mediantweets,modetweets,stdevtweets,title FROM programmes WHERE imported = 1 AND analysed = 0 LIMIT 5000""")
+            cursor.execute("""SELECT pid,duration,totaltweets,meantweets,mediantweets,modetweets,stdevtweets,title,timestamp,timediff FROM programmes WHERE imported = 1 AND analysed = 0 LIMIT 5000""")
             data = cursor.fetchall()
             for result in data:
                 pid = result[0]
@@ -303,6 +303,8 @@ class LiveAnalysis(threadedcomponent):
                 modetweets = result[5]
                 stdevtweets = result[6]
                 title = result[7]
+                timestamp = result[8]
+                timediff = result[9]
                 # Cycle through checking if all tweets for this programme have been analysed - if so finalise the stats
                 cursor.execute("""SELECT tid FROM rawdata WHERE analysed = 0 AND pid = %s""", (pid))
                 if cursor.fetchone() == None:
@@ -311,7 +313,7 @@ class LiveAnalysis(threadedcomponent):
 
                     meantweets = float(totaltweets) / (duration / 60) # Mean tweets per minute
 
-                    cursor.execute("""SELECT totaltweets FROM analyseddata WHERE pid = %s""",(pid))
+                    cursor.execute("""SELECT totaltweets FROM analyseddata WHERE pid = %s AND timestamp >= %s AND timestamp < %s""",(pid,timestamp,timestamp+duration))
                     analyseddata = cursor.fetchall()
 
                     runningtime = duration / 60
@@ -350,7 +352,7 @@ class LiveAnalysis(threadedcomponent):
                     except ZeroDivisionError, e:
                         stdevtweets = 0
 
-                    cursor.execute("""UPDATE programmes SET meantweets = %s, mediantweets = %s, modetweets = %s, stdevtweets = %s, analysed = 1 WHERE pid = %s""",(meantweets,mediantweets,modetweets,stdevtweets,pid))
+                    cursor.execute("""UPDATE programmes SET meantweets = %s, mediantweets = %s, modetweets = %s, stdevtweets = %s, analysed = 1 WHERE pid = %s AND timestamp = %s""",(meantweets,mediantweets,modetweets,stdevtweets,pid,timestamp))
                     print "Analysis component: Done!"
 
             # Sleep here until more data is available to analyse
