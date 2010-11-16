@@ -132,6 +132,8 @@ class TweetCleaner(component):
         if len(tweettext) > index:
             newtweettext += tweettext[index:len(tweettext)]
 
+        newtweettext = re.sub("\s{2,}"," ",newtweettext,re.I)
+
         return newtweettext.strip()
 
     def main(self):
@@ -324,7 +326,7 @@ if __name__ == "__main__":
                             ("REQUESTER", "outbox") : ("LINKER", "responses"),
                             ("LINKER", "outbox") : ("WRITER", "inbox"),}).run()
 
-    if 0:
+    if 1:
         Graphline(READER=READER,DECODER=DECODER,LINKER=LINKER,REQUESTER=REQUESTER,FIXER=FIXER,CLEANER=CLEANER,WRITER=WRITER,
                 linkages = {("READER", "outbox") : ("DECODER", "inbox"),
                             ("DECODER", "outbox") : ("FIXER", "inbox"),
@@ -334,7 +336,7 @@ if __name__ == "__main__":
                             ("LINKER", "outbox") : ("CLEANER", "inbox"),
                             ("CLEANER", "outbox") : ("WRITER", "inbox"),}).run()
 
-    if 1:
+    if 0:
         Pipeline(READER,SPELLING,WRITER).run()
     
 
