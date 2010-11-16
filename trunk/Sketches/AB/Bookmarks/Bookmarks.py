@@ -13,6 +13,7 @@ import cjson
 import os
 
 from Kamaelia.Chassis.Graphline import Graphline
+from Kamaelia.Chassis.Pipeline import Pipeline
 
 from BBCProgrammes import WhatsOn
 from Requester import Requester
@@ -20,7 +21,8 @@ from TwitterStream import TwitterStream
 from TwitterSearch import PeopleSearch
 from DataCollector import DataCollector, RawDataCollector
 from URLGetter import HTTPGetter
-from LiveAnalysis import LiveAnalysis#, LiveAnalysisNLTK
+from LiveAnalysis import LiveAnalysis, LiveAnalysisNLTK
+from TweetFixer import RetweetFixer, TweetCleaner, LinkResolver
 
 from Kamaelia.Util.TwoWaySplitter import TwoWaySplitter
 
@@ -43,6 +45,8 @@ if __name__ == "__main__":
     password = config['password']
     dbuser = config['dbuser']
     dbpass = config['dbpass']
+    bitlyusername = config['bitlyusername']
+    bitlyapikey = config['bitlyapikey']
 
     # Set proxy server if available
     if config.has_key('proxy'):
@@ -59,6 +63,12 @@ if __name__ == "__main__":
     else:
         keypair = False
 
+    LINKER = Graphline(LINKRESOLVE = LinkResolver(bitlyusername,bitlyapikey),
+                        LINKREQUESTER = HTTPGetter(proxy, "BBC R&D Grabber"),
+                        linkages = {("self", "inbox") : ("LINKRESOLVE", "inbox"),
+                                    ("LINKRESOLVE", "outbox") : ("self", "outbox"),
+                                    ("LINKRESOLVE", "urlrequests") : ("LINKREQUESTER", "inbox"),
+                                    ("LINKREQUESTER", "outbox") : ("LINKRESOLVE", "responses")}).activate()
     system = Graphline(CURRENTPROG = WhatsOn(proxy),
                     REQUESTER = Requester("all",dbuser,dbpass), # Can set this for specific channels to limit Twitter requests whilst doing dev
                     FIREHOSE = TwitterStream(username, password, proxy, True, 60), # Twitter API sends blank lines every 30 secs so timeout of 60 should be fine
@@ -69,9 +79,8 @@ if __name__ == "__main__":
                     HTTPGETTERRDF = HTTPGetter(proxy, "BBC R&D Grabber"),
                     TWOWAY = TwoWaySplitter(),
                     ANALYSIS = LiveAnalysis(dbuser,dbpass),
-                    # NLTKANALYSIS = LiveAnalysisNLTK(dbuser,dbpass), # This will be used as a replacement to LiveAnalysis, using a DB row for each word being analysed
-                    # This will also make use of the link removal, retweet fixing and entity removal components etc
-                    # It is important for now that the two analysis components aren't run together as they will conflict
+                    NLTKANALYSIS = LiveAnalysisNLTK(dbuser,dbpass),
+                    TWEETCLEANER = Pipeline(LINKER,RetweetFixer(),TweetCleaner(['user_mentions','urls','hashtags'])),
                     linkages = {("REQUESTER", "whatson") : ("CURRENTPROG", "inbox"), # Request what's currently broadcasting
                                 ("CURRENTPROG", "outbox") : ("REQUESTER", "whatson"), # Pass back results of what's on
                                 ("REQUESTER", "outbox") : ("FIREHOSE", "inbox"), # Send generated keywords to Twitter streaming API
@@ -84,6 +93,10 @@ if __name__ == "__main__":
                                 ("CURRENTPROG", "dataout") : ("HTTPGETTER", "inbox"),
                                 ("HTTPGETTER", "outbox") : ("CURRENTPROG", "datain"),
                                 ("HTTPGETTERRDF", "outbox") : ("REQUESTER", "datain"),
+                                ("ANALYSIS", "nltk") : ("NLTKANALYSIS", "inbox"),
+                                ("NLTKANALYSIS", "outbox") : ("ANALYSIS", "nltk"),
+                                ("NLTKANALYSIS", "tweetfixer") : ("TWEETCLEANER", "inbox"),
+                                ("TWEETCLEANER", "outbox") : ("NLTKANALYSIS", "tweetfixer"),
                                 }
                             ).run()
 
