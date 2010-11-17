@@ -21,7 +21,7 @@ from TwitterStream import TwitterStream
 from TwitterSearch import PeopleSearch
 from DataCollector import DataCollector, RawDataCollector
 from URLGetter import HTTPGetter
-from LiveAnalysis import LiveAnalysis, LiveAnalysisNLTK
+from LiveAnalysis import LiveAnalysis, LiveAnalysisNLTK, FinalAnalysisNLTK
 from TweetFixer import RetweetFixer, TweetCleaner, LinkResolver
 
 from Kamaelia.Util.TwoWaySplitter import TwoWaySplitter
@@ -69,6 +69,13 @@ if __name__ == "__main__":
                                     ("LINKRESOLVE", "outbox") : ("self", "outbox"),
                                     ("LINKRESOLVE", "urlrequests") : ("LINKREQUESTER", "inbox"),
                                     ("LINKREQUESTER", "outbox") : ("LINKRESOLVE", "responses")}).activate()
+    # This duplication could probably be avoided by doing some tagging/filtering TODO
+    LINKERFINAL = Graphline(LINKRESOLVE = LinkResolver(bitlyusername,bitlyapikey),
+                        LINKREQUESTER = HTTPGetter(proxy, "BBC R&D Grabber"),
+                        linkages = {("self", "inbox") : ("LINKRESOLVE", "inbox"),
+                                    ("LINKRESOLVE", "outbox") : ("self", "outbox"),
+                                    ("LINKRESOLVE", "urlrequests") : ("LINKREQUESTER", "inbox"),
+                                    ("LINKREQUESTER", "outbox") : ("LINKRESOLVE", "responses")}).activate()
     system = Graphline(CURRENTPROG = WhatsOn(proxy),
                     REQUESTER = Requester("all",dbuser,dbpass), # Can set this for specific channels to limit Twitter requests whilst doing dev
                     FIREHOSE = TwitterStream(username, password, proxy, True, 60), # Twitter API sends blank lines every 30 secs so timeout of 60 should be fine
@@ -81,6 +88,9 @@ if __name__ == "__main__":
                     ANALYSIS = LiveAnalysis(dbuser,dbpass),
                     NLTKANALYSIS = LiveAnalysisNLTK(dbuser,dbpass),
                     TWEETCLEANER = Pipeline(LINKER,RetweetFixer(),TweetCleaner(['user_mentions','urls','hashtags'])),
+                    NLTKANALYSISFINAL = FinalAnalysisNLTK(dbuser,dbpass),
+                    # This duplication could probably be avoided by doing some tagging/filtering TODO
+                    TWEETCLEANERFINAL = Pipeline(LINKERFINAL,RetweetFixer(),TweetCleaner(['user_mentions','urls','hashtags'])),
                     linkages = {("REQUESTER", "whatson") : ("CURRENTPROG", "inbox"), # Request what's currently broadcasting
                                 ("CURRENTPROG", "outbox") : ("REQUESTER", "whatson"), # Pass back results of what's on
                                 ("REQUESTER", "outbox") : ("FIREHOSE", "inbox"), # Send generated keywords to Twitter streaming API
@@ -97,6 +107,10 @@ if __name__ == "__main__":
                                 ("NLTKANALYSIS", "outbox") : ("ANALYSIS", "nltk"),
                                 ("NLTKANALYSIS", "tweetfixer") : ("TWEETCLEANER", "inbox"),
                                 ("TWEETCLEANER", "outbox") : ("NLTKANALYSIS", "tweetfixer"),
+                                ("ANALYSIS", "nltkfinal") : ("NLTKANALYSISFINAL", "inbox"),
+                                ("NLTKANALYSISFINAL", "outbox") : ("ANALYSIS", "nltkfinal"),
+                                ("NLTKANALYSISFINAL", "tweetfixer") : ("TWEETCLEANERFINAL", "inbox"),
+                                ("TWEETCLEANERFINAL", "outbox") : ("NLTKANALYSISFINAL", "tweetfixer"),
                                 }
                             ).run()
 
