@@ -1,6 +1,6 @@
 # Create your views here.
 from django.http import HttpResponse
-from bookmarks.output.models import programmes,analyseddata,rawdata
+from bookmarks.output.models import programmes,analyseddata,rawdata,wordanalysis
 from datetime import date,timedelta,datetime
 from pygooglechart import SimpleLineChart, Axis #lc
 import time
@@ -508,10 +508,13 @@ def rawtweets(request,pid,timestamp):
         #        tweetseccount[tweet.timestamp] = 1
             output += "<br /><strong>" + str(datetime.utcfromtimestamp(tweet.timestamp + progdata[0].utcoffset)) + ":</strong> " + "@" + tweet.user + ": " + tweet.text
         output += "</div><br /><br />"
-        output += "Tweets: <a href=\"/api/" + pid + "/" + str(timestamp) + ".json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + pid + "/" + str(timestamp) + ".xml\" target=\"_blank\">XML</a>"
+        output += "Tweets: <a href=\"/api/" + pid + "/" + str(timestamp) + ".json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + pid + "/" + str(timestamp) + ".xml\" target=\"_blank\">XML</a><br />"
         #if len(tweetseccount) > 0:
         #    tweetseccount = [(v,k) for k, v in tweetseccount.items()]
         #    tweetseccount.sort(reverse=True)
         #    output += "<br />" + str(tweetseccount)
+        newanalysis = wordanalysis.objects.filter(pid=pid,timestamp__gte=timestamp,timestamp__lt=endstamp).order_by('-count').all()
+        for entry in newanalysis:
+            output += "<br />" + entry.word + ": " + str(entry.count) + " " + str(entry.is_keyword) + " " + str(entry.is_entity) + " " + str(entry.is_common)
     output += footer
     return HttpResponse(output)
