@@ -23,6 +23,14 @@ class programmes(models.Model):
     class Meta:
         db_table = 'programmes'
 
+class programmes_unique(models.Model):
+    pid = models.CharField(max_length=10,primary_key=True,db_column="pid")
+    title = models.CharField(max_length=200,db_column="title")
+    duration = models.IntegerField(db_column="duration",default=0)
+
+    class Meta:
+        db_table = 'programmes_unique'
+
 class analyseddata(models.Model):
     did = models.IntegerField(primary_key=True,db_column="did")
     pid = models.ForeignKey(programmes,db_column="pid")

@@ -494,7 +494,7 @@ class LiveAnalysisNLTK(component):
                     if wordfreqdata.has_key("@" + item['screen_name']):
                         wordfreqdata["@" + item['screen_name']][1] += 1
                     else:
-                        if "@" + item['screen_name'].lower() in keywords:
+                        if item['screen_name'].lower() in keywords or "@" + item['screen_name'].lower() in keywords:
                             wordfreqdata["@" + item['screen_name']] = [0,1,1,1,0]
                         else:
                             wordfreqdata["@" + item['screen_name']] = [0,1,0,1,0]
@@ -507,7 +507,7 @@ class LiveAnalysisNLTK(component):
                     if wordfreqdata.has_key("#" + item['text']):
                         wordfreqdata["#" + item['text']][1] += 1
                     else:
-                        if "#" + item['text'].lower() in keywords:
+                        if item['text'].lower() in keywords or "#" + item['text'].lower() in keywords:
                             wordfreqdata["#" + item['text']] = [0,1,1,1,0]
                         else:
                             wordfreqdata["#" + item['text']] = [0,1,0,1,0]
