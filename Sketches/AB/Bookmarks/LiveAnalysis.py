@@ -18,6 +18,7 @@ import string
 import nltk
 from nltk import FreqDist
 #from nltk.collocations import BigramCollocationFinder
+import re
 
 from Axon.ThreadedComponent import threadedcomponent
 from Axon.Component import component
@@ -444,6 +445,19 @@ class LiveAnalysisNLTK(component):
                 return True
         return False
 
+    def spellingFixer(self,text):
+	# Fix ahahahahahaha and hahahahaha
+	text = re.sub("\S{0,}(ha){2,}\S{0,}","haha",text,re.I)
+	# fix looooooool and haaaaaaaaaaa - fails for some words at the mo, for example welllll will be converted to wel, and hmmm to hm etc
+	# Perhaps we could define both 'lol' and 'lool' as words, then avoid the above problem by reducing repeats to a max of 2
+	x = re.findall(r'((\D)\2*)',text,re.I)
+	for entry in sorted(x,reverse=True):
+            if len(entry[0])>2:
+                text = text.replace(entry[0],entry[1]).strip()
+            if len(text) == 1:
+                text += text
+	return text
+
     def main(self):
         # Calculate running total and mean etc
 
@@ -462,7 +476,7 @@ class LiveAnalysisNLTK(component):
                 # Issue #TODO - Words that appear as part of a keyword but not the whole thing won't get marked as being a keyword (e.g. Blue Peter - two diff words)
                 # Need to check for each word if it forms part of a phrase which is also a keyword
                 # If so, don't count is as a word, count the whole thing as a phrase and remember not to count it more than once
-                # Haven't included spelling fixer yet either - need to do this before WFA
+                # May actually store phrases AS WELL AS keywords
 
                 tweetdata = None
                 while tweetdata == None:
@@ -512,12 +526,12 @@ class LiveAnalysisNLTK(component):
                         else:
                             wordfreqdata["#" + item['text']] = [0,1,0,1,0]
 
-                tweettext = tweetjson['filtered_text'].split()
+                tweettext = self.spellingFixer(tweetjson['filtered_text']).split()
                 for word in tweettext:
-                    if word[0] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and (len(word) <= 3 and (word[0] == ":" or word[0] == ";")):
+                    if word[0] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and not (len(word) <= 3 and (word[0] == ":" or word[0] == ";")):
                         word = word[1:]
                     if word != "":
-                        if word[len(word)-1] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and word[len(word)-2:len(word)] != "s'":
+                        if word[len(word)-1] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and word[len(word)-2:len(word)] != "s'" and not (len(word) <= 3 and (word[0] == ":" or word[0] == ";")):
                             word = word[:len(word)-1]
                     if word != "":
                         if word in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""":
