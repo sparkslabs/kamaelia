@@ -514,11 +514,10 @@ class LiveAnalysisNLTK(component):
 
                 tweettext = tweetjson['filtered_text'].split()
                 for word in tweettext:
-                    # This will accidentally filter our smilies - FIXME TODO
-                    if word[0] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""":
+                    if word[0] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and (len(word) <= 3 and (word[0] == ":" or word[0] == ";")):
                         word = word[1:]
                     if word != "":
-                        if word[len(word)-1] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""":
+                        if word[len(word)-1] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and word[len(word)-2:len(word)] != "s'":
                             word = word[:len(word)-1]
                     if word != "":
                         if word in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""":
