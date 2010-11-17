@@ -279,7 +279,14 @@ class LiveAnalysis(threadedcomponent):
                 except ZeroDivisionError, e:
                     meantweets = 0
 
-                cursor.execute("""SELECT totaltweets FROM analyseddata WHERE pid = %s AND timestamp >= %s AND timestamp < %s""",(pid,timestamp,timestamp+duration))
+                sqltimestamp1 = timestamp
+                if dbtimestamp < sqltimestamp1:
+                    sqltimestamp1 = dbtimestamp
+                sqltimestamp2 = timestamp + duration
+                if dbtimestamp > sqltimestamp2:
+                    sqltimestamp2 = dbtimestamp
+                # This isn't great - needs redoing TODO
+                cursor.execute("""SELECT totaltweets FROM analyseddata WHERE pid = %s AND timestamp >= %s AND timestamp < %s""",(pid,sqltimestamp1,sqltimestamp2))
                 analyseddata = cursor.fetchall()
 
                 runningtime = int(runningtime)
@@ -455,6 +462,7 @@ class LiveAnalysisNLTK(component):
                 # Issue #TODO - Words that appear as part of a keyword but not the whole thing won't get marked as being a keyword (e.g. Blue Peter - two diff words)
                 # Need to check for each word if it forms part of a phrase which is also a keyword
                 # If so, don't count is as a word, count the whole thing as a phrase and remember not to count it more than once
+                # Haven't included spelling fixer yet either - need to do this before WFA
 
                 tweetdata = None
                 while tweetdata == None:
