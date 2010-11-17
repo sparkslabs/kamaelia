@@ -69,8 +69,12 @@ class wordanalysis(models.Model):
     wid = models.IntegerField(primary_key=True,db_column="wid")
     pid = models.ForeignKey(programmes,db_column="pid")
     timestamp = models.FloatField(db_column="timestamp")
-    word = models.CharField(max_length=30,db_column="word")
-    word_count = models.IntegerField(db_column="word_count")
+    word = models.CharField(max_length=200,db_column="word")
+    phrase = models.CharField(max_length=200,db_column="phrase")
+    count = models.IntegerField(db_column="count",default=0)
+    is_keyword = models.BooleanField(db_column="is_keyword",default=0)
+    is_entity = models.BooleanField(db_column="is_entity",default=0)
+    is_common = models.BooleanField(db_column="is_common",default=0)
 
     class Meta:
         db_table = 'wordanalysis'
