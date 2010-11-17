@@ -13,435 +13,64 @@
          xmlns:timeline = "http://purl.org/NET/c4dm/timeline.owl#"
          xmlns:event    = "http://purl.org/NET/c4dm/event.owl#">
 
-<rdf:Description rdf:about="/programmes/b00w4gvf.rdf">
-  <rdfs:label>Description of a programme version of Doppelgangers</rdfs:label>
-  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-10T00:43:59Z</dcterms:created>
-  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-10T00:43:59Z</dcterms:modified>
-  <foaf:primaryTopic rdf:resource="/programmes/b00w4gvf#programme"/>
+<rdf:Description rdf:about="/programmes/b00vz3xx.rdf">
+  <rdfs:label>Description of a programme version of 17/11/2010</rdfs:label>
+  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-10T00:13:23Z</dcterms:created>
+  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-10T00:13:23Z</dcterms:modified>
+  <foaf:primaryTopic rdf:resource="/programmes/b00vz3xx#programme"/>
 </rdf:Description>
 
-<po:Version rdf:about="/programmes/b00w4gvf#programme">
+<po:Version rdf:about="/programmes/b00vz3xx#programme">
 
-  <rdfs:label>A version of Doppelgangers</rdfs:label>
-  <po:aspect_ratio>16:9</po:aspect_ratio>
+  <rdfs:label>A version of 17/11/2010</rdfs:label>
+  
   <po:sound_format>Stereo</po:sound_format>
-  <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1500</po:duration>
-  <po:pid>b00w4gvf</po:pid>
+  <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">7200</po:duration>
+  <po:pid>b00vz3xx</po:pid>
   <po:time>
     <timeline:Interval>
-      <rdfs:label>Time interval for a version of Doppelgangers</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00w4gvf#timeline"/>
-      <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT1500S</timeline:duration>
+      <rdfs:label>Time interval for a version of 17/11/2010</rdfs:label>
+      <timeline:timeline rdf:resource="/programmes/b00vz3xx#timeline"/>
+      <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT7200S</timeline:duration>
     </timeline:Interval>
   </po:time>
 
-  <po:credit>
-    <po:Credit>
-      <po:role>
-        <po:Character>
-          <foaf:name>Rose Gupta</foaf:name>
-        </po:Character>
-      </po:role>
-      <po:participant>
-        <po:Alias>
-          <rdfs:label>Rachel Petladwala</rdfs:label>
-          <foaf:givenName>Rachel</foaf:givenName>
-          <foaf:familyName>Petladwala</foaf:familyName>
-        </po:Alias>
-      </po:participant>
-    </po:Credit>
-  </po:credit>
-  <po:credit>
-    <po:Credit>
-      <po:role>
-        <po:Character>
-          <foaf:name>Carrie Stewart</foaf:name>
-        </po:Character>
-      </po:role>
-      <po:participant>
-        <po:Alias>
-          <rdfs:label>Charlene Osuagwu</rdfs:label>
-          <foaf:givenName>Charlene</foaf:givenName>
-          <foaf:familyName>Osuagwu</foaf:familyName>
-        </po:Alias>
-      </po:participant>
-    </po:Credit>
-  </po:credit>
-  <po:credit>
-    <po:Credit>
-      <po:role>
-        <po:Character>
-          <foaf:name>Oscar Cole</foaf:name>
-        </po:Character>
-      </po:role>
-      <po:participant>
-        <po:Alias>
-          <rdfs:label>Ben Kerfoot</rdfs:label>
-          <foaf:givenName>Ben</foaf:givenName>
-          <foaf:familyName>Kerfoot</foaf:familyName>
-        </po:Alias>
-      </po:participant>
-    </po:Credit>
-  </po:credit>
-  <po:credit>
-    <po:Credit>
-      <po:role>
-        <po:Character>
-          <foaf:name>Frank London</foaf:name>
-        </po:Character>
-      </po:role>
-      <po:participant>
-        <po:Alias>
-          <rdfs:label>Jonny Freeman</rdfs:label>
-          <foaf:givenName>Jonny</foaf:givenName>
-          <foaf:familyName>Freeman</foaf:familyName>
-        </po:Alias>
-      </po:participant>
-    </po:Credit>
-  </po:credit>
-  <po:credit>
-    <po:Credit>
-      <po:role>
-        <po:Character>
-          <foaf:name>Mr Flatley</foaf:name>
-        </po:Character>
-      </po:role>
-      <po:participant>
-        <po:Alias>
-          <rdfs:label>Chris Stanton</rdfs:label>
-          <foaf:givenName>Chris</foaf:givenName>
-          <foaf:familyName>Stanton</foaf:familyName>
-        </po:Alias>
-      </po:participant>
-    </po:Credit>
-  </po:credit>
-  <po:credit>
-    <po:Credit>
-      <po:role>
-        <po:Character>
-          <foaf:name>Mrs King</foaf:name>
-        </po:Character>
-      </po:role>
-      <po:participant>
-        <po:Alias>
-          <rdfs:label>Channelle Owen</rdfs:label>
-          <foaf:givenName>Channelle</foaf:givenName>
-          <foaf:familyName>Owen</foaf:familyName>
-        </po:Alias>
-      </po:participant>
-    </po:Credit>
-  </po:credit>
-  <po:credit>
-    <po:Credit>
-      <po:role>
-        <po:Character>
-          <foaf:name>Chief Agent Stark</foaf:name>
-        </po:Character>
-      </po:role>
-      <po:participant>
-        <po:Alias>
-          <rdfs:label>Jonathan Rhodes</rdfs:label>
-          <foaf:givenName>Jonathan</foaf:givenName>
-          <foaf:familyName>Rhodes</foaf:familyName>
-        </po:Alias>
-      </po:participant>
-    </po:Credit>
-  </po:credit>
-  <po:credit>
-    <po:Credit>
-      <po:role>
-        <po:Character>
-          <foaf:name>Andrea Ivanovic</foaf:name>
-        </po:Character>
-      </po:role>
-      <po:participant>
-        <po:Alias>
-          <rdfs:label>Hermione Gulliford</rdfs:label>
-          <foaf:givenName>Hermione</foaf:givenName>
-          <foaf:familyName>Gulliford</foaf:familyName>
-        </po:Alias>
-      </po:participant>
-    </po:Credit>
-  </po:credit>
-  <po:credit>
-    <po:Credit>
-      <po:role>
-        <po:Character>
-          <foaf:name>Agent Brown</foaf:name>
-        </po:Character>
-      </po:role>
-      <po:participant>
-        <po:Alias>
-          <rdfs:label>Graham Bryan</rdfs:label>
-          <foaf:givenName>Graham</foaf:givenName>
-          <foaf:familyName>Bryan</foaf:familyName>
-        </po:Alias>
-      </po:participant>
-    </po:Credit>
-  </po:credit>
-  <po:credit>
-    <po:Credit>
-      <po:role>
-        <po:Character>
-          <foaf:name>Newsreader</foaf:name>
-        </po:Character>
-      </po:role>
-      <po:participant>
-        <po:Alias>
-          <rdfs:label>Krupa Pattani</rdfs:label>
-          <foaf:givenName>Krupa</foaf:givenName>
-          <foaf:familyName>Pattani</foaf:familyName>
-        </po:Alias>
-      </po:participant>
-    </po:Credit>
-  </po:credit>
-  <po:credit>
-    <po:Credit>
-      <po:role>
-        <po:Character>
-          <foaf:name>Pizza Delivery Man</foaf:name>
-        </po:Character>
-      </po:role>
-      <po:participant>
-        <po:Alias>
-          <rdfs:label>Akemnji Ndifernyan</rdfs:label>
-          <foaf:givenName>Akemnji</foaf:givenName>
-          <foaf:familyName>Ndifernyan</foaf:familyName>
-        </po:Alias>
-      </po:participant>
-    </po:Credit>
-  </po:credit>
-  <po:credit>
-    <po:Credit>
-      <po:role>
-        <po:Character>
-          <foaf:name>Scoop Doggy</foaf:name>
-        </po:Character>
-      </po:role>
-      <po:participant>
-        <po:Alias>
-          <rdfs:label>Sam Melvin</rdfs:label>
-          <foaf:givenName>Sam</foaf:givenName>
-          <foaf:familyName>Melvin</foaf:familyName>
-        </po:Alias>
-      </po:participant>
-    </po:Credit>
-  </po:credit>
-  <po:credit>
-    <po:Credit>
-      <po:role>
-        <po:Character>
-          <foaf:name>Avril Franklin</foaf:name>
-        </po:Character>
-      </po:role>
-      <po:participant>
-        <po:Alias>
-          <rdfs:label>Jenny Huxley Golden</rdfs:label>
-          <foaf:givenName>Jenny</foaf:givenName>
-          <foaf:familyName>Huxley Golden</foaf:familyName>
-        </po:Alias>
-      </po:participant>
-    </po:Credit>
-  </po:credit>
-  <po:credit>
-    <po:Credit>
-      <po:role>
-        <po:Character>
-          <foaf:name>Davina Berry</foaf:name>
-        </po:Character>
-      </po:role>
-      <po:participant>
-        <po:Alias>
-          <rdfs:label>Eliza Cummings-Cove</rdfs:label>
-          <foaf:givenName>Eliza</foaf:givenName>
-          <foaf:familyName>Cummings-Cove</foaf:familyName>
-        </po:Alias>
-      </po:participant>
-    </po:Credit>
-  </po:credit>
-  <po:credit>
-    <po:Credit>
-      <po:role>
-        <po:Character>
-          <foaf:name>Donovan Butler</foaf:name>
-        </po:Character>
-      </po:role>
-      <po:participant>
-        <po:Alias>
-          <rdfs:label>Joseph Cocklin</rdfs:label>
-          <foaf:givenName>Joseph</foaf:givenName>
-          <foaf:familyName>Cocklin</foaf:familyName>
-        </po:Alias>
-      </po:participant>
-    </po:Credit>
-  </po:credit>
-  <po:credit>
-    <po:Credit>
-      <po:role>
-        <po:Role>
-          <rdfs:label>Director</rdfs:label>
-          <dc:title>Director</dc:title>
-          <dc:description>A supervisor; generally refers to the person responsible for all audience-visible components of a program, film, or show, whereas the producer is responsible for the financial and other behind-the-scenes aspects. A director&#39;s duties might also include casting, script editing, shot selection, shot composition, and editing</dc:description>
-        </po:Role>
-      </po:role>
-      <po:participant>
-        <po:Alias>
-          <rdfs:label>Mat King</rdfs:label>
-          <foaf:givenName>Mat</foaf:givenName>
-          <foaf:familyName>King</foaf:familyName>
-        </po:Alias>
-      </po:participant>
-    </po:Credit>
-  </po:credit>
-  <po:credit>
-    <po:Credit>
-      <po:role>
-        <po:Role>
-          <rdfs:label>Producer</rdfs:label>
-          <dc:title>Producer</dc:title>
-          <dc:description>The manager of an event, show, or other work, usually the individual in charge of finance, personnel, and other non-artistic aspects in the development of commercials, plays, movies, and other works</dc:description>
-        </po:Role>
-      </po:role>
-      <po:participant>
-        <po:Alias>
-          <rdfs:label>Emma Kingsman Lloyd</rdfs:label>
-          <foaf:givenName>Emma</foaf:givenName>
-          <foaf:familyName>Kingsman Lloyd</foaf:familyName>
-        </po:Alias>
-      </po:participant>
-    </po:Credit>
-  </po:credit>
-  <po:credit>
-    <po:Credit>
-      <po:role>
-        <po:Role>
-          <rdfs:label>Writer</rdfs:label>
-          <dc:title>Writer</dc:title>
-          <dc:description>A person who writes scripts for plays or movies or broadcast dramas</dc:description>
-        </po:Role>
-      </po:role>
-      <po:participant>
-        <po:Alias>
-          <rdfs:label>Adrian Hewitt</rdfs:label>
-          <foaf:givenName>Adrian</foaf:givenName>
-          <foaf:familyName>Hewitt</foaf:familyName>
-        </po:Alias>
-      </po:participant>
-    </po:Credit>
-  </po:credit>
 
 </po:Version>
 
-<po:Episode rdf:about="/programmes/b00qnvws#programme">
-  <rdfs:label>Doppelgangers</rdfs:label>
-  <po:version rdf:resource="/programmes/b00w4gvf#programme" />
+<po:Episode rdf:about="/programmes/b00vz3z4#programme">
+  <rdfs:label>17/11/2010</rdfs:label>
+  <po:version rdf:resource="/programmes/b00vz3xx#programme" />
 </po:Episode>
 
-<timeline:TimeLine rdf:about="/programmes/b00w4gvf#timeline">
-  <rdfs:label>Timeline of a version of Doppelgangers</rdfs:label>
+<timeline:TimeLine rdf:about="/programmes/b00vz3xx#timeline">
+  <rdfs:label>Timeline of a version of 17/11/2010</rdfs:label>
 </timeline:TimeLine>
 
-<po:Broadcast rdf:about="/programmes/b00w4gvf#p00c2mx8">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/RepeatBroadcast"/>
-  <po:pid>p00c2mx8</po:pid>
+<po:Broadcast rdf:about="/programmes/b00vz3xx#p00c2km6">
+  <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
+  <po:pid>p00c2km6</po:pid>
   <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-11-17</po:schedule_date>
   <event:time>
     <timeline:Interval>
-      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-17T11:35:00Z</timeline:start>
-      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-17T12:00:00Z</timeline:end>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-17T13:00:00Z</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-17T15:00:00Z</timeline:end>
     </timeline:Interval>
   </event:time>
   <po:broadcast_on>
-    <po:Service rdf:about="/services/cbbc#service">
-      <rdfs:label>CBBC</rdfs:label>
+    <po:Service rdf:about="/services/asiannetwork#service">
+      <rdfs:label>BBC Asian Network</rdfs:label>
     </po:Service>
   </po:broadcast_on>
-  <po:broadcast_of rdf:resource="/programmes/b00w4gvf#programme" />
+  <po:broadcast_of rdf:resource="/programmes/b00vz3xx#programme" />
 </po:Broadcast>
 
 
 
 
 <po:Availability>
-  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-17T12:00:00Z</timeline:start>
-  <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-24T11:59:00Z</timeline:end>
-  <po:media_item>
-    <po:MediaItem rdf:about="/programmes/b00w4gvf#p00c6kdm">
-      <po:pid>p00c6kdm</po:pid>
-      <po:service rdf:resource="/services/pc_download_wmv#service"/>
-      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-16T19:15:36Z</po:start_of_media_availability>
-    </po:MediaItem>
-  </po:media_item>
-  <po:media_item>
-    <po:MediaItem rdf:about="/programmes/b00w4gvf#p00c6kdr">
-      <po:pid>p00c6kdr</po:pid>
-      <po:service rdf:resource="/services/iplayer_mobile_wmv#service"/>
-      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-16T19:16:52Z</po:start_of_media_availability>
-    </po:MediaItem>
-  </po:media_item>
-  <po:media_item>
-    <po:MediaItem rdf:about="/programmes/b00w4gvf#p00c6kg6">
-      <po:pid>p00c6kg6</po:pid>
-      <po:service rdf:resource="/services/mvod_sd_virgin#service"/>
-      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-16T19:21:20Z</po:start_of_media_availability>
-    </po:MediaItem>
-  </po:media_item>
-  <po:media_item>
-    <po:MediaItem rdf:about="/programmes/b00w4gvf#p00c6kvg">
-      <po:pid>p00c6kvg</po:pid>
-      <po:service rdf:resource="/services/iplayer_streaming_h264_flv_lo#service"/>
-      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-16T20:06:17Z</po:start_of_media_availability>
-    </po:MediaItem>
-  </po:media_item>
-  <po:media_item>
-    <po:MediaItem rdf:about="/programmes/b00w4gvf#p00c6kx3">
-      <po:pid>p00c6kx3</po:pid>
-      <po:service rdf:resource="/services/iplayer_wii#service"/>
-      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-16T20:10:55Z</po:start_of_media_availability>
-    </po:MediaItem>
-  </po:media_item>
-  <po:media_item>
-    <po:MediaItem rdf:about="/programmes/b00w4gvf#p00c6kxc">
-      <po:pid>p00c6kxc</po:pid>
-      <po:service rdf:resource="/services/iplayer_streaming_http_mp4#service"/>
-      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-16T20:12:30Z</po:start_of_media_availability>
-    </po:MediaItem>
-  </po:media_item>
-  <po:media_item>
-    <po:MediaItem rdf:about="/programmes/b00w4gvf#p00c6l0d">
-      <po:pid>p00c6l0d</po:pid>
-      <po:service rdf:resource="/services/iplayer_streaming_h264_flv_high#service"/>
-      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-16T20:43:37Z</po:start_of_media_availability>
-    </po:MediaItem>
-  </po:media_item>
-  <po:media_item>
-    <po:MediaItem rdf:about="/programmes/b00w4gvf#p00c6l0f">
-      <po:pid>p00c6l0f</po:pid>
-      <po:service rdf:resource="/services/iplayer_stb_streaming_sd#service"/>
-      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-16T20:43:39Z</po:start_of_media_availability>
-    </po:MediaItem>
-  </po:media_item>
-  <po:media_item>
-    <po:MediaItem rdf:about="/programmes/b00w4gvf#p00c6l0g">
-      <po:pid>p00c6l0g</po:pid>
-      <po:service rdf:resource="/services/iplayer_streaming_h264_flv#service"/>
-      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-16T20:44:25Z</po:start_of_media_availability>
-    </po:MediaItem>
-  </po:media_item>
-  <po:media_item>
-    <po:MediaItem rdf:about="/programmes/b00w4gvf#p00c6l0k">
-      <po:pid>p00c6l0k</po:pid>
-      <po:service rdf:resource="/services/iplayer_stbx_streaming_sd_high#service"/>
-      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-16T20:45:27Z</po:start_of_media_availability>
-    </po:MediaItem>
-  </po:media_item>
-  <po:media_item>
-    <po:MediaItem rdf:about="/programmes/b00w4gvf#p00c6lyr">
-      <po:pid>p00c6lyr</po:pid>
-      <po:service rdf:resource="/services/iplayer_download_http_h264_air_high#service"/>
-      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-16T22:56:52Z</po:start_of_media_availability>
-    </po:MediaItem>
-  </po:media_item>
+  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-17T15:02:00Z</timeline:start>
+  <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-24T15:02:00Z</timeline:end>
 </po:Availability>
 
 
