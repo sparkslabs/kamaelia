@@ -17,7 +17,6 @@ import cjson
 import string
 import nltk
 from nltk import FreqDist
-from nltk.collocations import BigramCollocationFinder
 import re
 
 from Axon.ThreadedComponent import threadedcomponent
@@ -27,11 +26,13 @@ class LiveAnalysis(threadedcomponent):
     Inboxes = {
         "inbox" : "",
         "nltk" : "Receives data back from the NLTK component",
+        "nltkfinal" : "Receives data back from the final NLTK analysis component",
         "control" : ""
     }
     Outboxes = {
         "outbox" : "",
         "nltk" : "Sends data out to the NLTK component",
+        "nltkfinal" : "Sends data out to the final NLTK analysis component",
         "signal" : ""
     }
 
@@ -395,6 +396,20 @@ class LiveAnalysis(threadedcomponent):
                     except ZeroDivisionError, e:
                         stdevtweets = 0
 
+                    sqltimestamp1 = timestamp - timediff
+                    sqltimestamp2 = timestamp + duration - timediff
+                    cursor.execute("""SELECT tweet_id FROM rawdata WHERE pid = %s AND timestamp >= %s AND timestamp < %s""", (pid,sqltimestamp1,sqltimestamp2))
+                    rawtweetids = cursor.fetchall()
+                    tweetids = list()
+                    for tweet in rawtweetids:
+                        tweetids.append(tweet[0])
+
+                    if len(tweetids) > 0:
+                        self.send([pid,tweetids],"nltkfinal")
+                        while not self.dataReady("nltkfinal"):
+                            time.sleep(1)
+                        nltkdata = self.recv("nltkfinal")
+
                     cursor.execute("""UPDATE programmes SET meantweets = %s, mediantweets = %s, modetweets = %s, stdevtweets = %s, analysed = 1 WHERE pid = %s AND timestamp = %s""",(meantweets,mediantweets,modetweets,stdevtweets,pid,timestamp))
                     print "Analysis component: Done!"
 
@@ -610,6 +625,8 @@ class FinalAnalysisNLTK(component):
     def spellingFixer(self,text):
 	# Fix ahahahahahaha and hahahahaha
 	text = re.sub("\S{0,}(ha){2,}\S{0,}","haha",text,re.I)
+        # E-mail filter
+        text = re.sub("\S{1,}@\S{1,}.\S{1,}","",text,re.I)
 	# fix looooooool and haaaaaaaaaaa - fails for some words at the mo, for example welllll will be converted to wel, and hmmm to hm etc
 	# Perhaps we could define both 'lol' and 'lool' as words, then avoid the above problem by reducing repeats to a max of 2
 	x = re.findall(r'((\D)\2*)',text,re.I)
@@ -630,99 +647,86 @@ class FinalAnalysisNLTK(component):
             if self.dataReady("inbox"):
                 data = self.recv("inbox")
                 pid = data[0]
-                tweetid = data[1]
-
-                # There is a possibility at this point that the tweet won't yet be in the DB.
-                # We'll have to stall for now if that happens but eventually it should be ensured tweets will be in the DB first
+                tweetids = data[1]
 
                 # Issue #TODO - Words that appear as part of a keyword but not the whole thing won't get marked as being a keyword (e.g. Blue Peter - two diff words)
                 # Need to check for each word if it forms part of a phrase which is also a keyword
                 # If so, don't count is as a word, count the whole thing as a phrase and remember not to count it more than once
                 # May actually store phrases AS WELL AS keywords
 
-                tweetdata = None
-                while tweetdata == None:
-                    cursor.execute("""SELECT tweet_json FROM rawtweets WHERE tweet_id = %s""",(tweetid))
-                    tweetdata = cursor.fetchone()
-                    if tweetdata == None:
-                        self.pause()
-                        yield 1
-
-                tweetjson = cjson.decode(tweetdata[0])
-
                 keywords = dict()
                 cursor.execute("""SELECT keyword,type FROM keywords WHERE pid = %s""",(pid))
                 keyworddata = cursor.fetchall()
                 for word in keyworddata:
                     wordname = word[0].lower()
-                    keywords[wordname] = word[1]
+                    if "^" in wordname:
+                        wordbits = wordname.split("^")
+                        wordname = wordbits[0]
+                    wordbits = wordname.split()
+                    # Only looking at phrases here (more than one word)
+                    if len(wordbits) > 1:
+                        keywords[wordname] = word[1]
 
-                self.send(tweetjson,"tweetfixer")
-                while not self.dataReady("tweetfixer"):
-                    self.pause()
-                    yield 1
-                tweetjson = self.recv("tweetfixer")
+                filteredtext = list()
+                for tweetid in tweetids:
+
+                    tweetdata = None
+                    while tweetdata == None:
+                        cursor.execute("""SELECT tweet_json FROM rawtweets WHERE tweet_id = %s""",(tweetid))
+                        tweetdata = cursor.fetchone()
+                        if tweetdata != None:
+
+                            tweetjson = cjson.decode(tweetdata[0])
+
+                            self.send(tweetjson,"tweetfixer")
+                            while not self.dataReady("tweetfixer"):
+                                self.pause()
+                                yield 1
+                            tweetjson = self.recv("tweetfixer")
+
+                            tweettext = self.spellingFixer(tweetjson['filtered_text']).split()
+                            
+                            for word in tweettext:
+                                if word[0] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and not (len(word) <= 3 and (word[0] == ":" or word[0] == ";")):
+                                    word = word[1:]
+                                if word != "":
+                                    # Done twice to capture things like 'this is a "quote".'
+                                    if len(word) >= 2:
+                                        if word[len(word)-1] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and word[len(word)-2:len(word)] != "s'" and not (len(word) <= 3 and (word[0] == ":" or word[0] == ";")):
+                                            word = word[:len(word)-1]
+                                            if word[len(word)-1] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and word[len(word)-2:len(word)] != "s'" and not (len(word) <= 3 and (word[0] == ":" or word[0] == ";")):
+                                                word = word[:len(word)-1]
+                                    elif word[len(word)-1] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and not (len(word) <= 3 and (word[0] == ":" or word[0] == ";")):
+                                        word = word[:len(word)-1]
+                                        if word != "":
+                                            if word[len(word)-1] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and not (len(word) <= 3 and (word[0] == ":" or word[0] == ";")):
+                                                word = word[:len(word)-1]
+                                if word != "":
+                                    if word in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""":
+                                        word = ""
+
+                                if word != "":
+                                    filteredtext.append(word)
 
                 # Format: {"word" : [is_phrase,count,is_keyword,is_entity,is_common]}
                 # Need to change this for retweets as they should include all the text content if truncated - need some clever merging FIXME TODO
                 wordfreqdata = dict()
-                for item in tweetjson['entities']['user_mentions']:
-                    if wordfreqdata.has_key("@" + item['screen_name']):
-                        wordfreqdata["@" + item['screen_name']][1] += 1
-                    else:
-                        if item['screen_name'].lower() in keywords or "@" + item['screen_name'].lower() in keywords:
-                            wordfreqdata["@" + item['screen_name']] = [0,1,1,1,0]
-                        else:
-                            wordfreqdata["@" + item['screen_name']] = [0,1,0,1,0]
-                for item in tweetjson['entities']['urls']:
-                    if wordfreqdata.has_key(item['url']):
-                        wordfreqdata[item['url']][1] += 1
-                    else:
-                        wordfreqdata[item['url']] = [0,1,0,1,0]
-                for item in tweetjson['entities']['hashtags']:
-                    if wordfreqdata.has_key("#" + item['text']):
-                        wordfreqdata["#" + item['text']][1] += 1
-                    else:
-                        if item['text'].lower() in keywords or "#" + item['text'].lower() in keywords:
-                            wordfreqdata["#" + item['text']] = [0,1,1,1,0]
-                        else:
-                            wordfreqdata["#" + item['text']] = [0,1,0,1,0]
 
-                tweettext = self.spellingFixer(tweetjson['filtered_text']).split()
-                for word in tweettext:
-                    if word[0] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and not (len(word) <= 3 and (word[0] == ":" or word[0] == ";")):
-                        word = word[1:]
-                    if word != "":
-                        # Done twice to capture things like 'this is a "quote".'
-                        if len(word) >= 2:
-                            if word[len(word)-1] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and word[len(word)-2:len(word)] != "s'" and not (len(word) <= 3 and (word[0] == ":" or word[0] == ";")):
-                                word = word[:len(word)-1]
-                                if word[len(word)-1] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and word[len(word)-2:len(word)] != "s'" and not (len(word) <= 3 and (word[0] == ":" or word[0] == ";")):
-                                    word = word[:len(word)-1]
-                        elif word[len(word)-1] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and not (len(word) <= 3 and (word[0] == ":" or word[0] == ";")):
-                            word = word[:len(word)-1]
-                            if word != "":
-                                if word[len(word)-1] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and not (len(word) <= 3 and (word[0] == ":" or word[0] == ";")):
-                                    word = word[:len(word)-1]
-                    if word != "":
-                        if word in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""":
-                            word = ""
+                bigram_fd = FreqDist(nltk.bigrams(filteredtext))
 
-                    if word != "":
-                        if wordfreqdata.has_key(word):
-                            wordfreqdata[word][1] += 1
-                        else:
-                            if word.lower() in self.exclusions:
-                                exclude = 1
+                print bigram_fd
+
+                for entry in bigram_fd:
+                    if entry[0] not in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and entry[1] not in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""":
+                        if entry[0] not in self.exclusions and entry[1] not in self.exclusions:
+                            for word in keywords:
+                                if entry[0] in word and entry[1] in word:
+                                    print "Keyword Match! " + str([entry[0],entry[1]])
+                                    break
                             else:
-                                exclude = 0
-                            if word.lower() in keywords:
-                                wordfreqdata[word] = [0,1,1,1,exclude]
-                            else:
-                                wordfreqdata[word] = [0,1,0,1,exclude]
+                                print [entry[0],entry[1]]
 
-
-                self.send(wordfreqdata,"outbox")
+                self.send(None,"outbox")
 
             self.pause()
             yield 1
