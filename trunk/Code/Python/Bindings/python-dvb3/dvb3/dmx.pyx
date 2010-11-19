@@ -61,7 +61,7 @@ cdef int get_ioctl_int(int fd, int cmd):
     return value
 
 cdef void set_ioctl_int(int fd, int cmd, int value):
-    if ioctl(self.fd, cmd, value) == -1:
+    if ioctl(fd, cmd, value) == -1:
         raise_ioerror()
 
 cdef raise_ioerror():
