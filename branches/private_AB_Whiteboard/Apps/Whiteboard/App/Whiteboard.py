@@ -199,6 +199,7 @@ def clientconnector(whiteboardBackplane="WHITEBOARD", audioBackplane="AUDIO", po
                         SimpleDetupler(1),     # remove 'SOUND' tag
                         SpeexDecode(3),
                         FilteringPubsubBackplane(audioBackplane, dontRemoveTag=True),
+                        PureTransformer(lambda x : x[1]),
                         #RawAudioMixer(),
                         SpeexEncode(3),
                         Entuple(prefix=["SOUND"],postfix=[]),
