@@ -195,7 +195,7 @@ cdef object fec2str(fec):
         return "FEC_NONE"
     elif fec < 9:
         return "FEC_" + str(fec) + "_" + str(fec + 1)
-    elif self.fec_inner == 9:
+    elif fec == 9:
         return "FEC_AUTO"
     else:
         return "?"

@@ -1,7 +1,7 @@
 import os
 from distutils.core import setup
 from distutils.extension import Extension
-from Pyrex.Distutils import build_ext
+from Cython.Distutils import build_ext
 
 kernel = "/lib/modules/" + os.uname()[2] + "/build/include"
 incs = [kernel]
@@ -17,9 +17,9 @@ setup(
         "dvb3.__init__"
     ],
     ext_modules=[
-        Extension("dvb3/frontend", ["dvb3/frontend.pyx"], include_dirs=incs),
-        Extension("dvb3/dmx", ["dvb3/dmx.pyx"], include_dirs=incs),
-        Extension("dvb3/soft_dmx", ["dvb3/soft_dmx.pyx"], include_dirs=incs),
+        Extension("dvb3.frontend", ["dvb3/frontend.pyx"], include_dirs=incs),
+        Extension("dvb3.dmx", ["dvb3/dmx.pyx"], include_dirs=incs),
+        Extension("dvb3.soft_dmx", ["dvb3/soft_dmx.pyx"], include_dirs=incs),
     ],
     cmdclass={"build_ext": build_ext}
 )
