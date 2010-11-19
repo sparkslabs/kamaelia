@@ -20,7 +20,8 @@
 # -------------------------------------------------------------------------
 from distutils.core import setup
 from distutils.extension import Extension
-from Pyrex.Distutils import build_ext
+# from Pyrex.Distutils import build_ext
+from Cython.Distutils import build_ext
 
 setup(
   name = 'Dirac',
@@ -33,12 +34,12 @@ setup(
     Extension("dirac_parser",
               ["dirac_parser.pyx"],
               libraries = ["dirac_decoder"],
-              include_dirs = ["/usr/local/include/dirac"],
+              include_dirs = ["/usr/include/dirac"],
              ),
     Extension("dirac_encoder",
               ["dirac_encoder.pyx"],
               libraries = ["dirac_encoder"],
-              include_dirs = ["/usr/local/include/dirac"],
+              include_dirs = ["/usr/include/dirac"],
              ),
     ],
   cmdclass = {'build_ext': build_ext},
