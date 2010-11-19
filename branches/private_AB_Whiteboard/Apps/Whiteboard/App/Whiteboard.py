@@ -487,6 +487,7 @@ if __name__=="__main__":
               TagAndFilterWrapperKeepingTag(
                   Pipeline(
                       #RawAudioMixer(),
+                      PureTransformer(lambda x : x[1]),
                       AlsaPlayer(),
                       ######
                       AlsaRecorder(),
