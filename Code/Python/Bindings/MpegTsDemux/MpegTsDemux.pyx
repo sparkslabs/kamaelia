@@ -67,7 +67,7 @@ cdef class MpegTsDemux:
 
     def delpids(self, pidlist):
         for pid in pidlist:
-           pidfilter[pid] = 0
+           self.pidfilter[pid] = 0
 
     def insert(self, fragment):
 #        """Insert a fragment of transport stream into the demuxer.
