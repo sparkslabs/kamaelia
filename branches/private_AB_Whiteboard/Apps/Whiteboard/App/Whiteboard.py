@@ -73,6 +73,8 @@ from Kamaelia.Apps.Whiteboard.Email import Email
 from Kamaelia.Apps.Whiteboard.Decks import Decks
 from Kamaelia.Apps.Whiteboard.ProperSurfaceDisplayer import ProperSurfaceDisplayer
 
+from Kamaelia.Apps.Whiteboard.Play import AlsaPlayer
+from Kamaelia.Apps.Whiteboard.Record import AlsaRecorder
 
 try:
     from Kamaelia.Codec.Speex import SpeexEncode,SpeexDecode
@@ -81,23 +83,23 @@ except Exception, e:
     SpeexEncode = nullSinkComponent
     SpeexDecode = nullSinkComponent
 
-try:
-    from Kamaelia.Apps.Whiteboard.Audio import SoundInput
-except ImportError:
-    print "SoundInput not available, using NullSink instead"
-    SoundInput = nullSinkComponent
+#try:
+#    from Kamaelia.Apps.Whiteboard.Audio import SoundInput
+#except ImportError:
+#    print "SoundInput not available, using NullSink instead"
+#    SoundInput = nullSinkComponent
 
-try:
-    from Kamaelia.Apps.Whiteboard.Audio import SoundOutput
-except ImportError:
-    print "SoundOutput not available, using NullSink instead"
-    SoundOutput = nullSinkComponent
+#try:
+#    from Kamaelia.Apps.Whiteboard.Audio import SoundOutput
+#except ImportError:
+#    print "SoundOutput not available, using NullSink instead"
+#    SoundOutput = nullSinkComponent
 
-try:
-    from Kamaelia.Apps.Whiteboard.Audio import RawAudioMixer
-except ImportError:
-    print "RawAudioMixer not available, using NullSink instead"
-    RawAudioMixer = nullSinkComponent
+#try:
+#    from Kamaelia.Apps.Whiteboard.Audio import RawAudioMixer
+#except ImportError:
+#    print "RawAudioMixer not available, using NullSink instead"
+#    RawAudioMixer = nullSinkComponent
 
 defaults = {"email" : {"server" : "","port" : "","user" : "","pass": "","from" : ""},\
             "directories" : {"scribbles" : os.path.expanduser("~") + "/.kamaelia/Kamaelia.Apps.Whiteboard/Scribbles",\
@@ -197,7 +199,7 @@ def clientconnector(whiteboardBackplane="WHITEBOARD", audioBackplane="AUDIO", po
                         SimpleDetupler(1),     # remove 'SOUND' tag
                         SpeexDecode(3),
                         FilteringPubsubBackplane(audioBackplane, dontRemoveTag=True),
-                        RawAudioMixer(),
+                        #RawAudioMixer(),
                         SpeexEncode(3),
                         Entuple(prefix=["SOUND"],postfix=[]),
                     ),
@@ -483,10 +485,10 @@ if __name__=="__main__":
     Pipeline( SubscribeTo("AUDIO"),
               TagAndFilterWrapperKeepingTag(
                   Pipeline(
-                      RawAudioMixer(),
-                      SoundOutput(),
+                      #RawAudioMixer(),
+                      AlsaPlayer(),
                       ######
-                      SoundInput(),
+                      AlsaRecorder(),
                   ),
               ),
               PublishTo("AUDIO"),
