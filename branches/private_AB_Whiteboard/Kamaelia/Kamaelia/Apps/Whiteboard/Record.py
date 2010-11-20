@@ -4,7 +4,7 @@ import Axon
 import alsaaudio
 import time
 
-class AlsaRecorder(Axon.Component.component):
+class AlsaRecorder(Axon.ThreadedComponent.threadedcomponent):
     channels = 2
     rate = 44100
     format = alsaaudio.PCM_FORMAT_S16_LE
@@ -19,12 +19,21 @@ class AlsaRecorder(Axon.Component.component):
         inp.setperiodsize(self.periodsize)
         loops = self.maxloops
         delay = self.delay
+        exception = False
         while 1:
-	    yield 1
-            #time.sleep(delay) # Causes significantly lower CPU usage
+            time.sleep(delay) # Causes significantly lower CPU usage
             l,data = inp.read()
             if l:
-              self.send(data, "outbox")
+	        try:
+		    self.send(data, "outbox")
+		    if exception == True:
+		        print "Recording buffer cleared - continuing"
+		        exception = False
+		except Axon.AxonExceptions.noSpaceInBox, e:
+		    # Recordings aren't being processed quickly enough
+		    if exception == False:
+		        print "Recording buffer full - waiting for data to clear"
+		        exception = True
 
 def parseargs(argv, longopts, longflags):
     args = {}

@@ -19,7 +19,7 @@ class SimpleReader(Axon.Component.component):
         self.send(Axon.Ipc.producerFinished(), "signal")
         print "finished reading"
 
-class AlsaPlayer(Axon.Component.component):
+class AlsaPlayer(Axon.ThreadedComponent.threadedcomponent):
     channels = 2
     rate = 44100
     format = alsaaudio.PCM_FORMAT_S16_LE
@@ -47,7 +47,7 @@ class AlsaPlayer(Axon.Component.component):
                 if isinstance(data,Axon.Ipc.producerFinished):
                     self.send(data, "signal")
                     shutdown = True
-            yield 1
+            time.sleep(self.delay)
         print "Shutdown :-)"
 
 
