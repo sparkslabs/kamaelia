@@ -219,6 +219,7 @@ class Decks(component):
         except Exception, e:
             sys.stderr.write("Error deleting slide " + str(current))
         self.fixNumbering()
+        self.send("loadsafe","toSequencer")
     
     def quit(self):
     	root = Tk()

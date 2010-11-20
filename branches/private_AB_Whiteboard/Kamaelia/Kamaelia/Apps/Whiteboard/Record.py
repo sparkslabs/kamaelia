@@ -4,7 +4,7 @@ import Axon
 import alsaaudio
 import time
 
-class AlsaRecorder(Axon.ThreadedComponent.threadedcomponent):
+class AlsaRecorder(Axon.Component.component):
     channels = 2
     rate = 44100
     format = alsaaudio.PCM_FORMAT_S16_LE
@@ -20,7 +20,8 @@ class AlsaRecorder(Axon.ThreadedComponent.threadedcomponent):
         loops = self.maxloops
         delay = self.delay
         while 1:
-            time.sleep(delay) # Causes significantly lower CPU usage
+	    yield 1
+            #time.sleep(delay) # Causes significantly lower CPU usage
             l,data = inp.read()
             if l:
               self.send(data, "outbox")

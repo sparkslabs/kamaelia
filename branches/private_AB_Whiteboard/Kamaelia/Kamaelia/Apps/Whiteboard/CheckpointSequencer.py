@@ -67,23 +67,31 @@ class CheckpointSequencer(Axon.Component.component):
         last = self.last
         self.send( self.loadMessage(current), "outbox")
         dirty = False
+        loadsafe = False
         while self.shutdown():
             while self.dataReady("inbox"):
                 command = self.recv("inbox")
                 if command == "delete":
-                    if current == last and last > 1:
+                    if (current == last and last > 1) or (current < last and current != 1):
                         # go to previous slide
                         dirty = False
                         command = "prev"
                         last -= 1
-                    elif current < last and current != 1:
-                        # go to previous slide and fix numbering
-                        dirty = False
-                        command = "prev"
+                        self.send(["delete",current],"toDecks")
+                    elif current == 1 and current < last:
+                        # fix numbering then reload current slide
                         last -= 1
-                    
-                #if command == "save": # MOVEME!!!!! - What does this even do? Commented out, appears pointless given that current remains unchanged
-                    #self.send( self.saveMessage(current), "outbox")
+                        #command = "next"
+                        loadsafe = True
+                        self.send(["delete",current],"toDecks")
+                    elif current == 1:
+		        self.send("clearscribbles", "toDecks")
+                # The below command is ONLY used when slide 1 has been deleted and the 'new' slide 1 replacing is has to be loaded
+                # Whilst not ideal, this avoids a possible race condition following the sending to two messages to two different components
+                if command == "loadsafe":
+		    if loadsafe == True:
+		        self.send( self.loadMessage(current), "outbox")
+		        loadsafe = False
                 if command == "prev":
                     if current >1:
                         if dirty:
@@ -149,13 +157,6 @@ class CheckpointSequencer(Axon.Component.component):
                         mess[0].append("nopropogate")
                         self.send( mess, "outbox")
 #                        self.send( self.loadMessage(current), "outbox")
-                if command == "delete":
-                    if current == 1 and current < last:
-                        # fix numbering then reload current slide
-                        last -= 1
-                        #command = "next"
-                        self.send( self.loadMessage(current+1), "outbox")
-                    self.send(["delete",current],"toDecks")
 
             if not self.anyReady():
                 self.pause()
