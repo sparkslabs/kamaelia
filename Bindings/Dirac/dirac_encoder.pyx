@@ -389,6 +389,53 @@ cdef dirac_chroma_t __chromatypemap(object c):
     else:
         raise ValueError("Unknown chroma type")
 
+cdef WltFilter __mapping_wlt_filter(object c):   # FIXME: checktype
+    if c == "DD9_7":
+        return DD9_7
+    elif c == "LEGALL5_3":
+        return LEGALL5_3
+    elif c == "DD13_7":
+        return DD13_7
+    elif c == "HAAR0":
+        return HAAR0
+    elif c == "HAAR1":
+        return HAAR1
+    elif c == "FIDELITY":
+        return FIDELITY
+    elif c == "DAUB9_7":
+        return DAUB9_7
+    elif c == "filterNK":
+        return filterNK
+    else:
+        raise ValueError("Unknown filter type")
+
+cdef PrefilterType __mapping_pre_filter(object c):   # FIXME: checktype
+    if c == "NO_PF":
+        return NO_PF
+    elif c == "DIAGLP":
+        return DIAGLP
+    elif c == "RECTLP":
+        return RECTLP
+    elif c == "CWM":
+        return CWM
+    else:
+        raise ValueError("Unknown pre filter type")
+
+cdef PictureType __mapping_picture_type(object c):   # FIXME: checktype
+    if c == "INTRA_PICTURE":
+        return INTRA_PICTURE
+    elif c == "INTER_PICTURE":
+        return INTER_PICTURE
+    else:
+        raise ValueError("Unknown pre filter type")
+
+cdef ReferenceType __mapping_reference_type(object c):   # FIXME: checktype
+    if c == "REFERENCE_PICTURE":
+        return REFERENCE_PICTURE
+    elif c == "NON_REFERENCE_PICTURE":
+        return NON_REFERENCE_PICTURE
+    else:
+        raise ValueError("Unknown pre filter type")
 
 cdef dirac_encoder_presets_t __mapping_videoformat(object preset):
     if preset=="CUSTOM":
@@ -438,6 +485,32 @@ cdef dirac_encoder_presets_t __mapping_videoformat(object preset):
     else:
         raise ValueError("Not valid video format")
 
+cdef dirac_col_primaries_t __mapping_col_primaries(object cprim):
+    if cprim=="CP_HDTV_COMP_INTERNET":
+        return CP_HDTV_COMP_INTERNET
+    if cprim=="CP_SDTV_525":
+        return CP_SDTV_525
+    if cprim=="CP_SDTV_625":
+        return CP_SDTV_625
+    if cprim=="CP_DCINEMA":
+        return CP_DCINEMA
+    elif cprim=="CP_UNDEF":
+        return CP_UNDEF
+    else:
+        raise ValueError("Not valid colour primaries set")
+
+cdef ColourMatrix __mapping_colour_matrix(object cmatrix):   # FIXME: checktype
+    if cmatrix=="CM_HDTV_COMP_INTERNET":
+        return CM_HDTV_COMP_INTERNET
+    elif cmatrix=="CM_SDTV":
+        return CM_SDTV
+    elif cmatrix=="CM_REVERSIBLE":
+        return CM_REVERSIBLE
+    elif cmatrix=="CM_UNDEF":
+        return CM_UNDEF
+    else:
+        raise ValueError("Not valid colour matrix set")
+
 cdef dirac_mvprecision_t __mapping_mv_precision(object mv):
     if mv=="MV_PRECISION_PIXEL":
         return MV_PRECISION_PIXEL
@@ -465,7 +538,23 @@ cdef dirac_clean_area_t __mapping_clean_area(object carea):
         c.top_offset = int(carea['top_offset'])
         
     return c
-        
+
+cdef SignalRangeType  __mapping_named_signal_range(object nsr):   # FIXME: checktype
+    if nsr=="SIGNAL_RANGE_CUSTOM":
+        return SIGNAL_RANGE_CUSTOM
+    elif nsr=="SIGNAL_RANGE_8BIT_FULL":
+        return SIGNAL_RANGE_8BIT_FULL
+    elif nsr=="SIGNAL_RANGE_8BIT_VIDEO":
+        return SIGNAL_RANGE_8BIT_VIDEO
+    elif nsr=="SIGNAL_RANGE_10BIT_VIDEO":
+        return SIGNAL_RANGE_10BIT_VIDEO
+    elif nsr=="SIGNAL_RANGE_12BIT_VIDEO":
+        return SIGNAL_RANGE_12BIT_VIDEO
+    elif nsr=="SIGNAL_RANGE_UNDEFINED":
+        return SIGNAL_RANGE_UNDEFINED
+    else:
+        raise ValueError("Not valid named signal range type")
+
 cdef dirac_signal_range_t __mapping_signalrange(object srange):
     cdef dirac_signal_range_t s
     
@@ -479,8 +568,7 @@ cdef dirac_signal_range_t __mapping_signalrange(object srange):
         s.chroma_excursion = int(srange['chroma_excursion'])
         
     return s
-    
-        
+
 cdef dirac_colour_spec_t __mapping_colour_spec(object cspec):
     cdef dirac_colour_spec_t c
     
@@ -492,20 +580,6 @@ cdef dirac_colour_spec_t __mapping_colour_spec(object cspec):
         c.trans_func = __mapping_trans_func(cspec['trans_func'])
     
     return c
-    
-cdef dirac_col_primaries_t __mapping_col_primaries(object cprim):
-    if cprim=="CP_HDTV_COMP_INTERNET":
-        return CP_HDTV_COMP_INTERNET
-    if cprim=="CP_SDTV_525":
-        return CP_SDTV_525
-    if cprim=="CP_SDTV_625":
-        return CP_SDTV_625
-    if cprim=="CP_DCINEMA":
-        return CP_DCINEMA
-    elif cprim=="CP_UNDEF":
-        return CP_UNDEF
-    else:
-        raise ValueError("Not valid colour primaries set")
 
 cdef dirac_col_matrix_t __mapping_col_matrix(object cmat):
     cdef dirac_col_matrix_t m
@@ -530,5 +604,64 @@ cdef dirac_transfer_func_t __mapping_trans_func(object transf):
         return TF_UNDEF
     else:
         raise ValueError("Not valid transfer function")
-    
+
+cdef FrameRateType __mapping_named_frame_rate(object named_frate):  # FIXME: checktype
+    if named_frate=="FRAMERATE_CUSTOM":
+        return FRAMERATE_CUSTOM
+    elif named_frate=="FRAMERATE_23p97_FPS":
+        return FRAMERATE_23p97_FPS
+    elif named_frate=="FRAMERATE_24_FPS":
+        return FRAMERATE_24_FPS
+    elif named_frate=="FRAMERATE_25_FPS":
+        return FRAMERATE_25_FPS
+    elif named_frate=="FRAMERATE_29p97_FPS":
+        return FRAMERATE_29p97_FPS
+    elif named_frate=="FRAMERATE_30_FPS":
+        return FRAMERATE_30_FPS
+    elif named_frate=="FRAMERATE_50_FPS":
+        return FRAMERATE_50_FPS
+    elif named_frate=="FRAMERATE_59p94_FPS":
+        return FRAMERATE_59p94_FPS
+    elif named_frate=="FRAMERATE_60_FPS":
+        return FRAMERATE_60_FPS
+    elif named_frate=="FRAMERATE_14p98_FPS":
+        return FRAMERATE_14p98_FPS
+    elif named_frate=="FRAMERATE_12p5_FPS":
+        return FRAMERATE_12p5_FPS
+    elif named_frate=="FRAMERATE_UNDEFINED":
+        return FRAMERATE_UNDEFINED
+    else:
+        raise ValueError("Not valid named frame rate")
+
+cdef PixelAspectRatioType __mapping_named_pixel_aspect_ratio(object asr):  # FIXME: checktype
+    if asr=="PIXEL_ASPECT_RATIO_CUSTOM":
+        return PIXEL_ASPECT_RATIO_CUSTOM
+    elif asr=="PIXEL_ASPECT_RATIO_1_1":
+        return PIXEL_ASPECT_RATIO_1_1
+    elif asr=="PIXEL_ASPECT_RATIO_1_1":
+        return PIXEL_ASPECT_RATIO_1_1
+    elif asr=="PIXEL_ASPECT_RATIO_10_11":
+        return PIXEL_ASPECT_RATIO_10_11
+    elif asr=="PIXEL_ASPECT_RATIO_12_11":
+        return PIXEL_ASPECT_RATIO_12_11
+    elif asr=="PIXEL_ASPECT_RATIO_40_33":
+        return PIXEL_ASPECT_RATIO_40_33
+    elif asr=="PIXEL_ASPECT_RATIO_16_11":
+        return PIXEL_ASPECT_RATIO_16_11
+    elif asr=="PIXEL_ASPECT_RATIO_4_3":
+        return PIXEL_ASPECT_RATIO_4_3
+    elif asr=="PIXEL_ASPECT_RATIO_UNDEFINED":
+        return PIXEL_ASPECT_RATIO_UNDEFINED
+    else:
+        raise ValueError("Not valid named pixel aspect ratio type")
+
+cdef CodeBlockMode __mapping_named_codeblockmode(object cbm):  # FIXME: checktype
+    if cbm=="QUANT_SINGLE":
+        return QUANT_SINGLE
+    elif cbm=="QUANT_MULTIPLE":
+        return QUANT_MULTIPLE
+    elif cbm=="QUANT_UNDEF":
+        return QUANT_UNDEF
+    else:
+        raise ValueError("Not valid named code block mode")
 
