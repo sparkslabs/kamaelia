@@ -135,11 +135,14 @@ cdef extern from "dirac/libdirac_common/common_types.h":
         SIGNAL_RANGE_12BIT_VIDEO
         SIGNAL_RANGE_UNDEFINED
 
-    ctypedef enum InterlaceType: ### FIXME: Where is this now?
-        IT_PROGRESSIVE
-        IT_INTERLACED_TFF
-        IT_INTERLACED_BFF
-        IT_UNDEF
+#
+# APPEARS TO HAVE DISAPPEARED NOW
+#
+#    ctypedef enum InterlaceType: ### FIXME: Where is this now?
+#        IT_PROGRESSIVE
+#        IT_INTERLACED_TFF
+#        IT_INTERLACED_BFF
+#        IT_UNDEF
 
     ctypedef enum MVPrecisionType:
         MV_PRECISION_PIXEL=0
@@ -148,7 +151,7 @@ cdef extern from "dirac/libdirac_common/common_types.h":
         MV_PRECISION_EIGHTH_PIXEL
         MV_PRECISION_UNDEFINED
 
-    /*! Type of quantiser modes when spatial partitioning is enabled */
+    # Type of quantiser modes when spatial partitioning is enabled
     ctypedef enum CodeBlockMode:
         QUANT_SINGLE,
         QUANT_MULTIPLE,
