@@ -223,7 +223,6 @@ cdef class DiracEncoder:
         else:
             raise "INTERNALFAULT"
 
-
     def sendFrameForEncode(self, yuvdata):
         cdef unsigned char *bytes
         cdef int size
@@ -238,7 +237,6 @@ cdef class DiracEncoder:
 
         if result == -1:
             raise "ENCODERERROR"
-
 
     def getEndSequence(self):
         cdef int result
@@ -273,13 +271,11 @@ cdef class DiracEncoder:
         self.encoder.enc_buf.buffer = <unsigned char*>PyString_AsString(self.outbuffer)
         self.encoder.enc_buf.size   = self.outbuffersize
 
-
     def __presetContext(self, preset=None):
         cdef dirac_encoder_presets_t cpreset
         
         cpreset = __mapping_videoformat(preset)
         dirac_encoder_context_init( &self.context, cpreset)
-
 
     def __loadEncParams(self, **params):
         if "qf" in params:
@@ -375,8 +371,10 @@ cdef class DiracEncoder:
         if "chroma_height" in params:
             self.context.seq_params.chroma_height = int(params['chroma_height'])
 
+# ALL Named Mapping Functions -------------------------------------------------------------
 
-
+# Better : __mapping_named_chromaformat
+#
 cdef dirac_chroma_t __chromatypemap(object c):
     if c == "444":
         return format444
@@ -511,86 +509,6 @@ cdef ColourMatrix __mapping_colour_matrix(object cmatrix):   # FIXME: checktype
     else:
         raise ValueError("Not valid colour matrix set")
 
-cdef dirac_mvprecision_t __mapping_mv_precision(object mv):
-    if mv=="MV_PRECISION_PIXEL":
-        return MV_PRECISION_PIXEL
-    elif mv=="MV_PRECISION_HALF_PIXEL":
-        return MV_PRECISION_HALF_PIXEL
-    elif mv=="MV_PRECISION_QUARTER_PIXEL":
-        return MV_PRECISION_QUARTER_PIXEL
-    elif mv=="MV_PRECISION_EIGHTH_PIXEL":
-        return MV_PRECISION_EIGHTH_PIXEL
-    elif mv=="MV_PRECISION_UNDEFINED":
-        return MV_PRECISION_UNDEFINED
-    else:
-        raise ValueError("Not valid motion vector precision")
-
-cdef dirac_clean_area_t __mapping_clean_area(object carea):
-    cdef dirac_clean_area_t c
-    
-    if "width" in carea:
-        c.width = int(carea['width'])
-    if "height" in carea:
-        c.height = int(carea['height'])
-    if "left_offset" in carea:
-        c.left_offset = int(carea['left_offset'])
-    if "top_offset" in carea:
-        c.top_offset = int(carea['top_offset'])
-        
-    return c
-
-cdef SignalRangeType  __mapping_named_signal_range(object nsr):   # FIXME: checktype
-    if nsr=="SIGNAL_RANGE_CUSTOM":
-        return SIGNAL_RANGE_CUSTOM
-    elif nsr=="SIGNAL_RANGE_8BIT_FULL":
-        return SIGNAL_RANGE_8BIT_FULL
-    elif nsr=="SIGNAL_RANGE_8BIT_VIDEO":
-        return SIGNAL_RANGE_8BIT_VIDEO
-    elif nsr=="SIGNAL_RANGE_10BIT_VIDEO":
-        return SIGNAL_RANGE_10BIT_VIDEO
-    elif nsr=="SIGNAL_RANGE_12BIT_VIDEO":
-        return SIGNAL_RANGE_12BIT_VIDEO
-    elif nsr=="SIGNAL_RANGE_UNDEFINED":
-        return SIGNAL_RANGE_UNDEFINED
-    else:
-        raise ValueError("Not valid named signal range type")
-
-cdef dirac_signal_range_t __mapping_signalrange(object srange):
-    cdef dirac_signal_range_t s
-    
-    if "luma_offset" in srange:
-        s.luma_offset = int(srange['luma_offset'])
-    if "luma_excursion" in srange:
-        s.luma_excursion = int(srange['luma_excursion'])
-    if "chroma_offset" in srange:
-        s.chroma_offset = int(srange['chroma_offset'])
-    if "chroma_excursion" in srange:
-        s.chroma_excursion = int(srange['chroma_excursion'])
-        
-    return s
-
-cdef dirac_colour_spec_t __mapping_colour_spec(object cspec):
-    cdef dirac_colour_spec_t c
-    
-    if "col_primary" in cspec:
-        c.col_primary = __mapping_col_primaries(cspec['col_primary'])
-    if "col_matrix" in cspec:
-        c.col_matrix = __mapping_col_matrix(cspec['col_matrix'])
-    if "trans_func" in cspec:
-        c.trans_func = __mapping_trans_func(cspec['trans_func'])
-    
-    return c
-
-cdef dirac_col_matrix_t __mapping_col_matrix(object cmat):
-    cdef dirac_col_matrix_t m
-    
-    if "kr" in cmat:
-        m.kr = float(cmat['kr'])
-    if "kb" in cmat:
-        m.kb = float(cmat['kb'])
-    
-    return m
-    
 cdef dirac_transfer_func_t __mapping_trans_func(object transf):
     if transf=="TF_TV":
         return TF_TV
@@ -655,6 +573,36 @@ cdef PixelAspectRatioType __mapping_named_pixel_aspect_ratio(object asr):  # FIX
     else:
         raise ValueError("Not valid named pixel aspect ratio type")
 
+cdef SignalRangeType  __mapping_named_signal_range(object nsr):   # FIXME: checktype
+    if nsr=="SIGNAL_RANGE_CUSTOM":
+        return SIGNAL_RANGE_CUSTOM
+    elif nsr=="SIGNAL_RANGE_8BIT_FULL":
+        return SIGNAL_RANGE_8BIT_FULL
+    elif nsr=="SIGNAL_RANGE_8BIT_VIDEO":
+        return SIGNAL_RANGE_8BIT_VIDEO
+    elif nsr=="SIGNAL_RANGE_10BIT_VIDEO":
+        return SIGNAL_RANGE_10BIT_VIDEO
+    elif nsr=="SIGNAL_RANGE_12BIT_VIDEO":
+        return SIGNAL_RANGE_12BIT_VIDEO
+    elif nsr=="SIGNAL_RANGE_UNDEFINED":
+        return SIGNAL_RANGE_UNDEFINED
+    else:
+        raise ValueError("Not valid named signal range type")
+
+cdef dirac_mvprecision_t __mapping_mv_precision(object mv):
+    if mv=="MV_PRECISION_PIXEL":
+        return MV_PRECISION_PIXEL
+    elif mv=="MV_PRECISION_HALF_PIXEL":
+        return MV_PRECISION_HALF_PIXEL
+    elif mv=="MV_PRECISION_QUARTER_PIXEL":
+        return MV_PRECISION_QUARTER_PIXEL
+    elif mv=="MV_PRECISION_EIGHTH_PIXEL":
+        return MV_PRECISION_EIGHTH_PIXEL
+    elif mv=="MV_PRECISION_UNDEFINED":
+        return MV_PRECISION_UNDEFINED
+    else:
+        raise ValueError("Not valid motion vector precision")
+
 cdef CodeBlockMode __mapping_named_codeblockmode(object cbm):  # FIXME: checktype
     if cbm=="QUANT_SINGLE":
         return QUANT_SINGLE
@@ -665,3 +613,55 @@ cdef CodeBlockMode __mapping_named_codeblockmode(object cbm):  # FIXME: checktyp
     else:
         raise ValueError("Not valid named code block mode")
 
+# Argument Conversion functions ----------------------------------------------------
+
+cdef dirac_clean_area_t __mapping_clean_area(object carea):
+    cdef dirac_clean_area_t c
+    
+    if "width" in carea:
+        c.width = int(carea['width'])
+    if "height" in carea:
+        c.height = int(carea['height'])
+    if "left_offset" in carea:
+        c.left_offset = int(carea['left_offset'])
+    if "top_offset" in carea:
+        c.top_offset = int(carea['top_offset'])
+        
+    return c
+
+cdef dirac_signal_range_t __mapping_signalrange(object srange):
+    cdef dirac_signal_range_t s
+    
+    if "luma_offset" in srange:
+        s.luma_offset = int(srange['luma_offset'])
+    if "luma_excursion" in srange:
+        s.luma_excursion = int(srange['luma_excursion'])
+    if "chroma_offset" in srange:
+        s.chroma_offset = int(srange['chroma_offset'])
+    if "chroma_excursion" in srange:
+        s.chroma_excursion = int(srange['chroma_excursion'])
+        
+    return s
+
+cdef dirac_colour_spec_t __mapping_colour_spec(object cspec):
+    cdef dirac_colour_spec_t c
+    
+    if "col_primary" in cspec:
+        c.col_primary = __mapping_col_primaries(cspec['col_primary'])
+    if "col_matrix" in cspec:
+        c.col_matrix = __mapping_col_matrix(cspec['col_matrix'])
+    if "trans_func" in cspec:
+        c.trans_func = __mapping_trans_func(cspec['trans_func'])
+    
+    return c
+
+cdef dirac_col_matrix_t __mapping_col_matrix(object cmat):  # FIXME: Relation to mapping?
+    cdef dirac_col_matrix_t m
+    
+    if "kr" in cmat:
+        m.kr = float(cmat['kr'])
+    if "kb" in cmat:
+        m.kb = float(cmat['kb'])
+    
+    return m
+    
