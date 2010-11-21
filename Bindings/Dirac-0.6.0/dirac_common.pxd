@@ -154,21 +154,21 @@ cdef extern from "dirac/libdirac_common/common_types.h":
 
     # Type of quantiser modes when spatial partitioning is enabled
     ctypedef enum CodeBlockMode:
-        QUANT_SINGLE,
-        QUANT_MULTIPLE,
+        QUANT_SINGLE
+        QUANT_MULTIPLE
         QUANT_UNDEF
 
 
 cdef extern from "dirac/libdirac_common/dirac_types.h":
 
-    ctypedef ChromaFormat dirac_chroma_t
-    ctypedef PictureType dirac_picture_type_t
+    ctypedef ChromaFormat  dirac_chroma_t
+    ctypedef PictureType   dirac_picture_type_t
     ctypedef ReferenceType dirac_reference_type_t
-    ctypedef WltFilter dirac_wlt_filter_t
+    ctypedef WltFilter     dirac_wlt_filter_t
 
     ctypedef struct dirac_rational_t:
-        int numerator;
-        int denominator;
+        int numerator
+        int denominator
 
     ctypedef dirac_rational_t dirac_frame_rate_t
     ctypedef dirac_rational_t dirac_pix_asr_t
@@ -203,15 +203,15 @@ cdef extern from "dirac/libdirac_common/dirac_types.h":
         unsigned int chroma_excursion
 
     ctypedef struct dirac_col_matrix_t:
-        float kr;
-        float kb;
+        float kr
+        float kb
 
     ctypedef ColourPrimaries dirac_col_primaries_t
     ctypedef TransferFunction dirac_transfer_func_t
 
     ctypedef struct dirac_colour_spec_t:
         dirac_col_primaries_t col_primary
-        dirac_col_matrix_t col_matrix
+        dirac_col_matrix_t    col_matrix
         dirac_transfer_func_t trans_func
 
     # Structure that holds the source parameters
@@ -231,13 +231,13 @@ cdef extern from "dirac/libdirac_common/dirac_types.h":
 
     # Structure that holds the picture parameters
     ctypedef struct dirac_picparams_t:
-        dirac_picture_type_t ptype
+        dirac_picture_type_t   ptype
         dirac_reference_type_t rtype
-        int pnum
+        int                    pnum
 
     # Structure that holds the frame buffers into which data is written 
     # NB we have frame-oriented IO even though we code pictures
     ctypedef struct dirac_framebuf_t:
         # buffers to hold the luma and chroma data
         unsigned char  *buf[3]
-        void  *id                # User data
+        void           *id                # User data
