@@ -25,8 +25,8 @@ from Cython.Distutils import build_ext
 
 setup(
   name = 'Dirac',
-  version = "0.0.2",
-  description = "Dirac 0.6.0 bindings for python",
+  version = "0.0.3",
+  description = "Dirac 1.0.2 bindings for python",
   author = "Michael",
   author_email = "ms_@users.sourceforge.net",
   url = "http://kamaelia.sourceforge.net/",
@@ -43,9 +43,12 @@ setup(
              ),
     ],
   cmdclass = {'build_ext': build_ext},
-  long_description = """Initial set of python bindings for Dirac 0.6.0 release. 
-This API is subject to change. Requires Pyrex, Dirac, and Dirac
-headers are expected to live in /usr/local/include/dirac
+  long_description = """Initial set of python bindings for Dirac 1.0.2 release. 
+This API is subject to change. Requires Cython, Dirac, and Dirac
+headers are expected to live in /usr/include/dirac
 For information on dirac, see http://dirac.sf.net/
+
+This particular version is created with regard to Dirac and Cython as included
+in Ubuntu 10.10
 """
 )
