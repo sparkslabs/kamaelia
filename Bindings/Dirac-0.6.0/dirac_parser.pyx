@@ -103,8 +103,6 @@ cdef extern from "dirac/libdirac_decoder/decoder_types.h":
     ctypedef enum DecoderState:
         STATE_BUFFER
         STATE_SEQUENCE
-        STATE_PICTURE_START
-        STATE_PICTURE_DECODE
         STATE_PICTURE_AVAIL
         STATE_SEQUENCE_END
         STATE_INVALID
@@ -115,9 +113,9 @@ cdef extern from "dirac/libdirac_decoder/dirac_parser.h":
 
     ctypedef struct dirac_decoder_t:
         dirac_decoder_state_t  state
-        dirac_seqparams_t      seq_params
+        dirac_parseparams_t    parse_params
         dirac_sourceparams_t   src_params
-        dirac_frameparams_t    frame_params
+        unsigned int           frame_num
         void                  *parser
         dirac_framebuf_t      *fbuf
         int                    frame_avail
@@ -131,8 +129,11 @@ cdef extern from "dirac/libdirac_decoder/dirac_parser.h":
 
     cdef void dirac_buffer(dirac_decoder_t *decoder, unsigned char *start, unsigned char *end)
     cdef void dirac_set_buf(dirac_decoder_t *decoder, unsigned char *buf[3], void *id)
-    cdef void dirac_skip(dirac_decoder_t *decoder, int skip)
 
+#
+#   APPEARS REMOVED
+#
+#    cdef void dirac_skip(dirac_decoder_t *decoder, int skip)
 
 
 cdef extern from "Python.h": 
