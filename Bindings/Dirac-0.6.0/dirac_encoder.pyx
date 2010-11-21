@@ -108,57 +108,69 @@ cdef extern from "dirac/libdirac_encoder/dirac_encoder.h":
         ENC_STATE_INVALID = -1
         ENC_STATE_BUFFER
         ENC_STATE_AVAIL
+        ENC_STATE_EOS
+
+    ctypedef PrefilterType dirac_prefilter_t
 
     ctypedef VideoFormat dirac_encoder_presets_t
 
     ctypedef MVPrecisionType dirac_mvprecision_t
     
     ctypedef struct dirac_encparams_t:
-        int   lossless
-        float qf
-        int   L1_sep
-        int   num_L1
-        float cpd
-        int   xblen
-        int   yblen
-        int   xbsep
-        int   ybsep
-        int   video_format
-        dirac_wlt_filter_t  wlt_filter
+        int                 lossless
+        float               qf
+        int                 full_search
+        int                 combined_me
+        int                 x_range_me
+        int                 y_range_me
+        int                 L1_sep
+        # The number of L1 frames before the next intra frame. Together
+        # with L1_sep determines the GOP structure.
+        int                 num_L1
+        float               cpd
+        int                 xblen
+        int                 yblen
+        int                 xbsep
+        int                 ybsep
+        int                 video_format
+        dirac_wlt_filter_t  intra_wlt_filter
+        dirac_wlt_filter_t  inter_wlt_filter
         unsigned int        wlt_depth
         unsigned int        spatial_partition
-        unsigned int        def_spatial_partition
+        dirac_prefilter_t   prefilter
+        unsigned int        prefilter_strength
         unsigned int        multi_quants
         dirac_mvprecision_t mv_precision
+        int                 trate
+        unsigned int        picture_coding_mode
+        int                 using_ac
 
     ctypedef struct dirac_encoder_context_t:
-        dirac_seqparams_t    seq_params
         dirac_sourceparams_t src_params
         dirac_encparams_t    enc_params
         int                  instr_flag
         int                  decode_flag
 
-    cdef void dirac_encoder_context_init(dirac_encoder_context_t *enc_ctx, dirac_encoder_presets_t preset)
+    cdef void dirac_encoder_context_init (dirac_encoder_context_t *enc_ctx, dirac_encoder_presets_t preset)
 
     ctypedef struct dirac_enc_data_t:
         unsigned char *buffer
-        int            size
+        int size
 
-
-    ctypedef struct dirac_enc_framestats_t:
+    ctypedef struct dirac_enc_picstats_t:
         unsigned int mv_bits
         unsigned int ycomp_bits
         unsigned int ucomp_bits
         unsigned int vcomp_bits
-        unsigned int frame_bits
+        unsigned int pic_bits
 
     ctypedef struct dirac_enc_seqstats_t:
-        unsigned int mv_bits
-        unsigned int seq_bits
-        unsigned int ycomp_bits
-        unsigned int ucomp_bits
-        unsigned int vcomp_bits
-        unsigned int bit_rate
+        int64_t mv_bits
+        int64_t seq_bits
+        int64_t ycomp_bits
+        int64_t ucomp_bits
+        int64_t vcomp_bits
+        int64_t bit_rate
 
     ctypedef struct dirac_mv_t:
         int x
@@ -169,51 +181,49 @@ cdef extern from "dirac/libdirac_encoder/dirac_encoder.h":
         float mvcost
 
     ctypedef struct dirac_instr_t:
-        dirac_frame_type_t ftype
+        dirac_picture_type_t   ptype
         dirac_reference_type_t rtype
-        int             fnum
-        int             num_refs
-        int             refs[2]
-        int             xbsep
-        int             ybsep
-        int             mb_xlen
-        int             mb_ylen
-        int             mv_xlen
-        int             mv_ylen
-        int             *mb_split_mode
-        int             *mb_common_mode
-        float           *mb_costs
-        int             *pred_mode
-        float           *intra_costs
-        dirac_mv_cost_t *bipred_costs
-        short           *dc_ycomp
-        short           *dc_ucomp
-        short           *dc_vcomp
-        dirac_mv_t      *mv[2]
-        dirac_mv_cost_t *pred_costs[2]
-
+        int                    pnum
+        int                    num_refs
+        int                    refs[2]
+        int                    xbsep
+        int                    ybsep
+        int                    sb_xlen
+        int                    sb_ylen
+        int                    mv_xlen
+        int                    mv_ylen
+        int                    *sb_split_mode
+        float                  *sb_costs
+        int                    *pred_mode
+        float                  *intra_costs
+        dirac_mv_cost_t        *bipred_costs
+        short                  *dc_ycomp
+        short                  *dc_ucomp
+        short                  *dc_vcomp
+        dirac_mv_t             *mv[2]
+        dirac_mv_cost_t        *pred_costs[2]
 
     ctypedef struct dirac_encoder_t:
         dirac_encoder_context_t enc_ctx
-        int                     encoded_frame_avail
+        int                     encoded_picture_avail
         dirac_enc_data_t        enc_buf
-        dirac_frameparams_t     enc_fparams
-        dirac_enc_framestats_t  enc_fstats
+        dirac_picparams_t       enc_pparams
+        dirac_enc_picstats_t    enc_pstats
         dirac_enc_seqstats_t    enc_seqstats
         int                     end_of_sequence
         int                     decoded_frame_avail
         dirac_framebuf_t        dec_buf
-        dirac_frameparams_t     dec_fparams
+        dirac_picparams_t       dec_pparams
         dirac_instr_t           instr
         int                     instr_data_avail
-        void                   *compressor
+        void                    *compressor # In C file this is const void*
 
     cdef dirac_encoder_t       *dirac_encoder_init (dirac_encoder_context_t *enc_ctx, int verbose)
+    cdef int dirac_encoder_pts_offset (dirac_encoder_t *encoder)
     cdef int                    dirac_encoder_load (dirac_encoder_t *encoder, unsigned char *uncdata, int uncdata_size)
     cdef dirac_encoder_state_t  dirac_encoder_output (dirac_encoder_t *encoder)
-    cdef int                    dirac_encoder_end_sequence (dirac_encoder_t *encoder)
+    cdef void                   dirac_encoder_end_sequence (dirac_encoder_t *encoder)
     cdef void                   dirac_encoder_close (dirac_encoder_t *encoder)
-
 
 
 cdef extern from "Python.h": 
