@@ -159,6 +159,10 @@ cdef extern from "dirac/libdirac_common/common_types.h":
         QUANT_UNDEF
 
 
+cdef extern from "stdint.h":
+    ctypedef long int                int64_t
+    ctypedef unsigned long int       uint64_t
+
 cdef extern from "dirac/libdirac_common/dirac_types.h":
 
     ctypedef ChromaFormat  dirac_chroma_t
