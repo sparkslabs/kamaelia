@@ -169,8 +169,8 @@ cdef extern from "dirac/libdirac_common/dirac_types.h":
         int numerator;
         int denominator;
 
-    typedef dirac_rational_t dirac_frame_rate_t;
-    typedef dirac_rational_t dirac_pix_asr_t;
+    ctypedef dirac_rational_t dirac_frame_rate_t
+    ctypedef dirac_rational_t dirac_pix_asr_t
 
     ctypedef struct dirac_parseparams_t:
         unsigned int major_ver
