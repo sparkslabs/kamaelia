@@ -48,7 +48,8 @@ cdef extern from "dirac/libdirac_common/common_types.h":
         RECTLP
         CWM
 
-    static const int NUM_WLT_FILTERS = 8 ### FIXME
+#    static const int NUM_WLT_FILTERS = 8 ### FIXME
+    cdef int NUM_WLT_FILTERS = 8 ### FIXME
 
     ctypedef enum PictureType:
         INTRA_PICTURE = 0
