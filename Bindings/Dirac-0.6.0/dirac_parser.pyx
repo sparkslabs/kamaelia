@@ -112,9 +112,8 @@ cdef class DiracParser:
         cdef dirac_decoder_state_t state
 
         parse = True
-        while parse:
+        while parse: # This looks un-necessary actually
             state = dirac_parse(self.decoder)
-            parse = False
 
             if state == STATE_BUFFER:
                 self.inputbuffer = ""
@@ -126,17 +125,19 @@ cdef class DiracParser:
                 self.__allocBuffers()
                 raise "SEQINFO"
     
-            elif state == STATE_PICTURE_START:
-                parse = True
+#            elif state == STATE_PICTURE_START:
+#                parse = True
 #                raise "FRAMEINFO"
     
             elif state == STATE_PICTURE_AVAIL:
+                parse = True
                 self.__extractFrameData()
                 frame =  self.__buildFrame()
                 self.__allocBuffers()
                 return frame
     
             elif state == STATE_SEQUENCE_END:
+                parse = False
                 raise "END"
     
             elif state == STATE_INVALID:
@@ -164,9 +165,9 @@ cdef class DiracParser:
             raise "NOTREADY"
 
     def __extractSequenceData(self):
-        cdef dirac_seqparams_t params
+        cdef dirac_parseparams_t params
 
-        params = self.decoder.seq_params
+        params = self.decoder.parse_params
 
         self.seqdata = { "size"          : (int(params.width), int(params.height)),
                          "chroma_type"   :  __mapchromatype(params.chroma),
@@ -201,9 +202,9 @@ cdef class DiracParser:
                        }
                        
     def __extractFrameData(self):
-        cdef dirac_frameparams_t params
+        cdef dirac_parseparams_t params
         
-        params = self.decoder.frame_params
+        params = self.decoder.parse_params
         
         self.framedata = {
             "frametype" : __mapping_frame_type(params.ftype),
@@ -257,14 +258,14 @@ cdef object __mapchromatype(dirac_chroma_t c):
     else:
         raise "INTERNALFAULT"
 
-cdef object __mapping_frame_type(dirac_frame_type_t ftype):
-    if ftype == INTRA_FRAME:
+cdef object __mapping_frame_type(dirac_picture_type_t ftype):
+    if ftype == INTRA_PICTURE:
         return "INTRA"
     else:
         return "INTER"
 
 cdef object __mapping_rframe_type(dirac_reference_type_t rtype):
-    if rtype == REFERENCE_FRAME:
+    if rtype == REFERENCE_PICTURE:
         return "REFERENCE"
     else:
         return "NON_REFERENCE"
