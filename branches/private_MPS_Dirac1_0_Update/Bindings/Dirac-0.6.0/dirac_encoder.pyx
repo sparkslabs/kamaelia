@@ -306,8 +306,9 @@ cdef class DiracEncoder:
         if "ybsep" in params:
             self.context.enc_params.ybsep = int(params['ybsep'])
 
-        if "wlt_filter" in params:
-            self.context.enc_params.wlt_filter = __mapping_wlt_filter(params['wlt_filter'])
+# Unsupported in 1.0.2 - split apart
+#        if "wlt_filter" in params:
+#            self.context.enc_params.wlt_filter = __mapping_wlt_filter(params['wlt_filter'])
         
         if "wlt_depth" in params:
             self.context.enc_params.wlt_depth = int(params['wl_depth'])
@@ -392,35 +393,50 @@ cdef dirac_chroma_t __chromatypemap(object c):
 cdef dirac_encoder_presets_t __mapping_videoformat(object preset):
     if preset=="CUSTOM":
         return VIDEO_FORMAT_CUSTOM
-    elif preset=="QSIF":
-        return VIDEO_FORMAT_QSIF
+    elif preset=="QSIF525":
+        return VIDEO_FORMAT_QSIF525
     elif preset=="QCIF":
         return VIDEO_FORMAT_QCIF
-    elif preset=="SIF":
-        return VIDEO_FORMAT_SIF
+    elif preset=="SIF525":
+        return VIDEO_FORMAT_SIF525
     elif preset=="CIF":
         return VIDEO_FORMAT_CIF
+    elif preset=="4SIF525":
+        return VIDEO_FORMAT_4SIF525
     elif preset=="4CIF":
         return VIDEO_FORMAT_4CIF
-    elif preset=="4SIF":
-        return VIDEO_FORMAT_4SIF
-    elif preset=="SD_525_DIGITAL":
-        return VIDEO_FORMAT_SD_525_DIGITAL
-    elif preset=="SD_625_DIGITAL":
-        return VIDEO_FORMAT_SD_625_DIGITAL
-    elif preset=="HD_720":
-        return VIDEO_FORMAT_HD_720
-    elif preset=="HD_1080":
-        return VIDEO_FORMAT_HD_1080
-    elif preset=="DIGI_CINEMA_2K":
-        return VIDEO_FORMAT_DIGI_CINEMA_2K
-    elif preset=="DIGI_CINEMA_4K":
-        return VIDEO_FORMAT_DIGI_CINEMA_4K
+    elif preset=="SD_480I60":
+        return VIDEO_FORMAT_SD_480I60
+    elif preset=="SD_576I50":
+        return VIDEO_FORMAT_SD_576I50
+    elif preset=="HD_720P60":
+        return VIDEO_FORMAT_HD_720P60
+    elif preset=="HD_720P50":
+        return VIDEO_FORMAT_HD_720P50
+    elif preset=="HD_1080I60":
+        return VIDEO_FORMAT_HD_1080I60
+    elif preset=="HD_1080I50":
+        return VIDEO_FORMAT_HD_1080I50
+    elif preset=="HD_1080P60":
+        return VIDEO_FORMAT_HD_1080P60
+    elif preset=="HD_1080P50":
+        return VIDEO_FORMAT_HD_1080P50
+    elif preset=="DIGI_CINEMA_2K24":
+        return VIDEO_FORMAT_DIGI_CINEMA_2K24
+    elif preset=="DIGI_CINEMA_4K24":
+        return VIDEO_FORMAT_DIGI_CINEMA_4K24
+    elif preset=="UHDTV_4K60":
+        return VIDEO_FORMAT_UHDTV_4K60
+    elif preset=="UHDTV_4K50":
+        return VIDEO_FORMAT_UHDTV_4K50
+    elif preset=="UHDTV_8K60":
+        return VIDEO_FORMAT_UHDTV_8K60
+    elif preset=="UHDTV_8K50":
+        return VIDEO_FORMAT_UHDTV_8K50
     elif preset=="UNDEFINED":
         return VIDEO_FORMAT_UNDEFINED
     else:
         raise ValueError("Not valid video format")
-
 
 cdef dirac_mvprecision_t __mapping_mv_precision(object mv):
     if mv=="MV_PRECISION_PIXEL":
@@ -478,14 +494,14 @@ cdef dirac_colour_spec_t __mapping_colour_spec(object cspec):
     return c
     
 cdef dirac_col_primaries_t __mapping_col_primaries(object cprim):
-    if cprim=="CP_ITU_709":
-        return CP_ITU_709
-    elif cprim=="CP_SMPTE_C":
-        return CP_SMPTE_C
-    elif cprim=="CP_EBU_3213":
-        return CP_EBU_3213
-    elif cprim=="CP_CIE_XYZ":
-        return CP_CIE_XYZ
+    if cprim=="CP_HDTV_COMP_INTERNET":
+        return CP_HDTV_COMP_INTERNET
+    if cprim=="CP_SDTV_525":
+        return CP_SDTV_525
+    if cprim=="CP_SDTV_625":
+        return CP_SDTV_625
+    if cprim=="CP_DCINEMA":
+        return CP_DCINEMA
     elif cprim=="CP_UNDEF":
         return CP_UNDEF
     else:
