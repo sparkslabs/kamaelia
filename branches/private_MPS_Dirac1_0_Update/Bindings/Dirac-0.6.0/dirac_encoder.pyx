@@ -244,12 +244,10 @@ cdef class DiracEncoder:
         cdef int result
         self.__setOutBuffer()
         dirac_encoder_end_sequence(self.encoder)
-#        if result == -1:
-#            raise "ENCODERERROR"
-#        else:
-        if 1:
-            data = self.outbuffer[:self.encoder.enc_buf.size]
-            return data
+
+        # Assume OK. 
+        data = self.outbuffer[:self.encoder.enc_buf.size]
+        return data
 
 
     def getFrameStats(self):
