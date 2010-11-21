@@ -243,10 +243,11 @@ cdef class DiracEncoder:
     def getEndSequence(self):
         cdef int result
         self.__setOutBuffer()
-        result = dirac_encoder_end_sequence(self.encoder)
-        if result == -1:
-            raise "ENCODERERROR"
-        else:
+        dirac_encoder_end_sequence(self.encoder)
+#        if result == -1:
+#            raise "ENCODERERROR"
+#        else:
+        if 1:
             data = self.outbuffer[:self.encoder.enc_buf.size]
             return data
 
