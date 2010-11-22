@@ -13,53 +13,66 @@
          xmlns:timeline = "http://purl.org/NET/c4dm/timeline.owl#"
          xmlns:event    = "http://purl.org/NET/c4dm/event.owl#">
 
-<rdf:Description rdf:about="/programmes/b00lb6m2.rdf">
-  <rdfs:label>Description of the episode Southwold Art</rdfs:label>
-  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2009-06-08T03:39:08+01:00</dcterms:created>
-  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-10-01T02:52:53+01:00</dcterms:modified>
-  <foaf:primaryTopic rdf:resource="/programmes/b00lb6m2#programme"/>
+<rdf:Description rdf:about="/programmes/b00w5c7n.rdf">
+  <rdfs:label>Description of a programme version of 22/11/2010</rdfs:label>
+  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-15T00:12:31Z</dcterms:created>
+  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-15T00:12:31Z</dcterms:modified>
+  <foaf:primaryTopic rdf:resource="/programmes/b00w5c7n#programme"/>
 </rdf:Description>
 
-<po:Episode rdf:about="/programmes/b00lb6m2#programme">
+<po:Version rdf:about="/programmes/b00w5c7n#programme">
 
-  <po:pid>b00lb6m2</po:pid>
-  <dc:title>Southwold Art</dc:title>
-  <po:short_synopsis>The team journey around the breathtaking shoreline of East Anglia.</po:short_synopsis>
-  <po:medium_synopsis>The team journey around the shoreline of East Anglia. Mark Horton investigates the state of seaside piers, while Alice Roberts tries to capture Southwold on canvas.</po:medium_synopsis>
-  <po:long_synopsis>The team journey around the breathtaking shoreline of East Anglia. Mark Horton investigates the perilous state of the seaside piers, including the pier at Lowestoft, which has been closed to the public since 1982. By contrast, the pier at Southwold has been renovated and the visitors are now coming back. And self-taught artist Alice Roberts tries to capture the unique beauty of Southwold, which has inspired generations of painters.</po:long_synopsis>
-
+  <rdfs:label>A version of 22/11/2010</rdfs:label>
   
+  <po:sound_format>Stereo</po:sound_format>
+  <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">7200</po:duration>
+  <po:pid>b00w5c7n</po:pid>
+  <po:time>
+    <timeline:Interval>
+      <rdfs:label>Time interval for a version of 22/11/2010</rdfs:label>
+      <timeline:timeline rdf:resource="/programmes/b00w5c7n#timeline"/>
+      <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT7200S</timeline:duration>
+    </timeline:Interval>
+  </po:time>
 
 
-  <po:masterbrand rdf:resource="/bbctwo#service"/>
+</po:Version>
 
-  
-
-  <po:genre rdf:resource="/programmes/genres/factual/scienceandnature#genre" />
-
-  <po:format rdf:resource="/programmes/formats/documentaries#format" />
-
-  <po:subject rdf:resource="/programmes/subjects/artist#subject" />
-
-
-  <po:place rdf:resource="/programmes/places/east_anglia#place" />
-  <po:place rdf:resource="/programmes/places/lowestoft#place" />
-  <po:place rdf:resource="/programmes/places/southwold_pier#place" />
-
-  <po:version rdf:resource="/programmes/b00lb6fl#programme" />
-
-
+<po:Episode rdf:about="/programmes/b00w5c9b#programme">
+  <rdfs:label>22/11/2010</rdfs:label>
+  <po:version rdf:resource="/programmes/b00w5c7n#programme" />
 </po:Episode>
 
-<po:Series rdf:about="/programmes/b006q3c3#programme">
-  <po:episode rdf:resource="/programmes/b00lb6m2#programme"/>
-</po:Series>
+<timeline:TimeLine rdf:about="/programmes/b00w5c7n#timeline">
+  <rdfs:label>Timeline of a version of 22/11/2010</rdfs:label>
+</timeline:TimeLine>
+
+<po:Broadcast rdf:about="/programmes/b00w5c7n#p00c5d36">
+  <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
+  <po:pid>p00c5d36</po:pid>
+  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-11-22</po:schedule_date>
+  <event:time>
+    <timeline:Interval>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-22T13:00:00Z</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-22T15:00:00Z</timeline:end>
+    </timeline:Interval>
+  </event:time>
+  <po:broadcast_on>
+    <po:Service rdf:about="/services/asiannetwork#service">
+      <rdfs:label>BBC Asian Network</rdfs:label>
+    </po:Service>
+  </po:broadcast_on>
+  <po:broadcast_of rdf:resource="/programmes/b00w5c7n#programme" />
+</po:Broadcast>
 
 
 
-<po:Brand rdf:about="/programmes/b006mvlc#programme">
-  <po:episode rdf:resource="/programmes/b00lb6m2#programme"/>
-</po:Brand>
+
+<po:Availability>
+  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-22T15:02:00Z</timeline:start>
+  <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-29T15:02:00Z</timeline:end>
+</po:Availability>
+
 
 
 </rdf:RDF>
