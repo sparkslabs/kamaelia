@@ -35,6 +35,42 @@
     </timeline:Interval>
   </po:time>
 
+  <po:credit>
+    <po:Credit>
+      <po:role>
+        <po:Role>
+          <rdfs:label>Director</rdfs:label>
+          <dc:title>Director</dc:title>
+          <dc:description>A supervisor; generally refers to the person responsible for all audience-visible components of a program, film, or show, whereas the producer is responsible for the financial and other behind-the-scenes aspects. A director&#39;s duties might also include casting, script editing, shot selection, shot composition, and editing</dc:description>
+        </po:Role>
+      </po:role>
+      <po:participant>
+        <po:Alias>
+          <rdfs:label>Richard Jeffery</rdfs:label>
+          <foaf:givenName>Richard</foaf:givenName>
+          <foaf:familyName>Jeffery</foaf:familyName>
+        </po:Alias>
+      </po:participant>
+    </po:Credit>
+  </po:credit>
+  <po:credit>
+    <po:Credit>
+      <po:role>
+        <po:Role>
+          <rdfs:label>Producer</rdfs:label>
+          <dc:title>Producer</dc:title>
+          <dc:description>The manager of an event, show, or other work, usually the individual in charge of finance, personnel, and other non-artistic aspects in the development of commercials, plays, movies, and other works</dc:description>
+        </po:Role>
+      </po:role>
+      <po:participant>
+        <po:Alias>
+          <rdfs:label>Claudia Lloyd</rdfs:label>
+          <foaf:givenName>Claudia</foaf:givenName>
+          <foaf:familyName>Lloyd</foaf:familyName>
+        </po:Alias>
+      </po:participant>
+    </po:Credit>
+  </po:credit>
 
 </po:Version>
 
@@ -71,6 +107,10 @@
 <po:Availability>
   <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-22T12:32:00Z</timeline:start>
   <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-29T12:32:00Z</timeline:end>
+</po:Availability>
+<po:Availability>
+  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-22T12:30:00Z</timeline:start>
+  <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-29T12:29:00Z</timeline:end>
 </po:Availability>
 
 
