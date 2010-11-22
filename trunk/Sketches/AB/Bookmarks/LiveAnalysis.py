@@ -170,7 +170,6 @@ class LiveAnalysis(threadedcomponent):
             data = cursor.fetchall()
 
             for result in data:
-                print "Starting analysis", str(time.time())
                 tid = result[0]
                 pid = result[1]
                 tweettime = result[2]
@@ -198,21 +197,13 @@ class LiveAnalysis(threadedcomponent):
                 dbtimestamp = time.mktime(dbtime.timetuple()) + utcoffset
                 cursor.execute("""SELECT did,totaltweets,wordfreqexpected,wordfrequnexpected FROM analyseddata WHERE pid = %s AND timestamp = %s""",(pid,dbtimestamp))
                 analyseddata = cursor.fetchone()
-                print "Starting NLTK", str(time.time())
                 self.send([pid,tweetid],"nltk")
                 while not self.dataReady("nltk"):
                     time.sleep(0.01)
                 nltkdata = self.recv("nltk")
-                print "Finished NLTK", str(time.time())
                 if analyseddata == None: # No tweets yet recorded for this minute
                     minutetweets = 1
-                    #itemdicts = self.analyseTweet(cursor,pid,tweettext)
-                    #wfdict = cjson.encode(itemdicts[0])
-                    #wfudict = cjson.encode(itemdicts[1])
-                    wfdict = cjson.encode(dict())
-                    wfudict = cjson.encode(dict())
-
-                    cursor.execute("""INSERT INTO analyseddata (pid,wordfreqexpected,wordfrequnexpected,totaltweets,timestamp) VALUES (%s,%s,%s,%s,%s)""", (pid,wfdict,wfudict,minutetweets,dbtimestamp))
+                    cursor.execute("""INSERT INTO analyseddata (pid,totaltweets,timestamp) VALUES (%s,%s,%s)""", (pid,minutetweets,dbtimestamp))
                     for word in nltkdata:
                         if nltkdata[word][0] == 1:
                             cursor.execute("""INSERT INTO wordanalysis (pid,timestamp,phrase,count,is_keyword,is_entity,is_common) VALUES (%s,%s,%s,%s,%s,%s,%s)""", (pid,dbtimestamp,word,nltkdata[word][1],nltkdata[word][2],nltkdata[word][3],nltkdata[word][4]))
@@ -222,37 +213,8 @@ class LiveAnalysis(threadedcomponent):
                     did = analyseddata[0]
                     minutetweets = analyseddata[1] # Get current number of tweets for this minute
                     minutetweets += 1 # Add one to it for this tweet
-                    wfexpected = cjson.decode(analyseddata[2])
-                    wfunexpected = cjson.decode(analyseddata[3])
-                    #itemdicts = self.analyseTweet(cursor,pid,tweettext)
-                    #wfdict = itemdicts[0]
-                    #wfudict = itemdicts[1]
-                    wfdict = dict()
-                    wfudict = dict()
-                    for entry in wfdict:
-                        if wfexpected.has_key(entry):
-                            wfexpected[entry] = wfexpected[entry] + wfdict[entry]
-                        else:
-                            wfexpected[entry] = wfdict[entry]
-                    for entry in wfudict:
-                        if wfunexpected.has_key(entry):
-                            wfunexpected[entry] = wfunexpected[entry] + wfudict[entry]
-                        else:
-                            wfunexpected[entry] = wfudict[entry]
-                    wfexpected = cjson.encode(wfexpected)
-                    wfunexpected = cjson.encode(wfunexpected)
 
-
-                    # Ensure we're not exceeding DB limits
-                    # for now, if this happens we won't update the affected field
-                    if len(wfunexpected) > 2000 and len(wfexpected) > 2000:
-                        cursor.execute("""UPDATE analyseddata SET totaltweets = %s WHERE did = %s""",(minutetweets,did))
-                    elif len(wfexpected) > 2000:
-                        cursor.execute("""UPDATE analyseddata SET totaltweets = %s, wordfrequnexpected = %s WHERE did = %s""",(minutetweets,wfunexpected,did))
-                    elif len(wfunexpected) > 2000:
-                        cursor.execute("""UPDATE analyseddata SET totaltweets = %s, wordfreqexpected = %s WHERE did = %s""",(minutetweets,wfexpected,did))
-                    else:
-                        cursor.execute("""UPDATE analyseddata SET totaltweets = %s, wordfreqexpected = %s, wordfrequnexpected = %s WHERE did = %s""",(minutetweets,wfexpected,wfunexpected,did))
+                    cursor.execute("""UPDATE analyseddata SET totaltweets = %s WHERE did = %s""",(minutetweets,did))
 
                     for word in nltkdata:
                         if nltkdata[word][0] == 1:
@@ -269,7 +231,6 @@ class LiveAnalysis(threadedcomponent):
                                 cursor.execute("""INSERT INTO wordanalysis (pid,timestamp,word,count,is_keyword,is_entity,is_common) VALUES (%s,%s,%s,%s,%s,%s,%s)""", (pid,dbtimestamp,word,nltkdata[word][1],nltkdata[word][2],nltkdata[word][3],nltkdata[word][4]))
                             else:
                                 cursor.execute("""UPDATE wordanalysis SET count = %s WHERE wid = %s""",(nltkdata[word][1] + wordcheck[1],wordcheck[0]))
-                print "Finished wordanalysis", str(time.time())
                 # Averages / stdev are calculated roughly based on the programme's running time at this point
                 progdate = datetime.utcfromtimestamp(timestamp) + timedelta(seconds=utcoffset)
                 actualstart = progdate - timedelta(seconds=timediff)
@@ -339,7 +300,6 @@ class LiveAnalysis(threadedcomponent):
                 # Finished analysis
                 cursor.execute("""UPDATE programmes SET totaltweets = %s, meantweets = %s, mediantweets = %s, modetweets = %s, stdevtweets = %s WHERE pid = %s AND timestamp = %s""",(totaltweets,meantweets,mediantweets,modetweets,stdevtweets,pid,timestamp))
                 cursor.execute("""UPDATE rawdata SET analysed = 1 WHERE tid = %s""",(tid))
-                print "Analysis complete", str(time.time())
                 print "Analysis component: Done!"
 
             # Stage 2: If all raw tweets analysed and imported = 1, finalise the analysis - could do bookmark identification here too?
@@ -506,8 +466,6 @@ class LiveAnalysisNLTK(component):
                 # If so, don't count is as a word, count the whole thing as a phrase and remember not to count it more than once
                 # May actually store phrases AS WELL AS keywords
 
-                print "Getting JSON", str(time.time())
-
                 tweetdata = None
                 while tweetdata == None:
                     cursor.execute("""SELECT tweet_json FROM rawtweets WHERE tweet_id = %s""",(tweetid))
@@ -518,8 +476,6 @@ class LiveAnalysisNLTK(component):
 
                 tweetjson = cjson.decode(tweetdata[0])
 
-                print "Getting keywords", str(time.time())
-
                 keywords = dict()
                 cursor.execute("""SELECT keyword,type FROM keywords WHERE pid = %s""",(pid))
                 keyworddata = cursor.fetchall()
@@ -527,16 +483,12 @@ class LiveAnalysisNLTK(component):
                     wordname = word[0].lower()
                     keywords[wordname] = word[1]
 
-                print "Fixing tweet", str(time.time())
-
                 self.send(tweetjson,"tweetfixer")
                 while not self.dataReady("tweetfixer"):
                     self.pause()
                     yield 1
                 tweetjson = self.recv("tweetfixer")
 
-                print "Done fixing tweet", str(time.time())
-                
                 # Format: {"word" : [is_phrase,count,is_keyword,is_entity,is_common]}
                 # Need to change this for retweets as they should include all the text content if truncated - need some clever merging FIXME TODO
                 wordfreqdata = dict()
@@ -595,7 +547,6 @@ class LiveAnalysisNLTK(component):
                             else:
                                 wordfreqdata[word] = [0,1,0,0,exclude]
 
-                print "NLTK Done", str(time.time())
                 self.send(wordfreqdata,"outbox")
 
             self.pause()

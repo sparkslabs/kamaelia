@@ -338,65 +338,60 @@ def programme(request,pid,redux=False):
                         lastwasbookmark = True
                         bookmarks.append(playertimemin)
                         # BOOKMARK TEST
-                        try:
-                            wfdata = cjson.decode(minute.wordfrequnexpected)
-                            unexpecteditems = [(v,k) for k, v in wfdata.items()]
-                            unexpecteditems.sort(reverse=True)
-                            if len(unexpecteditems) > 0:
-                                # Find most popular keyword
-                                keyword = unexpecteditems[0][1]
-                                # Now look at each previous minute until it's no longer the top keyword
-                                topkeyword = keyword
-                                currentstamp = minute.timestamp
-                                while topkeyword == keyword:
-                                    currentstamp -= 60
-                                    try:
-                                        dataset = analyseddata.objects.get(pid=pid,timestamp=currentstamp)
-                                    except ObjectDoesNotExist:
-                                        break
-                                    wfdata = cjson.decode(dataset.wordfrequnexpected)
-                                    unexpecteditems = [(v,k) for k, v in wfdata.items()]
-                                    unexpecteditems.sort(reverse=True)
-                                    if len(unexpecteditems) > 0:
-                                        # Find most popular keyword
-                                        topkeyword = unexpecteditems[0][1]
+                        wfdata = wordanalysis.objects.filter(timestamp=minute.timestamp,pid=pid,is_keyword=0).order_by('-count').all()
 
-                                startstamp = currentstamp
-                                endstamp = currentstamp + 60
-                                
-                                # Investigate the previous minute
-                                tweetset = False
-                                rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=startstamp,timestamp__lt=endstamp).order_by('timestamp').all()
-                                for tweet in rawtweets:
-                                    tweettext = string.lower(tweet.text)
-                                    for items in """!"#$%&(),:;?@~[]'`{|}""":
-                                        tweettext = string.replace(tweettext,items,"")
-                                    try:
-                                        if str(keyword) in tweettext:
-                                            bookmarkstest.append(tweet.timestamp)
-                                            tweetset = True
-                                            break
-                                    except UnicodeEncodeError:
-                                        break
+                        # Find most popular keyword
+                        is_word = True
+                        if wfdata[0].word != "":
+                            keyword = wfdata[0].word
+                        else:
+                            keyword = wfdata[0].phrase
+                            is_word = False
+                        # Now look at each previous minute until it's no longer the top keyword
+                        currentstamp = minute.timestamp
+                        topkeyword = keyword
+                        while topkeyword == keyword:
+                            currentstamp -= 60
+                            try:
+                                dataset = wordanalysis.objects.filter(timestamp=currentstamp,pid=pid,is_keyword=0).order_by('-count').all()
+                            except ObjectDoesNotExist:
+                                break
 
-                                if not tweetset:
-                                    rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=minute.timestamp,timestamp__lt=(minute.timestamp + 60)).order_by('timestamp').all()
-                                    for tweet in rawtweets:
-                                        tweettext = string.lower(tweet.text)
-                                        for items in """!"#$%&(),:;?@~[]'`{|}""":
-                                            tweettext = string.replace(tweettext,items,"")
-                                        try:
-                                            if str(keyword) in tweettext:
-                                                bookmarkstest.append(tweet.timestamp)
-                                                break
-                                        except UnicodeEncodeError:
-                                            break
-                        except cjson.DecodeError, e:
-                            # Data is too old - no word freq data
-                            pass
-                        except AttributeError, e:
-                            # As above
-                            pass
+                            if is_word:
+                                topkeyword = dataset[0].word
+                            else:
+                                topkeyword = dataset[0].phrase
+
+                        startstamp = currentstamp
+                        endstamp = currentstamp + 60
+
+                        # Investigate the previous minute to see if the keyword from above is in the top 10
+                        tweetset = False
+                        rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=startstamp,timestamp__lt=endstamp).order_by('timestamp').all()
+                        for tweet in rawtweets:
+                            tweettext = string.lower(tweet.text)
+                            for items in """!"#$%&(),:;?@~[]'`{|}""":
+                                tweettext = string.replace(tweettext,items,"")
+                            try:
+                                if str(keyword).lower() in tweettext:
+                                    bookmarkstest.append(tweet.timestamp)
+                                    tweetset = True
+                                    break
+                            except UnicodeEncodeError:
+                                break
+
+                        if not tweetset:
+                            rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=minute.timestamp,timestamp__lt=(minute.timestamp + 60)).order_by('timestamp').all()
+                            for tweet in rawtweets:
+                                tweettext = string.lower(tweet.text)
+                                for items in """!"#$%&(),:;?@~[]'`{|}""":
+                                    tweettext = string.replace(tweettext,items,"")
+                                try:
+                                    if str(keyword).lower() in tweettext:
+                                        bookmarkstest.append(tweet.timestamp)
+                                        break
+                                except UnicodeEncodeError:
+                                    break
 
                     else:
                         lastwasbookmark = False
@@ -541,11 +536,6 @@ def rawtweets(request,pid,timestamp):
         output += str(progdate.strftime("%d/%m/%Y")) + "<br />"
         output += "<strong>" + progdata[0].title + "</strong><br />"
         output += "Raw tweet output between " + str(starttime.strftime("%H:%M:%S")) + " and " + str(endtime.strftime("%H:%M:%S")) + "<br />"
-        analysedtweets = analyseddata.objects.filter(pid=pid,timestamp__gte=timestamp,timestamp__lt=endstamp).all()
-        output += "<br /><b>Testing:</b>"
-        for entry in analysedtweets:
-            output += "<br />" + entry.wordfreqexpected + "<br />" + entry.wordfrequnexpected
-        output += "<br />"
         rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=timestamp,timestamp__lt=endstamp).order_by('timestamp').all()
         output += "<div id=\"rawtweets\" style=\"font-size: 9pt\">"
         #tweetseccount = dict()
