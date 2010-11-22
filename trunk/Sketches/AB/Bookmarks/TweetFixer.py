@@ -10,6 +10,7 @@ import re
 import os
 import cjson
 import MySQLdb
+import sys
 from URLGetter import HTTPGetter
 
 
@@ -138,27 +139,15 @@ class RetweetCorrector(component):
                                 if row[0] == tweettext:
                                     # Tweet text is the same - add the ID
                                     tweetjson['retweeted_status']['id'] = row[1]
-                                    tweetjson['retweeted_status']['truncated'] = False
                                     breaker = True
                                     break
-                                tweettext = tweetjson['retweeted_status']['text'][:-3] # Remove ... from end of the string just in case
-                                if len(row[0]) > len(tweettext):
-                                    if row[0][:len(tweettext)] == tweettext:
-                                        # Tweet text is the same but trimmed
+                                if len(row[0]) > len(tweettext) and len(tweettext) > 3:
+                                    if tweettext[:-3] in row[0]:
+                                        # Tweet text is the same but trimmed (allows for ... on the end too)
                                         tweetjson['retweeted_status']['id'] = row[1]
-                                        tweetjson['retweeted_status']['truncated'] = True
                                         tweetjson['retweeted_status']['text'] = row[0]
                                         tweetjson['text'] = tweetjson['text'].replace(tweettext,row[0])
                                         breaker = True
-                                        # Stuff below is temporary until I see an example of it working
-                                        counter = 20
-                                        while counter > 0:
-                                            print "#"
-                                            counter -= 1
-                                        print "OOOOH - retweet found"
-                                        print "Tweet text: " + tweetjson['retweeted_status']['text']
-                                        print "Full retweeted text: " + row[0]
-                                        print "New tweet reads: " + tweetjson['text']
                                         break
                             if breaker:
                                 # No need to check any further - found it
