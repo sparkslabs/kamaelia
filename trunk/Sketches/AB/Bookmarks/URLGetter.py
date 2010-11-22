@@ -10,12 +10,13 @@
 
 import urllib2
 import httplib
+import time
 
 from Axon.Component import component
 from Axon.ThreadedComponent import threadedcomponent
 
 
-class HTTPGetter(component):
+class HTTPGetter(threadedcomponent):
 
     Inboxes = {
         "inbox" : "Receives a URL (and optional username and password) to get content from",
@@ -109,8 +110,7 @@ class HTTPGetter(component):
                     urldata = self.getURLData(request[0])
                 # Data format: [OK/Error,message]
                 self.send(urldata,"outbox")
-            yield 1
-            self.pause()
+            time.sleep(0.1)
 
 class StreamingHTTPGetter(threadedcomponent):
     #TODO - will be created if hanging issue solved in Twitter streamer - possibly
