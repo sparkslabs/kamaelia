@@ -387,7 +387,7 @@ cdef dirac_chroma_t __chromatypemap(object c):
     else:
         raise ValueError("Unknown chroma type")
 
-cdef WltFilter __mapping_wlt_filter(object c):   # FIXME: checktype
+cdef dirac_wlt_filter_t __mapping_wlt_filter(object c):
     if c == "DD9_7":
         return DD9_7
     elif c == "LEGALL5_3":
@@ -407,7 +407,7 @@ cdef WltFilter __mapping_wlt_filter(object c):   # FIXME: checktype
     else:
         raise ValueError("Unknown filter type")
 
-cdef PrefilterType __mapping_pre_filter(object c):   # FIXME: checktype
+cdef dirac_prefilter_t __mapping_pre_filter(object c):
     if c == "NO_PF":
         return NO_PF
     elif c == "DIAGLP":
@@ -419,7 +419,7 @@ cdef PrefilterType __mapping_pre_filter(object c):   # FIXME: checktype
     else:
         raise ValueError("Unknown pre filter type")
 
-cdef PictureType __mapping_picture_type(object c):   # FIXME: checktype
+cdef dirac_picture_type_t __mapping_picture_type(object c):
     if c == "INTRA_PICTURE":
         return INTRA_PICTURE
     elif c == "INTER_PICTURE":
@@ -427,7 +427,7 @@ cdef PictureType __mapping_picture_type(object c):   # FIXME: checktype
     else:
         raise ValueError("Unknown pre filter type")
 
-cdef ReferenceType __mapping_reference_type(object c):   # FIXME: checktype
+cdef dirac_reference_type_t __mapping_reference_type(object c):
     if c == "REFERENCE_PICTURE":
         return REFERENCE_PICTURE
     elif c == "NON_REFERENCE_PICTURE":
@@ -497,7 +497,7 @@ cdef dirac_col_primaries_t __mapping_col_primaries(object cprim):
     else:
         raise ValueError("Not valid colour primaries set")
 
-cdef ColourMatrix __mapping_colour_matrix(object cmatrix):   # FIXME: checktype
+cdef ColourMatrix __mapping_colour_matrix(object cmatrix):   # FIXME: type checked - maybe ok
     if cmatrix=="CM_HDTV_COMP_INTERNET":
         return CM_HDTV_COMP_INTERNET
     elif cmatrix=="CM_SDTV":
@@ -523,7 +523,7 @@ cdef dirac_transfer_func_t __mapping_trans_func(object transf):
     else:
         raise ValueError("Not valid transfer function")
 
-cdef FrameRateType __mapping_named_frame_rate(object named_frate):  # FIXME: checktype
+cdef FrameRateType __mapping_named_frame_rate(object named_frate):  # FIXME: type checked - maybe ok
     if named_frate=="FRAMERATE_CUSTOM":
         return FRAMERATE_CUSTOM
     elif named_frate=="FRAMERATE_23p97_FPS":
@@ -551,7 +551,7 @@ cdef FrameRateType __mapping_named_frame_rate(object named_frate):  # FIXME: che
     else:
         raise ValueError("Not valid named frame rate")
 
-cdef PixelAspectRatioType __mapping_named_pixel_aspect_ratio(object asr):  # FIXME: checktype
+cdef PixelAspectRatioType __mapping_named_pixel_aspect_ratio(object asr):  # FIXME: type checked - maybe ok
     if asr=="PIXEL_ASPECT_RATIO_CUSTOM":
         return PIXEL_ASPECT_RATIO_CUSTOM
     elif asr=="PIXEL_ASPECT_RATIO_1_1":
@@ -573,7 +573,7 @@ cdef PixelAspectRatioType __mapping_named_pixel_aspect_ratio(object asr):  # FIX
     else:
         raise ValueError("Not valid named pixel aspect ratio type")
 
-cdef SignalRangeType  __mapping_named_signal_range(object nsr):   # FIXME: checktype
+cdef SignalRangeType  __mapping_named_signal_range(object nsr):   # FIXME: type checked - maybe ok
     if nsr=="SIGNAL_RANGE_CUSTOM":
         return SIGNAL_RANGE_CUSTOM
     elif nsr=="SIGNAL_RANGE_8BIT_FULL":
@@ -603,7 +603,7 @@ cdef dirac_mvprecision_t __mapping_mv_precision(object mv):
     else:
         raise ValueError("Not valid motion vector precision")
 
-cdef CodeBlockMode __mapping_named_codeblockmode(object cbm):  # FIXME: checktype
+cdef CodeBlockMode __mapping_named_codeblockmode(object cbm):  # FIXME: type checked - maybe ok
     if cbm=="QUANT_SINGLE":
         return QUANT_SINGLE
     elif cbm=="QUANT_MULTIPLE":
