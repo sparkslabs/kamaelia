@@ -9,6 +9,7 @@ from Axon.Ipc import producerFinished, shutdownMicroprocess
 import re
 import os
 import cjson
+import MySQLdb
 from URLGetter import HTTPGetter
 
 
@@ -81,6 +82,81 @@ class RetweetFixer(component):
                 
             self.pause()
             yield 1
+
+class RetweetCorrector(component):
+    # This is a DB specific retweet fixer - the idea being to correct the retweet ID and text properly
+
+    Inboxes = {
+        "inbox" : "Receives tweet dict which may need elements removing",
+        "control" : "",
+    }
+    Outboxes = {
+        "outbox" : "Sends out fixed dict",
+        "signal" : "",
+    }
+
+    def __init__(self,dbuser,dbpass):
+        super(RetweetCorrector, self).__init__()
+        self.dbuser = dbuser
+        self.dbpass = dbpass
+
+    def dbConnect(self,dbuser,dbpass):
+        db = MySQLdb.connect(user=dbuser,passwd=dbpass,db="twitter_bookmarks",use_unicode=True,charset="utf8")
+        cursor = db.cursor()
+        return cursor
+
+    def finished(self):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
+                self.send(msg, "signal")
+                return True
+        return False
+
+    def main(self):
+
+        cursor = self.dbConnect(self.dbuser,self.dbpass)
+
+        while not self.finished():
+            while self.dataReady("inbox"):
+                tweetjson = self.recv("inbox")
+
+                if tweetjson.has_key('retweeted_status'):
+                    # Find this tweet's PIDs
+                    cursor.execute("""SELECT pid,text FROM rawdata WHERE tweet_id = %s""",(tweetjson['id']))
+                    pids = cursor.fetchall()
+                    breaker = False
+                    for pid in pids:
+                        tweettext = pid[1]
+                        if not tweetjson['retweeted_status'].has_key('id'):
+                            # This is a fixed retweet - let's try and fix it further by identifying the original
+                            # Only worth doing for the same PID
+                            cursor.execute("""SELECT text,tweet_id FROM rawdata WHERE user = %s AND pid = %s""",(tweetjson['retweeted_status']['user']['screen_name'],pid[0]))
+                            dataset = cursor.fetchall()
+                            for row in dataset:
+                                if row[0] == tweettext:
+                                    # Tweet text is the same - add the ID
+                                    tweetjson['retweeted_status']['id'] = row[1]
+                                    tweetjson['retweeted_status']['truncated'] = False
+                                    breaker = True
+                                    break
+                                tweettext = tweetjson['retweeted_status']['text'][:-3] # Remove ... from the string
+                                if len(row[0]) > len(tweettext):
+                                    if row[0][:len(tweettext)] == tweettext:
+                                        # Tweet text is the same but trimmed
+                                        tweetjson['retweeted_status']['id'] = row[1]
+                                        tweetjson['retweeted_status']['truncated'] = True
+                                        breaker = True
+                                        break
+                            if breaker:
+                                # No need to check any further - found it
+                                break
+
+                self.send(tweetjson,"outbox")
+
+            self.pause()
+            yield 1
+
 
 class TweetCleaner(component):
     # Steps:
