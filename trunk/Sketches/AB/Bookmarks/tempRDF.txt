@@ -13,105 +13,61 @@
          xmlns:timeline = "http://purl.org/NET/c4dm/timeline.owl#"
          xmlns:event    = "http://purl.org/NET/c4dm/event.owl#">
 
-<rdf:Description rdf:about="/programmes/b00w5c5d.rdf">
+<rdf:Description rdf:about="/programmes/b00w4ldt.rdf">
   <rdfs:label>Description of a programme version of 22/11/2010</rdfs:label>
-  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-15T00:12:28Z</dcterms:created>
-  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-15T00:12:28Z</dcterms:modified>
-  <foaf:primaryTopic rdf:resource="/programmes/b00w5c5d#programme"/>
+  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-15T00:58:28Z</dcterms:created>
+  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-15T00:58:28Z</dcterms:modified>
+  <foaf:primaryTopic rdf:resource="/programmes/b00w4ldt#programme"/>
 </rdf:Description>
 
-<po:Version rdf:about="/programmes/b00w5c5d#programme">
+<po:Version rdf:about="/programmes/b00w4ldt#programme">
 
   <rdfs:label>A version of 22/11/2010</rdfs:label>
-  
+  <po:aspect_ratio>16:9</po:aspect_ratio>
   <po:sound_format>Stereo</po:sound_format>
-  <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">9000</po:duration>
-  <po:pid>b00w5c5d</po:pid>
+  <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3600</po:duration>
+  <po:pid>b00w4ldt</po:pid>
   <po:time>
     <timeline:Interval>
       <rdfs:label>Time interval for a version of 22/11/2010</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00w5c5d#timeline"/>
-      <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT9000S</timeline:duration>
+      <timeline:timeline rdf:resource="/programmes/b00w4ldt#timeline"/>
+      <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT3600S</timeline:duration>
     </timeline:Interval>
   </po:time>
 
-  <po:credit>
-    <po:Credit>
-      <po:role>
-        <po:Role>
-          <rdfs:label>Director</rdfs:label>
-          <dc:title>Director</dc:title>
-          <dc:description>A supervisor; generally refers to the person responsible for all audience-visible components of a program, film, or show, whereas the producer is responsible for the financial and other behind-the-scenes aspects. A director&#39;s duties might also include casting, script editing, shot selection, shot composition, and editing</dc:description>
-        </po:Role>
-      </po:role>
-      <po:participant>
-        <po:Alias>
-          <rdfs:label>Richard Jeffery</rdfs:label>
-          <foaf:givenName>Richard</foaf:givenName>
-          <foaf:familyName>Jeffery</foaf:familyName>
-        </po:Alias>
-      </po:participant>
-    </po:Credit>
-  </po:credit>
-  <po:credit>
-    <po:Credit>
-      <po:role>
-        <po:Role>
-          <rdfs:label>Producer</rdfs:label>
-          <dc:title>Producer</dc:title>
-          <dc:description>The manager of an event, show, or other work, usually the individual in charge of finance, personnel, and other non-artistic aspects in the development of commercials, plays, movies, and other works</dc:description>
-        </po:Role>
-      </po:role>
-      <po:participant>
-        <po:Alias>
-          <rdfs:label>Claudia Lloyd</rdfs:label>
-          <foaf:givenName>Claudia</foaf:givenName>
-          <foaf:familyName>Lloyd</foaf:familyName>
-        </po:Alias>
-      </po:participant>
-    </po:Credit>
-  </po:credit>
 
 </po:Version>
 
-<po:Episode rdf:about="/programmes/b00w5c6h#programme">
+<po:Episode rdf:about="/programmes/b00w6l7b#programme">
   <rdfs:label>22/11/2010</rdfs:label>
-  <po:version rdf:resource="/programmes/b00w5c5d#programme" />
+  <po:version rdf:resource="/programmes/b00w4ldt#programme" />
 </po:Episode>
 
-<timeline:TimeLine rdf:about="/programmes/b00w5c5d#timeline">
+<timeline:TimeLine rdf:about="/programmes/b00w4ldt#timeline">
   <rdfs:label>Timeline of a version of 22/11/2010</rdfs:label>
 </timeline:TimeLine>
 
-<po:Broadcast rdf:about="/programmes/b00w5c5d#p00c5d34">
+<po:Broadcast rdf:about="/programmes/b00w4ldt#p00c5g7g">
   <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
-  <po:pid>p00c5d34</po:pid>
+  <po:pid>p00c5g7g</po:pid>
   <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-11-22</po:schedule_date>
   <event:time>
     <timeline:Interval>
-      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-22T10:00:00Z</timeline:start>
-      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-22T12:30:00Z</timeline:end>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-22T12:00:00Z</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-22T13:00:00Z</timeline:end>
     </timeline:Interval>
   </event:time>
   <po:broadcast_on>
-    <po:Service rdf:about="/services/asiannetwork#service">
-      <rdfs:label>BBC Asian Network</rdfs:label>
+    <po:Service rdf:about="/services/bbcnews#service">
+      <rdfs:label>BBC News Channel</rdfs:label>
     </po:Service>
   </po:broadcast_on>
-  <po:broadcast_of rdf:resource="/programmes/b00w5c5d#programme" />
+  <po:broadcast_of rdf:resource="/programmes/b00w4ldt#programme" />
 </po:Broadcast>
 
 
 
 
-<po:Availability>
-  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-22T12:32:00Z</timeline:start>
-  <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-29T12:32:00Z</timeline:end>
-</po:Availability>
-<po:Availability>
-  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-22T12:30:00Z</timeline:start>
-  <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-29T12:29:00Z</timeline:end>
-</po:Availability>
 
 
 
