@@ -356,11 +356,12 @@ def programme(request,pid,redux=False):
                                 dataset = wordanalysis.objects.filter(timestamp=currentstamp,pid=pid,is_keyword=0).order_by('-count').all()
                             except ObjectDoesNotExist:
                                 break
-
-                            if is_word:
-                                topkeyword = dataset[0].word
-                            else:
-                                topkeyword = dataset[0].phrase
+                            for line in dataset:
+                                if is_word:
+                                    topkeyword = line.word
+                                else:
+                                    topkeyword = line.phrase
+                                break
 
                         startstamp = currentstamp
                         endstamp = currentstamp + 60

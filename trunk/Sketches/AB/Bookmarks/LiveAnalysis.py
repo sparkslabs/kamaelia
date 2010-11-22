@@ -665,9 +665,9 @@ class FinalAnalysisNLTK(component):
                                 if tweetjson['retweeted_status'].has_key('id'):
                                     statusid = tweetjson['retweeted_status']['id']
                                     if retweetcache.has_key(statusid):
-                                        retweetcache[statusid] += 1
+                                        retweetcache[statusid][0] += 1
                                     else:
-                                        retweetcache[statusid] = 1
+                                        retweetcache[statusid] = [1,tweetjson['retweeted_status']['text']]
 
 
                             tweettext = self.spellingFixer(tweetjson['filtered_text']).split()
@@ -713,7 +713,7 @@ class FinalAnalysisNLTK(component):
                             else:
                                 print [entry[0],entry[1]]
 
-                print str(retweetcache)
+                print "Retweet data: " + str(retweetcache)
 
                 self.send(None,"outbox")
 
