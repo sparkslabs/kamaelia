@@ -123,30 +123,42 @@ class RetweetCorrector(component):
 
                 if tweetjson.has_key('retweeted_status'):
                     # Find this tweet's PIDs
-                    cursor.execute("""SELECT pid,text FROM rawdata WHERE tweet_id = %s""",(tweetjson['id']))
+                    cursor.execute("""SELECT pid FROM rawdata WHERE tweet_id = %s""",(tweetjson['id']))
                     pids = cursor.fetchall()
                     breaker = False
                     for pid in pids:
-                        tweettext = pid[1]
+                        tweettext = tweetjson['retweeted_status']['text']
                         if not tweetjson['retweeted_status'].has_key('id'):
                             # This is a fixed retweet - let's try and fix it further by identifying the original
                             # Only worth doing for the same PID
                             cursor.execute("""SELECT text,tweet_id FROM rawdata WHERE user = %s AND pid = %s""",(tweetjson['retweeted_status']['user']['screen_name'],pid[0]))
                             dataset = cursor.fetchall()
                             for row in dataset:
+                                print row[0]
                                 if row[0] == tweettext:
                                     # Tweet text is the same - add the ID
                                     tweetjson['retweeted_status']['id'] = row[1]
                                     tweetjson['retweeted_status']['truncated'] = False
                                     breaker = True
                                     break
-                                tweettext = tweetjson['retweeted_status']['text'][:-3] # Remove ... from the string
+                                tweettext = tweetjson['retweeted_status']['text'][:-3] # Remove ... from end of the string just in case
                                 if len(row[0]) > len(tweettext):
                                     if row[0][:len(tweettext)] == tweettext:
                                         # Tweet text is the same but trimmed
                                         tweetjson['retweeted_status']['id'] = row[1]
                                         tweetjson['retweeted_status']['truncated'] = True
+                                        tweetjson['retweeted_status']['text'] = row[0]
+                                        tweetjson['text'] = tweetjson['text'].replace(tweettext,row[0])
                                         breaker = True
+                                        # Stuff below is temporary until I see an example of it working
+                                        counter = 20
+                                        while counter > 0:
+                                            print "#"
+                                            counter -= 1
+                                        print "OOOOH - retweet found"
+                                        print "Tweet text: " + tweetjson['retweeted_status']['text']
+                                        print "Full retweeted text: " + row[0]
+                                        print "New tweet reads: " + tweetjson['text']
                                         break
                             if breaker:
                                 # No need to check any further - found it
