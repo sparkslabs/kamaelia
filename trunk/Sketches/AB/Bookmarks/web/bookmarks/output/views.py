@@ -14,6 +14,10 @@ tvchannels = ["bbcone","bbctwo","bbcthree","bbcfour","cbbc","cbeebies","bbcnews"
             
 radiochannels = ["radio1","1xtra","radio2","radio3","radio4","5live","sportsextra","6music","radio7","asiannetwork","worldservice"]
 
+reduxmapping = {"bbcnews" : "bbcnews24","bbcparliament" : "bbcparl", "radio1" : "bbcr1", "1xtra" : "bbc1x", "radio2" : "bbcr2", \
+                "radio3" : "bbcr3", "radio4" : "bbcr4", "5live" : "bbcr5l", "sportsextra" : "r5lsx", "6music" : "bbc6m", "radio7" : "bbc7", \
+                "asiannetwork" : "bbcan"}
+
 allchannels = tvchannels + radiochannels
 
 header = '<html><head><title>Social Bookmarks</title><script type="text/javascript" src="/media/jquery/jquery.min.js"></script>\
@@ -131,11 +135,18 @@ def channel(request,channel,year=0,month=0,day=0):
             if len(str(day)) == 2 and len(str(month)) == 2 and len(str(year)) == 4:
                 output += "<br />Currently viewing shows for " + day + "/" + month + "/" + year + "<br />"
                 starttimestamp = time.mktime(datetime(int(year),int(month),int(day),0,0,0,0).timetuple())
+                if starttimestamp + (86400 * 8) < time.time():
+                    redux = True
+                else:
+                    redux = False
                 endtimestamp = starttimestamp + 86400
                 data = programmes.objects.filter(channel__exact=channel,timestamp__gte=starttimestamp,timestamp__lt=endtimestamp).order_by('timestamp').all()
                 for programme in data:
                     progdate = datetime.utcfromtimestamp(programme.timestamp) + timedelta(seconds=programme.utcoffset)
-                    output += "<br />" + str(progdate.strftime("%H:%M")) + ": <a href=\"/programmes/" + programme.pid + "\">" + programme.title + "</a>"
+                    if redux:
+                        output += "<br />" + str(progdate.strftime("%H:%M")) + ": <a href=\"/programmes/" + programme.pid + "/redux\">" + programme.title + "</a>"
+                    else:
+                        output += "<br />" + str(progdate.strftime("%H:%M")) + ": <a href=\"/programmes/" + programme.pid + "\">" + programme.title + "</a>"
                 if len(data) < 1:
                     output += "<br />No data for this date - please select another from the picker above.<br />"
             else:
@@ -184,6 +195,10 @@ def channelgraph(request,channel,year=0,month=0,day=0):
             if len(str(day)) == 2 and len(str(month)) == 2 and len(str(year)) == 4:
                 output += "<br />Currently viewing shows for " + day + "/" + month + "/" + year + "<br />"
                 starttimestamp = time.mktime(datetime(int(year),int(month),int(day),0,0,0,0).timetuple())
+                if starttimestamp + (86400 * 8) < time.time():
+                    redux = True
+                else:
+                    redux = False
                 endtimestamp = starttimestamp + 86400
                 data = programmes.objects.filter(channel__exact=channel,timestamp__gte=starttimestamp,timestamp__lt=endtimestamp).order_by('timestamp').all()
                 for programme in data:
@@ -191,7 +206,10 @@ def channelgraph(request,channel,year=0,month=0,day=0):
 
                     if programme.totaltweets > 0:
 
-                        output += "<br />" + str(progdate.strftime("%H:%M")) + ": <a href=\"/programmes/" + programme.pid + "\">" + programme.title + "</a> (see below)"
+                        if redux:
+                            output += "<br />" + str(progdate.strftime("%H:%M")) + ": <a href=\"/programmes/" + programme.pid + "/redux\">" + programme.title + "</a> (see below)"
+                        else:
+                            output += "<br />" + str(progdate.strftime("%H:%M")) + ": <a href=\"/programmes/" + programme.pid + "\">" + programme.title + "</a> (see below)"
 
                         actualstart = progdate - timedelta(seconds=programme.timediff)
                         minutedata = analyseddata.objects.filter(pid=programme.pid).order_by('timestamp').all()
@@ -237,8 +255,10 @@ def channelgraph(request,channel,year=0,month=0,day=0):
                         output += "<br /><img src=\"" + graph.get_url() + "\"><br />"
 
                     else:
-
-                        output += "<br />" + str(progdate.strftime("%H:%M")) + ": <a href=\"/programmes/" + programme.pid + "\">" + programme.title + "</a>"
+                        if redux:
+                            output += "<br />" + str(progdate.strftime("%H:%M")) + ": <a href=\"/programmes/" + programme.pid + "/redux\">" + programme.title + "</a>"
+                        else:
+                            output += "<br />" + str(progdate.strftime("%H:%M")) + ": <a href=\"/programmes/" + programme.pid + "\">" + programme.title + "</a>"
                         output += " - No data available<br />"
 
                 if len(data) < 1:
@@ -250,7 +270,7 @@ def channelgraph(request,channel,year=0,month=0,day=0):
     output += footer
     return HttpResponse(output)
 
-def programme(request,pid):
+def programme(request,pid,redux=False):
     # Now that this is live, would be clever to use AJAX to refresh graphs etc every minute whilst still unanalysed?
 
     output = header
@@ -263,7 +283,10 @@ def programme(request,pid):
             output += "<meta http-equiv='refresh' content='30'>"
         channel = data[0].channel
         output += "<br /><a href=\"http://www.bbc.co.uk/" + channel + "\" target=\"_blank\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br /><br />"
-        progdate = datetime.utcfromtimestamp(data[0].timestamp) + timedelta(seconds=data[0].utcoffset)
+        progdatetime = datetime.utcfromtimestamp(data[0].timestamp)
+        progdatestring = progdatetime.strftime("%Y-%m-%d")
+        progtimestring = progdatetime.strftime("%H-%M-%S")
+        progdate = progdatetime + timedelta(seconds=data[0].utcoffset)
         actualstart = progdate - timedelta(seconds=data[0].timediff)
         minutedata = analyseddata.objects.filter(pid=pid).order_by('timestamp').all()
         output += str(progdate.strftime("%d/%m/%Y")) + "<br />"
@@ -405,24 +428,46 @@ def programme(request,pid):
             blockgraph3 = "<div style=\"border-bottom: 1px #CCCCCC solid; border-left: 1px #CCCCCC solid; border-right: 1px #CCCCCC solid; height: 20px; width: " + str(mainwidth) + "px; overflow: hidden\">"
             width = int(1000/(maxx+1))
             lastbookmark = None
-            for min in xlist:
-                if tweetmins.has_key(str(min)):
-                    opacity = float(tweetmins[str(min)]) / maxy
+            if redux == "redux":
+                if reduxmapping.has_key(channel):
+                    reduxchannel = reduxmapping[channel]
                 else:
-                    opacity = 0
-                blockgraph += "<a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(min) + "m" + str(playertimesec) + "s\" target=\"_blank\"><div style=\"width: " + str(width) + "px; height: 50px; cursor: pointer; float: left; background-color: #000000; opacity: " + str(opacity) + "; filter:alpha(opacity=" + str(int(opacity * 100)) + ")\"></div></a>"
-                if min in bookmarks:
-                    blockgraph2 += "<a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(min) + "m" + str(playertimesec) + "s\" target=\"_blank\"><div style=\"width: " + str(width) + "px; height: 20px; cursor: pointer; float: left; background-color: #888888\"></div></a>"
-                    lastbookmark = min
-                elif min in bookmarkcont and lastbookmark != None:
-                    blockgraph2 += "<a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(lastbookmark) + "m" + str(playertimesec) + "s\" target=\"_blank\"><div style=\"width: " + str(width) + "px; height: 20px; cursor: pointer; float: left; background-color: #888888\"></div></a>"
-                else:
-                    blockgraph2 += "<div style=\"width: " + str(width) + "px; height: 20px; float: left; background-color: #FFFFFF\"></div>"
-                if tweetstamps.has_key(str(min)):
-                    blockgraph3 += "<a href=\"/programmes/" + pid + "/" + str(tweetstamps[str(min)]) + "/\" target=\"_blank\"><div style=\"width: " + str(width) + "px; height: 20px; cursor: pointer; float: left; background-color: #000000; opacity: " + str(opacity) + "\"></div></a>"
-                else:
-                    blockgraph3 += "<div style=\"width: " + str(width) + "px; height: 20px; float: left; background-color: #000000; opacity: " + str(opacity) + "\"></div>"
-
+                    reduxchannel = channel
+                for min in xlist:
+                    if tweetmins.has_key(str(min)):
+                        opacity = float(tweetmins[str(min)]) / maxy
+                    else:
+                        opacity = 0
+                    blockgraph += "<a href=\"http://g.bbcredux.com/programme/" + reduxchannel + "/" + progdatestring + "/" + progtimestring + "?start=" + str(60*min+playertimesec) + "\" target=\"_blank\"><div style=\"width: " + str(width) + "px; height: 50px; cursor: pointer; float: left; background-color: #000000; opacity: " + str(opacity) + "; filter:alpha(opacity=" + str(int(opacity * 100)) + ")\"></div></a>"
+                    if min in bookmarks:
+                        blockgraph2 += "<a href=\"http://g.bbcredux.com/programme/" + reduxchannel + "/" + progdatestring + "/" + progtimestring + "?start=" + str(60*min+playertimesec) + "\" target=\"_blank\"><div style=\"width: " + str(width) + "px; height: 20px; cursor: pointer; float: left; background-color: #888888\"></div></a>"
+                        lastbookmark = min
+                    elif min in bookmarkcont and lastbookmark != None:
+                        blockgraph2 += "<a href=\"http://g.bbcredux.com/programme/" + reduxchannel + "/" + progdatestring + "/" + progtimestring + "?start=" + str(60*lastbookmark+playertimesec) + "\" target=\"_blank\"><div style=\"width: " + str(width) + "px; height: 20px; cursor: pointer; float: left; background-color: #888888\"></div></a>"
+                    else:
+                        blockgraph2 += "<div style=\"width: " + str(width) + "px; height: 20px; float: left; background-color: #FFFFFF\"></div>"
+                    if tweetstamps.has_key(str(min)):
+                        blockgraph3 += "<a href=\"/programmes/" + pid + "/" + str(tweetstamps[str(min)]) + "/\" target=\"_blank\"><div style=\"width: " + str(width) + "px; height: 20px; cursor: pointer; float: left; background-color: #000000; opacity: " + str(opacity) + "\"></div></a>"
+                    else:
+                        blockgraph3 += "<div style=\"width: " + str(width) + "px; height: 20px; float: left; background-color: #000000; opacity: " + str(opacity) + "\"></div>"
+            else:
+                for min in xlist:
+                    if tweetmins.has_key(str(min)):
+                        opacity = float(tweetmins[str(min)]) / maxy
+                    else:
+                        opacity = 0
+                    blockgraph += "<a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(min) + "m" + str(playertimesec) + "s\" target=\"_blank\"><div style=\"width: " + str(width) + "px; height: 50px; cursor: pointer; float: left; background-color: #000000; opacity: " + str(opacity) + "; filter:alpha(opacity=" + str(int(opacity * 100)) + ")\"></div></a>"
+                    if min in bookmarks:
+                        blockgraph2 += "<a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(min) + "m" + str(playertimesec) + "s\" target=\"_blank\"><div style=\"width: " + str(width) + "px; height: 20px; cursor: pointer; float: left; background-color: #888888\"></div></a>"
+                        lastbookmark = min
+                    elif min in bookmarkcont and lastbookmark != None:
+                        blockgraph2 += "<a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(lastbookmark) + "m" + str(playertimesec) + "s\" target=\"_blank\"><div style=\"width: " + str(width) + "px; height: 20px; cursor: pointer; float: left; background-color: #888888\"></div></a>"
+                    else:
+                        blockgraph2 += "<div style=\"width: " + str(width) + "px; height: 20px; float: left; background-color: #FFFFFF\"></div>"
+                    if tweetstamps.has_key(str(min)):
+                        blockgraph3 += "<a href=\"/programmes/" + pid + "/" + str(tweetstamps[str(min)]) + "/\" target=\"_blank\"><div style=\"width: " + str(width) + "px; height: 20px; cursor: pointer; float: left; background-color: #000000; opacity: " + str(opacity) + "\"></div></a>"
+                    else:
+                        blockgraph3 += "<div style=\"width: " + str(width) + "px; height: 20px; float: left; background-color: #000000; opacity: " + str(opacity) + "\"></div>"
             blockgraph += "</div>"
             blockgraph2 += "</div>"
             blockgraph3 += "</div>"
@@ -461,7 +506,10 @@ def programme(request,pid):
                     else:
                         playertimemin = 0
                         playertimesec = 0
-                    output += "<br /><a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(playertimemin) + "m" + str(playertimesec) + "s\" target=\"_blank\">http://bbc.co.uk/i/" + pid + "/?t=" + str(playertimemin) + "m" + str(playertimesec) + "s</a>"
+                    if redux == "redux":
+                        output += "<br /><a href=\"http://g.bbcredux.com/programme/" + reduxchannel + "/" + progdatestring + "/" + progtimestring + "?start=" + str(60*playertimemin+playertimesec) + "\" target=\"_blank\">http://g.bbcredux.com/programme/" + channel + "/" + progdatestring + "/" + progtimestring + "?start=" + str(60*playertimemin+playertimesec) + "</a>"
+                    else:
+                        output += "<br /><a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(playertimemin) + "m" + str(playertimesec) + "s\" target=\"_blank\">http://bbc.co.uk/i/" + pid + "/?t=" + str(playertimemin) + "m" + str(playertimesec) + "s</a>"
         else:
             output += "<br />Not enough data to generate statistics.<br />"
 
@@ -513,7 +561,7 @@ def rawtweets(request,pid,timestamp):
         #    tweetseccount = [(v,k) for k, v in tweetseccount.items()]
         #    tweetseccount.sort(reverse=True)
         #    output += "<br />" + str(tweetseccount)
-        newanalysis = wordanalysis.objects.filter(pid=pid,timestamp__gte=timestamp,timestamp__lt=endstamp).order_by('-count').all()
+        newanalysis = wordanalysis.objects.filter(pid=pid,timestamp__gte=timestamp,timestamp__lt=endstamp,is_common=0).order_by('-count').all()
         for entry in newanalysis:
             output += "<br />" + entry.word + ": " + str(entry.count) + " " + str(entry.is_keyword) + " " + str(entry.is_entity) + " " + str(entry.is_common)
     output += footer
