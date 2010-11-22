@@ -48,7 +48,6 @@ cdef extern from "dirac/libdirac_common/common_types.h":
         RECTLP
         CWM
 
-#    static const int NUM_WLT_FILTERS = 8 ### FIXME
     cdef int NUM_WLT_FILTERS = 8 ### FIXME
 
     ctypedef enum PictureType:
@@ -136,15 +135,6 @@ cdef extern from "dirac/libdirac_common/common_types.h":
         SIGNAL_RANGE_12BIT_VIDEO
         SIGNAL_RANGE_UNDEFINED
 
-#
-# APPEARS TO HAVE DISAPPEARED NOW
-#
-#    ctypedef enum InterlaceType: ### FIXME: Where is this now?
-#        IT_PROGRESSIVE
-#        IT_INTERLACED_TFF
-#        IT_INTERLACED_BFF
-#        IT_UNDEF
-
     ctypedef enum MVPrecisionType:
         MV_PRECISION_PIXEL=0
         MV_PRECISION_HALF_PIXEL
@@ -182,17 +172,6 @@ cdef extern from "dirac/libdirac_common/dirac_types.h":
         unsigned int minor_ver
         unsigned int profile
         unsigned int level
-
-#
-# APPEARS TO HAVE DISAPPEARED NOW
-#
-#    ctypedef struct dirac_seqparams_t:  ### FIXME: Where is this now?
-#        int                width
-#        int                height
-#        dirac_chroma_t     chroma
-#        int                chroma_width
-#        int                chroma_height
-#        int                video_depth
 
     ctypedef struct dirac_clean_area_t:
         unsigned int width
