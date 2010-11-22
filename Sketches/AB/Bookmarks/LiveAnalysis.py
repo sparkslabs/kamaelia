@@ -542,8 +542,10 @@ class LiveAnalysisNLTK(component):
                                 exclude = 1
                             else:
                                 exclude = 0
-                            if word.lower() in keywords:
-                                wordfreqdata[word] = [0,1,1,0,exclude]
+                            for row in keywords:
+                                if word.lower() in row:
+                                    wordfreqdata[word] = [0,1,1,0,exclude]
+                                    break
                             else:
                                 wordfreqdata[word] = [0,1,0,0,exclude]
 
