@@ -22,7 +22,7 @@ from TwitterSearch import PeopleSearch
 from DataCollector import DataCollector, RawDataCollector
 from URLGetter import HTTPGetter
 from LiveAnalysis import LiveAnalysis, LiveAnalysisNLTK, FinalAnalysisNLTK
-from TweetFixer import RetweetFixer, TweetCleaner, LinkResolver
+from TweetFixer import RetweetFixer, TweetCleaner, LinkResolver, RetweetCorrector
 
 from Kamaelia.Util.TwoWaySplitter import TwoWaySplitter
 
@@ -87,10 +87,10 @@ if __name__ == "__main__":
                     TWOWAY = TwoWaySplitter(),
                     ANALYSIS = LiveAnalysis(dbuser,dbpass),
                     NLTKANALYSIS = LiveAnalysisNLTK(dbuser,dbpass),
-                    TWEETCLEANER = Pipeline(LINKER,RetweetFixer(),TweetCleaner(['user_mentions','urls','hashtags'])),
+                    TWEETCLEANER = Pipeline(LINKER,RetweetFixer(),RetweetCorrector(dbuser,dbpass),TweetCleaner(['user_mentions','urls','hashtags'])),
                     NLTKANALYSISFINAL = FinalAnalysisNLTK(dbuser,dbpass),
                     # This duplication could probably be avoided by doing some tagging/filtering TODO
-                    TWEETCLEANERFINAL = Pipeline(LINKERFINAL,RetweetFixer(),TweetCleaner(['user_mentions','urls','hashtags'])),
+                    TWEETCLEANERFINAL = Pipeline(LINKERFINAL,RetweetFixer(),RetweetCorrector(dbuser,dbpass),TweetCleaner(['user_mentions','urls','hashtags'])),
                     linkages = {("REQUESTER", "whatson") : ("CURRENTPROG", "inbox"), # Request what's currently broadcasting
                                 ("CURRENTPROG", "outbox") : ("REQUESTER", "whatson"), # Pass back results of what's on
                                 ("REQUESTER", "outbox") : ("FIREHOSE", "inbox"), # Send generated keywords to Twitter streaming API

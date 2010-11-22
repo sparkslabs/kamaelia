@@ -662,24 +662,6 @@ class FinalAnalysisNLTK(component):
                             tweetjson = self.recv("tweetfixer")
 
                             if tweetjson.has_key('retweeted_status'):
-                                if not tweetjson['retweeted_status'].has_key('id'):
-                                    # This is a fixed retweet - let's try and fix it further by identifying the original
-                                    # Only worth doing for the same PID
-                                    cursor.execute("""SELECT text,tweet_id FROM rawdata WHERE user = %s AND pid = %s""",(tweetjson['retweeted_status']['user']['screen_name'],pid))
-                                    dataset = cursor.fetchall()
-                                    for row in dataset:
-                                        if row[0] == tweettext:
-                                            # Tweet text is the same - add the ID
-                                            tweetjson['retweeted_status']['id'] = row[1]
-                                            tweetjson['retweeted_status']['truncated'] = False
-                                            break
-                                        tweettext = tweetjson['retweeted_status']['text'][:-3] # Remove ... from the string
-                                        if len(row[0]) > len(tweettext):
-                                            if row[0][:len(tweettext)] == tweettext:
-                                                # Tweet text is the same but trimmed
-                                                tweetjson['retweeted_status']['id'] = row[1]
-                                                tweetjson['retweeted_status']['truncated'] = True
-                                                break
                                 if tweetjson['retweeted_status'].has_key('id'):
                                     statusid = tweetjson['retweeted_status']['id']
                                     if retweetcache.has_key(statusid):
