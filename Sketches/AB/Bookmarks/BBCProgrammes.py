@@ -90,8 +90,8 @@ class WhatsOn(component):
                 # Grab SyncTV time data to work out the offset between local (NTP) and BBC time (roughly)
                 self.send([synctimeurl], "dataout")
                 while not self.dataReady("datain"):
-                    yield 1
                     self.pause()
+                    yield 1
                 recvdata = self.recv("datain")
                 if recvdata[0] == "OK":
                     content = recvdata[1]
@@ -111,8 +111,8 @@ class WhatsOn(component):
                 # Grab actual programme start time from DVB bridge channel page
                     self.send([syncschedurl], "dataout")
                     while not self.dataReady("datain"):
-                        yield 1
                         self.pause()
+                        yield 1
                     recvdata = self.recv("datain")
                     if recvdata[0] == "OK":
                         content = recvdata[1]
@@ -130,8 +130,8 @@ class WhatsOn(component):
                 # Grab BBC schedule data for given channel
                 self.send([scheduleurl], "dataout")
                 while not self.dataReady("datain"):
-                    yield 1
                     self.pause()
+                    yield 1
                 recvdata = self.recv("datain")
                 if recvdata[0] == "OK":
                     content = recvdata[1]
@@ -209,8 +209,8 @@ class WhatsOn(component):
                                     
 
                 self.send(data,"outbox")
-            yield 1
             self.pause()
+            yield 1
             
 
 class NowPlaying(component):
