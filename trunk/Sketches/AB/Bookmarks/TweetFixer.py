@@ -10,7 +10,6 @@ import re
 import os
 import cjson
 import MySQLdb
-import sys
 from URLGetter import HTTPGetter
 
 
@@ -135,7 +134,6 @@ class RetweetCorrector(component):
                             cursor.execute("""SELECT text,tweet_id FROM rawdata WHERE user = %s AND pid = %s""",(tweetjson['retweeted_status']['user']['screen_name'],pid[0]))
                             dataset = cursor.fetchall()
                             for row in dataset:
-                                print row[0]
                                 if row[0] == tweettext:
                                     # Tweet text is the same - add the ID
                                     tweetjson['retweeted_status']['id'] = row[1]
