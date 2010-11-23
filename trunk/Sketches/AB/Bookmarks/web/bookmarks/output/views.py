@@ -4,8 +4,8 @@ from bookmarks.output.models import programmes,analyseddata,rawdata,wordanalysis
 from datetime import date,timedelta,datetime
 from pygooglechart import SimpleLineChart, Axis #lc
 import time
-import cjson
 import string
+import math
 #import re
 from django.core.exceptions import ObjectDoesNotExist
 #TODO: Replace ugly meta refresh tags with AJAX
@@ -589,7 +589,7 @@ def programmev2(request,pid,timestamp=False,redux=False):
         output += "<br /><div id=\"statistics\">"
         output += programmev2data(False,"statistics",pid,timestamp,redux,False)
         output += "</div>"
-        output += "<br /><div id=\"statistics\">"
+        output += "<br /><div id=\"graphs\">"
         output += programmev2data(False,"graphs",pid,timestamp,redux,False)
         output += "</div>"
 
@@ -602,7 +602,7 @@ def programmev2(request,pid,timestamp=False,redux=False):
                 output += "\">"
                 progdatetime = datetime.utcfromtimestamp(row.timestamp)
                 progdate = progdatetime + timedelta(seconds=row.utcoffset)
-                output += str(progdate.strftime("%d/%m/%Y %H:%M:%S"))
+                output += str(progdate.strftime("%d/%m/%Y %H:%M:%S")) + " (" + str(row.channel) + ")"
                 output += "</a>"
 
     output += footer
@@ -619,46 +619,96 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
     rowcount = len(data)
     if element == "statistics":
         # Print a line like Total tweets: 7 - Tweets per minute - Mean: 0.27 - Median: 0 - Mode: 0 - STDev: 0.53
-        # TODO: Recalculate median, mode and stdev if rowcount > 1
+        minutegroups = dict()
         totaltweets = 0
-        meantweets = 0
-        mediantweets = None
-        modetweets = None
-        stdevtweets = None
-        for row in data:
-            totaltweets += row.totaltweets
-            meantweets += row.meantweets
-            if rowcount == 1:
-                mediantweets = row.mediantweets
-                modetweets = row.modetweets
-                stdevtweets = row.stdevtweets
-        if rowcount > 0:
-            meantweets = meantweets / rowcount
-
-        output += "Total tweets: " + str(totaltweets) + " - Tweets per minute - Mean: " + str(round(meantweets,2))
-        if mediantweets != None:
-            output += " - Median: " + str(round(mediantweets,2))
-        if modetweets != None:
-            output += " - Mode: " + str(round(modetweets,2))
-        if stdevtweets != None:
-            output += " - STDev: " + str(round(stdevtweets,2))
-    elif element == "graphs":
         for row in data:
             # This may not return some results at extreme ends, but should get the vast majority
             # No point in looking for data outside this anyway as we can't link back into it
             rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=row.timestamp-row.timediff,timestamp__lt=row.timestamp+master.duration-row.timediff).order_by('timestamp').all()
-            minutegroups = dict()
-            durcount = int(master.duration / 60)
-            # Set up the counter
-            while durcount > 0:
-                durcount -= 1
-                minutegroups[durcount] = 0
+            # Set up the counter if not done already
+            if not minutegroups.has_key(0):
+                durcount = int(master.duration / 60)
+                while durcount > 0:
+                    durcount -= 1
+                    minutegroups[durcount] = 0
             for line in rawtweets:
                 if line.programme_position >= 0:
                     group = int(line.programme_position / 60)
                     if minutegroups.has_key(group):
                         minutegroups[group] += 1
-            output += str(minutegroups)
+                        totaltweets += 1
+
+        minuteitems = minutegroups.items()
+        minuteitems.sort()
+
+        if len(data) == 1:
+            meantweets = data[0].meantweets
+            mediantweets = data[0].mediantweets
+            modetweets = data[0].modetweets
+            stdevtweets = data[0].stdevtweets
+        else:
+            meantweets = totaltweets / (master.duration / 60)
+            stdevtotal = 0
+            medianlist = list()
+            modelist = dict()
+            for minute in minuteitems:
+                # Calculate standard deviation
+                stdevtotal += (minute[1] - meantweets) * (minute[1] - meantweets)
+                medianlist.append(minute[1])
+                if modelist.has_key(minute[1]):
+                    modelist[minute[1]] += 1
+                else:
+                    modelist[minute[1]] = 1
+            medianlist.sort()
+            mediantweets = medianlist[int(len(medianlist)/2)]
+            modeitems = [[v, k] for k, v in modelist.items()]
+            modeitems.sort(reverse=True)
+            modetweets = int(modeitems[0][1])
+            stdevtweets = math.sqrt(stdevtotal / len(minuteitems))
+
+        output += "Total tweets: " + str(totaltweets) + " - Tweets per minute - Mean: " + str(round(meantweets,2))
+        output += " - Median: " + str(round(mediantweets,2)) + " - Mode: " + str(round(modetweets,2))
+        output += " - STDev: " + str(round(stdevtweets,2))
+    elif element == "graphs":
+        minutegroups = dict()
+        totaltweets = 0
+        for row in data:
+            # This may not return some results at extreme ends, but should get the vast majority
+            # No point in looking for data outside this anyway as we can't link back into it
+            rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=row.timestamp-row.timediff,timestamp__lt=row.timestamp+master.duration-row.timediff).order_by('timestamp').all()
+            # Set up the counter if not done already
+            if not minutegroups.has_key(0):
+                durcount = int(master.duration / 60)
+                while durcount > 0:
+                    durcount -= 1
+                    minutegroups[durcount] = 0
+            for line in rawtweets:
+                if line.programme_position >= 0:
+                    group = int(line.programme_position / 60)
+                    if minutegroups.has_key(group):
+                        minutegroups[group] += 1
+                        totaltweets += 1
+
+        minuteitems = minutegroups.items()
+        minuteitems.sort()
+
+        output += str(minuteitems)
+
+        if len(data) == 1:
+            meantweets = data[0].meantweets
+            stdevtweets = data[0].stdevtweets
+        else:
+            meantweets = totaltweets / (master.duration / 60)
+            stdevtotal = 0
+            for minute in minuteitems:
+                # Calculate standard deviation
+                stdevtotal += (minute[1] - meantweets) * (minute[1] - meantweets)
+            stdevtweets = math.sqrt(stdevtotal / len(minuteitems))
+            
+        for minute in minuteitems:
+            # Work out where the bookmarks should be
+            if minute[1] > (2.2*stdevtweets+meantweets) and minute[1] > 9: # Arbitrary value chosen for now - needs experimentation - was 9
+                pass
 
     elif element == "status":
         if len(data) == 0:

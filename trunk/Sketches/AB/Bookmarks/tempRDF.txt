@@ -13,318 +13,91 @@
          xmlns:timeline = "http://purl.org/NET/c4dm/timeline.owl#"
          xmlns:event    = "http://purl.org/NET/c4dm/event.owl#">
 
-<rdf:Description rdf:about="/programmes/p006fr84.rdf">
-  <rdfs:label>Description of a programme version of Your Worst Nightmare</rdfs:label>
-  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-02-13T19:05:46Z</dcterms:created>
-  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-02-13T19:05:46Z</dcterms:modified>
-  <foaf:primaryTopic rdf:resource="/programmes/p006fr84#programme"/>
+<rdf:Description rdf:about="/programmes/b00wbp0p.rdf">
+  <rdfs:label>Description of a programme version of Work and Pensions Questions</rdfs:label>
+  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-15T00:23:58Z</dcterms:created>
+  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-15T00:23:58Z</dcterms:modified>
+  <foaf:primaryTopic rdf:resource="/programmes/b00wbp0p#programme"/>
 </rdf:Description>
 
-<po:Version rdf:about="/programmes/p006fr84#programme">
+<po:Version rdf:about="/programmes/b00wbp0p#programme">
 
-  <rdfs:label>A version of Your Worst Nightmare</rdfs:label>
+  <rdfs:label>A version of Work and Pensions Questions</rdfs:label>
   <po:aspect_ratio>16:9</po:aspect_ratio>
   <po:sound_format>Stereo</po:sound_format>
-  <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1800</po:duration>
-  <po:pid>p006fr84</po:pid>
+  <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3600</po:duration>
+  <po:pid>b00wbp0p</po:pid>
   <po:time>
     <timeline:Interval>
-      <rdfs:label>Time interval for a version of Your Worst Nightmare</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/p006fr84#timeline"/>
-      <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT1800S</timeline:duration>
+      <rdfs:label>Time interval for a version of Work and Pensions Questions</rdfs:label>
+      <timeline:timeline rdf:resource="/programmes/b00wbp0p#timeline"/>
+      <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT3600S</timeline:duration>
     </timeline:Interval>
   </po:time>
 
-  <po:credit>
-    <po:Credit>
-      <po:role>
-        <po:Character>
-          <foaf:name>Bo</foaf:name>
-        </po:Character>
-      </po:role>
-      <po:participant>
-        <po:Alias>
-          <rdfs:label>Jessica Henwick</rdfs:label>
-          <foaf:givenName>Jessica</foaf:givenName>
-          <foaf:familyName>Henwick</foaf:familyName>
-        </po:Alias>
-      </po:participant>
-    </po:Credit>
-  </po:credit>
-  <po:credit>
-    <po:Credit>
-      <po:role>
-        <po:Character>
-          <foaf:name>Li</foaf:name>
-        </po:Character>
-      </po:role>
-      <po:participant>
-        <po:Alias>
-          <rdfs:label>Benedict Wong</rdfs:label>
-          <foaf:givenName>Benedict</foaf:givenName>
-          <foaf:familyName>Wong</foaf:familyName>
-        </po:Alias>
-      </po:participant>
-    </po:Credit>
-  </po:credit>
-  <po:credit>
-    <po:Credit>
-      <po:role>
-        <po:Character>
-          <foaf:name>Hwang</foaf:name>
-        </po:Character>
-      </po:role>
-      <po:participant>
-        <po:Alias>
-          <rdfs:label>Tom Wu</rdfs:label>
-          <foaf:givenName>Tom</foaf:givenName>
-          <foaf:familyName>Wu</foaf:familyName>
-        </po:Alias>
-      </po:participant>
-    </po:Credit>
-  </po:credit>
-  <po:credit>
-    <po:Credit>
-      <po:role>
-        <po:Character>
-          <foaf:name>Jen</foaf:name>
-        </po:Character>
-      </po:role>
-      <po:participant>
-        <po:Alias>
-          <rdfs:label>Alicia Lai</rdfs:label>
-          <foaf:givenName>Alicia</foaf:givenName>
-          <foaf:familyName>Lai</foaf:familyName>
-        </po:Alias>
-      </po:participant>
-    </po:Credit>
-  </po:credit>
-  <po:credit>
-    <po:Credit>
-      <po:role>
-        <po:Character>
-          <foaf:name>Vicky</foaf:name>
-        </po:Character>
-      </po:role>
-      <po:participant>
-        <po:Alias>
-          <rdfs:label>Lil Simz</rdfs:label>
-          <foaf:givenName>Lil</foaf:givenName>
-          <foaf:familyName>Simz</foaf:familyName>
-        </po:Alias>
-      </po:participant>
-    </po:Credit>
-  </po:credit>
-  <po:credit>
-    <po:Credit>
-      <po:role>
-        <po:Character>
-          <foaf:name>Trix</foaf:name>
-        </po:Character>
-      </po:role>
-      <po:participant>
-        <po:Alias>
-          <rdfs:label>Gilles Geary</rdfs:label>
-          <foaf:givenName>Gilles</foaf:givenName>
-          <foaf:familyName>Geary</foaf:familyName>
-        </po:Alias>
-      </po:participant>
-    </po:Credit>
-  </po:credit>
-  <po:credit>
-    <po:Credit>
-      <po:role>
-        <po:Character>
-          <foaf:name>Martin</foaf:name>
-        </po:Character>
-      </po:role>
-      <po:participant>
-        <po:Alias>
-          <rdfs:label>Karl Rogers</rdfs:label>
-          <foaf:givenName>Karl</foaf:givenName>
-          <foaf:familyName>Rogers</foaf:familyName>
-        </po:Alias>
-      </po:participant>
-    </po:Credit>
-  </po:credit>
-  <po:credit>
-    <po:Credit>
-      <po:role>
-        <po:Character>
-          <foaf:name>Shen</foaf:name>
-        </po:Character>
-      </po:role>
-      <po:participant>
-        <po:Alias>
-          <rdfs:label>Burt Kwouk</rdfs:label>
-          <foaf:givenName>Burt</foaf:givenName>
-          <foaf:familyName>Kwouk</foaf:familyName>
-        </po:Alias>
-      </po:participant>
-    </po:Credit>
-  </po:credit>
-  <po:credit>
-    <po:Credit>
-      <po:role>
-        <po:Character>
-          <foaf:name>Hau</foaf:name>
-        </po:Character>
-      </po:role>
-      <po:participant>
-        <po:Alias>
-          <rdfs:label>Hi Ching</rdfs:label>
-          <foaf:givenName>Hi</foaf:givenName>
-          <foaf:familyName>Ching</foaf:familyName>
-        </po:Alias>
-      </po:participant>
-    </po:Credit>
-  </po:credit>
-  <po:credit>
-    <po:Credit>
-      <po:role>
-        <po:Character>
-          <foaf:name>Fei-Yan</foaf:name>
-        </po:Character>
-      </po:role>
-      <po:participant>
-        <po:Alias>
-          <rdfs:label>Daphne Cheung</rdfs:label>
-          <foaf:givenName>Daphne</foaf:givenName>
-          <foaf:familyName>Cheung</foaf:familyName>
-        </po:Alias>
-      </po:participant>
-    </po:Credit>
-  </po:credit>
-  <po:credit>
-    <po:Credit>
-      <po:role>
-        <po:Character>
-          <foaf:name>Ying</foaf:name>
-        </po:Character>
-      </po:role>
-      <po:participant>
-        <po:Alias>
-          <rdfs:label>Yennis Cheung</rdfs:label>
-          <foaf:givenName>Yennis</foaf:givenName>
-          <foaf:familyName>Cheung</foaf:familyName>
-        </po:Alias>
-      </po:participant>
-    </po:Credit>
-  </po:credit>
-  <po:credit>
-    <po:Credit>
-      <po:role>
-        <po:Character>
-          <foaf:name>Mr Austin</foaf:name>
-        </po:Character>
-      </po:role>
-      <po:participant>
-        <po:Alias>
-          <rdfs:label>Michael Culkin</rdfs:label>
-          <foaf:givenName>Michael</foaf:givenName>
-          <foaf:familyName>Culkin</foaf:familyName>
-        </po:Alias>
-      </po:participant>
-    </po:Credit>
-  </po:credit>
-  <po:credit>
-    <po:Credit>
-      <po:role>
-        <po:Character>
-          <foaf:name>Bo&#39;s Dad</foaf:name>
-        </po:Character>
-      </po:role>
-      <po:participant>
-        <po:Alias>
-          <rdfs:label>David K.S Tse</rdfs:label>
-          <foaf:givenName>David K.S</foaf:givenName>
-          <foaf:familyName>Tse</foaf:familyName>
-        </po:Alias>
-      </po:participant>
-    </po:Credit>
-  </po:credit>
-  <po:credit>
-    <po:Credit>
-      <po:role>
-        <po:Character>
-          <foaf:name>Vicky&#39;s Mum</foaf:name>
-        </po:Character>
-      </po:role>
-      <po:participant>
-        <po:Alias>
-          <rdfs:label>Maureen Hibbert</rdfs:label>
-          <foaf:givenName>Maureen</foaf:givenName>
-          <foaf:familyName>Hibbert</foaf:familyName>
-        </po:Alias>
-      </po:participant>
-    </po:Credit>
-  </po:credit>
-  <po:credit>
-    <po:Credit>
-      <po:role>
-        <po:Role>
-          <rdfs:label>Director</rdfs:label>
-          <dc:title>Director</dc:title>
-          <dc:description>A supervisor; generally refers to the person responsible for all audience-visible components of a program, film, or show, whereas the producer is responsible for the financial and other behind-the-scenes aspects. A director&#39;s duties might also include casting, script editing, shot selection, shot composition, and editing</dc:description>
-        </po:Role>
-      </po:role>
-      <po:participant>
-        <po:Alias>
-          <rdfs:label>Jon East</rdfs:label>
-          <foaf:givenName>Jon</foaf:givenName>
-          <foaf:familyName>East</foaf:familyName>
-        </po:Alias>
-      </po:participant>
-    </po:Credit>
-  </po:credit>
-  <po:credit>
-    <po:Credit>
-      <po:role>
-        <po:Role>
-          <rdfs:label>Producer</rdfs:label>
-          <dc:title>Producer</dc:title>
-          <dc:description>The manager of an event, show, or other work, usually the individual in charge of finance, personnel, and other non-artistic aspects in the development of commercials, plays, movies, and other works</dc:description>
-        </po:Role>
-      </po:role>
-      <po:participant>
-        <po:Alias>
-          <rdfs:label>Nick Pitt</rdfs:label>
-          <foaf:givenName>Nick</foaf:givenName>
-          <foaf:familyName>Pitt</foaf:familyName>
-        </po:Alias>
-      </po:participant>
-    </po:Credit>
-  </po:credit>
-  <po:credit>
-    <po:Credit>
-      <po:role>
-        <po:Role>
-          <rdfs:label>Writer</rdfs:label>
-          <dc:title>Writer</dc:title>
-          <dc:description>A person who writes scripts for plays or movies or broadcast dramas</dc:description>
-        </po:Role>
-      </po:role>
-      <po:participant>
-        <po:Alias>
-          <rdfs:label>Carol Noble</rdfs:label>
-          <foaf:givenName>Carol</foaf:givenName>
-          <foaf:familyName>Noble</foaf:familyName>
-        </po:Alias>
-      </po:participant>
-    </po:Credit>
-  </po:credit>
 
 </po:Version>
 
-<po:Episode rdf:about="/programmes/b00qtsq1#programme">
-  <rdfs:label>Your Worst Nightmare</rdfs:label>
-  <po:version rdf:resource="/programmes/p006fr84#programme" />
+<po:Episode rdf:about="/programmes/b00wbp2k#programme">
+  <rdfs:label>Work and Pensions Questions</rdfs:label>
+  <po:version rdf:resource="/programmes/b00wbp0p#programme" />
 </po:Episode>
 
-<timeline:TimeLine rdf:about="/programmes/p006fr84#timeline">
-  <rdfs:label>Timeline of a version of Your Worst Nightmare</rdfs:label>
+<timeline:TimeLine rdf:about="/programmes/b00wbp0p#timeline">
+  <rdfs:label>Timeline of a version of Work and Pensions Questions</rdfs:label>
 </timeline:TimeLine>
 
+<po:Broadcast rdf:about="/programmes/b00wbp0p#p00c5dx7">
+  <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
+  <po:pid>p00c5dx7</po:pid>
+  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-11-23</po:schedule_date>
+  <event:time>
+    <timeline:Interval>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-23T01:00:00Z</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-23T02:00:00Z</timeline:end>
+    </timeline:Interval>
+  </event:time>
+  <po:broadcast_on>
+    <po:Service rdf:about="/services/parliament#service">
+      <rdfs:label>BBC Parliament</rdfs:label>
+    </po:Service>
+  </po:broadcast_on>
+  <po:broadcast_of rdf:resource="/programmes/b00wbp0p#programme" />
+</po:Broadcast>
+<po:Broadcast rdf:about="/programmes/b00wbp0p#p00c5dxj">
+  <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
+  <po:pid>p00c5dxj</po:pid>
+  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-11-23</po:schedule_date>
+  <event:time>
+    <timeline:Interval>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-23T03:30:00Z</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-23T04:30:00Z</timeline:end>
+    </timeline:Interval>
+  </event:time>
+  <po:broadcast_on>
+    <po:Service rdf:about="/services/parliament#service">
+      <rdfs:label>BBC Parliament</rdfs:label>
+    </po:Service>
+  </po:broadcast_on>
+  <po:broadcast_of rdf:resource="/programmes/b00wbp0p#programme" />
+</po:Broadcast>
+<po:Broadcast rdf:about="/programmes/b00wbp0p#p00c9zly">
+  <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
+  <po:pid>p00c9zly</po:pid>
+  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-11-23</po:schedule_date>
+  <event:time>
+    <timeline:Interval>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-23T12:55:00Z</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-23T14:00:00Z</timeline:end>
+    </timeline:Interval>
+  </event:time>
+  <po:broadcast_on>
+    <po:Service rdf:about="/services/parliament#service">
+      <rdfs:label>BBC Parliament</rdfs:label>
+    </po:Service>
+  </po:broadcast_on>
+  <po:broadcast_of rdf:resource="/programmes/b00wbp0p#programme" />
+</po:Broadcast>
 
 
 
