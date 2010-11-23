@@ -531,16 +531,17 @@ def programmev2(request,pid,timestamp=False,redux=False):
 
         # Ajax refresh code for divs TODO: Each time, request to /data/status to see if we need to keep refreshing
         scripting = """<script>
-                            $(document).ready(function() {
+                            jQuery.noConflict();
+                            jQuery(document).ready(function() {
                                 var refreshId = setInterval(function() {
-                                    $('#statistics').load('/data/statistics/""" + pid
+                                    jQuery('#statistics').load('/data/statistics/""" + pid
         if timestamp:
             scripting += "/" + str(timestamp)
         if redux == "redux":
             scripting += "/redux"
 
         scripting += """?randval='+Math.random());
-                                    $('#graphs').load('/data/graphs/""" + pid
+                                    jQuery('#graphs').load('/data/graphs/""" + pid
         if timestamp:
             scripting += "/" + str(timestamp)
         if redux == "redux":
@@ -555,7 +556,17 @@ def programmev2(request,pid,timestamp=False,redux=False):
         # Allowance for non-JS browsers
         output += "<noscript><meta http-equiv='refresh' content='30'></noscript>"
 
-    master = programmes_unique.objects.get(pid=pid)
+    output += """<!--[if IE]><script type=\"text/javascript\" src=\"/media/prototypejs/excanvas.js\"></script><![endif]-->
+                <script type=\"text/javascript\" src=\"/media/prototypejs/prototype.js\"></script>
+                <script type=\"text/javascript\" src=\"/media/prototypejs/base64.js\"></script>
+                <script type=\"text/javascript\" src=\"/media/prototypejs/canvas2image.js\"></script>
+                <script type=\"text/javascript\" src=\"/media/prototypejs/canvastext.js\"></script>
+                <script type=\"text/javascript\" src=\"/media/prototypejs/flotr.js\"></script>"""
+    try:
+        master = programmes_unique.objects.get(pid=pid)
+    except ObjectDoesNotExist, e:
+        pass # This is handled later
+
     if timestamp:
         data = programmes.objects.filter(pid=pid,timestamp=timestamp).all()
         # Viewing a single instance
@@ -605,18 +616,24 @@ def programmev2(request,pid,timestamp=False,redux=False):
                 output += str(progdate.strftime("%d/%m/%Y %H:%M:%S")) + " (" + str(row.channel) + ")"
                 output += "</a>"
 
+        # TODO The channel linked to here won't necessarily be the right one
+        output += "<br /><br />"#<a href=\"/channel-graph/" + row.channel + "/" + str(progdate.strftime("%Y/%m/%d")) + "/\">Back to channel page</a> -
+        output += "<a href=\"http://www.bbc.co.uk/programmes/" + pid + "\" target=\"_blank\">View BBC /programmes page</a>"
+
     output += footer
     return HttpResponse(output)
 
 def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True):
 
     output = "" # Initialise output buffer
-    master = programmes_unique.objects.get(pid=pid)
+    try:
+        master = programmes_unique.objects.get(pid=pid)
+    except ObjectDoesNotExist, e:
+        pass # This is handled later
     if timestamp:
         data = programmes.objects.filter(pid=pid,timestamp=timestamp).all()
     else:
         data = programmes.objects.filter(pid=pid).all()
-    rowcount = len(data)
     if element == "statistics":
         # Print a line like Total tweets: 7 - Tweets per minute - Mean: 0.27 - Median: 0 - Mode: 0 - STDev: 0.53
         minutegroups = dict()
@@ -692,7 +709,12 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
         minuteitems = minutegroups.items()
         minuteitems.sort()
 
-        output += str(minuteitems)
+        jsminlist = str(minuteitems).replace(")","]")
+        jsminlist = jsminlist.replace("(","[")
+
+        output += "<div id=\"container\" style=\"width: 990px; height: 300px\"></div>"
+
+        output += "<script type=\"text/javascript\">var data = " + jsminlist + "; var f =  Flotr.draw($('container'),[data],{label: 'test label', lines: {lineWidth: 1}});</script>"
 
         if len(data) == 1:
             meantweets = data[0].meantweets
@@ -708,7 +730,13 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
         for minute in minuteitems:
             # Work out where the bookmarks should be
             if minute[1] > (2.2*stdevtweets+meantweets) and minute[1] > 9: # Arbitrary value chosen for now - needs experimentation - was 9
+                #wfdata = wordanalysis.objects.filter(timestamp=minute.timestamp,pid=pid,is_keyword=0).order_by('-count').all()
+                # Issue - each prog has its own timestamp and timediff - need to identify the nearest wordanalysis for each?
+                # May need to modify live analysis to store data with the right second value rather than always using 0
                 pass
+
+
+        output += "<div id=\"blockcontainer\" style=\"width: 962px; height: 150px; margin-left: 22px; border: 1px solid #000000\"></div>"
 
     elif element == "status":
         if len(data) == 0:

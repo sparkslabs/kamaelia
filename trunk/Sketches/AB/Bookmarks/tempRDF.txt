@@ -13,95 +13,65 @@
          xmlns:timeline = "http://purl.org/NET/c4dm/timeline.owl#"
          xmlns:event    = "http://purl.org/NET/c4dm/event.owl#">
 
-<rdf:Description rdf:about="/programmes/b00wbp0p.rdf">
-  <rdfs:label>Description of a programme version of Work and Pensions Questions</rdfs:label>
-  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-15T00:23:58Z</dcterms:created>
-  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-15T00:23:58Z</dcterms:modified>
-  <foaf:primaryTopic rdf:resource="/programmes/b00wbp0p#programme"/>
+<rdf:Description rdf:about="/programmes/p00bybrl.rdf">
+  <rdfs:label>Description of a programme version of 23/11/2010</rdfs:label>
+  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-02T19:12:34Z</dcterms:created>
+  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-02T19:12:34Z</dcterms:modified>
+  <foaf:primaryTopic rdf:resource="/programmes/p00bybrl#programme"/>
 </rdf:Description>
 
-<po:Version rdf:about="/programmes/b00wbp0p#programme">
+<po:Version rdf:about="/programmes/p00bybrl#programme">
 
-  <rdfs:label>A version of Work and Pensions Questions</rdfs:label>
-  <po:aspect_ratio>16:9</po:aspect_ratio>
-  <po:sound_format>Stereo</po:sound_format>
-  <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3600</po:duration>
-  <po:pid>b00wbp0p</po:pid>
+  <rdfs:label>A version of 23/11/2010</rdfs:label>
+  
+  
+  <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1500</po:duration>
+  <po:pid>p00bybrl</po:pid>
   <po:time>
     <timeline:Interval>
-      <rdfs:label>Time interval for a version of Work and Pensions Questions</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00wbp0p#timeline"/>
-      <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT3600S</timeline:duration>
+      <rdfs:label>Time interval for a version of 23/11/2010</rdfs:label>
+      <timeline:timeline rdf:resource="/programmes/p00bybrl#timeline"/>
+      <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT1500S</timeline:duration>
     </timeline:Interval>
   </po:time>
 
 
 </po:Version>
 
-<po:Episode rdf:about="/programmes/b00wbp2k#programme">
-  <rdfs:label>Work and Pensions Questions</rdfs:label>
-  <po:version rdf:resource="/programmes/b00wbp0p#programme" />
+<po:Episode rdf:about="/programmes/p00bybp4#programme">
+  <rdfs:label>23/11/2010</rdfs:label>
+  <po:version rdf:resource="/programmes/p00bybrl#programme" />
 </po:Episode>
 
-<timeline:TimeLine rdf:about="/programmes/b00wbp0p#timeline">
-  <rdfs:label>Timeline of a version of Work and Pensions Questions</rdfs:label>
+<timeline:TimeLine rdf:about="/programmes/p00bybrl#timeline">
+  <rdfs:label>Timeline of a version of 23/11/2010</rdfs:label>
 </timeline:TimeLine>
 
-<po:Broadcast rdf:about="/programmes/b00wbp0p#p00c5dx7">
+<po:Broadcast rdf:about="/programmes/p00bybrl#p00bybvj">
   <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
-  <po:pid>p00c5dx7</po:pid>
+  <po:pid>p00bybvj</po:pid>
   <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-11-23</po:schedule_date>
   <event:time>
     <timeline:Interval>
-      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-23T01:00:00Z</timeline:start>
-      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-23T02:00:00Z</timeline:end>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-23T16:05:00Z</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-23T16:30:00Z</timeline:end>
     </timeline:Interval>
   </event:time>
   <po:broadcast_on>
-    <po:Service rdf:about="/services/parliament#service">
-      <rdfs:label>BBC Parliament</rdfs:label>
+    <po:Service rdf:about="/services/worldservice#service">
+      <rdfs:label>BBC World Service</rdfs:label>
     </po:Service>
   </po:broadcast_on>
-  <po:broadcast_of rdf:resource="/programmes/b00wbp0p#programme" />
-</po:Broadcast>
-<po:Broadcast rdf:about="/programmes/b00wbp0p#p00c5dxj">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
-  <po:pid>p00c5dxj</po:pid>
-  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-11-23</po:schedule_date>
-  <event:time>
-    <timeline:Interval>
-      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-23T03:30:00Z</timeline:start>
-      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-23T04:30:00Z</timeline:end>
-    </timeline:Interval>
-  </event:time>
-  <po:broadcast_on>
-    <po:Service rdf:about="/services/parliament#service">
-      <rdfs:label>BBC Parliament</rdfs:label>
-    </po:Service>
-  </po:broadcast_on>
-  <po:broadcast_of rdf:resource="/programmes/b00wbp0p#programme" />
-</po:Broadcast>
-<po:Broadcast rdf:about="/programmes/b00wbp0p#p00c9zly">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
-  <po:pid>p00c9zly</po:pid>
-  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-11-23</po:schedule_date>
-  <event:time>
-    <timeline:Interval>
-      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-23T12:55:00Z</timeline:start>
-      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-23T14:00:00Z</timeline:end>
-    </timeline:Interval>
-  </event:time>
-  <po:broadcast_on>
-    <po:Service rdf:about="/services/parliament#service">
-      <rdfs:label>BBC Parliament</rdfs:label>
-    </po:Service>
-  </po:broadcast_on>
-  <po:broadcast_of rdf:resource="/programmes/b00wbp0p#programme" />
+  <po:broadcast_of rdf:resource="/programmes/p00bybrl#programme" />
 </po:Broadcast>
 
 
 
 
+<po:Availability>
+  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-23T16:32:00Z</timeline:start>
+  <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-30T16:32:00Z</timeline:end>
+</po:Availability>
 
 
 
