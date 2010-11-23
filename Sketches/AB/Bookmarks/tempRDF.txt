@@ -13,318 +13,64 @@
          xmlns:timeline = "http://purl.org/NET/c4dm/timeline.owl#"
          xmlns:event    = "http://purl.org/NET/c4dm/event.owl#">
 
-<rdf:Description rdf:about="/programmes/b00wbxpb.rdf">
-  <rdfs:label>Description of a programme version of Best of Furry Friends</rdfs:label>
-  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-16T00:17:40Z</dcterms:created>
-  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-16T00:17:40Z</dcterms:modified>
-  <foaf:primaryTopic rdf:resource="/programmes/b00wbxpb#programme"/>
+<rdf:Description rdf:about="/programmes/p00bybr2.rdf">
+  <rdfs:label>Description of a programme version of 23/11/2010</rdfs:label>
+  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-02T19:12:35Z</dcterms:created>
+  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-02T19:12:35Z</dcterms:modified>
+  <foaf:primaryTopic rdf:resource="/programmes/p00bybr2#programme"/>
 </rdf:Description>
 
-<po:Version rdf:about="/programmes/b00wbxpb#programme">
+<po:Version rdf:about="/programmes/p00bybr2#programme">
 
-  <rdfs:label>A version of Best of Furry Friends</rdfs:label>
-  <po:aspect_ratio>16:9</po:aspect_ratio>
-  <po:sound_format>Stereo</po:sound_format>
+  <rdfs:label>A version of 23/11/2010</rdfs:label>
+  
+  
   <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">900</po:duration>
-  <po:pid>b00wbxpb</po:pid>
+  <po:pid>p00bybr2</po:pid>
   <po:time>
     <timeline:Interval>
-      <rdfs:label>Time interval for a version of Best of Furry Friends</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00wbxpb#timeline"/>
+      <rdfs:label>Time interval for a version of 23/11/2010</rdfs:label>
+      <timeline:timeline rdf:resource="/programmes/p00bybr2#timeline"/>
       <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT900S</timeline:duration>
     </timeline:Interval>
   </po:time>
 
-  <po:credit>
-    <po:Credit>
-      <po:role>
-        <po:Character>
-          <foaf:name>Potto</foaf:name>
-        </po:Character>
-      </po:role>
-      <po:participant>
-        <po:Alias>
-          <rdfs:label>Paul Currie</rdfs:label>
-          <foaf:givenName>Paul</foaf:givenName>
-          <foaf:familyName>Currie</foaf:familyName>
-        </po:Alias>
-      </po:participant>
-    </po:Credit>
-  </po:credit>
-  <po:credit>
-    <po:Credit>
-      <po:role>
-        <po:Character>
-          <foaf:name>Hilda</foaf:name>
-        </po:Character>
-      </po:role>
-      <po:participant>
-        <po:Alias>
-          <rdfs:label>Lesa Gillespie</rdfs:label>
-          <foaf:givenName>Lesa</foaf:givenName>
-          <foaf:familyName>Gillespie</foaf:familyName>
-        </po:Alias>
-      </po:participant>
-    </po:Credit>
-  </po:credit>
-  <po:credit>
-    <po:Credit>
-      <po:role>
-        <po:Character>
-          <foaf:name>Archie</foaf:name>
-        </po:Character>
-      </po:role>
-      <po:participant>
-        <po:Alias>
-          <rdfs:label>Mike Smith</rdfs:label>
-          <foaf:givenName>Mike</foaf:givenName>
-          <foaf:familyName>Smith</foaf:familyName>
-        </po:Alias>
-      </po:participant>
-    </po:Credit>
-  </po:credit>
-  <po:credit>
-    <po:Credit>
-      <po:role>
-        <po:Character>
-          <foaf:name>Masie Weatherberry</foaf:name>
-        </po:Character>
-      </po:role>
-      <po:participant>
-        <po:Alias>
-          <rdfs:label>Sarah Lyle</rdfs:label>
-          <foaf:givenName>Sarah</foaf:givenName>
-          <foaf:familyName>Lyle</foaf:familyName>
-        </po:Alias>
-      </po:participant>
-    </po:Credit>
-  </po:credit>
-  <po:credit>
-    <po:Credit>
-      <po:role>
-        <po:Character>
-          <foaf:name>Claribelle</foaf:name>
-        </po:Character>
-      </po:role>
-      <po:participant>
-        <po:Alias>
-          <rdfs:label>Alana Kerr</rdfs:label>
-          <foaf:givenName>Alana</foaf:givenName>
-          <foaf:familyName>Kerr</foaf:familyName>
-        </po:Alias>
-      </po:participant>
-    </po:Credit>
-  </po:credit>
-  <po:credit>
-    <po:Credit>
-      <po:role>
-        <po:Character>
-          <foaf:name>Bookworm</foaf:name>
-        </po:Character>
-      </po:role>
-      <po:participant>
-        <po:Alias>
-          <rdfs:label>Sarah Wilson</rdfs:label>
-          <foaf:givenName>Sarah</foaf:givenName>
-          <foaf:familyName>Wilson</foaf:familyName>
-        </po:Alias>
-      </po:participant>
-    </po:Credit>
-  </po:credit>
-  <po:credit>
-    <po:Credit>
-      <po:role>
-        <po:Role>
-          <rdfs:label>Actor</rdfs:label>
-          <dc:title>Actor</dc:title>
-          <dc:description>A person who plays the role of a character</dc:description>
-        </po:Role>
-      </po:role>
-      <po:participant>
-        <po:Alias>
-          <rdfs:label>Michael McNulty</rdfs:label>
-          <foaf:givenName>Michael</foaf:givenName>
-          <foaf:familyName>McNulty</foaf:familyName>
-        </po:Alias>
-      </po:participant>
-    </po:Credit>
-  </po:credit>
 
 </po:Version>
 
-<po:Episode rdf:about="/programmes/b00wcmjp#programme">
-  <rdfs:label>Best of Furry Friends</rdfs:label>
-  <po:version rdf:resource="/programmes/b00wbxpb#programme" />
+<po:Episode rdf:about="/programmes/p00bybnm#programme">
+  <rdfs:label>23/11/2010</rdfs:label>
+  <po:version rdf:resource="/programmes/p00bybr2#programme" />
 </po:Episode>
 
-<timeline:TimeLine rdf:about="/programmes/b00wbxpb#timeline">
-  <rdfs:label>Timeline of a version of Best of Furry Friends</rdfs:label>
+<timeline:TimeLine rdf:about="/programmes/p00bybr2#timeline">
+  <rdfs:label>Timeline of a version of 23/11/2010</rdfs:label>
 </timeline:TimeLine>
 
-<po:Broadcast rdf:about="/programmes/b00wbxpb#p00c6049">
+<po:Broadcast rdf:about="/programmes/p00bybr2#p00bybtv">
   <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
-  <po:pid>p00c6049</po:pid>
+  <po:pid>p00bybtv</po:pid>
   <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-11-23</po:schedule_date>
   <event:time>
     <timeline:Interval>
-      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-23T10:40:00Z</timeline:start>
-      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-23T11:00:00Z</timeline:end>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-23T11:05:00Z</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-23T11:20:00Z</timeline:end>
     </timeline:Interval>
   </event:time>
   <po:broadcast_on>
-    <po:Service rdf:about="/services/cbeebies#service">
-      <rdfs:label>CBeebies</rdfs:label>
+    <po:Service rdf:about="/services/worldservice#service">
+      <rdfs:label>BBC World Service</rdfs:label>
     </po:Service>
   </po:broadcast_on>
-  <po:broadcast_of rdf:resource="/programmes/b00wbxpb#programme" />
-</po:Broadcast>
-<po:Broadcast rdf:about="/programmes/b00wbxpb#p00c604q">
-  <rdf:type rdf:resource="http://purl.org/ontology/po/RepeatBroadcast"/>
-  <po:pid>p00c604q</po:pid>
-  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-11-23</po:schedule_date>
-  <event:time>
-    <timeline:Interval>
-      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-23T14:40:00Z</timeline:start>
-      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-23T14:55:00Z</timeline:end>
-    </timeline:Interval>
-  </event:time>
-  <po:broadcast_on>
-    <po:Service rdf:about="/services/cbeebies#service">
-      <rdfs:label>CBeebies</rdfs:label>
-    </po:Service>
-  </po:broadcast_on>
-  <po:broadcast_of rdf:resource="/programmes/b00wbxpb#programme" />
+  <po:broadcast_of rdf:resource="/programmes/p00bybr2#programme" />
 </po:Broadcast>
 
 
 
 
 <po:Availability>
-  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-23T11:00:00Z</timeline:start>
-  <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-30T10:59:00Z</timeline:end>
-  <po:media_item>
-    <po:MediaItem rdf:about="/programmes/b00wbxpb#p00c9xz9">
-      <po:pid>p00c9xz9</po:pid>
-      <po:service rdf:resource="/services/mvod_sd_bt#service"/>
-      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-22T19:08:35Z</po:start_of_media_availability>
-    </po:MediaItem>
-  </po:media_item>
-</po:Availability>
-<po:Availability>
-  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-23T11:00:00Z</timeline:start>
-  <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-12-10T09:59:00Z</timeline:end>
-  <po:media_item>
-    <po:MediaItem rdf:about="/programmes/b00wbxpb#p00c9y29">
-      <po:pid>p00c9y29</po:pid>
-      <po:service rdf:resource="/services/mvod_sd_virgin#service"/>
-      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-22T18:49:42Z</po:start_of_media_availability>
-    </po:MediaItem>
-  </po:media_item>
-  <po:media_item>
-    <po:MediaItem rdf:about="/programmes/b00wbxpb#p00c9y90">
-      <po:pid>p00c9y90</po:pid>
-      <po:service rdf:resource="/services/iplayer_wii#service"/>
-      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-22T19:14:42Z</po:start_of_media_availability>
-    </po:MediaItem>
-  </po:media_item>
-  <po:media_item>
-    <po:MediaItem rdf:about="/programmes/b00wbxpb#p00c9yqw">
-      <po:pid>p00c9yqw</po:pid>
-      <po:service rdf:resource="/services/iplayer_streaming_http_mp4#service"/>
-      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-22T19:31:45Z</po:start_of_media_availability>
-    </po:MediaItem>
-  </po:media_item>
-  <po:media_item>
-    <po:MediaItem rdf:about="/programmes/b00wbxpb#p00c9yqx">
-      <po:pid>p00c9yqx</po:pid>
-      <po:service rdf:resource="/services/iplayer_streaming_h264_flv_lo#service"/>
-      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-22T19:32:01Z</po:start_of_media_availability>
-    </po:MediaItem>
-  </po:media_item>
-  <po:media_item>
-    <po:MediaItem rdf:about="/programmes/b00wbxpb#p00c9yqy">
-      <po:pid>p00c9yqy</po:pid>
-      <po:service rdf:resource="/services/iplayer_streaming_n95_3g#service"/>
-      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-22T19:31:55Z</po:start_of_media_availability>
-    </po:MediaItem>
-  </po:media_item>
-  <po:media_item>
-    <po:MediaItem rdf:about="/programmes/b00wbxpb#p00c9yrp">
-      <po:pid>p00c9yrp</po:pid>
-      <po:service rdf:resource="/services/iplayer_freesat#service"/>
-      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-22T19:34:34Z</po:start_of_media_availability>
-    </po:MediaItem>
-  </po:media_item>
-  <po:media_item>
-    <po:MediaItem rdf:about="/programmes/b00wbxpb#p00c9yrq">
-      <po:pid>p00c9yrq</po:pid>
-      <po:service rdf:resource="/services/iplayer_freesat_high#service"/>
-      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-22T19:35:06Z</po:start_of_media_availability>
-    </po:MediaItem>
-  </po:media_item>
-  <po:media_item>
-    <po:MediaItem rdf:about="/programmes/b00wbxpb#p00c9z2m">
-      <po:pid>p00c9z2m</po:pid>
-      <po:service rdf:resource="/services/iptv_streaming_bt#service"/>
-      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-22T20:21:59Z</po:start_of_media_availability>
-    </po:MediaItem>
-  </po:media_item>
-  <po:media_item>
-    <po:MediaItem rdf:about="/programmes/b00wbxpb#p00c9z2n">
-      <po:pid>p00c9z2n</po:pid>
-      <po:service rdf:resource="/services/iplayer_streaming_n95_wifi#service"/>
-      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-22T20:21:51Z</po:start_of_media_availability>
-    </po:MediaItem>
-  </po:media_item>
-  <po:media_item>
-    <po:MediaItem rdf:about="/programmes/b00wbxpb#p00c9z2p">
-      <po:pid>p00c9z2p</po:pid>
-      <po:service rdf:resource="/services/iplayer_streaming_h264_flv_vlo#service"/>
-      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-22T20:22:14Z</po:start_of_media_availability>
-    </po:MediaItem>
-  </po:media_item>
-  <po:media_item>
-    <po:MediaItem rdf:about="/programmes/b00wbxpb#p00c9z2w">
-      <po:pid>p00c9z2w</po:pid>
-      <po:service rdf:resource="/services/iplayer_streaming_h264_flv#service"/>
-      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-22T20:23:06Z</po:start_of_media_availability>
-    </po:MediaItem>
-  </po:media_item>
-  <po:media_item>
-    <po:MediaItem rdf:about="/programmes/b00wbxpb#p00c9z2x">
-      <po:pid>p00c9z2x</po:pid>
-      <po:service rdf:resource="/services/iplayer_stbx_streaming_sd#service"/>
-      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-22T20:24:30Z</po:start_of_media_availability>
-    </po:MediaItem>
-  </po:media_item>
-  <po:media_item>
-    <po:MediaItem rdf:about="/programmes/b00wbxpb#p00c9z2y">
-      <po:pid>p00c9z2y</po:pid>
-      <po:service rdf:resource="/services/iplayer_stb_streaming_sd#service"/>
-      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-22T20:23:23Z</po:start_of_media_availability>
-    </po:MediaItem>
-  </po:media_item>
-  <po:media_item>
-    <po:MediaItem rdf:about="/programmes/b00wbxpb#p00c9z35">
-      <po:pid>p00c9z35</po:pid>
-      <po:service rdf:resource="/services/iplayer_stb_streaming_sd_high#service"/>
-      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-22T20:24:46Z</po:start_of_media_availability>
-    </po:MediaItem>
-  </po:media_item>
-  <po:media_item>
-    <po:MediaItem rdf:about="/programmes/b00wbxpb#p00c9z36">
-      <po:pid>p00c9z36</po:pid>
-      <po:service rdf:resource="/services/iplayer_stbx_streaming_sd_high#service"/>
-      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-22T20:26:32Z</po:start_of_media_availability>
-    </po:MediaItem>
-  </po:media_item>
-  <po:media_item>
-    <po:MediaItem rdf:about="/programmes/b00wbxpb#p00c9z7t">
-      <po:pid>p00c9z7t</po:pid>
-      <po:service rdf:resource="/services/iplayer_streaming_h264_flv_high#service"/>
-      <po:start_of_media_availability rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-22T20:48:02Z</po:start_of_media_availability>
-    </po:MediaItem>
-  </po:media_item>
+  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-23T11:22:00Z</timeline:start>
+  <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-30T11:22:00Z</timeline:end>
 </po:Availability>
 
 

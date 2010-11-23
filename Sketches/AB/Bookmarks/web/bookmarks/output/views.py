@@ -526,6 +526,24 @@ def programmev2(request,pid,timestamp=False,redux=False):
     # Now that this is live, would be clever to use AJAX to refresh graphs etc every minute whilst still unanalysed?
 
     output = header
+
+    if programmev2data(False,"status",pid,timestamp,redux,False) == "206":
+
+        scripting = """<script>
+                            $(document).ready(function() {
+                                var refreshId = setInterval(function() {
+                                    $('#statistics').load('/data/statistics/""" + pid
+        if timestamp:
+            scripting += "/" + str(timestamp)
+        if redux == "redux":
+            scripting += "/redux"
+
+        scripting += """?randval='+Math.random());}, 5000);
+                    });
+                    </script>"""
+
+        output += scripting
+
     master = programmes_unique.objects.get(pid=pid)
     if timestamp:
         data = programmes.objects.filter(pid=pid,timestamp=timestamp).all()
@@ -557,7 +575,9 @@ def programmev2(request,pid,timestamp=False,redux=False):
             else:
                 output += "Duration: " + str(progmins) + " minutes<br />"
         
-        output += "<br />" + programmev2data(False,"statistics",pid,timestamp,redux,False)
+        output += "<br /><div id=\"statistics\">"
+        output += programmev2data(False,"statistics",pid,timestamp,redux,False)
+        output += "</div>"
 
         if rowcount > 1:
             output += "<br /><br /><strong>Broadcasts</strong>"
