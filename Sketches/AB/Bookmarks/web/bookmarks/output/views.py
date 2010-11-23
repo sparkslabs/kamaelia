@@ -1,6 +1,6 @@
 # Create your views here.
 from django.http import HttpResponse
-from bookmarks.output.models import programmes,analyseddata,rawdata,wordanalysis
+from bookmarks.output.models import programmes,analyseddata,rawdata,wordanalysis,programmes_unique
 from datetime import date,timedelta,datetime
 from pygooglechart import SimpleLineChart, Axis #lc
 import time
@@ -275,6 +275,7 @@ def programme(request,pid,redux=False):
 
     output = header
     data = programmes.objects.filter(pid=pid).all()
+    output += "<br />This output is due to be replaced. New views are currently under development at /programmesv2.<br />"
     if len(data) == 0:
         output += "<br />Invalid pid supplied or no data has yet been captured for this programme."
         output += "<br /><br /><a href=\"/\">Back to index</a>"
@@ -520,6 +521,114 @@ def programme(request,pid,redux=False):
 
     output += footer
     return HttpResponse(output)
+
+def programmev2(request,pid,timestamp=False,redux=False):
+    # Now that this is live, would be clever to use AJAX to refresh graphs etc every minute whilst still unanalysed?
+
+    output = header
+    master = programmes_unique.objects.get(pid=pid)
+    if timestamp:
+        data = programmes.objects.filter(pid=pid,timestamp=timestamp).all()
+        # Viewing a single instance
+    else:
+        data = programmes.objects.filter(pid=pid).all()
+        # Viewing all instances (inc repeats etc) - shows the same as the timestamp case if only one row found
+    rowcount = len(data)
+    if rowcount == 0:
+        output += "<br />Invalid pid supplied or no data has yet been captured for this programme."
+        output += "<br /><br /><a href=\"/\">Back to index</a>"
+    else:
+        if rowcount == 1:
+            channel = data[0].channel
+            output += "<br /><a href=\"http://www.bbc.co.uk/" + channel + "\" target=\"_blank\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br /><br />"
+            progdatetime = datetime.utcfromtimestamp(data[0].timestamp)
+            progdate = progdatetime + timedelta(seconds=data[0].utcoffset)
+            actualstart = progdate - timedelta(seconds=data[0].timediff)
+            output += str(progdate.strftime("%d/%m/%Y"))
+        output += "<br /><strong>" + master.title + "</strong><br />"
+        if rowcount == 1:
+            output += "Expected show times: " + str(progdate.strftime("%H:%M:%S")) + " to " + str((progdate + timedelta(seconds=data[0].duration)).strftime("%H:%M:%S")) + "<br />"
+            output += "Actual show times (estimated): " + str(actualstart.strftime("%H:%M:%S")) + " to " + str((actualstart + timedelta(seconds=data[0].duration)).strftime("%H:%M:%S")) + "<br />"
+        else:
+            proghours = master.duration / 3600 - master.duration % 3600
+            progmins = (master.duration % 3600) / 60
+            if proghours >= 1:
+                output += "Duration: " + str(proghours) + " hours, " + str(progmins) + " minutes<br />"
+            else:
+                output += "Duration: " + str(progmins) + " minutes<br />"
+        
+        output += "<br />" + programmev2data(False,"statistics",pid,timestamp,redux,False)
+
+        if rowcount > 1:
+            output += "<br /><br /><strong>Broadcasts</strong>"
+            for row in data:
+                output += "<br /><a href=\"/programmesv2/" + pid + "/" + str(int(row.timestamp))
+                if redux == "redux":
+                    output += "/redux"
+                output += "\">"
+                progdatetime = datetime.utcfromtimestamp(row.timestamp)
+                progdate = progdatetime + timedelta(seconds=row.utcoffset)
+                output += str(progdate.strftime("%d/%m/%Y %H:%M:%S"))
+                output += "</a>"
+
+    output += footer
+    return HttpResponse(output)
+
+def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True):
+
+    output = "" # Initialise output buffer
+    if timestamp:
+        data = programmes.objects.filter(pid=pid,timestamp=timestamp).all()
+    else:
+        data = programmes.objects.filter(pid=pid).all()
+    if element == "statistics":
+        # Print a line like Total tweets: 7 - Tweets per minute - Mean: 0.27 - Median: 0 - Mode: 0 - STDev: 0.53
+        # TODO: Recalculate median, mode and stdev if rowcount > 1
+        totaltweets = 0
+        meantweets = 0
+        rowcount = len(data)
+        mediantweets = None
+        modetweets = None
+        stdevtweets = None
+        for row in data:
+            totaltweets += row.totaltweets
+            meantweets += row.meantweets
+            if rowcount == 1:
+                mediantweets = row.mediantweets
+                modetweets = row.modetweets
+                stdevtweets = row.stdevtweets
+        if rowcount > 0:
+            meantweets = meantweets / rowcount
+
+        output += "Total tweets: " + str(totaltweets) + " - Tweets per minute - Mean: " + str(round(meantweets,2))
+        if mediantweets != None:
+            output += " - Median: " + str(round(mediantweets,2))
+        if modetweets != None:
+            output += " - Mode: " + str(round(modetweets,2))
+        if stdevtweets != None:
+            output += " - STDev: " + str(round(stdevtweets,2))
+    elif element == "graphs":
+        output += ""
+    elif element == "status":
+        if len(data) == 0:
+            output += "404" # Invalid PID
+        else:
+            some_analysed = False
+            some_unanalysed = False
+            for row in data:
+                if row.analysed == 1:
+                    some_analysed = True
+                elif row.analysed ==0:
+                    some_unanalysed = True
+            if some_analysed and not some_unanalysed:
+                output += "200" # Fully Analysed
+            elif some_unanalysed:
+                output += "206" # Part Analysed
+
+    if wrapper:
+        return HttpResponse(output)
+    else:
+        return output
 
 def rawtweets(request,pid,timestamp):
     output = header

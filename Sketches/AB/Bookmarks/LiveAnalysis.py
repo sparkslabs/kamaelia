@@ -366,7 +366,6 @@ class LiveAnalysis(threadedcomponent):
                         stdevtweets = 0
 
                     if 1:
-                        print "Running final NLTK analysis"
                         sqltimestamp1 = timestamp - timediff
                         sqltimestamp2 = timestamp + duration - timediff
                         cursor.execute("""SELECT tweet_id FROM rawdata WHERE pid = %s AND timestamp >= %s AND timestamp < %s""", (pid,sqltimestamp1,sqltimestamp2))
