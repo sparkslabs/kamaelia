@@ -529,10 +529,18 @@ def programmev2(request,pid,timestamp=False,redux=False):
 
     if programmev2data(False,"status",pid,timestamp,redux,False) == "206":
 
+        # Ajax refresh code for divs TODO: Each time, request to /data/status to see if we need to keep refreshing
         scripting = """<script>
                             $(document).ready(function() {
                                 var refreshId = setInterval(function() {
                                     $('#statistics').load('/data/statistics/""" + pid
+        if timestamp:
+            scripting += "/" + str(timestamp)
+        if redux == "redux":
+            scripting += "/redux"
+
+        scripting += """?randval='+Math.random());
+                                    $('#graphs').load('/data/graphs/""" + pid
         if timestamp:
             scripting += "/" + str(timestamp)
         if redux == "redux":
@@ -543,6 +551,9 @@ def programmev2(request,pid,timestamp=False,redux=False):
                     </script>"""
 
         output += scripting
+
+        # Allowance for non-JS browsers
+        output += "<noscript><meta http-equiv='refresh' content='30'></noscript>"
 
     master = programmes_unique.objects.get(pid=pid)
     if timestamp:
@@ -565,8 +576,8 @@ def programmev2(request,pid,timestamp=False,redux=False):
             output += str(progdate.strftime("%d/%m/%Y"))
         output += "<br /><strong>" + master.title + "</strong><br />"
         if rowcount == 1:
-            output += "Expected show times: " + str(progdate.strftime("%H:%M:%S")) + " to " + str((progdate + timedelta(seconds=data[0].duration)).strftime("%H:%M:%S")) + "<br />"
-            output += "Actual show times (estimated): " + str(actualstart.strftime("%H:%M:%S")) + " to " + str((actualstart + timedelta(seconds=data[0].duration)).strftime("%H:%M:%S")) + "<br />"
+            output += "Expected show times: " + str(progdate.strftime("%H:%M:%S")) + " to " + str((progdate + timedelta(seconds=master.duration)).strftime("%H:%M:%S")) + "<br />"
+            output += "Actual show times (estimated): " + str(actualstart.strftime("%H:%M:%S")) + " to " + str((actualstart + timedelta(seconds=master.duration)).strftime("%H:%M:%S")) + "<br />"
         else:
             proghours = master.duration / 3600 - master.duration % 3600
             progmins = (master.duration % 3600) / 60
@@ -577,6 +588,9 @@ def programmev2(request,pid,timestamp=False,redux=False):
         
         output += "<br /><div id=\"statistics\">"
         output += programmev2data(False,"statistics",pid,timestamp,redux,False)
+        output += "</div>"
+        output += "<br /><div id=\"statistics\">"
+        output += programmev2data(False,"graphs",pid,timestamp,redux,False)
         output += "</div>"
 
         if rowcount > 1:
@@ -597,16 +611,17 @@ def programmev2(request,pid,timestamp=False,redux=False):
 def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True):
 
     output = "" # Initialise output buffer
+    master = programmes_unique.objects.get(pid=pid)
     if timestamp:
         data = programmes.objects.filter(pid=pid,timestamp=timestamp).all()
     else:
         data = programmes.objects.filter(pid=pid).all()
+    rowcount = len(data)
     if element == "statistics":
         # Print a line like Total tweets: 7 - Tweets per minute - Mean: 0.27 - Median: 0 - Mode: 0 - STDev: 0.53
         # TODO: Recalculate median, mode and stdev if rowcount > 1
         totaltweets = 0
         meantweets = 0
-        rowcount = len(data)
         mediantweets = None
         modetweets = None
         stdevtweets = None
@@ -628,7 +643,23 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
         if stdevtweets != None:
             output += " - STDev: " + str(round(stdevtweets,2))
     elif element == "graphs":
-        output += ""
+        for row in data:
+            # This may not return some results at extreme ends, but should get the vast majority
+            # No point in looking for data outside this anyway as we can't link back into it
+            rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=row.timestamp-row.timediff,timestamp__lt=row.timestamp+master.duration-row.timediff).order_by('timestamp').all()
+            minutegroups = dict()
+            durcount = int(master.duration / 60)
+            # Set up the counter
+            while durcount > 0:
+                durcount -= 1
+                minutegroups[durcount] = 0
+            for line in rawtweets:
+                if line.programme_position >= 0:
+                    group = int(line.programme_position / 60)
+                    if minutegroups.has_key(group):
+                        minutegroups[group] += 1
+            output += str(minutegroups)
+
     elif element == "status":
         if len(data) == 0:
             output += "404" # Invalid PID
