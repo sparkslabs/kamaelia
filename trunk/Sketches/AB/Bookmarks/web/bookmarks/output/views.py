@@ -743,7 +743,7 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
                 stdevtotal += (minute[1] - meantweets) * (minute[1] - meantweets)
             stdevtweets = math.sqrt(stdevtotal / len(minuteitems))
 
-        slicewidth = int(960/len(minuteitems))
+        slicewidth = int(1000/len(minuteitems))
         if slicewidth < 1:
             slicewidth = 1
 
@@ -769,16 +769,23 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
                 progskipplot += "<a href=\"http://g.bbcredux.com/programme/" + reduxchannel + "/" + progdatestring + "/" + progtimestring + "?start=" + str(60*minute[0]) + "\" target=\"_blank\">"
             else:
                 progskipplot += "<a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(minute[0]) + "m0s\" target=\"_blank\">"
-            progskipplot += "<div style=\"float: left; opacity: " + str(opacity) + ";cursor: pointer;background-color: #000000; height: 40px; width: " + str(slicewidth) + "px;filter:alpha(opacity=" + str(int(opacity * 100)) + ")\"></div></a>"
+            progskipplot += "<div style=\"float: left; opacity: " + str(opacity) + ";cursor: pointer;background-color: #3333FF; height: 40px; width: " + str(slicewidth) + "px;filter:alpha(opacity=" + str(int(opacity * 100)) + ")\"></div></a>"
             if len(data) == 1:
-                rawtweetplot += "<a href=\"/programmesv2/" + pid + "/" + str(int(progtimestamp-progtimediff+(minute[0]*60))) + "\" target=\"_blank\"><div style=\"float: left; opacity: " + str(opacity) + ";cursor: pointer;background-color: #000000; height: 40px; width: " + str(slicewidth) + "px;filter:alpha(opacity=" + str(int(opacity * 100)) + ")\"></div></a>"
+                rawtweetplot += "<a href=\"/programmesv2/" + pid + "/" + str(int(progtimestamp-progtimediff+(minute[0]*60))) + "\" target=\"_blank\"><div style=\"float: left; opacity: " + str(opacity) + ";cursor: pointer;background-color: #009933; height: 40px; width: " + str(slicewidth) + "px;filter:alpha(opacity=" + str(int(opacity * 100)) + ")\"></div></a>"
             else:
-                rawtweetplot += "<a href=\"/programmesv2/" + pid + "/" + str(minute[0]) + "/aggregated\" target=\"_blank\"><div style=\"float: left; opacity: " + str(opacity) + ";cursor: pointer;background-color: #000000; height: 40px; width: " + str(slicewidth) + "px;filter:alpha(opacity=" + str(int(opacity * 100)) + ")\"></div></a>"
+                rawtweetplot += "<a href=\"/programmesv2/" + pid + "/" + str(minute[0]) + "/aggregated\" target=\"_blank\"><div style=\"float: left; opacity: " + str(opacity) + ";cursor: pointer;background-color: #009933; height: 40px; width: " + str(slicewidth) + "px;filter:alpha(opacity=" + str(int(opacity * 100)) + ")\"></div></a>"
 
-        output += "<div id=\"blockcontainer\" style=\"width: " + str(len(minuteitems)*slicewidth+2) + "px; height: 150px; margin-left: 22px; border: 1px solid #000000\">"
-        output += "<div style=\"overflow: hidden\">" + progskipplot + "</div>"
-        output += "<div style=\"overflow: hidden\">" + bookmarkplot + "</div>"
-        output += "<div style=\"overflow: hidden\">" + rawtweetplot + "</div>"
+        # The +3 in the widths below gets around an IE CSS issue. All other browsers will ignore it
+        output += "<div id=\"blockcontainer\" class=\"iediv\" style=\"margin-left: 22px; border: 1px solid #444444; background-color: light red\">"
+        if redux == "redux":
+            output += "<div style=\"font-size: 8pt\">Redux Links</div>"
+        else:
+            output += "<div style=\"font-size: 8pt; padding: 2px 0px 2px 4px; background-color: #3333FF; opacity: 0.7; color: #FFFFFF; filter:alpha(opacity=30)\">iPlayer Links</div>"
+        output += "<div style=\"width= " + str(len(minuteitems)*slicewidth+3) + "px;overflow: hidden;height: 40px;\">" + progskipplot + "</div>"
+        output += "<div style=\"font-size: 8pt; padding: 2px 0px 2px 4px; background-color: #FF6633; opacity: 0.7; color: #FFFFFF; filter:alpha(opacity=30)\">Bookmarks</div>"
+        output += "<div style=\"width= " + str(len(minuteitems)*slicewidth+3) + "px;overflow: hidden;height: 40px;\">" + bookmarkplot + "</div>"
+        output += "<div style=\"font-size: 8pt; padding: 2px 0px 2px 4px; background-color: #009933; opacity: 0.7; color: #FFFFFF; filter:alpha(opacity=30)\">Raw Data</div>"
+        output += "<div style=\"width= " + str(len(minuteitems)*slicewidth+3) + "px;overflow: hidden;height: 40px;\">" + rawtweetplot + "</div>"
 
         output += "</div>"
 
@@ -890,19 +897,10 @@ def rawtweetsv2(request,pid,timestamp,aggregated=False):
             output += "Raw tweet output between " + str(starttime.strftime("%H:%M:%S")) + " and " + str(endtime.strftime("%H:%M:%S")) + "<br />"
             rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=timestamp,timestamp__lt=endstamp).order_by('timestamp').all()
             output += "<div id=\"rawtweets\" style=\"font-size: 9pt\">"
-            #tweetseccount = dict()
             for tweet in rawtweets:
-            #    if tweetseccount.has_key(tweet.timestamp):
-            #        tweetseccount[tweet.timestamp] += 1
-            #    else:
-            #        tweetseccount[tweet.timestamp] = 1
                 output += "<br /><strong>" + str(datetime.utcfromtimestamp(tweet.timestamp + progdata[0].utcoffset)) + ":</strong> " + "@" + tweet.user + ": " + tweet.text
             output += "</div><br /><br />"
             output += "Tweets: <a href=\"/api/" + pid + "/" + str(timestamp) + ".json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + pid + "/" + str(timestamp) + ".xml\" target=\"_blank\">XML</a><br />"
-            #if len(tweetseccount) > 0:
-            #    tweetseccount = [(v,k) for k, v in tweetseccount.items()]
-            #    tweetseccount.sort(reverse=True)
-            #    output += "<br />" + str(tweetseccount)
             newanalysis = wordanalysis.objects.filter(pid=pid,timestamp=timestamp,is_common=0).order_by('-count').all()
             for entry in newanalysis:
                 output += "<br />" + entry.word + ": " + str(entry.count) + " " + str(entry.is_keyword) + " " + str(entry.is_entity) + " " + str(entry.is_common)
