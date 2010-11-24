@@ -641,19 +641,18 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
         for row in data:
             # This may not return some results at extreme ends, but should get the vast majority
             # No point in looking for data outside this anyway as we can't link back into it
-            rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=row.timestamp-row.timediff,timestamp__lt=row.timestamp+master.duration-row.timediff).order_by('timestamp').all()
+            minutedata = analyseddata.objects.filter(pid=pid,timestamp__gte=row.timestamp-row.timediff,timestamp__lt=row.timestamp+master.duration-row.timediff).order_by('timestamp').all()
             # Set up the counter if not done already
             if not minutegroups.has_key(0):
                 durcount = int(master.duration / 60)
                 while durcount > 0:
                     durcount -= 1
                     minutegroups[durcount] = 0
-            for line in rawtweets:
-                if line.programme_position >= 0:
-                    group = int(line.programme_position / 60)
-                    if minutegroups.has_key(group):
-                        minutegroups[group] += 1
-                        totaltweets += 1
+            for line in minutedata:
+                group = int((line.timestamp - (row.timestamp - row.timediff)) / 60)
+                if minutegroups.has_key(group):
+                    minutegroups[group] += line.totaltweets
+                    totaltweets += line.totaltweets
 
         minuteitems = minutegroups.items()
         minuteitems.sort()
@@ -703,21 +702,20 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
                     reduxchannel = progchannel
             # This may not return some results at extreme ends, but should get the vast majority
             # No point in looking for data outside this anyway as we can't link back into it
-            rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=row.timestamp-row.timediff,timestamp__lt=row.timestamp+master.duration-row.timediff).order_by('timestamp').all()
+            minutedata = analyseddata.objects.filter(pid=pid,timestamp__gte=row.timestamp-row.timediff,timestamp__lt=row.timestamp+master.duration-row.timediff).order_by('timestamp').all()
             # Set up the counter if not done already
             if not minutegroups.has_key(0):
                 durcount = int(master.duration / 60)
                 while durcount > 0:
                     durcount -= 1
                     minutegroups[durcount] = 0
-            for line in rawtweets:
-                if line.programme_position >= 0:
-                    group = int(line.programme_position / 60)
-                    if minutegroups.has_key(group):
-                        minutegroups[group] += 1
-                        if minutegroups[group] > maxtweets:
-                            maxtweets = minutegroups[group]
-                        totaltweets += 1
+            for line in minutedata:
+                group = int((line.timestamp - (row.timestamp - row.timediff)) / 60)
+                if minutegroups.has_key(group):
+                    minutegroups[group] += int(line.totaltweets)
+                    if minutegroups[group] > maxtweets:
+                        maxtweets = minutegroups[group]
+                    totaltweets += line.totaltweets
 
         minuteitems = minutegroups.items()
         minuteitems.sort()
