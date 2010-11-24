@@ -275,7 +275,7 @@ def programme(request,pid,redux=False):
 
     output = header
     data = programmes.objects.filter(pid=pid).all()
-    output += "<br />This output is due to be replaced. New views are currently under development at /programmesv2.<br />"
+    output += "<br />This output is due to be replaced. New views are currently under development at <a href=\"/programmesv2/" + pid + "\">/programmesv2</a>.<br />"
     if len(data) == 0:
         output += "<br />Invalid pid supplied or no data has yet been captured for this programme."
         output += "<br /><br /><a href=\"/\">Back to index</a>"
@@ -776,15 +776,15 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
                 rawtweetplot += "<a href=\"/programmesv2/" + pid + "/" + str(minute[0]) + "/aggregated\" target=\"_blank\"><div style=\"float: left; opacity: " + str(opacity) + ";cursor: pointer;background-color: #009933; height: 40px; width: " + str(slicewidth) + "px;filter:alpha(opacity=" + str(int(opacity * 100)) + ")\"></div></a>"
 
         # The +3 in the widths below gets around an IE CSS issue. All other browsers will ignore it
-        output += "<div id=\"blockcontainer\" class=\"iediv\" style=\"margin-left: 22px; border: 1px solid #444444; background-color: light red\">"
+        output += "<div id=\"blockcontainer\" style=\"margin-left: 28px; border: 1px solid #444444; max-width: " + str(len(minuteitems)*slicewidth) + "\">"
         if redux == "redux":
-            output += "<div style=\"font-size: 8pt\">Redux Links</div>"
+            output += "<div style=\"font-size: 8pt; padding: 2px 0px 2px 4px; background-color: #3333FF; opacity: 0.8; color: #FFFFFF; filter:alpha(opacity=30)\">Redux Links</div>"
         else:
-            output += "<div style=\"font-size: 8pt; padding: 2px 0px 2px 4px; background-color: #3333FF; opacity: 0.7; color: #FFFFFF; filter:alpha(opacity=30)\">iPlayer Links</div>"
+            output += "<div style=\"font-size: 8pt; padding: 2px 0px 2px 4px; background-color: #3333FF; opacity: 0.8; color: #FFFFFF; filter:alpha(opacity=30)\">iPlayer Links</div>"
         output += "<div style=\"width= " + str(len(minuteitems)*slicewidth+3) + "px;overflow: hidden;height: 40px;\">" + progskipplot + "</div>"
-        output += "<div style=\"font-size: 8pt; padding: 2px 0px 2px 4px; background-color: #FF6633; opacity: 0.7; color: #FFFFFF; filter:alpha(opacity=30)\">Bookmarks</div>"
+        output += "<div style=\"font-size: 8pt; padding: 2px 0px 2px 4px; background-color: #FF6633; opacity: 0.8; color: #FFFFFF; filter:alpha(opacity=30)\">Bookmarks</div>"
         output += "<div style=\"width= " + str(len(minuteitems)*slicewidth+3) + "px;overflow: hidden;height: 40px;\">" + bookmarkplot + "</div>"
-        output += "<div style=\"font-size: 8pt; padding: 2px 0px 2px 4px; background-color: #009933; opacity: 0.7; color: #FFFFFF; filter:alpha(opacity=30)\">Raw Data</div>"
+        output += "<div style=\"font-size: 8pt; padding: 2px 0px 2px 4px; background-color: #009933; opacity: 0.8; color: #FFFFFF; filter:alpha(opacity=30)\">Raw Data</div>"
         output += "<div style=\"width= " + str(len(minuteitems)*slicewidth+3) + "px;overflow: hidden;height: 40px;\">" + rawtweetplot + "</div>"
 
         output += "</div>"
