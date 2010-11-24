@@ -755,14 +755,9 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
         progskipplot = ""
         bookmarkplot = ""
         rawtweetplot = ""
+        lastwasbookmark = False
+        bookmarks = list()
         for minute in minuteitems:
-            # Work out where the bookmarks should be
-            if minute[1] > (2.2*stdevtweets+meantweets) and minute[1] > 9: # Arbitrary value chosen for now - needs experimentation - was 9
-                #wfdata = wordanalysis.objects.filter(timestamp=minute.timestamp,pid=pid,is_keyword=0).order_by('-count').all()
-                # Issue - each prog has its own timestamp and timediff - need to identify the nearest wordanalysis for each?
-                # May need to modify live analysis to store data with the right second value rather than always using 0
-                pass
-
             opacity = float(minute[1]) / maxtweets
             if redux == "redux":
                 # Any channel will work fine for redux but iPlayer needs the most recent
@@ -771,9 +766,77 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
                 progskipplot += "<a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(minute[0]) + "m0s\" target=\"_blank\">"
             progskipplot += "<div style=\"float: left; opacity: " + str(opacity) + ";cursor: pointer;background-color: #3333FF; height: 40px; width: " + str(slicewidth) + "px;filter:alpha(opacity=" + str(int(opacity * 100)) + ")\"></div></a>"
             if len(data) == 1:
-                rawtweetplot += "<a href=\"/programmesv2/" + pid + "/" + str(int(progtimestamp-progtimediff+(minute[0]*60))) + "\" target=\"_blank\"><div style=\"float: left; opacity: " + str(opacity) + ";cursor: pointer;background-color: #009933; height: 40px; width: " + str(slicewidth) + "px;filter:alpha(opacity=" + str(int(opacity * 100)) + ")\"></div></a>"
+                rawtweetplot += "<a href=\"/raw/" + pid + "/" + str(int(progtimestamp-progtimediff+(minute[0]*60))) + "\" target=\"_blank\"><div style=\"float: left; opacity: " + str(opacity) + ";cursor: pointer;background-color: #009933; height: 40px; width: " + str(slicewidth) + "px;filter:alpha(opacity=" + str(int(opacity * 100)) + ")\"></div></a>"
             else:
-                rawtweetplot += "<a href=\"/programmesv2/" + pid + "/" + str(minute[0]) + "/aggregated\" target=\"_blank\"><div style=\"float: left; opacity: " + str(opacity) + ";cursor: pointer;background-color: #009933; height: 40px; width: " + str(slicewidth) + "px;filter:alpha(opacity=" + str(int(opacity * 100)) + ")\"></div></a>"
+                rawtweetplot += "<a href=\"/raw/" + pid + "/" + str(minute[0]) + "/aggregated\" target=\"_blank\"><div style=\"float: left; opacity: " + str(opacity) + ";cursor: pointer;background-color: #009933; height: 40px; width: " + str(slicewidth) + "px;filter:alpha(opacity=" + str(int(opacity * 100)) + ")\"></div></a>"
+
+            if 0:
+                # Work out where the bookmarks should be
+                if minute[1] > (1.5*stdevtweets+meantweets):
+                    if lastwasbookmark == True:
+                        bookmarkcont.append(playertimemin)
+                    else:
+                        if minute[1] > (2.2*stdevtweets+meantweets) and minute[1] > 9: # Arbitrary value chosen for now - needs experimentation - was 9
+                            lastwasbookmark = True
+                            # BOOKMARK TEST
+                            wfdata = wordanalysis.objects.filter(timestamp=minute.timestamp,pid=pid,is_keyword=0).order_by('-count').all()
+
+                            # Find most popular keyword
+                            is_word = True
+                            if wfdata[0].word != "":
+                                keyword = wfdata[0].word
+                            else:
+                                keyword = wfdata[0].phrase
+                                is_word = False
+                            # Now look at each previous minute until it's no longer the top keyword
+                            currentstamp = minute.timestamp
+                            topkeyword = keyword
+                            while topkeyword == keyword:
+                                currentstamp -= 60
+                                try:
+                                    dataset = wordanalysis.objects.filter(timestamp=currentstamp,pid=pid,is_keyword=0).order_by('-count').all()
+                                except ObjectDoesNotExist:
+                                    break
+                                for line in dataset:
+                                    if is_word:
+                                        topkeyword = line.word
+                                    else:
+                                        topkeyword = line.phrase
+                                    break
+
+                            startstamp = currentstamp
+                            endstamp = currentstamp + 60
+
+                            # Investigate the previous minute to see if the keyword from above is in the top 10
+                            tweetset = False
+                            rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=startstamp,timestamp__lt=endstamp).order_by('timestamp').all()
+                            for tweet in rawtweets:
+                                tweettext = string.lower(tweet.text)
+                                for items in """!"#$%&(),:;?@~[]'`{|}""":
+                                    tweettext = string.replace(tweettext,items,"")
+                                try:
+                                    if str(keyword).lower() in tweettext:
+                                        bookmarks.append([tweet.timestamp])
+                                        tweetset = True
+                                        break
+                                except UnicodeEncodeError:
+                                    break
+
+                            if not tweetset:
+                                rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=minute.timestamp,timestamp__lt=(minute.timestamp + 60)).order_by('timestamp').all()
+                                for tweet in rawtweets:
+                                    tweettext = string.lower(tweet.text)
+                                    for items in """!"#$%&(),:;?@~[]'`{|}""":
+                                        tweettext = string.replace(tweettext,items,"")
+                                    try:
+                                        if str(keyword).lower() in tweettext:
+                                            bookmarks.append([tweet.timestamp])
+                                            break
+                                    except UnicodeEncodeError:
+                                        break
+
+                        else:
+                            lastwasbookmark = False
 
         # The +3 in the widths below gets around an IE CSS issue. All other browsers will ignore it
         output += "<div id=\"blockcontainer\" style=\"margin-left: 28px; border: 1px solid #444444; max-width: " + str(len(minuteitems)*slicewidth) + "\">"
