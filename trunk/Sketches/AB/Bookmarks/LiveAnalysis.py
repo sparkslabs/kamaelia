@@ -198,7 +198,7 @@ class LiveAnalysis(threadedcomponent):
                 # Need to work out the timestamp to assign to the entry in analysed data
                 progstart = timestamp - timediff
                 progmins = int(progpos / 60)
-                analysedstamp = progstart + (progmins * 60)
+                analysedstamp = int(progstart + (progmins * 60))
                 if progpos > 0 and progpos <= duration:
                     cursor.execute("""SELECT did,totaltweets,wordfreqexpected,wordfrequnexpected FROM analyseddata WHERE pid = %s AND timestamp = %s""",(pid,analysedstamp))
                     analyseddata = cursor.fetchone()

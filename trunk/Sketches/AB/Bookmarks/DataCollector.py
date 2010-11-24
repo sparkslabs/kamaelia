@@ -93,7 +93,7 @@ class DataCollector(threadedcomponent):
                                                 if cursor.fetchone() == None:
                                                     print ("Storing tweet for pid " + pid)
                                                     timestamp = time2.mktime(parse(newdata['created_at']).timetuple())
-                                                    progposition = timestamp - progdata[0] - progdata[1]
+                                                    progposition = timestamp - (progdata[0] - progdata[1])
                                                     cursor.execute("""INSERT INTO rawdata (tweet_id,pid,timestamp,text,user,programme_position) VALUES (%s,%s,%s,%s,%s,%s)""", (tweetid,pid,timestamp,newdata['text'],newdata['user']['screen_name'],progposition))
                                                     break # Break out of this loop and back to check the same tweet against the next programme
                                                 else:
@@ -108,7 +108,7 @@ class DataCollector(threadedcomponent):
                                             if cursor.fetchone() == None:
                                                 print ("Storing tweet for pid " + pid)
                                                 timestamp = time2.mktime(parse(newdata['created_at']).timetuple())
-                                                progposition = timestamp - progdata[0] - progdata[1]
+                                                progposition = timestamp - (progdata[0] - progdata[1])
                                                 cursor.execute("""INSERT INTO rawdata (tweet_id,pid,timestamp,text,user,programme_position) VALUES (%s,%s,%s,%s,%s,%s)""", (tweetid,pid,timestamp,newdata['text'],newdata['user']['screen_name'],progposition))
                                                 break # Break out of this loop and back to check the same tweet against the next programme
                                             else:
