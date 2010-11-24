@@ -638,6 +638,7 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
         # Print a line like Total tweets: 7 - Tweets per minute - Mean: 0.27 - Median: 0 - Mode: 0 - STDev: 0.53
         minutegroups = dict()
         totaltweets = 0
+        minlimit = 0
         for row in data:
             # This may not return some results at extreme ends, but should get the vast majority
             # No point in looking for data outside this anyway as we can't link back into it
@@ -650,6 +651,8 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
                     minutegroups[durcount] = 0
             for line in minutedata:
                 group = int((line.timestamp - (row.timestamp - row.timediff)) / 60)
+                if minlimit < group:
+                    minlimit = group
                 if minutegroups.has_key(group):
                     minutegroups[group] += line.totaltweets
                     totaltweets += line.totaltweets
@@ -767,6 +770,10 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
             else:
                 progskipplot += "<a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(minute[0]) + "m0s\" target=\"_blank\">"
             progskipplot += "<div style=\"float: left; opacity: " + str(opacity) + ";cursor: pointer;background-color: #000000; height: 40px; width: " + str(slicewidth) + "px;filter:alpha(opacity=" + str(int(opacity * 100)) + ")\"></div></a>"
+            if len(data) == 1:
+                rawtweetplot += "<a href=\"/programmesv2/" + pid + "/" + str(int(row.timestamp-row.timediff+minute[0])) + "\" target=\"_blank\"><div style=\"float: left; opacity: " + str(opacity) + ";cursor: pointer;background-color: #000000; height: 40px; width: " + str(slicewidth) + "px;filter:alpha(opacity=" + str(int(opacity * 100)) + ")\"></div></a>"
+            else:
+                rawtweetplot += "<a href=\"/programmesv2/" + pid + "/" + str(minute[0]) + "/aggregated\" target=\"_blank\"><div style=\"float: left; opacity: " + str(opacity) + ";cursor: pointer;background-color: #000000; height: 40px; width: " + str(slicewidth) + "px;filter:alpha(opacity=" + str(int(opacity * 100)) + ")\"></div></a>"
 
         output += progskipplot
         output += bookmarkplot
@@ -829,5 +836,74 @@ def rawtweets(request,pid,timestamp):
         newanalysis = wordanalysis.objects.filter(pid=pid,timestamp__gte=timestamp,timestamp__lt=endstamp,is_common=0).order_by('-count').all()
         for entry in newanalysis:
             output += "<br />" + entry.word + ": " + str(entry.count) + " " + str(entry.is_keyword) + " " + str(entry.is_entity) + " " + str(entry.is_common)
+    output += footer
+    return HttpResponse(output)
+
+def rawtweetsv2(request,pid,timestamp,aggregated=False):
+    output = header
+    try:
+        master = programmes_unique.objects.get(pid=pid)
+    except ObjectDoesNotExist, e:
+        pass # This is handled later
+    progdata = programmes.objects.filter(pid=pid).all()
+    timestamp = int(timestamp)
+    if len(progdata) == 0:
+        output += "<br />Invalid pid supplied or no data has yet been captured for this programme."
+    else:
+        endstamp = timestamp + 60
+        if aggregated == "aggregated":
+            progpos = timestamp
+            # In this case the 'timestamp' is actually the programme position
+            rawtweetdict = dict()
+            analysedwords = dict()
+            for row in progdata:
+                rawtweets = rawdata.objects.filter(pid=pid,programme_position__gte=progpos,programme_position__lt=endstamp).order_by('timestamp').all()
+                for tweet in rawtweets:
+                    if rawtweetdict.has_key(int(tweet.programme_position)):
+                        rawtweetdict[int(tweet.programme_position)].append("<br /><strong>" + str(datetime.utcfromtimestamp(tweet.timestamp + row.utcoffset)) + ":</strong> " + "@" + tweet.user + ": " + tweet.text)
+                    else:
+                        rawtweetdict[int(tweet.programme_position)] = ["<br /><strong>" + str(datetime.utcfromtimestamp(tweet.timestamp + row.utcoffset)) + ":</strong> " + "@" + tweet.user + ": " + tweet.text]
+                newanalysis = wordanalysis.objects.filter(pid=pid,timestamp=row.timestamp-row.timediff+progpos,is_common=0).order_by('-count').all()
+                for word in newanalysis:
+                    if analysedwords.has_key(word.word):
+                        analysedwords[word.word][0] += int(word.count)
+                    else:
+                        analysedwords[word.word] = [int(word.count),word.is_keyword,word.is_entity,word.is_common]
+            tweetitems = rawtweetdict.items()
+            tweetitems.sort()
+            worditems = [[v[0],v[1:], k] for k, v in analysedwords.items()]
+            worditems.sort(reverse=True)
+            for minute in tweetitems:
+                for tweet in minute[1]:
+                    output += tweet
+            for word in worditems:
+                output += "<br />" + word[2] + ": " + str(word[0]) + " " + str(word[1][0]) + " " + str(word[1][1]) + " " + str(word[1][2])
+        else:
+            channel = progdata[0].channel
+            output += "<br /><a href=\"http://www.bbc.co.uk/" + channel + "\" target=\"_blank\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br /><br />"
+            progdate = datetime.utcfromtimestamp(progdata[0].timestamp) + timedelta(seconds=progdata[0].utcoffset)
+            starttime = datetime.utcfromtimestamp(timestamp) + timedelta(seconds=progdata[0].utcoffset)
+            endtime = datetime.utcfromtimestamp(endstamp) + timedelta(seconds=progdata[0].utcoffset)
+            output += str(progdate.strftime("%d/%m/%Y")) + "<br />"
+            output += "<strong>" + master.title + "</strong><br />"
+            output += "Raw tweet output between " + str(starttime.strftime("%H:%M:%S")) + " and " + str(endtime.strftime("%H:%M:%S")) + "<br />"
+            rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=timestamp,timestamp__lt=endstamp).order_by('timestamp').all()
+            output += "<div id=\"rawtweets\" style=\"font-size: 9pt\">"
+            #tweetseccount = dict()
+            for tweet in rawtweets:
+            #    if tweetseccount.has_key(tweet.timestamp):
+            #        tweetseccount[tweet.timestamp] += 1
+            #    else:
+            #        tweetseccount[tweet.timestamp] = 1
+                output += "<br /><strong>" + str(datetime.utcfromtimestamp(tweet.timestamp + progdata[0].utcoffset)) + ":</strong> " + "@" + tweet.user + ": " + tweet.text
+            output += "</div><br /><br />"
+            output += "Tweets: <a href=\"/api/" + pid + "/" + str(timestamp) + ".json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + pid + "/" + str(timestamp) + ".xml\" target=\"_blank\">XML</a><br />"
+            #if len(tweetseccount) > 0:
+            #    tweetseccount = [(v,k) for k, v in tweetseccount.items()]
+            #    tweetseccount.sort(reverse=True)
+            #    output += "<br />" + str(tweetseccount)
+            newanalysis = wordanalysis.objects.filter(pid=pid,timestamp=timestamp,is_common=0).order_by('-count').all()
+            for entry in newanalysis:
+                output += "<br />" + entry.word + ": " + str(entry.count) + " " + str(entry.is_keyword) + " " + str(entry.is_entity) + " " + str(entry.is_common)
     output += footer
     return HttpResponse(output)
