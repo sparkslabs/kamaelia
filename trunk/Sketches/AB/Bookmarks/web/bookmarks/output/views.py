@@ -728,7 +728,7 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
         jsminlist = str(minuteitems).replace(")","]")
         jsminlist = jsminlist.replace("(","[")
 
-        output += "<div id=\"container\" style=\"width: 990px; height: 300px\"></div>"
+        output += "<div style=\"width: 990px; text-align: center; margin-left: 20px\"><strong>Tweets Per Minute vs. Programme Position</strong></div><div id=\"container\" style=\"width: 990px; height: 300px\"></div>"
 
         output += "<script type=\"text/javascript\">var data = " + jsminlist + "; var f =  Flotr.draw($('container'),[data],{label: 'test label', lines: {lineWidth: 1}});</script>"
 
