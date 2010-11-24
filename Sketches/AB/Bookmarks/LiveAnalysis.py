@@ -166,7 +166,7 @@ class LiveAnalysis(threadedcomponent):
 
             # Stage 1: Live analysis - could do with a better way to do the first query (indexed field 'analsed' to speed up for now)
             # Could move this into the main app to take a copy of tweets on arrival, but would rather solve separately if poss
-            cursor.execute("""SELECT tid,pid,timestamp,text,user,tweet_id FROM rawdata WHERE analysed = 0 ORDER BY tid LIMIT 5000""")
+            cursor.execute("""SELECT tid,pid,timestamp,text,tweet_id,programme_position FROM rawdata WHERE analysed = 0 ORDER BY tid LIMIT 5000""")
             data = cursor.fetchall()
 
             for result in data:
@@ -174,17 +174,17 @@ class LiveAnalysis(threadedcomponent):
                 pid = result[1]
                 tweettime = result[2]
                 tweettext = result[3]
-                tweetuser = result[4]
-                tweetid = result[5]
+                tweetid = result[4]
+                progpos = result[5]
                 dbtime = datetime.utcfromtimestamp(tweettime)
                 dbtime = dbtime.replace(second=0)
                 print "Analysis component: Analysing new tweet for pid", pid, "(" + str(dbtime) + "):"
                 print "Analysis component: '" + tweettext + "'"
                 cursor.execute("""SELECT duration FROM programmes_unique WHERE pid = %s""",(pid))
                 progdata = cursor.fetchone()
+                duration = progdata[0]
                 cursor.execute("""SELECT totaltweets,meantweets,mediantweets,modetweets,stdevtweets,timediff,timestamp,utcoffset FROM programmes WHERE pid = %s ORDER BY timestamp DESC""",(pid))
                 progdata2 = cursor.fetchone()
-                duration = progdata[0]
                 totaltweets = progdata2[0]
                 totaltweets += 1
                 meantweets = progdata2[1]
@@ -194,111 +194,114 @@ class LiveAnalysis(threadedcomponent):
                 timediff = progdata2[5]
                 timestamp = progdata2[6]
                 utcoffset = progdata2[7]
-                dbtimestamp = time.mktime(dbtime.timetuple()) + utcoffset
-                cursor.execute("""SELECT did,totaltweets,wordfreqexpected,wordfrequnexpected FROM analyseddata WHERE pid = %s AND timestamp = %s""",(pid,dbtimestamp))
-                analyseddata = cursor.fetchone()
-                self.send([pid,tweetid],"nltk")
-                while not self.dataReady("nltk"):
-                    time.sleep(0.01)
-                nltkdata = self.recv("nltk")
-                if analyseddata == None: # No tweets yet recorded for this minute
-                    minutetweets = 1
-                    cursor.execute("""INSERT INTO analyseddata (pid,totaltweets,timestamp) VALUES (%s,%s,%s)""", (pid,minutetweets,dbtimestamp))
-                    for word in nltkdata:
-                        if nltkdata[word][0] == 1:
-                            cursor.execute("""INSERT INTO wordanalysis (pid,timestamp,phrase,count,is_keyword,is_entity,is_common) VALUES (%s,%s,%s,%s,%s,%s,%s)""", (pid,dbtimestamp,word,nltkdata[word][1],nltkdata[word][2],nltkdata[word][3],nltkdata[word][4]))
-                        else:
-                            cursor.execute("""INSERT INTO wordanalysis (pid,timestamp,word,count,is_keyword,is_entity,is_common) VALUES (%s,%s,%s,%s,%s,%s,%s)""", (pid,dbtimestamp,word,nltkdata[word][1],nltkdata[word][2],nltkdata[word][3],nltkdata[word][4]))
-                else:
-                    did = analyseddata[0]
-                    minutetweets = analyseddata[1] # Get current number of tweets for this minute
-                    minutetweets += 1 # Add one to it for this tweet
 
-                    cursor.execute("""UPDATE analyseddata SET totaltweets = %s WHERE did = %s""",(minutetweets,did))
-
-                    for word in nltkdata:
-                        if nltkdata[word][0] == 1:
-                            cursor.execute("""SELECT wid,count FROM wordanalysis WHERE pid = %s AND timestamp = %s AND phrase LIKE %s""",(pid,dbtimestamp,word))
-                            wordcheck = cursor.fetchone()
-                            if wordcheck == None:
-                                cursor.execute("""INSERT INTO wordanalysis (pid,timestamp,phrase,count,is_keyword,is_entity,is_common) VALUES (%s,%s,%s,%s,%s,%s,%s)""", (pid,dbtimestamp,word,nltkdata[word][1],nltkdata[word][2],nltkdata[word][3],nltkdata[word][4]))
+                # Need to work out the timestamp to assign to the entry in analysed data
+                progstart = timestamp - timediff
+                progmins = int(progpos / 60)
+                print pid + " " + str(progmins) + " " + str(progstart)
+                analysedstamp = progstart + (progmins * 60)
+                if progpos > 0 and progpos <= duration:
+                    cursor.execute("""SELECT did,totaltweets,wordfreqexpected,wordfrequnexpected FROM analyseddata WHERE pid = %s AND timestamp = %s""",(pid,analysedstamp))
+                    analyseddata = cursor.fetchone()
+                    self.send([pid,tweetid],"nltk")
+                    while not self.dataReady("nltk"):
+                        time.sleep(0.01)
+                    nltkdata = self.recv("nltk")
+                    if analyseddata == None: # No tweets yet recorded for this minute
+                        minutetweets = 1
+                        cursor.execute("""INSERT INTO analyseddata (pid,totaltweets,timestamp) VALUES (%s,%s,%s)""", (pid,minutetweets,analysedstamp))
+                        for word in nltkdata:
+                            if nltkdata[word][0] == 1:
+                                cursor.execute("""INSERT INTO wordanalysis (pid,timestamp,phrase,count,is_keyword,is_entity,is_common) VALUES (%s,%s,%s,%s,%s,%s,%s)""", (pid,analysedstamp,word,nltkdata[word][1],nltkdata[word][2],nltkdata[word][3],nltkdata[word][4]))
                             else:
-                                cursor.execute("""UPDATE wordanalysis SET count = %s WHERE wid = %s""",(nltkdata[word][1] + wordcheck[1],wordcheck[0]))
-                        else:
-                            cursor.execute("""SELECT wid,count FROM wordanalysis WHERE pid = %s AND timestamp = %s AND word LIKE %s""",(pid,dbtimestamp,word))
-                            wordcheck = cursor.fetchone()
-                            if wordcheck == None:
-                                cursor.execute("""INSERT INTO wordanalysis (pid,timestamp,word,count,is_keyword,is_entity,is_common) VALUES (%s,%s,%s,%s,%s,%s,%s)""", (pid,dbtimestamp,word,nltkdata[word][1],nltkdata[word][2],nltkdata[word][3],nltkdata[word][4]))
+                                cursor.execute("""INSERT INTO wordanalysis (pid,timestamp,word,count,is_keyword,is_entity,is_common) VALUES (%s,%s,%s,%s,%s,%s,%s)""", (pid,analysedstamp,word,nltkdata[word][1],nltkdata[word][2],nltkdata[word][3],nltkdata[word][4]))
+                    else:
+                        did = analyseddata[0]
+                        minutetweets = analyseddata[1] # Get current number of tweets for this minute
+                        minutetweets += 1 # Add one to it for this tweet
+
+                        cursor.execute("""UPDATE analyseddata SET totaltweets = %s WHERE did = %s""",(minutetweets,did))
+
+                        for word in nltkdata:
+                            if nltkdata[word][0] == 1:
+                                cursor.execute("""SELECT wid,count FROM wordanalysis WHERE pid = %s AND timestamp = %s AND phrase LIKE %s""",(pid,analysedstamp,word))
+                                wordcheck = cursor.fetchone()
+                                if wordcheck == None:
+                                    cursor.execute("""INSERT INTO wordanalysis (pid,timestamp,phrase,count,is_keyword,is_entity,is_common) VALUES (%s,%s,%s,%s,%s,%s,%s)""", (pid,analysedstamp,word,nltkdata[word][1],nltkdata[word][2],nltkdata[word][3],nltkdata[word][4]))
+                                else:
+                                    cursor.execute("""UPDATE wordanalysis SET count = %s WHERE wid = %s""",(nltkdata[word][1] + wordcheck[1],wordcheck[0]))
                             else:
-                                cursor.execute("""UPDATE wordanalysis SET count = %s WHERE wid = %s""",(nltkdata[word][1] + wordcheck[1],wordcheck[0]))
-                # Averages / stdev are calculated roughly based on the programme's running time at this point
-                progdate = datetime.utcfromtimestamp(timestamp) + timedelta(seconds=utcoffset)
-                actualstart = progdate - timedelta(seconds=timediff)
-                actualtweettime = datetime.utcfromtimestamp(tweettime + utcoffset)
+                                cursor.execute("""SELECT wid,count FROM wordanalysis WHERE pid = %s AND timestamp = %s AND word LIKE %s""",(pid,analysedstamp,word))
+                                wordcheck = cursor.fetchone()
+                                if wordcheck == None:
+                                    cursor.execute("""INSERT INTO wordanalysis (pid,timestamp,word,count,is_keyword,is_entity,is_common) VALUES (%s,%s,%s,%s,%s,%s,%s)""", (pid,analysedstamp,word,nltkdata[word][1],nltkdata[word][2],nltkdata[word][3],nltkdata[word][4]))
+                                else:
+                                    cursor.execute("""UPDATE wordanalysis SET count = %s WHERE wid = %s""",(nltkdata[word][1] + wordcheck[1],wordcheck[0]))
+                    # Averages / stdev are calculated roughly based on the programme's running time at this point
+                    progdate = datetime.utcfromtimestamp(timestamp) + timedelta(seconds=utcoffset)
+                    actualstart = progdate - timedelta(seconds=timediff)
+                    actualtweettime = datetime.utcfromtimestamp(tweettime + utcoffset)
 
-                # Calculate how far through the programme this tweet occurred
-                runningtime = actualtweettime - actualstart
-                runningtime = runningtime.seconds
+                    # Calculate how far through the programme this tweet occurred
+                    runningtime = actualtweettime - actualstart
+                    runningtime = runningtime.seconds
 
-                if runningtime < 0:
-                    runningtime = 0
-                else:
-                    runningtime = float(runningtime) / 60
+                    if runningtime < 0:
+                        runningtime = 0
+                    else:
+                        runningtime = float(runningtime) / 60
 
-                try:
-                    meantweets = totaltweets / runningtime
-                except ZeroDivisionError, e:
-                    meantweets = 0
+                    try:
+                        meantweets = totaltweets / runningtime
+                    except ZeroDivisionError, e:
+                        meantweets = 0
 
-                sqltimestamp1 = timestamp + timediff
-                if dbtimestamp < sqltimestamp1:
-                    sqltimestamp1 = dbtimestamp
-                sqltimestamp2 = timestamp + duration - timediff
-                if dbtimestamp > sqltimestamp2:
-                    sqltimestamp2 = dbtimestamp
-                # This isn't great - needs redoing TODO
-                cursor.execute("""SELECT totaltweets FROM analyseddata WHERE pid = %s AND timestamp >= %s AND timestamp < %s""",(pid,sqltimestamp1,sqltimestamp2))
-                analyseddata = cursor.fetchall()
+                    cursor.execute("""SELECT totaltweets FROM analyseddata WHERE pid = %s AND timestamp >= %s AND timestamp < %s""",(pid,analysedstamp,analysedstamp+duration))
+                    analyseddata = cursor.fetchall()
 
-                runningtime = int(runningtime)
+                    runningtime = int(runningtime)
 
-                tweetlist = list()
-                for result in analyseddata:
-                    totaltweetsmin = result[0]
-                    tweetlist.append(int(totaltweetsmin))
+                    tweetlist = list()
+                    for result in analyseddata:
+                        totaltweetsmin = result[0]
+                        tweetlist.append(int(totaltweetsmin))
 
-                # Ensure tweetlist has enough entries
-                if len(tweetlist) < runningtime:
-                    additions = runningtime - len(tweetlist)
-                    while additions > 0:
-                        tweetlist.append(0)
-                        additions -= 1
+                    # Ensure tweetlist has enough entries
+                    if len(tweetlist) < runningtime:
+                        additions = runningtime - len(tweetlist)
+                        while additions > 0:
+                            tweetlist.append(0)
+                            additions -= 1
 
-                tweetlist.sort()
+                    tweetlist.sort()
 
-                mediantweets = tweetlist[int(len(tweetlist)/2)]
+                    mediantweets = tweetlist[int(len(tweetlist)/2)]
 
-                modes = dict()
-                stdevlist = list()
-                for tweet in tweetlist:
-                    modes[tweet] = tweetlist.count(tweet)
-                    stdevlist.append((tweet - meantweets)*(tweet - meantweets))
+                    modes = dict()
+                    stdevlist = list()
+                    for tweet in tweetlist:
+                        modes[tweet] = tweetlist.count(tweet)
+                        stdevlist.append((tweet - meantweets)*(tweet - meantweets))
 
-                modeitems = [[v, k] for k, v in modes.items()]
-                modeitems.sort(reverse=True)
-                modetweets = int(modeitems[0][1])
+                    modeitems = [[v, k] for k, v in modes.items()]
+                    modeitems.sort(reverse=True)
+                    modetweets = int(modeitems[0][1])
 
-                stdevtweets = 0
-                for val in stdevlist:
-                    stdevtweets += val
-
-                try:
-                    stdevtweets = math.sqrt(stdevtweets / runningtime)
-                except ZeroDivisionError, e:
                     stdevtweets = 0
+                    for val in stdevlist:
+                        stdevtweets += val
 
-                # Finished analysis
-                cursor.execute("""UPDATE programmes SET totaltweets = %s, meantweets = %s, mediantweets = %s, modetweets = %s, stdevtweets = %s WHERE pid = %s AND timestamp = %s""",(totaltweets,meantweets,mediantweets,modetweets,stdevtweets,pid,timestamp))
+                    try:
+                        stdevtweets = math.sqrt(stdevtweets / runningtime)
+                    except ZeroDivisionError, e:
+                        stdevtweets = 0
+
+                    # Finished analysis
+                    cursor.execute("""UPDATE programmes SET totaltweets = %s, meantweets = %s, mediantweets = %s, modetweets = %s, stdevtweets = %s WHERE pid = %s AND timestamp = %s""",(totaltweets,meantweets,mediantweets,modetweets,stdevtweets,pid,timestamp))
+
+                else:
+                    print "Analysis component: Skipping tweet - falls outside the programme's running time"
+
                 cursor.execute("""UPDATE rawdata SET analysed = 1 WHERE tid = %s""",(tid))
                 print "Analysis component: Done!"
 
@@ -326,7 +329,7 @@ class LiveAnalysis(threadedcomponent):
 
                     meantweets = float(totaltweets) / (duration / 60) # Mean tweets per minute
 
-                    cursor.execute("""SELECT totaltweets FROM analyseddata WHERE pid = %s AND timestamp >= %s AND timestamp < %s""",(pid,timestamp,timestamp+duration))
+                    cursor.execute("""SELECT totaltweets FROM analyseddata WHERE pid = %s AND timestamp >= %s AND timestamp < %s""",(pid,timestamp-timediff,timestamp+duration-timediff))
                     analyseddata = cursor.fetchall()
 
                     runningtime = duration / 60
