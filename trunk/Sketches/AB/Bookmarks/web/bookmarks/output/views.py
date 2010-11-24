@@ -694,10 +694,12 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
         maxtweets = 0
         progtimestamp = 0
         progchannel = None
+        progtimediff = 0
         reduxchannel = None
         for row in data:
             if row.timestamp > progtimestamp:
                 progtimestamp = row.timestamp
+                progtimediff = row.timediff
                 progchannel = row.channel
                 if reduxmapping.has_key(progchannel):
                     reduxchannel = reduxmapping[progchannel]
@@ -741,8 +743,6 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
                 stdevtotal += (minute[1] - meantweets) * (minute[1] - meantweets)
             stdevtweets = math.sqrt(stdevtotal / len(minuteitems))
 
-        output += "<div id=\"blockcontainer\" style=\"width: 962px; height: 150px; margin-left: 22px; border: 1px solid #000000\">"
-
         slicewidth = int(960/len(minuteitems))
         if slicewidth < 1:
             slicewidth = 1
@@ -771,13 +771,14 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
                 progskipplot += "<a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(minute[0]) + "m0s\" target=\"_blank\">"
             progskipplot += "<div style=\"float: left; opacity: " + str(opacity) + ";cursor: pointer;background-color: #000000; height: 40px; width: " + str(slicewidth) + "px;filter:alpha(opacity=" + str(int(opacity * 100)) + ")\"></div></a>"
             if len(data) == 1:
-                rawtweetplot += "<a href=\"/programmesv2/" + pid + "/" + str(int(row.timestamp-row.timediff+minute[0])) + "\" target=\"_blank\"><div style=\"float: left; opacity: " + str(opacity) + ";cursor: pointer;background-color: #000000; height: 40px; width: " + str(slicewidth) + "px;filter:alpha(opacity=" + str(int(opacity * 100)) + ")\"></div></a>"
+                rawtweetplot += "<a href=\"/programmesv2/" + pid + "/" + str(int(progtimestamp-progtimediff+(minute[0]*60))) + "\" target=\"_blank\"><div style=\"float: left; opacity: " + str(opacity) + ";cursor: pointer;background-color: #000000; height: 40px; width: " + str(slicewidth) + "px;filter:alpha(opacity=" + str(int(opacity * 100)) + ")\"></div></a>"
             else:
                 rawtweetplot += "<a href=\"/programmesv2/" + pid + "/" + str(minute[0]) + "/aggregated\" target=\"_blank\"><div style=\"float: left; opacity: " + str(opacity) + ";cursor: pointer;background-color: #000000; height: 40px; width: " + str(slicewidth) + "px;filter:alpha(opacity=" + str(int(opacity * 100)) + ")\"></div></a>"
 
-        output += progskipplot
-        output += bookmarkplot
-        output += rawtweetplot
+        output += "<div id=\"blockcontainer\" style=\"width: " + str(len(minuteitems)*slicewidth+2) + "px; height: 150px; margin-left: 22px; border: 1px solid #000000\">"
+        output += "<div style=\"overflow: hidden\">" + progskipplot + "</div>"
+        output += "<div style=\"overflow: hidden\">" + bookmarkplot + "</div>"
+        output += "<div style=\"overflow: hidden\">" + rawtweetplot + "</div>"
 
         output += "</div>"
 
