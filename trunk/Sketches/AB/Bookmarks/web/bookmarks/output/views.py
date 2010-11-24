@@ -689,7 +689,18 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
     elif element == "graphs":
         minutegroups = dict()
         totaltweets = 0
+        maxtweets = 0
+        progtimestamp = 0
+        progchannel = None
+        reduxchannel = None
         for row in data:
+            if row.timestamp > progtimestamp:
+                progtimestamp = row.timestamp
+                progchannel = row.channel
+                if reduxmapping.has_key(progchannel):
+                    reduxchannel = reduxmapping[progchannel]
+                else:
+                    reduxchannel = progchannel
             # This may not return some results at extreme ends, but should get the vast majority
             # No point in looking for data outside this anyway as we can't link back into it
             rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=row.timestamp-row.timediff,timestamp__lt=row.timestamp+master.duration-row.timediff).order_by('timestamp').all()
@@ -704,6 +715,8 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
                     group = int(line.programme_position / 60)
                     if minutegroups.has_key(group):
                         minutegroups[group] += 1
+                        if minutegroups[group] > maxtweets:
+                            maxtweets = minutegroups[group]
                         totaltweets += 1
 
         minuteitems = minutegroups.items()
@@ -726,7 +739,21 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
                 # Calculate standard deviation
                 stdevtotal += (minute[1] - meantweets) * (minute[1] - meantweets)
             stdevtweets = math.sqrt(stdevtotal / len(minuteitems))
-            
+
+        output += "<div id=\"blockcontainer\" style=\"width: 962px; height: 150px; margin-left: 22px; border: 1px solid #000000\">"
+
+        slicewidth = int(960/len(minuteitems))
+        if slicewidth < 1:
+            slicewidth = 1
+
+        if redux == "redux":
+            progdatetime = datetime.utcfromtimestamp(progtimestamp)
+            progdatestring = progdatetime.strftime("%Y-%m-%d")
+            progtimestring = progdatetime.strftime("%H-%M-%S")
+
+        progskipplot = ""
+        bookmarkplot = ""
+        rawtweetplot = ""
         for minute in minuteitems:
             # Work out where the bookmarks should be
             if minute[1] > (2.2*stdevtweets+meantweets) and minute[1] > 9: # Arbitrary value chosen for now - needs experimentation - was 9
@@ -735,8 +762,19 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
                 # May need to modify live analysis to store data with the right second value rather than always using 0
                 pass
 
+            opacity = float(minute[1]) / maxtweets
+            if redux == "redux":
+                # Any channel will work fine for redux but iPlayer needs the most recent
+                progskipplot += "<a href=\"http://g.bbcredux.com/programme/" + reduxchannel + "/" + progdatestring + "/" + progtimestring + "?start=" + str(60*minute[0]) + "\" target=\"_blank\">"
+            else:
+                progskipplot += "<a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(minute[0]) + "m0s\" target=\"_blank\">"
+            progskipplot += "<div style=\"float: left; opacity: " + str(opacity) + ";cursor: pointer;background-color: #000000; height: 40px; width: " + str(slicewidth) + "px;filter:alpha(opacity=" + str(int(opacity * 100)) + ")\"></div></a>"
 
-        output += "<div id=\"blockcontainer\" style=\"width: 962px; height: 150px; margin-left: 22px; border: 1px solid #000000\"></div>"
+        output += progskipplot
+        output += bookmarkplot
+        output += rawtweetplot
+
+        output += "</div>"
 
     elif element == "status":
         if len(data) == 0:
