@@ -936,7 +936,7 @@ def rawtweetsv2(request,pid,timestamp,aggregated=False):
                             if ((document.cloudopts.keyword.checked == true) | (document.cloudopts.entity.checked == true) | (document.cloudopts.common.checked == true)) {
                                 updateCloud();
                             } else {
-                                $('#tagcloud').tagcloud({type:"list",sizemin:12,sizemax:30,colormin:"3399FF",colormax:"339900"}).find("li").tsort();
+                                $('#tagcloud').tagcloud({type:"list",sizemin:15,sizemax:30,colormin:"3399FF",colormax:"339900"}).find("li").tsort();
                             }
                             });
                             function updateCloud() {
@@ -965,6 +965,7 @@ def rawtweetsv2(request,pid,timestamp,aggregated=False):
                                 });
                             }</script>"""
         if aggregated == "aggregated":
+            output += "<br /><strong>" + master.title + "</strong><br /><br />"
             progpos = timestamp*60
             endstamp = progpos + 60
             # In this case the 'timestamp' is actually the programme position
@@ -982,9 +983,12 @@ def rawtweetsv2(request,pid,timestamp,aggregated=False):
             output += tagcloud(False,pid,timestamp,"aggregated",False)
             #TODO For this to support non-JS browsers, the URL scheme will need to include elements for rawtweets directly
             output += "</div><br />"
+            output += "Raw tweet output between " + str(timestamp) + " minutes and " + str(timestamp + 1) + " minutes through the programme<br />"
+            output += "<div id=\"rawtweets\" style=\"font-size: 9pt\">"
             for minute in tweetitems:
                 for tweet in minute[1]:
                     output += tweet
+            output += "</div>"
         else:
             endstamp = timestamp + 60
             channel = progdata[0].channel
