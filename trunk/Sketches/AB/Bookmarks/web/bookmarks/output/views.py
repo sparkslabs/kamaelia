@@ -940,12 +940,15 @@ def rawtweetsv2(request,pid,timestamp,aggregated=False):
                             }
                             });
                             function updateCloud() {
-                                urlappender = "/data/tagcloud/""" + pid + """/""" + str(timestamp) + """/"""
+                                urlappender = "/data/tagcloud/""" + pid + """/""" + str(timestamp)
         if aggregated == "aggregated":
-            output += "aggregated/\";"
+            output += "/aggregated\";"
         else:
             output += "\";"
-        output += """           if (document.cloudopts.keyword.checked == true) {
+        output += """           if ((document.cloudopts.keyword.checked == true) | (document.cloudopts.entity.checked == true) | (document.cloudopts.common.checked == true)) {
+                                    urlappender += "/";
+                                }
+                                if (document.cloudopts.keyword.checked == true) {
                                     urlappender += "k";
                                 }
                                 if (document.cloudopts.entity.checked == true) {
@@ -975,10 +978,10 @@ def rawtweetsv2(request,pid,timestamp,aggregated=False):
                         rawtweetdict[int(tweet.programme_position)] = ["<br /><strong>" + str(datetime.utcfromtimestamp(tweet.timestamp + row.utcoffset)) + ":</strong> " + "@" + tweet.user + ": " + tweet.text]
             tweetitems = rawtweetdict.items()
             tweetitems.sort()
-            output += "<div id=\"cloudcontainer\">"
+            output += "<form name=\"cloudopts\" style=\"font-size: 9pt\">Hide Keywords: <input type=\"checkbox\" value=\"keyword\" name=\"keyword\" onClick=\"updateCloud();\">&nbsp; Hide Twitter Entities: <input type=\"checkbox\" value=\"entity\" name=\"entity\" onClick=\"updateCloud();\">&nbsp; Hide Common Words: <input type=\"checkbox\" value=\"common\" name=\"common\" onClick=\"updateCloud();\"></form><div id=\"cloudcontainer\">"
             output += tagcloud(False,pid,timestamp,"aggregated",False)
             #TODO For this to support non-JS browsers, the URL scheme will need to include elements for rawtweets directly
-            output += "</div><form name=\"cloudopts\" style=\"font-size: 9pt\">Hide Keywords: <input type=\"checkbox\" value=\"keyword\" name=\"keyword\" onClick=\"updateCloud();\">&nbsp; Hide Twitter Entities: <input type=\"checkbox\" value=\"entity\" name=\"entity\" onClick=\"updateCloud();\">&nbsp; Hide Common Words: <input type=\"checkbox\" value=\"common\" name=\"common\" onClick=\"updateCloud();\"></form>"
+            output += "</div><br />"
             for minute in tweetitems:
                 for tweet in minute[1]:
                     output += tweet
@@ -991,10 +994,10 @@ def rawtweetsv2(request,pid,timestamp,aggregated=False):
             endtime = datetime.utcfromtimestamp(endstamp) + timedelta(seconds=progdata[0].utcoffset)
             output += str(progdate.strftime("%d/%m/%Y")) + "<br />"
             output += "<strong>" + master.title + "</strong><br /><br />"
-            output += "<div id=\"cloudcontainer\">"
-            output += tagcloud(False,pid,timestamp,"aggregated",False)
+            output += "<form name=\"cloudopts\" style=\"font-size: 9pt\">Hide Keywords: <input type=\"checkbox\" value=\"keyword\" name=\"keyword\" onClick=\"updateCloud();\">&nbsp; Hide Twitter Entities: <input type=\"checkbox\" value=\"entity\" name=\"entity\" onClick=\"updateCloud();\">&nbsp; Hide Common Words: <input type=\"checkbox\" value=\"common\" name=\"common\" onClick=\"updateCloud();\"></form><div id=\"cloudcontainer\">"
+            output += tagcloud(False,pid,timestamp,False,False)
             #TODO For this to support non-JS browsers, the URL scheme will need to include elements for rawtweets directly
-            output += "</div><form name=\"cloudopts\" style=\"font-size: 9pt\">Hide Keywords: <input type=\"checkbox\" value=\"keyword\" name=\"keyword\" onClick=\"updateCloud();\">&nbsp; Hide Twitter Entities: <input type=\"checkbox\" value=\"entity\" name=\"entity\" onClick=\"updateCloud();\">&nbsp; Hide Common Words: <input type=\"checkbox\" value=\"common\" name=\"common\" onClick=\"updateCloud();\"></form>"
+            output += "</div><br />"
             output += "Raw tweet output between " + str(starttime.strftime("%H:%M:%S")) + " and " + str(endtime.strftime("%H:%M:%S")) + "<br />"
             rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=timestamp,timestamp__lt=endstamp).order_by('timestamp').all()
             output += "<div id=\"rawtweets\" style=\"font-size: 9pt\">"
@@ -1013,8 +1016,12 @@ def tagcloud(request,pid,timestamp,params=False,wrapper=True):
             aggregated = params[0]
             elements = params[1]
         else:
-            aggregated = params
-            elements = False
+            if params == "aggregated":
+                aggregated = params
+                elements = False
+            else:
+                aggregated = False
+                elements = params
     else:
         aggregated = False
         elements = False
