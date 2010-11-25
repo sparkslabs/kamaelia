@@ -899,7 +899,7 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
                                     bookmarkend = progtimestamp - progtimediff + master.duration
                                 # Only bookmark worthy if it creates 'buzz' for 60 seconds or more
                                 if (bookmarkend - bookmarkstart) > 60:
-                                    bookmarks.append([bookmarkstart,bookmarkend])
+                                    bookmarks.append([bookmarkstart,bookmarkend,bookmarkstart-80])
 
             # The +3 in the widths below gets around an IE CSS issue. All other browsers will ignore it
             output += "<div id=\"blockcontainer\" style=\"margin-left: 28px; border: 1px solid #444444; max-width: " + str(len(minuteitems)*slicewidth) + "\">"
@@ -918,8 +918,10 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
             for bookmark in bookmarks:
                 if bmcurrent == 0 and bookmark[0] != progstart:
                     bookmarkplot += "<div style=\"float: left; background-color: #FFFFFF; height: 40px; width: " + str(int((bookmark[0] - progstart)*bmsecondwidth)) + "px\"></div>"
-                #TODO Ensure that bookmarks that overlap are clearly defined - need gradient?
-                bookmarkpos = bookmark[0] - progstart
+                bookmarkpos = bookmark[2] - progstart
+                # Need to check having taken some time off the bookmark to allow for tweeting that it doesn't underrun
+                if bookmarkpos < 0:
+                    bookmarkpos = 0
                 if redux == "redux":
                     # Any channel will work fine for redux but iPlayer needs the most recent
                     bookmarkplot += "<a href=\"http://g.bbcredux.com/programme/" + reduxchannel + "/" + progdatestring + "/" + progtimestring + "?start=" + str(int(bookmarkpos)) + "\" target=\"_blank\">"
