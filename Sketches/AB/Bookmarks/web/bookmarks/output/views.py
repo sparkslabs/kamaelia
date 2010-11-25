@@ -722,108 +722,95 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
                         maxtweets = minutegroups[group]
                     totaltweets += line.totaltweets
 
-        minuteitems = minutegroups.items()
-        minuteitems.sort()
+        if maxtweets > 0:
+            minuteitems = minutegroups.items()
+            minuteitems.sort()
 
-        jsminlist = str(minuteitems).replace(")","]")
-        jsminlist = jsminlist.replace("(","[")
+            jsminlist = str(minuteitems).replace(")","]")
+            jsminlist = jsminlist.replace("(","[")
 
-        output += "<div style=\"width: 990px; text-align: center; margin-left: 20px\"><strong>Tweets Per Minute vs. Programme Position</strong></div><div id=\"container\" style=\"width: 990px; height: 300px\"></div>"
+            output += "<div style=\"width: 990px; text-align: center; margin-left: 20px\"><strong>Tweets Per Minute vs. Programme Position</strong></div><div id=\"container\" style=\"width: 990px; height: 300px\"></div>"
 
-        output += "<script type=\"text/javascript\">var data = " + jsminlist + "; var f =  Flotr.draw($('container'),[data],{label: 'test label', lines: {lineWidth: 1}});</script>"
+            output += "<script type=\"text/javascript\">var data = " + jsminlist + "; var f =  Flotr.draw($('container'),[data],{label: 'test label', lines: {lineWidth: 1}});</script>"
 
-        if len(data) == 1:
-            meantweets = data[0].meantweets
-            stdevtweets = data[0].stdevtweets
-        else:
-            meantweets = totaltweets / (master.duration / 60)
-            stdevtotal = 0
-            for minute in minuteitems:
-                # Calculate standard deviation
-                stdevtotal += (minute[1] - meantweets) * (minute[1] - meantweets)
-            stdevtweets = math.sqrt(stdevtotal / len(minuteitems))
-
-        slicewidth = int(1000/len(minuteitems))
-        if slicewidth < 1:
-            slicewidth = 1
-
-        if redux == "redux":
-            progdatetime = datetime.utcfromtimestamp(progtimestamp)
-            progdatestring = progdatetime.strftime("%Y-%m-%d")
-            progtimestring = progdatetime.strftime("%H-%M-%S")
-
-        progskipplot = ""
-        bookmarkplot = ""
-        rawtweetplot = ""
-        lastwasbookmark = False
-        bookmarks = list()
-        for minute in minuteitems:
-            opacity = float(minute[1]) / maxtweets
-            if redux == "redux":
-                # Any channel will work fine for redux but iPlayer needs the most recent
-                progskipplot += "<a href=\"http://g.bbcredux.com/programme/" + reduxchannel + "/" + progdatestring + "/" + progtimestring + "?start=" + str(60*minute[0]) + "\" target=\"_blank\">"
-            else:
-                progskipplot += "<a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(minute[0]) + "m0s\" target=\"_blank\">"
-            progskipplot += "<div style=\"float: left; opacity: " + str(opacity) + ";cursor: pointer;background-color: #3333FF; height: 40px; width: " + str(slicewidth) + "px;filter:alpha(opacity=" + str(int(opacity * 100)) + ")\"></div></a>"
             if len(data) == 1:
-                rawtweetplot += "<a href=\"/raw/" + pid + "/" + str(int(progtimestamp-progtimediff+(minute[0]*60))) + "\" target=\"_blank\"><div style=\"float: left; opacity: " + str(opacity) + ";cursor: pointer;background-color: #009933; height: 40px; width: " + str(slicewidth) + "px;filter:alpha(opacity=" + str(int(opacity * 100)) + ")\"></div></a>"
+                meantweets = data[0].meantweets
+                stdevtweets = data[0].stdevtweets
             else:
-                rawtweetplot += "<a href=\"/raw/" + pid + "/" + str(minute[0]) + "/aggregated\" target=\"_blank\"><div style=\"float: left; opacity: " + str(opacity) + ";cursor: pointer;background-color: #009933; height: 40px; width: " + str(slicewidth) + "px;filter:alpha(opacity=" + str(int(opacity * 100)) + ")\"></div></a>"
+                meantweets = totaltweets / (master.duration / 60)
+                stdevtotal = 0
+                for minute in minuteitems:
+                    # Calculate standard deviation
+                    stdevtotal += (minute[1] - meantweets) * (minute[1] - meantweets)
+                stdevtweets = math.sqrt(stdevtotal / len(minuteitems))
 
-            if 0:
-                # Work out where the bookmarks should be
-                if minute[1] > (1.5*stdevtweets+meantweets):
-                    if lastwasbookmark == True:
-                        bookmarkcont.append(playertimemin)
-                    else:
-                        if minute[1] > (2.2*stdevtweets+meantweets) and minute[1] > 9: # Arbitrary value chosen for now - needs experimentation - was 9
-                            lastwasbookmark = True
-                            # BOOKMARK TEST
-                            wfdata = wordanalysis.objects.filter(timestamp=minute.timestamp,pid=pid,is_keyword=0).order_by('-count').all()
+            slicewidth = int(1000/len(minuteitems))
+            if slicewidth < 1:
+                slicewidth = 1
 
-                            # Find most popular keyword
-                            is_word = True
-                            if wfdata[0].word != "":
-                                keyword = wfdata[0].word
-                            else:
-                                keyword = wfdata[0].phrase
-                                is_word = False
-                            # Now look at each previous minute until it's no longer the top keyword
-                            currentstamp = minute.timestamp
-                            topkeyword = keyword
-                            while topkeyword == keyword:
-                                currentstamp -= 60
-                                try:
-                                    dataset = wordanalysis.objects.filter(timestamp=currentstamp,pid=pid,is_keyword=0).order_by('-count').all()
-                                except ObjectDoesNotExist:
-                                    break
-                                for line in dataset:
-                                    if is_word:
-                                        topkeyword = line.word
-                                    else:
-                                        topkeyword = line.phrase
-                                    break
+            if redux == "redux":
+                progdatetime = datetime.utcfromtimestamp(progtimestamp)
+                progdatestring = progdatetime.strftime("%Y-%m-%d")
+                progtimestring = progdatetime.strftime("%H-%M-%S")
 
-                            startstamp = currentstamp
-                            endstamp = currentstamp + 60
+            progskipplot = ""
+            bookmarkplot = ""
+            rawtweetplot = ""
+            lastwasbookmark = False
+            bookmarks = list()
+            for minute in minuteitems:
+                opacity = float(minute[1]) / maxtweets
+                if redux == "redux":
+                    # Any channel will work fine for redux but iPlayer needs the most recent
+                    progskipplot += "<a href=\"http://g.bbcredux.com/programme/" + reduxchannel + "/" + progdatestring + "/" + progtimestring + "?start=" + str(60*minute[0]) + "\" target=\"_blank\">"
+                else:
+                    progskipplot += "<a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(minute[0]) + "m0s\" target=\"_blank\">"
+                progskipplot += "<div style=\"float: left; opacity: " + str(opacity) + ";cursor: pointer;background-color: #3333FF; height: 40px; width: " + str(slicewidth) + "px;filter:alpha(opacity=" + str(int(opacity * 100)) + ")\"></div></a>"
+                if len(data) == 1:
+                    rawtweetplot += "<a href=\"/raw/" + pid + "/" + str(int(progtimestamp-progtimediff+(minute[0]*60))) + "\" target=\"_blank\"><div style=\"float: left; opacity: " + str(opacity) + ";cursor: pointer;background-color: #009933; height: 40px; width: " + str(slicewidth) + "px;filter:alpha(opacity=" + str(int(opacity * 100)) + ")\"></div></a>"
+                else:
+                    rawtweetplot += "<a href=\"/raw/" + pid + "/" + str(minute[0]) + "/aggregated\" target=\"_blank\"><div style=\"float: left; opacity: " + str(opacity) + ";cursor: pointer;background-color: #009933; height: 40px; width: " + str(slicewidth) + "px;filter:alpha(opacity=" + str(int(opacity * 100)) + ")\"></div></a>"
 
-                            # Investigate the previous minute to see if the keyword from above is in the top 10
-                            tweetset = False
-                            rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=startstamp,timestamp__lt=endstamp).order_by('timestamp').all()
-                            for tweet in rawtweets:
-                                tweettext = string.lower(tweet.text)
-                                for items in """!"#$%&(),:;?@~[]'`{|}""":
-                                    tweettext = string.replace(tweettext,items,"")
-                                try:
-                                    if str(keyword).lower() in tweettext:
-                                        bookmarks.append([tweet.timestamp])
-                                        tweetset = True
+                if 0:
+                    # Work out where the bookmarks should be
+                    if minute[1] > (1.5*stdevtweets+meantweets):
+                        if lastwasbookmark == True:
+                            bookmarkcont.append(playertimemin)
+                        else:
+                            if minute[1] > (2.2*stdevtweets+meantweets) and minute[1] > 9: # Arbitrary value chosen for now - needs experimentation - was 9
+                                lastwasbookmark = True
+                                # BOOKMARK TEST
+                                wfdata = wordanalysis.objects.filter(timestamp=minute.timestamp,pid=pid,is_keyword=0).order_by('-count').all()
+
+                                # Find most popular keyword
+                                is_word = True
+                                if wfdata[0].word != "":
+                                    keyword = wfdata[0].word
+                                else:
+                                    keyword = wfdata[0].phrase
+                                    is_word = False
+                                # Now look at each previous minute until it's no longer the top keyword
+                                currentstamp = minute.timestamp
+                                topkeyword = keyword
+                                while topkeyword == keyword:
+                                    currentstamp -= 60
+                                    try:
+                                        dataset = wordanalysis.objects.filter(timestamp=currentstamp,pid=pid,is_keyword=0).order_by('-count').all()
+                                    except ObjectDoesNotExist:
                                         break
-                                except UnicodeEncodeError:
-                                    break
+                                    for line in dataset:
+                                        if is_word:
+                                            topkeyword = line.word
+                                        else:
+                                            topkeyword = line.phrase
+                                        break
 
-                            if not tweetset:
-                                rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=minute.timestamp,timestamp__lt=(minute.timestamp + 60)).order_by('timestamp').all()
+                                startstamp = currentstamp
+                                endstamp = currentstamp + 60
+
+                                # Investigate the previous minute to see if the keyword from above is in the top 10
+                                tweetset = False
+                                rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=startstamp,timestamp__lt=endstamp).order_by('timestamp').all()
                                 for tweet in rawtweets:
                                     tweettext = string.lower(tweet.text)
                                     for items in """!"#$%&(),:;?@~[]'`{|}""":
@@ -831,27 +818,42 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
                                     try:
                                         if str(keyword).lower() in tweettext:
                                             bookmarks.append([tweet.timestamp])
+                                            tweetset = True
                                             break
                                     except UnicodeEncodeError:
                                         break
 
-                        else:
-                            lastwasbookmark = False
+                                if not tweetset:
+                                    rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=minute.timestamp,timestamp__lt=(minute.timestamp + 60)).order_by('timestamp').all()
+                                    for tweet in rawtweets:
+                                        tweettext = string.lower(tweet.text)
+                                        for items in """!"#$%&(),:;?@~[]'`{|}""":
+                                            tweettext = string.replace(tweettext,items,"")
+                                        try:
+                                            if str(keyword).lower() in tweettext:
+                                                bookmarks.append([tweet.timestamp])
+                                                break
+                                        except UnicodeEncodeError:
+                                            break
 
-        # The +3 in the widths below gets around an IE CSS issue. All other browsers will ignore it
-        output += "<div id=\"blockcontainer\" style=\"margin-left: 28px; border: 1px solid #444444; max-width: " + str(len(minuteitems)*slicewidth) + "\">"
-        if redux == "redux":
-            output += "<div style=\"font-size: 8pt; padding: 2px 0px 2px 4px; background-color: #3333FF; opacity: 0.8; color: #FFFFFF; filter:alpha(opacity=30)\">Redux Links</div>"
+                            else:
+                                lastwasbookmark = False
+
+            # The +3 in the widths below gets around an IE CSS issue. All other browsers will ignore it
+            output += "<div id=\"blockcontainer\" style=\"margin-left: 28px; border: 1px solid #444444; max-width: " + str(len(minuteitems)*slicewidth) + "\">"
+            if redux == "redux":
+                output += "<div style=\"font-size: 8pt; padding: 2px 0px 2px 4px; background-color: #3333FF; opacity: 0.8; color: #FFFFFF; filter:alpha(opacity=30)\">Redux Links</div>"
+            else:
+                output += "<div style=\"font-size: 8pt; padding: 2px 0px 2px 4px; background-color: #3333FF; opacity: 0.8; color: #FFFFFF; filter:alpha(opacity=30)\">iPlayer Links</div>"
+            output += "<div style=\"width= " + str(len(minuteitems)*slicewidth+3) + "px;overflow: hidden;height: 40px;\">" + progskipplot + "</div>"
+            output += "<div style=\"font-size: 8pt; padding: 2px 0px 2px 4px; background-color: #FF6633; opacity: 0.8; color: #FFFFFF; filter:alpha(opacity=30)\">Bookmarks</div>"
+            output += "<div style=\"width= " + str(len(minuteitems)*slicewidth+3) + "px;overflow: hidden;height: 40px;\">" + bookmarkplot + "</div>"
+            output += "<div style=\"font-size: 8pt; padding: 2px 0px 2px 4px; background-color: #009933; opacity: 0.8; color: #FFFFFF; filter:alpha(opacity=30)\">Raw Data</div>"
+            output += "<div style=\"width= " + str(len(minuteitems)*slicewidth+3) + "px;overflow: hidden;height: 40px;\">" + rawtweetplot + "</div>"
+
+            output += "</div>"
         else:
-            output += "<div style=\"font-size: 8pt; padding: 2px 0px 2px 4px; background-color: #3333FF; opacity: 0.8; color: #FFFFFF; filter:alpha(opacity=30)\">iPlayer Links</div>"
-        output += "<div style=\"width= " + str(len(minuteitems)*slicewidth+3) + "px;overflow: hidden;height: 40px;\">" + progskipplot + "</div>"
-        output += "<div style=\"font-size: 8pt; padding: 2px 0px 2px 4px; background-color: #FF6633; opacity: 0.8; color: #FFFFFF; filter:alpha(opacity=30)\">Bookmarks</div>"
-        output += "<div style=\"width= " + str(len(minuteitems)*slicewidth+3) + "px;overflow: hidden;height: 40px;\">" + bookmarkplot + "</div>"
-        output += "<div style=\"font-size: 8pt; padding: 2px 0px 2px 4px; background-color: #009933; opacity: 0.8; color: #FFFFFF; filter:alpha(opacity=30)\">Raw Data</div>"
-        output += "<div style=\"width= " + str(len(minuteitems)*slicewidth+3) + "px;overflow: hidden;height: 40px;\">" + rawtweetplot + "</div>"
-
-        output += "</div>"
-
+            output += "No data found to generate graphs.<br />"
     elif element == "status":
         if len(data) == 0:
             output += "404" # Invalid PID
@@ -921,9 +923,9 @@ def rawtweetsv2(request,pid,timestamp,aggregated=False):
     if len(progdata) == 0:
         output += "<br />Invalid pid supplied or no data has yet been captured for this programme."
     else:
-        endstamp = timestamp + 60
         if aggregated == "aggregated":
-            progpos = timestamp
+            progpos = timestamp*60
+            endstamp = progpos + 60
             # In this case the 'timestamp' is actually the programme position
             rawtweetdict = dict()
             analysedwords = dict()
@@ -950,13 +952,46 @@ def rawtweetsv2(request,pid,timestamp,aggregated=False):
             for word in worditems:
                 output += "<br />" + word[2] + ": " + str(word[0]) + " " + str(word[1][0]) + " " + str(word[1][1]) + " " + str(word[1][2])
         else:
+            endstamp = timestamp + 60
             channel = progdata[0].channel
+            output += """<style type="text/css">
+                            .xmpl { padding: 10px 15px 10px 15px !important; }
+                            ul.xmpl { padding: 5px 15px 5px 30px !important; }
+                            .xmpl li { z-index: 0 !important; }
+                            ul.xmpl, ol.xmpl { height: 100px; overflow: hidden; padding: 0px !important; }
+                        </style>
+                        <script type=\"text/javascript\" src=\"/media/jquery/jquery.tagcloud.min.js\"></script>
+                        <script type=\"text/javascript\" src=\"/media/jquery/jquery.tinysort.min.js\"></script>
+                            <script type=\"text/javascript\">
+                            $(document).ready(function() { $('#tagcloud').tagcloud({type:"list",sizemin:12,sizemax:25,height:150}).find("li").tsort(); });
+                            function updateCloud() {
+                                urlappender = "/data/tagcloud/""" + pid + """/""" + str(timestamp) + """/"
+                                if (document.cloudopts.keyword.checked == true) {
+                                    urlappender += "k";
+                                }
+                                if (document.cloudopts.entity.checked == true) {
+                                    urlappender += "e";
+                                }
+                                if (document.cloudopts.common.checked == true) {
+                                    urlappender += "c";
+                                }
+                                urlappender += '?randval='+Math.random();
+                                $('#cloudcontainer').html('<span style="font-size: 10pt">Loading...</span>');
+                                $.get(urlappender, function(data) {
+                                    $('#cloudcontainer').html(data);
+                                    $('#tagcloud').tagcloud({type:"list",sizemin:15,sizemax:25}).find("li").tsort();
+                                });
+                            }</script>"""
             output += "<br /><a href=\"http://www.bbc.co.uk/" + channel + "\" target=\"_blank\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br /><br />"
             progdate = datetime.utcfromtimestamp(progdata[0].timestamp) + timedelta(seconds=progdata[0].utcoffset)
             starttime = datetime.utcfromtimestamp(timestamp) + timedelta(seconds=progdata[0].utcoffset)
             endtime = datetime.utcfromtimestamp(endstamp) + timedelta(seconds=progdata[0].utcoffset)
             output += str(progdate.strftime("%d/%m/%Y")) + "<br />"
-            output += "<strong>" + master.title + "</strong><br />"
+            output += "<strong>" + master.title + "</strong><br /><br />"
+            output += "<div id=\"cloudcontainer\">"
+            output += tagcloud(False,pid,timestamp,aggregated,False,False)
+            #TODO For this to support non-JS browsers, the URL scheme will need to include elements for rawtweets directly
+            output += "</div><form name=\"cloudopts\" style=\"font-size: 9pt\">Hide Keywords: <input type=\"checkbox\" value=\"keyword\" name=\"keyword\" onClick=\"updateCloud();\">&nbsp; Hide Twitter Entities: <input type=\"checkbox\" value=\"entity\" name=\"entity\" onClick=\"updateCloud();\">&nbsp; Hide Common Words: <input type=\"checkbox\" value=\"common\" name=\"common\" onClick=\"updateCloud();\"></form>"
             output += "Raw tweet output between " + str(starttime.strftime("%H:%M:%S")) + " and " + str(endtime.strftime("%H:%M:%S")) + "<br />"
             rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=timestamp,timestamp__lt=endstamp).order_by('timestamp').all()
             output += "<div id=\"rawtweets\" style=\"font-size: 9pt\">"
@@ -964,8 +999,40 @@ def rawtweetsv2(request,pid,timestamp,aggregated=False):
                 output += "<br /><strong>" + str(datetime.utcfromtimestamp(tweet.timestamp + progdata[0].utcoffset)) + ":</strong> " + "@" + tweet.user + ": " + tweet.text
             output += "</div><br /><br />"
             output += "Tweets: <a href=\"/api/" + pid + "/" + str(timestamp) + ".json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + pid + "/" + str(timestamp) + ".xml\" target=\"_blank\">XML</a><br />"
-            newanalysis = wordanalysis.objects.filter(pid=pid,timestamp=timestamp,is_common=0).order_by('-count').all()
-            for entry in newanalysis:
-                output += "<br />" + entry.word + ": " + str(entry.count) + " " + str(entry.is_keyword) + " " + str(entry.is_entity) + " " + str(entry.is_common)
     output += footer
     return HttpResponse(output)
+
+def tagcloud(request,pid,timestamp,aggregated=False,elements=False,wrapper=True):
+    output = ""
+    #TODO doesn't yet handle aggregated data
+    # The below seems horribly overcomplicated, but I'm failing to see an easier way given Django's API TODO
+    if elements:
+        if "k" in elements and "e" in elements and "c" in elements:
+            newanalysis = wordanalysis.objects.filter(pid=pid,timestamp=timestamp,is_keyword=0,is_entity=0,is_common=0).order_by('-count').all()
+        elif "k" in elements and "e" in elements:
+            newanalysis = wordanalysis.objects.filter(pid=pid,timestamp=timestamp,is_keyword=0,is_entity=0).order_by('-count').all()
+        elif "k" in elements and "c" in elements:
+            newanalysis = wordanalysis.objects.filter(pid=pid,timestamp=timestamp,is_keyword=0,is_common=0).order_by('-count').all()
+        elif "c" in elements and "e" in elements:
+            newanalysis = wordanalysis.objects.filter(pid=pid,timestamp=timestamp,is_entity=0,is_common=0).order_by('-count').all()
+        elif "k" in elements:
+            newanalysis = wordanalysis.objects.filter(pid=pid,timestamp=timestamp,is_keyword=0).order_by('-count').all()
+        elif "c" in elements:
+            newanalysis = wordanalysis.objects.filter(pid=pid,timestamp=timestamp,is_common=0).order_by('-count').all()
+        elif "e" in elements:
+            newanalysis = wordanalysis.objects.filter(pid=pid,timestamp=timestamp,is_entity=0).order_by('-count').all()
+    else:
+        newanalysis = wordanalysis.objects.filter(pid=pid,timestamp=timestamp).order_by('-count').all()
+    output += "<ul id=\"tagcloud\" class=\"xmpl\" style=\"width: 800px; height: auto; position: static; list-style: none outside none; margin: 0px; padding: 0px\">"
+    currenttag = 0
+    for entry in newanalysis:
+        if currenttag >= 50:
+            break
+        #output += "<br />" + entry.word + ": " + str(entry.count) + " " + str(entry.is_keyword) + " " + str(entry.is_entity) + " " + str(entry.is_common)
+        output += "<li style=\"cursor: pointer\" title=\"" + entry.word + "\" value=\"" + str(entry.count) + "\"><a title=\"" + str(entry.count) + "\">" + entry.word + " </a></li>"
+        currenttag += 1
+    output += "</ul>"
+    if wrapper:
+        return HttpResponse(output)
+    else:
+        return output
