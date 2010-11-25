@@ -573,7 +573,7 @@ def programmev2(request,pid,timestamp=False,redux=False):
         data = programmes.objects.filter(pid=pid,timestamp=timestamp).all()
         # Viewing a single instance
     else:
-        data = programmes.objects.filter(pid=pid).all()
+        data = programmes.objects.filter(pid=pid).order_by('-timestamp').all()
         # Viewing all instances (inc repeats etc) - shows the same as the timestamp case if only one row found
     rowcount = len(data)
     if rowcount == 0:
@@ -1053,9 +1053,21 @@ def rawtweetsv2(request,pid,timestamp,aggregated=False):
                                 });
                             }</script>"""
         if aggregated == "aggregated":
-            output += "<br /><strong>" + master.title + "</strong><br /><br />"
             progpos = timestamp*60
             endstamp = progpos + 60
+            output += "<br /><strong>" + master.title + "</strong><br /><br />"
+            if timestamp > 0:
+                # Print previous button
+                output += "<a href=\"/raw/" + pid + "/" + str(timestamp - 1) + "/aggregated\"><- Previous</a>"
+            else:
+                output += "<- Previous"
+            output += " - "
+            if timestamp < ((master.duration / 60)-1):
+                # Print 'next' button
+                output += "<a href=\"/raw/" + pid + "/" + str(timestamp + 1) + "/aggregated\">Next -></a>"
+            else:
+                output += "Next ->"
+            output += "<br /><br />"
             # In this case the 'timestamp' is actually the programme position
             rawtweetdict = dict()
             for row in progdata:
@@ -1086,6 +1098,18 @@ def rawtweetsv2(request,pid,timestamp,aggregated=False):
             endtime = datetime.utcfromtimestamp(endstamp) + timedelta(seconds=progdata[0].utcoffset)
             output += str(progdate.strftime("%d/%m/%Y")) + "<br />"
             output += "<strong>" + master.title + "</strong><br /><br />"
+            if timestamp > (progdata[0].timestamp - progdata[0].timediff):
+                # Print previous button
+                output += "<a href=\"/raw/" + pid + "/" + str(timestamp - 60) + "\"><- Previous</a>"
+            else:
+                output += "<- Previous"
+            output += " - "
+            if (progdata[0].timestamp - progdata[0].timediff + master.duration) > endstamp:
+                # Print 'next' button
+                output += "<a href=\"/raw/" + pid + "/" + str(timestamp + 60) + "\">Next -></a>"
+            else:
+                output += "Next ->"
+            output += "<br /><br />"
             output += "<form name=\"cloudopts\" style=\"font-size: 9pt\">Hide Keywords: <input type=\"checkbox\" value=\"keyword\" name=\"keyword\" onClick=\"updateCloud();\">&nbsp; Hide Twitter Entities: <input type=\"checkbox\" value=\"entity\" name=\"entity\" onClick=\"updateCloud();\">&nbsp; Hide Common Words: <input type=\"checkbox\" value=\"common\" name=\"common\" onClick=\"updateCloud();\"></form><div id=\"cloudcontainer\">"
             output += tagcloud(False,pid,timestamp,False,False)
             #TODO For this to support non-JS browsers, the URL scheme will need to include elements for rawtweets directly
