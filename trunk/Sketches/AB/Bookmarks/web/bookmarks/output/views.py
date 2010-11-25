@@ -923,50 +923,29 @@ def rawtweetsv2(request,pid,timestamp,aggregated=False):
     if len(progdata) == 0:
         output += "<br />Invalid pid supplied or no data has yet been captured for this programme."
     else:
-        if aggregated == "aggregated":
-            progpos = timestamp*60
-            endstamp = progpos + 60
-            # In this case the 'timestamp' is actually the programme position
-            rawtweetdict = dict()
-            analysedwords = dict()
-            for row in progdata:
-                rawtweets = rawdata.objects.filter(pid=pid,programme_position__gte=progpos,programme_position__lt=endstamp).order_by('timestamp').all()
-                for tweet in rawtweets:
-                    if rawtweetdict.has_key(int(tweet.programme_position)):
-                        rawtweetdict[int(tweet.programme_position)].append("<br /><strong>" + str(datetime.utcfromtimestamp(tweet.timestamp + row.utcoffset)) + ":</strong> " + "@" + tweet.user + ": " + tweet.text)
-                    else:
-                        rawtweetdict[int(tweet.programme_position)] = ["<br /><strong>" + str(datetime.utcfromtimestamp(tweet.timestamp + row.utcoffset)) + ":</strong> " + "@" + tweet.user + ": " + tweet.text]
-                newanalysis = wordanalysis.objects.filter(pid=pid,timestamp=row.timestamp-row.timediff+progpos,is_common=0).order_by('-count').all()
-                for word in newanalysis:
-                    if analysedwords.has_key(word.word):
-                        analysedwords[word.word][0] += int(word.count)
-                    else:
-                        analysedwords[word.word] = [int(word.count),word.is_keyword,word.is_entity,word.is_common]
-            tweetitems = rawtweetdict.items()
-            tweetitems.sort()
-            worditems = [[v[0],v[1:], k] for k, v in analysedwords.items()]
-            worditems.sort(reverse=True)
-            for minute in tweetitems:
-                for tweet in minute[1]:
-                    output += tweet
-            for word in worditems:
-                output += "<br />" + word[2] + ": " + str(word[0]) + " " + str(word[1][0]) + " " + str(word[1][1]) + " " + str(word[1][2])
-        else:
-            endstamp = timestamp + 60
-            channel = progdata[0].channel
-            output += """<style type="text/css">
+        output += """<style type="text/css">
                             .xmpl { padding: 10px 15px 10px 15px !important; }
                             ul.xmpl { padding: 5px 15px 5px 30px !important; }
                             .xmpl li { z-index: 0 !important; }
                             ul.xmpl, ol.xmpl { height: 100px; overflow: hidden; padding: 0px !important; }
                         </style>
                         <script type=\"text/javascript\" src=\"/media/jquery/jquery.tagcloud.min.js\"></script>
-                        <script type=\"text/javascript\" src=\"/media/jquery/jquery.tinysort.min.js\"></script>
-                            <script type=\"text/javascript\">
-                            $(document).ready(function() { $('#tagcloud').tagcloud({type:"list",sizemin:12,sizemax:25,height:150}).find("li").tsort(); });
+                        <script type=\"text/javascript\" src=\"/media/jquery/jquery.tinysort.min.js\"></script>"""
+        output += """<script type=\"text/javascript\">
+                            $(document).ready(function() {
+                            if ((document.cloudopts.keyword.checked == true) | (document.cloudopts.entity.checked == true) | (document.cloudopts.common.checked == true)) {
+                                updateCloud();
+                            } else {
+                                $('#tagcloud').tagcloud({type:"list",sizemin:12,sizemax:30,colormin:"3399FF",colormax:"339900"}).find("li").tsort();
+                            }
+                            });
                             function updateCloud() {
-                                urlappender = "/data/tagcloud/""" + pid + """/""" + str(timestamp) + """/"
-                                if (document.cloudopts.keyword.checked == true) {
+                                urlappender = "/data/tagcloud/""" + pid + """/""" + str(timestamp) + """/"""
+        if aggregated == "aggregated":
+            output += "aggregated/\";"
+        else:
+            output += "\";"
+        output += """           if (document.cloudopts.keyword.checked == true) {
                                     urlappender += "k";
                                 }
                                 if (document.cloudopts.entity.checked == true) {
@@ -979,9 +958,33 @@ def rawtweetsv2(request,pid,timestamp,aggregated=False):
                                 $('#cloudcontainer').html('<span style="font-size: 10pt">Loading...</span>');
                                 $.get(urlappender, function(data) {
                                     $('#cloudcontainer').html(data);
-                                    $('#tagcloud').tagcloud({type:"list",sizemin:15,sizemax:25}).find("li").tsort();
+                                    $('#tagcloud').tagcloud({type:"list",sizemin:15,sizemax:30,colormin:"3399FF",colormax:"339900"}).find("li").tsort();
                                 });
                             }</script>"""
+        if aggregated == "aggregated":
+            progpos = timestamp*60
+            endstamp = progpos + 60
+            # In this case the 'timestamp' is actually the programme position
+            rawtweetdict = dict()
+            for row in progdata:
+                rawtweets = rawdata.objects.filter(pid=pid,programme_position__gte=progpos,programme_position__lt=endstamp).order_by('timestamp').all()
+                for tweet in rawtweets:
+                    if rawtweetdict.has_key(int(tweet.programme_position)):
+                        rawtweetdict[int(tweet.programme_position)].append("<br /><strong>" + str(datetime.utcfromtimestamp(tweet.timestamp + row.utcoffset)) + ":</strong> " + "@" + tweet.user + ": " + tweet.text)
+                    else:
+                        rawtweetdict[int(tweet.programme_position)] = ["<br /><strong>" + str(datetime.utcfromtimestamp(tweet.timestamp + row.utcoffset)) + ":</strong> " + "@" + tweet.user + ": " + tweet.text]
+            tweetitems = rawtweetdict.items()
+            tweetitems.sort()
+            output += "<div id=\"cloudcontainer\">"
+            output += tagcloud(False,pid,timestamp,"aggregated",False)
+            #TODO For this to support non-JS browsers, the URL scheme will need to include elements for rawtweets directly
+            output += "</div><form name=\"cloudopts\" style=\"font-size: 9pt\">Hide Keywords: <input type=\"checkbox\" value=\"keyword\" name=\"keyword\" onClick=\"updateCloud();\">&nbsp; Hide Twitter Entities: <input type=\"checkbox\" value=\"entity\" name=\"entity\" onClick=\"updateCloud();\">&nbsp; Hide Common Words: <input type=\"checkbox\" value=\"common\" name=\"common\" onClick=\"updateCloud();\"></form>"
+            for minute in tweetitems:
+                for tweet in minute[1]:
+                    output += tweet
+        else:
+            endstamp = timestamp + 60
+            channel = progdata[0].channel
             output += "<br /><a href=\"http://www.bbc.co.uk/" + channel + "\" target=\"_blank\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br /><br />"
             progdate = datetime.utcfromtimestamp(progdata[0].timestamp) + timedelta(seconds=progdata[0].utcoffset)
             starttime = datetime.utcfromtimestamp(timestamp) + timedelta(seconds=progdata[0].utcoffset)
@@ -989,7 +992,7 @@ def rawtweetsv2(request,pid,timestamp,aggregated=False):
             output += str(progdate.strftime("%d/%m/%Y")) + "<br />"
             output += "<strong>" + master.title + "</strong><br /><br />"
             output += "<div id=\"cloudcontainer\">"
-            output += tagcloud(False,pid,timestamp,aggregated,False,False)
+            output += tagcloud(False,pid,timestamp,"aggregated",False)
             #TODO For this to support non-JS browsers, the URL scheme will need to include elements for rawtweets directly
             output += "</div><form name=\"cloudopts\" style=\"font-size: 9pt\">Hide Keywords: <input type=\"checkbox\" value=\"keyword\" name=\"keyword\" onClick=\"updateCloud();\">&nbsp; Hide Twitter Entities: <input type=\"checkbox\" value=\"entity\" name=\"entity\" onClick=\"updateCloud();\">&nbsp; Hide Common Words: <input type=\"checkbox\" value=\"common\" name=\"common\" onClick=\"updateCloud();\"></form>"
             output += "Raw tweet output between " + str(starttime.strftime("%H:%M:%S")) + " and " + str(endtime.strftime("%H:%M:%S")) + "<br />"
@@ -1002,36 +1005,92 @@ def rawtweetsv2(request,pid,timestamp,aggregated=False):
     output += footer
     return HttpResponse(output)
 
-def tagcloud(request,pid,timestamp,aggregated=False,elements=False,wrapper=True):
+def tagcloud(request,pid,timestamp,params=False,wrapper=True):
     output = ""
-    #TODO doesn't yet handle aggregated data
-    # The below seems horribly overcomplicated, but I'm failing to see an easier way given Django's API TODO
-    if elements:
-        if "k" in elements and "e" in elements and "c" in elements:
-            newanalysis = wordanalysis.objects.filter(pid=pid,timestamp=timestamp,is_keyword=0,is_entity=0,is_common=0).order_by('-count').all()
-        elif "k" in elements and "e" in elements:
-            newanalysis = wordanalysis.objects.filter(pid=pid,timestamp=timestamp,is_keyword=0,is_entity=0).order_by('-count').all()
-        elif "k" in elements and "c" in elements:
-            newanalysis = wordanalysis.objects.filter(pid=pid,timestamp=timestamp,is_keyword=0,is_common=0).order_by('-count').all()
-        elif "c" in elements and "e" in elements:
-            newanalysis = wordanalysis.objects.filter(pid=pid,timestamp=timestamp,is_entity=0,is_common=0).order_by('-count').all()
-        elif "k" in elements:
-            newanalysis = wordanalysis.objects.filter(pid=pid,timestamp=timestamp,is_keyword=0).order_by('-count').all()
-        elif "c" in elements:
-            newanalysis = wordanalysis.objects.filter(pid=pid,timestamp=timestamp,is_common=0).order_by('-count').all()
-        elif "e" in elements:
-            newanalysis = wordanalysis.objects.filter(pid=pid,timestamp=timestamp,is_entity=0).order_by('-count').all()
+    if params:
+        if "/" in params:
+            params = params.split("/")
+            aggregated = params[0]
+            elements = params[1]
+        else:
+            aggregated = params
+            elements = False
     else:
-        newanalysis = wordanalysis.objects.filter(pid=pid,timestamp=timestamp).order_by('-count').all()
-    output += "<ul id=\"tagcloud\" class=\"xmpl\" style=\"width: 800px; height: auto; position: static; list-style: none outside none; margin: 0px; padding: 0px\">"
-    currenttag = 0
-    for entry in newanalysis:
-        if currenttag >= 50:
-            break
-        #output += "<br />" + entry.word + ": " + str(entry.count) + " " + str(entry.is_keyword) + " " + str(entry.is_entity) + " " + str(entry.is_common)
-        output += "<li style=\"cursor: pointer\" title=\"" + entry.word + "\" value=\"" + str(entry.count) + "\"><a title=\"" + str(entry.count) + "\">" + entry.word + " </a></li>"
-        currenttag += 1
-    output += "</ul>"
+        aggregated = False
+        elements = False
+    try:
+        master = programmes_unique.objects.get(pid=pid)
+    except ObjectDoesNotExist, e:
+        pass # This is handled later
+    progdata = programmes.objects.filter(pid=pid).all()
+    timestamp = int(timestamp)
+    if len(progdata) == 0:
+        output += "<br />Invalid pid supplied or no data has yet been captured for this programme."
+    else:
+        output += "<ul id=\"tagcloud\" class=\"xmpl\" style=\"width: 700px; height: auto; position: static; list-style: none outside none; margin: 0px; padding: 0px\">"
+        if aggregated == "aggregated":
+            progpos = timestamp*60
+            # In this case the 'timestamp' is actually the programme position
+            analysedwords = dict()
+            for row in progdata:
+                searchstamp = row.timestamp-row.timediff+progpos
+                if elements:
+                    if "k" in elements and "e" in elements and "c" in elements:
+                        newanalysis = wordanalysis.objects.filter(pid=pid,timestamp=searchstamp,is_keyword=0,is_entity=0,is_common=0).order_by('-count').all()
+                    elif "k" in elements and "e" in elements:
+                        newanalysis = wordanalysis.objects.filter(pid=pid,timestamp=searchstamp,is_keyword=0,is_entity=0).order_by('-count').all()
+                    elif "k" in elements and "c" in elements:
+                        newanalysis = wordanalysis.objects.filter(pid=pid,timestamp=searchstamp,is_keyword=0,is_common=0).order_by('-count').all()
+                    elif "c" in elements and "e" in elements:
+                        newanalysis = wordanalysis.objects.filter(pid=pid,timestamp=searchstamp,is_entity=0,is_common=0).order_by('-count').all()
+                    elif "k" in elements:
+                        newanalysis = wordanalysis.objects.filter(pid=pid,timestamp=searchstamp,is_keyword=0).order_by('-count').all()
+                    elif "c" in elements:
+                        newanalysis = wordanalysis.objects.filter(pid=pid,timestamp=searchstamp,is_common=0).order_by('-count').all()
+                    elif "e" in elements:
+                        newanalysis = wordanalysis.objects.filter(pid=pid,timestamp=searchstamp,is_entity=0).order_by('-count').all()
+                else:
+                    newanalysis = wordanalysis.objects.filter(pid=pid,timestamp=searchstamp).order_by('-count').all()
+                for word in newanalysis:
+                    if analysedwords.has_key(word.word):
+                        analysedwords[word.word] += int(word.count)
+                    else:
+                        analysedwords[word.word] = int(word.count)
+            worditems = [[v, k] for k, v in analysedwords.items()]
+            worditems.sort(reverse=True)
+            currenttag = 0
+            for word in worditems:
+                if currenttag >= 100:
+                    break
+                output += "<li style=\"cursor: pointer\" title=\"" + word[1] + "\" value=\"" + str(word[0]) + "\"><a title=\"" + str(word[0]) + "\">" + word[1] + " </a></li>"
+                currenttag += 1
+        else:
+            # The below seems horribly overcomplicated, but I'm failing to see an easier way given Django's API TODO
+            if elements:
+                if "k" in elements and "e" in elements and "c" in elements:
+                    newanalysis = wordanalysis.objects.filter(pid=pid,timestamp=timestamp,is_keyword=0,is_entity=0,is_common=0).order_by('-count').all()
+                elif "k" in elements and "e" in elements:
+                    newanalysis = wordanalysis.objects.filter(pid=pid,timestamp=timestamp,is_keyword=0,is_entity=0).order_by('-count').all()
+                elif "k" in elements and "c" in elements:
+                    newanalysis = wordanalysis.objects.filter(pid=pid,timestamp=timestamp,is_keyword=0,is_common=0).order_by('-count').all()
+                elif "c" in elements and "e" in elements:
+                    newanalysis = wordanalysis.objects.filter(pid=pid,timestamp=timestamp,is_entity=0,is_common=0).order_by('-count').all()
+                elif "k" in elements:
+                    newanalysis = wordanalysis.objects.filter(pid=pid,timestamp=timestamp,is_keyword=0).order_by('-count').all()
+                elif "c" in elements:
+                    newanalysis = wordanalysis.objects.filter(pid=pid,timestamp=timestamp,is_common=0).order_by('-count').all()
+                elif "e" in elements:
+                    newanalysis = wordanalysis.objects.filter(pid=pid,timestamp=timestamp,is_entity=0).order_by('-count').all()
+            else:
+                newanalysis = wordanalysis.objects.filter(pid=pid,timestamp=timestamp).order_by('-count').all()
+            currenttag = 0
+            for entry in newanalysis:
+                if currenttag >= 100:
+                    break
+                #output += "<br />" + entry.word + ": " + str(entry.count) + " " + str(entry.is_keyword) + " " + str(entry.is_entity) + " " + str(entry.is_common)
+                output += "<li style=\"cursor: pointer\" title=\"" + entry.word + "\" value=\"" + str(entry.count) + "\"><a title=\"" + str(entry.count) + "\">" + entry.word + " </a></li>"
+                currenttag += 1
+        output += "</ul>"
     if wrapper:
         return HttpResponse(output)
     else:
