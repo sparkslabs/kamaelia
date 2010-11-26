@@ -2,7 +2,6 @@ from piston.handler import BaseHandler
 from bookmarks.output.models import programmes, keywords, analyseddata, rawdata, rawtweets
 from datetime import timedelta,datetime
 from django.core.exceptions import ObjectDoesNotExist
-import locale
 
 tvchannels = ["bbcone","bbctwo","bbcthree","bbcfour","cbbc","cbeebies","bbcnews","bbcparliament"]
 
@@ -16,7 +15,7 @@ class ProgrammesHandler(BaseHandler):
     #fields = ('pid', 'channel', 'title', 'expectedstart', 'timediff', 'duration', 'imported', 'analysed', 'totaltweets', 'meantweets', 'mediantweets', 'modetweets', 'stdevtweets')
     #model = programmes
 
-    def read(self, request, pid):
+    def read(self, request, pid, timestamp=False):
         retdata = dict()
         data = programmes.objects.filter(pid=pid)
         if len(data) == 1:
@@ -124,7 +123,7 @@ class SummaryHandler(BaseHandler):
 class TweetHandler(BaseHandler):
     allowed_methods = ('GET',)
 
-    def read(self, request, pid):
+    def read(self, request, pid, timestamp=False):
         retdata = {"tweets" : list()}
         # Need to add full tweet dicts to this once the model has been added
         data = rawdata.objects.filter(pid=pid).order_by('timestamp').all()
@@ -145,7 +144,7 @@ class TweetHandler(BaseHandler):
 class TimestampHandler(BaseHandler):
     allowed_methods = ('GET',)
 
-    def read(self, request, pid, timestamp):
+    def read(self, request, pid, timestamp=False, progpos=False):
         retdata = {"tweets" : list()}
         timestamp = int(timestamp)
         # Need to add full tweet dicts to this once the model has been added
@@ -163,11 +162,4 @@ class TimestampHandler(BaseHandler):
                 retdata['tweets'].append({"created_at" : tweet.timestamp,"programme_position" : tweet.programme_position,"screen_name" : tweet.user,"text" : tweet.text, "legacy" : legacy})
             else:
                 retdata['tweets'].append({"id" : tweetid,"created_at" : tweet.timestamp,"programme_position" : tweet.programme_position,"json" : tweetjson, "legacy" : legacy})
-        return retdata
-
-class ProgrammesHandlerV2(BaseHandler):
-    allowed_methods = ('GET',)
-
-    def read(self, request, pid):
-        retdata = dict()
         return retdata

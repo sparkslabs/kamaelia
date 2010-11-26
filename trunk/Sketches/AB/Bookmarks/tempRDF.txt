@@ -13,64 +13,83 @@
          xmlns:timeline = "http://purl.org/NET/c4dm/timeline.owl#"
          xmlns:event    = "http://purl.org/NET/c4dm/event.owl#">
 
-<rdf:Description rdf:about="/programmes/b00w5c65.rdf">
-  <rdfs:label>Description of a programme version of 26/11/2010</rdfs:label>
-  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-19T00:08:14Z</dcterms:created>
-  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-19T00:08:14Z</dcterms:modified>
-  <foaf:primaryTopic rdf:resource="/programmes/b00w5c65#programme"/>
+<rdf:Description rdf:about="/programmes/b00w231q.rdf">
+  <rdfs:label>Description of a programme version of Unforgiveable, That&#39;s What You Are</rdfs:label>
+  <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-19T00:03:58Z</dcterms:created>
+  <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-19T00:03:58Z</dcterms:modified>
+  <foaf:primaryTopic rdf:resource="/programmes/b00w231q#programme"/>
 </rdf:Description>
 
-<po:Version rdf:about="/programmes/b00w5c65#programme">
+<po:Version rdf:about="/programmes/b00w231q#programme">
 
-  <rdfs:label>A version of 26/11/2010</rdfs:label>
+  <rdfs:label>A version of Unforgiveable, That&#39;s What You Are</rdfs:label>
   
   <po:sound_format>Stereo</po:sound_format>
-  <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">9000</po:duration>
-  <po:pid>b00w5c65</po:pid>
+  <po:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1800</po:duration>
+  <po:pid>b00w231q</po:pid>
   <po:time>
     <timeline:Interval>
-      <rdfs:label>Time interval for a version of 26/11/2010</rdfs:label>
-      <timeline:timeline rdf:resource="/programmes/b00w5c65#timeline"/>
-      <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT9000S</timeline:duration>
+      <rdfs:label>Time interval for a version of Unforgiveable, That&#39;s What You Are</rdfs:label>
+      <timeline:timeline rdf:resource="/programmes/b00w231q#timeline"/>
+      <timeline:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT1800S</timeline:duration>
     </timeline:Interval>
   </po:time>
 
 
 </po:Version>
 
-<po:Episode rdf:about="/programmes/b00w5c6r#programme">
-  <rdfs:label>26/11/2010</rdfs:label>
-  <po:version rdf:resource="/programmes/b00w5c65#programme" />
+<po:Episode rdf:about="/programmes/b00w236m#programme">
+  <rdfs:label>Unforgiveable, That&#39;s What You Are</rdfs:label>
+  <po:version rdf:resource="/programmes/b00w231q#programme" />
 </po:Episode>
 
-<timeline:TimeLine rdf:about="/programmes/b00w5c65#timeline">
-  <rdfs:label>Timeline of a version of 26/11/2010</rdfs:label>
+<timeline:TimeLine rdf:about="/programmes/b00w231q#timeline">
+  <rdfs:label>Timeline of a version of Unforgiveable, That&#39;s What You Are</rdfs:label>
 </timeline:TimeLine>
 
-<po:Broadcast rdf:about="/programmes/b00w5c65#p00c7v8j">
+<po:Broadcast rdf:about="/programmes/b00w231q#p00c7tyt">
   <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
-  <po:pid>p00c7v8j</po:pid>
+  <po:pid>p00c7tyt</po:pid>
   <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-11-26</po:schedule_date>
   <event:time>
     <timeline:Interval>
-      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-26T10:00:00Z</timeline:start>
-      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-26T12:30:00Z</timeline:end>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-26T11:30:00Z</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-26T12:00:00Z</timeline:end>
     </timeline:Interval>
   </event:time>
   <po:broadcast_on>
-    <po:Service rdf:about="/services/asiannetwork#service">
-      <rdfs:label>BBC Asian Network</rdfs:label>
-    </po:Service>
+    <po:Service rdf:about="/services/radio4/fm#service">
+       <rdfs:label>FM</rdfs:label>
+       <po:parent_service rdf:resource="/services/radio4#service"/>
+     </po:Service>
   </po:broadcast_on>
-  <po:broadcast_of rdf:resource="/programmes/b00w5c65#programme" />
+  <po:broadcast_of rdf:resource="/programmes/b00w231q#programme" />
+</po:Broadcast>
+<po:Broadcast rdf:about="/programmes/b00w231q#p00c7vdc">
+  <rdf:type rdf:resource="http://purl.org/ontology/po/FirstBroadcast"/>
+  <po:pid>p00c7vdc</po:pid>
+  <po:schedule_date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-11-26</po:schedule_date>
+  <event:time>
+    <timeline:Interval>
+      <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-26T11:30:00Z</timeline:start>
+      <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-26T12:00:00Z</timeline:end>
+    </timeline:Interval>
+  </event:time>
+  <po:broadcast_on>
+    <po:Service rdf:about="/services/radio4/lw#service">
+       <rdfs:label>LW</rdfs:label>
+       <po:parent_service rdf:resource="/services/radio4#service"/>
+     </po:Service>
+  </po:broadcast_on>
+  <po:broadcast_of rdf:resource="/programmes/b00w231q#programme" />
 </po:Broadcast>
 
 
 
 
 <po:Availability>
-  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-26T12:32:00Z</timeline:start>
-  <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-12-03T12:32:00Z</timeline:end>
+  <timeline:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-11-26T12:02:00Z</timeline:start>
+  <timeline:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-12-03T12:02:00Z</timeline:end>
 </po:Availability>
 
 
