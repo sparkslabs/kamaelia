@@ -3,10 +3,15 @@ from bookmarks.output.models import programmes, keywords, analyseddata, rawdata,
 from datetime import timedelta,datetime
 from django.core.exceptions import ObjectDoesNotExist
 import math
+import string
 
 tvchannels = ["bbcone","bbctwo","bbcthree","bbcfour","cbbc","cbeebies","bbcnews","bbcparliament"]
 
 radiochannels = ["radio1","1xtra","radio2","radio3","radio4","5live","sportsextra","6music","radio7","asiannetwork","worldservice"]
+
+reduxmapping = {"bbcnews" : "bbcnews24","bbcparliament" : "bbcparl", "radio1" : "bbcr1", "1xtra" : "bbc1x", "radio2" : "bbcr2", \
+                "radio3" : "bbcr3", "radio4" : "bbcr4", "5live" : "bbcr5l", "sportsextra" : "r5lsx", "6music" : "bbc6m", "radio7" : "bbc7", \
+                "asiannetwork" : "bbcan"}
 
 allchannels = tvchannels + radiochannels
 
@@ -16,7 +21,8 @@ class ProgrammesHandler(BaseHandler):
     #fields = ('pid', 'channel', 'title', 'expectedstart', 'timediff', 'duration', 'imported', 'analysed', 'totaltweets', 'meantweets', 'mediantweets', 'modetweets', 'stdevtweets')
     #model = programmes
 
-    def read(self, request, pid, timestamp=False):
+    def read(self, request, pid, timestamp=False, redux=False):
+        #redux = ""
         #TODO: Add redux support for bookmarks here
         retdata = dict()
         try:
@@ -46,6 +52,11 @@ class ProgrammesHandler(BaseHandler):
             minutegroups = dict()
             totaltweets = 0
             minlimit = 0
+            maxtweets = 0
+            progtimestamp = 0
+            progchannel = None
+            progtimediff = 0
+            reduxchannel = None
             for row in data:
                 # This may not return some results at extreme ends, but should get the vast majority
                 # No point in looking for data outside this anyway as we can't link back into it
@@ -61,8 +72,19 @@ class ProgrammesHandler(BaseHandler):
                     if minlimit < group:
                         minlimit = group
                     if minutegroups.has_key(group):
-                        minutegroups[group] += line.totaltweets
+                        minutegroups[group] += int(line.totaltweets)
                         totaltweets += line.totaltweets
+                        if minutegroups[group] > maxtweets:
+                            maxtweets = minutegroups[group]
+
+                if row.timestamp > progtimestamp:
+                    progtimestamp = row.timestamp
+                    progtimediff = row.timediff
+                    progchannel = row.channel
+                    if reduxmapping.has_key(progchannel):
+                        reduxchannel = reduxmapping[progchannel]
+                    else:
+                        reduxchannel = progchannel
 
             minuteitems = minutegroups.items()
             minuteitems.sort()
@@ -99,53 +121,157 @@ class ProgrammesHandler(BaseHandler):
             retdata['stdevtweets'] = stdevtweets
 
 
-            if 0:
+            if 1:
+
                 retdata['bookmarks'] = list()
 
-                progdate = datetime.utcfromtimestamp(data[0].timestamp) + timedelta(seconds=data[0].utcoffset)
-                actualstart = progdate - timedelta(seconds=data[0].timediff)
-                minutedata = analyseddata.objects.filter(pid=pid).order_by('timestamp').all()
-                tweetmins = dict()
-                lastwasbookmark = False
+                if redux == "redux":
+                    progdatetime = datetime.utcfromtimestamp(progtimestamp)
+                    progdatestring = progdatetime.strftime("%Y-%m-%d")
+                    progtimestring = progdatetime.strftime("%H-%M-%S")
+
                 bookmarks = list()
-                bookmarkcont = list()
-                for minute in minutedata:
-                    # This isn't the most elegant BST solution, but it appears to work
-                    tweettime = datetime.utcfromtimestamp(minute.timestamp) + timedelta(seconds=data[0].utcoffset)
-                    proghour = tweettime.hour - actualstart.hour
-                    progmin = tweettime.minute - actualstart.minute
-                    progsec = tweettime.second - actualstart.second
-                    playertime = (((proghour * 60) + progmin) * 60) + progsec - 90 # needs between 60 and 120 secs removing to allow for tweeting time - using 90 for now
-                    if playertime > (data[0].duration - 60):
-                        playertimemin = (data[0].duration/60) - 1
-                        playertimesec = playertime%60
-                    elif playertime > 0:
-                        playertimemin = playertime/60
-                        playertimesec = playertime%60
-                    else:
-                        playertimemin = 0
-                        playertimesec = 0
-                    if minute.totaltweets > (1.5*data[0].stdevtweets+data[0].meantweets):
-                        if lastwasbookmark == True:
-                            bookmarkcont.append(playertimemin)
-                        else:
-                            if minute.totaltweets > (2.2*data[0].stdevtweets+data[0].meantweets) and minute.totaltweets > 9:
-                                lastwasbookmark = True
-                                bookmarks.append(playertimemin)
+                for minute in minuteitems:
+                    # Work out where the bookmarks should be
+                    if minute[1] > (2.2*stdevtweets+meantweets) and minute[1] > 9: # Arbitrary value chosen for now - needs experimentation - was 9
+
+                        wfdata = wordanalysis.objects.filter(timestamp=progtimestamp-progtimediff+(minute[0]*60),pid=pid,is_keyword=0,is_common=0).order_by('-count').all()
+
+                        if len(wfdata) > 0:
+                            bookmarkstart = False
+                            bookmarkend = False
+
+                            # Find most popular keyword
+                            is_word = True
+                            if wfdata[0].word != "":
+                                keyword = wfdata[0].word
                             else:
-                                lastwasbookmark = False
+                                keyword = wfdata[0].phrase
+                                is_word = False
+                            # Now look at each previous minute until it's no longer the top keyword
+                            currentstamp = progtimestamp-progtimediff+(minute[0]*60)
+                            topkeyword = keyword
+                            while topkeyword == keyword:
+                                currentstamp -= 60
+                                try:
+                                    dataset = wordanalysis.objects.filter(timestamp=currentstamp,pid=pid,is_keyword=0,is_common=0).order_by('-count').all()
+                                except ObjectDoesNotExist:
+                                    break
+                                for line in dataset:
+                                    if is_word:
+                                        topkeyword = line.word
+                                    else:
+                                        topkeyword = line.phrase
+                                    break
+
+                            startstamp = currentstamp
+                            endstamp = currentstamp + 60
+
+                            # Investigate the previous minute to see if the keyword from above is in the top 10
+                            tweetset = False
+                            rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=startstamp,timestamp__lt=endstamp).order_by('timestamp').all()
+                            for tweet in rawtweets:
+                                tweettext = string.lower(tweet.text)
+                                for items in """!"#$%&(),:;?@~[]'`{|}""":
+                                    tweettext = string.replace(tweettext,items,"")
+                                try:
+                                    if str(keyword).lower() in tweettext:
+                                        bookmarkstart = int(tweet.timestamp)
+                                        tweetset = True
+                                        break
+                                except UnicodeEncodeError:
+                                    break
+
+                            if not tweetset:
+                                rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=currentstamp,timestamp__lt=(currentstamp + 60)).order_by('timestamp').all()
+                                for tweet in rawtweets:
+                                    tweettext = string.lower(tweet.text)
+                                    for items in """!"#$%&(),:;?@~[]'`{|}""":
+                                        tweettext = string.replace(tweettext,items,"")
+                                    try:
+                                        if str(keyword).lower() in tweettext:
+                                            bookmarkstart = int(tweet.timestamp)
+                                            break
+                                    except UnicodeEncodeError:
+                                        break
+
+                            # Now look at each next minute until it's no longer the top keyword
+                            currentstamp = progtimestamp-progtimediff+(minute[0]*60)
+                            topkeyword = keyword
+                            while topkeyword == keyword:
+                                currentstamp += 60
+                                try:
+                                    dataset = wordanalysis.objects.filter(timestamp=currentstamp,pid=pid,is_keyword=0,is_common=0).order_by('-count').all()
+                                except ObjectDoesNotExist:
+                                    break
+                                for line in dataset:
+                                    if is_word:
+                                        topkeyword = line.word
+                                    else:
+                                        topkeyword = line.phrase
+                                    break
+
+                            startstamp = currentstamp
+                            endstamp = currentstamp + 60
+
+                            # Investigate the previous minute to see if the keyword from above is in the top 10
+                            tweetset = False
+                            rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=startstamp,timestamp__lt=endstamp).order_by('-timestamp').all()
+                            for tweet in rawtweets:
+                                tweettext = string.lower(tweet.text)
+                                for items in """!"#$%&(),:;?@~[]'`{|}""":
+                                    tweettext = string.replace(tweettext,items,"")
+                                try:
+                                    if str(keyword).lower() in tweettext:
+                                        bookmarkend = int(tweet.timestamp)
+                                        tweetset = True
+                                        break
+                                except UnicodeEncodeError:
+                                    break
+
+                            if not tweetset:
+                                rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=currentstamp,timestamp__lt=(currentstamp + 60)).order_by('-timestamp').all()
+                                for tweet in rawtweets:
+                                    tweettext = string.lower(tweet.text)
+                                    for items in """!"#$%&(),:;?@~[]'`{|}""":
+                                        tweettext = string.replace(tweettext,items,"")
+                                    try:
+                                        if str(keyword).lower() in tweettext:
+                                            bookmarkend = int(tweet.timestamp)
+                                            break
+                                    except UnicodeEncodeError:
+                                        break
+
+                            if (bookmarkstart and bookmarkend) and (bookmarkstart != bookmarkend):
+                                if bookmarkstart < (progtimestamp - progtimediff):
+                                    bookmarkstart = progtimestamp - progtimediff
+                                if bookmarkend > (progtimestamp - progtimediff + master.duration):
+                                    bookmarkend = progtimestamp - progtimediff + master.duration
+                                # Only bookmark worthy if it creates 'buzz' for 60 seconds or more
+                                if (len(bookmarks) > 0):
+                                    # Check if the bookmarks should be merged, allowing a slight overlap time of 20 seconds in case of a sudden lack of tweets
+                                    checkkeyword = bookmarks[len(bookmarks)-1][3]
+                                    originalkeyword = keyword
+                                    #try:
+                                    #    checkkeyword = string.lower(checkkeyword)
+                                    #    originalkeyword = string.lower(originalkeyword)
+                                    #except UnicodeEncodeError:
+                                    #    pass
+                                    if bookmarks[len(bookmarks)-1][1] >= (bookmarkstart - 20) and checkkeyword == originalkeyword:
+                                        bookmarks[len(bookmarks)-1][1] = bookmarkend
+                                        continue
+                                if (bookmarkend - bookmarkstart) > 60:
+                                    bookmarks.append([bookmarkstart,bookmarkend,bookmarkstart-80,keyword])
+
+                for bookmark in bookmarks:
+                    bookmarkpos = bookmark[2]-progtimestamp-progtimediff
+                    bookmarkmins = int(bookmarkpos / 60)
+                    bookmarksecs = int(bookmarkpos % 60)
+                    if redux == "redux":
+                        #TODO: Finish this!!!
+                        retdata['bookmarks'].append({'redux' : "http://g.bbcredux.com/programme/" + reduxchannel + "/" + progdatestring + "/" + progtimestring + "?start=" + str(bookmarkpos), 'startseconds' : bookmark[2]-progtimestamp-progtimediff, 'endseconds' : bookmark[1]-progtimestamp-progtimediff})
                     else:
-                        lastwasbookmark = False
-                    if not tweetmins.has_key(str(playertimemin)):
-                        tweetmins[str(playertimemin)] = int(minute.totaltweets)
-                if len(tweetmins) > 0:
-                    xlist = range(0,data[0].duration/60)
-                    for min in xlist:
-                        if min in bookmarks:
-                            retdata['bookmarks'].append({'iplayer' : "http://bbc.co.uk/i/" + pid + "/?t=" + str(min) + "m" + str(playertimesec) + "s", 'startseconds' : min*60+playertimesec, 'endseconds' : min*60+playertimesec+60})
-                            lastindex = len(retdata['bookmarks']) - 1
-                        elif min in bookmarkcont:
-                            retdata['bookmarks'][lastindex]['endseconds'] = min*60+playertimesec+60
+                        retdata['bookmarks'].append({'iplayer' : "http://bbc.co.uk/i/" + pid + "/?t=" + str(bookmarkmins) + "m" + str(bookmarksecs) + "s", 'startseconds' : bookmark[2]-progtimestamp-progtimediff, 'endseconds' : bookmark[1]-progtimestamp-progtimediff})
 
         else:
             retdata['status'] = "ERROR"
