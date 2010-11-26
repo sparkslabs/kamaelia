@@ -1086,7 +1086,7 @@ def rawtweetsv2(request,pid,timestamp,aggregated=False):
             for minute in tweetitems:
                 for tweet in minute[1]:
                     output += tweet
-            output += "</div>"
+            output += "</div><br />"
             output += "Tweets: <a href=\"/api/" + pid + "/" + str(timestamp) + "/aggregated/tweets.json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + pid + "/" + str(timestamp) + "/aggregated/tweets.xml\" target=\"_blank\">XML</a><br />"
         else:
             endstamp = timestamp + 60
