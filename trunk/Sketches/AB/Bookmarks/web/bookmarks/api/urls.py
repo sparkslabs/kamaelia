@@ -12,8 +12,8 @@ urlpatterns = patterns('',
    url(r'^summary.json', summary_handler, { 'emitter_format': 'json' }),
    url(r'^summary.xml', summary_handler, { 'emitter_format': 'xml' }),
    # The below handle raw tweet output for minute periods within programmes
-   url(r'^(?P<pid>\w+)/(?P<progpos>\d+)/aggregated/tweets.json', timestamp_handler, { 'emitter_format': 'json' }),
-   url(r'^(?P<pid>\w+)/(?P<progpos>\d+)/aggregated/tweets.xml', timestamp_handler, { 'emitter_format': 'xml' }),
+   url(r'^(?P<pid>\w+)/(?P<timestamp>\d+)/(?P<aggregated>\D+)/tweets.json', timestamp_handler, { 'emitter_format': 'json' }),
+   url(r'^(?P<pid>\w+)/(?P<timestamp>\d+)/(?P<aggregated>\D+)/tweets.xml', timestamp_handler, { 'emitter_format': 'xml' }),
    url(r'^(?P<pid>\w+)/(?P<timestamp>\d+)/tweets.json', timestamp_handler, { 'emitter_format': 'json' }),
    url(r'^(?P<pid>\w+)/(?P<timestamp>\d+)/tweets.xml', timestamp_handler, { 'emitter_format': 'xml' }),
    # The below handle programme stats either aggregated or for a single programme
