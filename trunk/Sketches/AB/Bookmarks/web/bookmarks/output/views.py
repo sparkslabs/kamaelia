@@ -476,8 +476,10 @@ def programme(request,pid,redux=False):
                         output += "<br /><a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(playertimemin) + "m" + str(playertimesec) + "s\" target=\"_blank\">http://bbc.co.uk/i/" + pid + "/?t=" + str(playertimemin) + "m" + str(playertimesec) + "s</a>"
         else:
             output += "<br />Not enough data to generate statistics.<br />"
-
-        output += "<br /><br />API: <a href=\"/api/" + data[0].pid + "/stats.json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + data[0].pid + "/stats.xml\" target=\"_blank\">XML</a>"
+        if redux == "redux":
+            output += "<br /><br />API: <a href=\"/api/" + data[0].pid + "/redux/stats.json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + data[0].pid + "/redux/stats.xml\" target=\"_blank\">XML</a>"
+        else:
+            output += "<br /><br />API: <a href=\"/api/" + data[0].pid + "/stats.json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + data[0].pid + "/stats.xml\" target=\"_blank\">XML</a>"
         output += "<br />Tweets: <a href=\"/api/" + data[0].pid + ".json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + data[0].pid + ".xml\" target=\"_blank\">XML</a>"
         # Reveal tweets is temporary - will allow selection and viewing of single minutes once the database has been redesigned.
         output += "<br /><br /><a href=\"/channel-graph/" + data[0].channel + "/" + str(progdate.strftime("%Y/%m/%d")) + "/\">Back to channel page</a> - <a href=\"http://www.bbc.co.uk/programmes/" + data[0].pid + "\" target=\"_blank\">View BBC /programmes page</a>"
@@ -587,10 +589,16 @@ def programmev2(request,pid,timestamp=False,redux=False):
         # TODO The channel linked to here won't necessarily be the right one
         output += "<br /><br />"#<a href=\"/channel-graph/" + row.channel + "/" + str(progdate.strftime("%Y/%m/%d")) + "/\">Back to channel page</a> -
         if rowcount > 1:
-            output += "API: <a href=\"/api/" + pid + "/stats.json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + pid + "/stats.xml\" target=\"_blank\">XML</a>"
+            if redux == "redux":
+                output += "API: <a href=\"/api/" + pid + "/redux/stats.json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + pid + "/redux/stats.xml\" target=\"_blank\">XML</a>"
+            else:
+                output += "API: <a href=\"/api/" + pid + "/stats.json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + pid + "/stats.xml\" target=\"_blank\">XML</a>"
             output += "<br />Tweets: <a href=\"/api/" + pid + ".json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + pid + ".xml\" target=\"_blank\">XML</a><br /><br />"
         else:
-            output += "API: <a href=\"/api/" + pid + "/" + str(int(data[0].timestamp)) + "/stats.json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + pid + "/" + str(int(data[0].timestamp)) + "/stats.xml\" target=\"_blank\">XML</a>"
+            if redux == "redux":
+                output += "API: <a href=\"/api/" + pid + "/" + str(int(data[0].timestamp)) + "/redux/stats.json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + pid + "/" + str(int(data[0].timestamp)) + "/redux/stats.xml\" target=\"_blank\">XML</a>"
+            else:
+                output += "API: <a href=\"/api/" + pid + "/" + str(int(data[0].timestamp)) + "/stats.json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + pid + "/" + str(int(data[0].timestamp)) + "/stats.xml\" target=\"_blank\">XML</a>"
             output += "<br />Tweets: <a href=\"/api/" + pid + "/" + str(int(data[0].timestamp)) + ".json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + pid + "/" + str(int(data[0].timestamp)) + ".xml\" target=\"_blank\">XML</a><br /><br />"
         output += "<a href=\"http://www.bbc.co.uk/programmes/" + pid + "\" target=\"_blank\">View BBC /programmes page</a>"
 
