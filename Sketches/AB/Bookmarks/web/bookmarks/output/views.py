@@ -166,11 +166,12 @@ def channelgraph(request,channel,year=0,month=0,day=0):
         output += '<style type="text/css">@import "/media/jquery/jquery.datepick.css";</style>\n \
                     <script type="text/javascript" src="/media/jquery/jquery.datepick.js"></script>\n'
         output += "<script type=\"text/javascript\">\n \
-                        $(function() {\n "
+                        jQuery.noConflict();\
+                        jQuery(function() {\n "
         if len(str(day)) == 2 and len(str(month)) == 2 and len(str(year)) == 4:
-            output += "$('#inlineDatepicker').datepick({onSelect: showDate, defaultDate: '" + month + "/" + day + "/" + year + "', selectDefaultDate: true});\n"
+            output += "jQuery('#inlineDatepicker').datepick({onSelect: showDate, defaultDate: '" + month + "/" + day + "/" + year + "', selectDefaultDate: true});\n"
         else:
-            output += "$('#inlineDatepicker').datepick({onSelect: showDate});\n "
+            output += "jQuery('#inlineDatepicker').datepick({onSelect: showDate});\n "
         output += "});\n \
                         \n \
                         function showDate(date) {\n \
@@ -186,6 +187,12 @@ def channelgraph(request,channel,year=0,month=0,day=0):
                             window.location = '/channel-graph/" + channel + "/' + pickerYear + '/' + pickerMonth + '/' + pickerDay + '/';\n \
                         }\n \
                     </script>\n"
+        output += """<!--[if IE]><script type=\"text/javascript\" src=\"/media/prototypejs/excanvas.js\"></script><![endif]-->
+                <script type=\"text/javascript\" src=\"/media/prototypejs/prototype.js\"></script>
+                <script type=\"text/javascript\" src=\"/media/prototypejs/base64.js\"></script>
+                <script type=\"text/javascript\" src=\"/media/prototypejs/canvas2image.js\"></script>
+                <script type=\"text/javascript\" src=\"/media/prototypejs/canvastext.js\"></script>
+                <script type=\"text/javascript\" src=\"/media/prototypejs/flotr.js\"></script>"""
 
         output += "<br /><a href=\"http://www.bbc.co.uk/" + channel + "\" target=\"_blank\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
         if len(data) < 1:
@@ -211,48 +218,7 @@ def channelgraph(request,channel,year=0,month=0,day=0):
                         else:
                             output += "<br />" + str(progdate.strftime("%H:%M")) + ": <a href=\"/programmes/" + programme.pid + "\">" + programme.title + "</a> (see below)"
 
-                        actualstart = progdate - timedelta(seconds=programme.timediff)
-                        minutedata = analyseddata.objects.filter(pid=programme.pid).order_by('timestamp').all()
-
-                        tweetmins = dict()
-                        for minute in minutedata:
-                            tweettime = datetime.utcfromtimestamp(minute.timestamp) + timedelta(seconds=data[0].utcoffset)
-                            proghour = tweettime.hour - actualstart.hour
-                            progmin = tweettime.minute - actualstart.minute
-                            progsec = tweettime.second - actualstart.second
-                            playertime = (((proghour * 60) + progmin) * 60) + progsec - 90 # needs between 60 and 120 secs removing to allow for tweeting time - using 90 for now
-                            if playertime > (programme.duration - 60):
-                                playertimemin = (programme.duration/60) - 1
-                            elif playertime > 0:
-                                playertimemin = playertime/60
-                            else:
-                                playertimemin = 0
-                            if not tweetmins.has_key(str(playertimemin)):
-                                tweetmins[str(playertimemin)] = int(minute.totaltweets)
-
-                        xlist = range(0,programme.duration/60)
-                        ylist = list()
-                        for min in xlist:
-                            if tweetmins.has_key(str(min)):
-                                ylist.append(tweetmins[str(min)])
-                            else:
-                                ylist.append(0)
-
-                        maxy = max(ylist)
-                        maxx = max(xlist)
-
-                        mainwidth = int(1000/(maxx+1)) * (maxx + 1)
-
-                        graph = SimpleLineChart(mainwidth,300,y_range=[0,maxy])
-                        graph.add_data(ylist)
-
-                        #TODO: Fix the bad labelling! - perhaps see if flotr is any better
-                        graph.set_title("Tweets per minute")
-                        left_axis = ['',int(maxy/4),int(maxy/2),int(3*maxy/4),int(maxy)]
-                        bottom_axis = [0,int(maxx/8),int(maxx/4),int(3*maxx/8),int(maxx/2),int(5*maxx/8),int(3*maxx/4),int(7*maxx/8),int(maxx)]
-                        graph.set_axis_labels(Axis.LEFT,left_axis)
-                        graph.set_axis_labels(Axis.BOTTOM,bottom_axis)
-                        output += "<br /><img src=\"" + graph.get_url() + "\"><br />"
+                        output += programmev2data(False,"graphs-channel",programme.pid,programme.timestamp,redux,False)
 
                     else:
                         if redux:
@@ -275,7 +241,6 @@ def programme(request,pid,redux=False):
 
     output = header
     data = programmes.objects.filter(pid=pid).all()
-    output += "<br />This output is due to be replaced. New views are currently under development at <a href=\"/programmesv2/" + pid + "\">/programmesv2</a>.<br />"
     if len(data) == 0:
         output += "<br />Invalid pid supplied or no data has yet been captured for this programme."
         output += "<br /><br /><a href=\"/\">Back to index</a>"
@@ -446,7 +411,7 @@ def programme(request,pid,redux=False):
                     else:
                         blockgraph2 += "<div style=\"width: " + str(width) + "px; height: 20px; float: left; background-color: #FFFFFF\"></div>"
                     if tweetstamps.has_key(str(min)):
-                        blockgraph3 += "<a href=\"/programmes/" + pid + "/" + str(tweetstamps[str(min)]) + "/\" target=\"_blank\"><div style=\"width: " + str(width) + "px; height: 20px; cursor: pointer; float: left; background-color: #000000; opacity: " + str(opacity) + "\"></div></a>"
+                        blockgraph3 += "<a href=\"/programmes-old/" + pid + "/" + str(tweetstamps[str(min)]) + "/\" target=\"_blank\"><div style=\"width: " + str(width) + "px; height: 20px; cursor: pointer; float: left; background-color: #000000; opacity: " + str(opacity) + "\"></div></a>"
                     else:
                         blockgraph3 += "<div style=\"width: " + str(width) + "px; height: 20px; float: left; background-color: #000000; opacity: " + str(opacity) + "\"></div>"
             else:
@@ -464,7 +429,7 @@ def programme(request,pid,redux=False):
                     else:
                         blockgraph2 += "<div style=\"width: " + str(width) + "px; height: 20px; float: left; background-color: #FFFFFF\"></div>"
                     if tweetstamps.has_key(str(min)):
-                        blockgraph3 += "<a href=\"/programmes/" + pid + "/" + str(tweetstamps[str(min)]) + "/\" target=\"_blank\"><div style=\"width: " + str(width) + "px; height: 20px; cursor: pointer; float: left; background-color: #000000; opacity: " + str(opacity) + "\"></div></a>"
+                        blockgraph3 += "<a href=\"/programmes-old/" + pid + "/" + str(tweetstamps[str(min)]) + "/\" target=\"_blank\"><div style=\"width: " + str(width) + "px; height: 20px; cursor: pointer; float: left; background-color: #000000; opacity: " + str(opacity) + "\"></div></a>"
                     else:
                         blockgraph3 += "<div style=\"width: " + str(width) + "px; height: 20px; float: left; background-color: #000000; opacity: " + str(opacity) + "\"></div>"
             blockgraph += "</div>"
@@ -512,8 +477,8 @@ def programme(request,pid,redux=False):
         else:
             output += "<br />Not enough data to generate statistics.<br />"
 
-        output += "<br /><br />API: <a href=\"/api/" + data[0].pid + ".json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + data[0].pid + ".xml\" target=\"_blank\">XML</a>"
-        output += "<br />Tweets: <a href=\"/api/" + data[0].pid + "/tweets.json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + data[0].pid + "/tweets.xml\" target=\"_blank\">XML</a>"
+        output += "<br /><br />API: <a href=\"/api/" + data[0].pid + "/stats.json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + data[0].pid + "/stats.xml\" target=\"_blank\">XML</a>"
+        output += "<br />Tweets: <a href=\"/api/" + data[0].pid + ".json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + data[0].pid + ".xml\" target=\"_blank\">XML</a>"
         # Reveal tweets is temporary - will allow selection and viewing of single minutes once the database has been redesigned.
         output += "<br /><br /><a href=\"/channel-graph/" + data[0].channel + "/" + str(progdate.strftime("%Y/%m/%d")) + "/\">Back to channel page</a> - <a href=\"http://www.bbc.co.uk/programmes/" + data[0].pid + "\" target=\"_blank\">View BBC /programmes page</a>"
 
@@ -580,6 +545,7 @@ def programmev2(request,pid,timestamp=False,redux=False):
         output += "<br />Invalid pid supplied or no data has yet been captured for this programme."
         output += "<br /><br /><a href=\"/\">Back to index</a>"
     else:
+        output += "<br />Can't see any bookmarks? Programmes broadcast before 24/11/10 only show bookmarks using the old /programmes pages available via <a href=\"/programmes-old/" + pid + "\">this link</a>.<br />"
         if rowcount == 1:
             channel = data[0].channel
             output += "<br /><a href=\"http://www.bbc.co.uk/" + channel + "\" target=\"_blank\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br /><br />"
@@ -609,7 +575,7 @@ def programmev2(request,pid,timestamp=False,redux=False):
         if rowcount > 1:
             output += "<br /><br /><strong>Broadcasts</strong>"
             for row in data:
-                output += "<br /><a href=\"/programmesv2/" + pid + "/" + str(int(row.timestamp))
+                output += "<br /><a href=\"/programmes/" + pid + "/" + str(int(row.timestamp))
                 if redux == "redux":
                     output += "/redux"
                 output += "\">"
@@ -620,6 +586,12 @@ def programmev2(request,pid,timestamp=False,redux=False):
 
         # TODO The channel linked to here won't necessarily be the right one
         output += "<br /><br />"#<a href=\"/channel-graph/" + row.channel + "/" + str(progdate.strftime("%Y/%m/%d")) + "/\">Back to channel page</a> -
+        if rowcount > 1:
+            output += "API: <a href=\"/api/" + pid + "/stats.json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + pid + "/stats.xml\" target=\"_blank\">XML</a>"
+            output += "<br />Tweets: <a href=\"/api/" + pid + ".json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + pid + ".xml\" target=\"_blank\">XML</a><br /><br />"
+        else:
+            output += "API: <a href=\"/api/" + pid + "/" + str(int(data[0].timestamp)) + "/stats.json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + pid + "/" + str(int(data[0].timestamp)) + "/stats.xml\" target=\"_blank\">XML</a>"
+            output += "<br />Tweets: <a href=\"/api/" + pid + "/" + str(int(data[0].timestamp)) + ".json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + pid + "/" + str(int(data[0].timestamp)) + ".xml\" target=\"_blank\">XML</a><br /><br />"
         output += "<a href=\"http://www.bbc.co.uk/programmes/" + pid + "\" target=\"_blank\">View BBC /programmes page</a>"
 
     output += footer
@@ -636,6 +608,11 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
         data = programmes.objects.filter(pid=pid,timestamp=timestamp).all()
     else:
         data = programmes.objects.filter(pid=pid).all()
+    elemitem = "all"
+    if "-" in element and "graphs" in element:
+        splitter = element.split("-")
+        element = splitter[0]
+        elemitem = splitter[1]
     if element == "statistics":
         # Print a line like Total tweets: 7 - Tweets per minute - Mean: 0.27 - Median: 0 - Mode: 0 - STDev: 0.53
         minutegroups = dict()
@@ -691,6 +668,7 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
         output += " - Median: " + str(round(mediantweets,2)) + " - Mode: " + str(round(modetweets,2))
         output += " - STDev: " + str(round(stdevtweets,2))
     elif element == "graphs":
+        #TODO should really create an automatic saved cache of graphs that won't change again - avoids the need to javascript too
         output += """<style type=\"text/css\">
                         .bmgradient {
                             background: #FF6633;
@@ -739,99 +717,93 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
             jsminlist = str(minuteitems).replace(")","]")
             jsminlist = jsminlist.replace("(","[")
 
-            output += "<div style=\"width: 990px; text-align: center; margin-left: 20px\"><strong>Tweets Per Minute vs. Programme Position</strong></div><div id=\"container\" style=\"width: 990px; height: 300px\"></div>"
-
-            output += "<script type=\"text/javascript\">var data = " + jsminlist + "; var f =  Flotr.draw($('container'),[data],{label: 'test label', lines: {lineWidth: 1}});</script>"
-
-            if len(data) == 1:
-                meantweets = data[0].meantweets
-                stdevtweets = data[0].stdevtweets
+            if elemitem == "channel":
+                containername = "container-" + progchannel + "-" + str(progtimestamp)
             else:
-                meantweets = totaltweets / (master.duration / 60)
-                stdevtotal = 0
-                for minute in minuteitems:
-                    # Calculate standard deviation
-                    stdevtotal += (minute[1] - meantweets) * (minute[1] - meantweets)
-                stdevtweets = math.sqrt(stdevtotal / len(minuteitems))
+                containername = "container"
 
-            slicewidth = int(1000/len(minuteitems))
-            if slicewidth < 1:
-                slicewidth = 1
+            output += "<div style=\"width: 990px; text-align: center; margin-left: 20px\"><strong>Tweets Per Minute vs. Programme Position</strong></div><div id=\"" + containername + "\" style=\"width: 990px; height: 300px\"></div>"
 
-            if redux == "redux":
-                progdatetime = datetime.utcfromtimestamp(progtimestamp)
-                progdatestring = progdatetime.strftime("%Y-%m-%d")
-                progtimestring = progdatetime.strftime("%H-%M-%S")
+            output += "<script type=\"text/javascript\">var data = " + jsminlist + "; var f =  Flotr.draw($('" + containername + "'),[data],{label: 'test label', lines: {lineWidth: 1}});</script>"
 
-            progskipplot = ""
-            bookmarkplot = ""
-            rawtweetplot = ""
-            bookmarks = list()
-            for minute in minuteitems:
-                opacity = float(minute[1]) / maxtweets
-                if redux == "redux":
-                    # Any channel will work fine for redux but iPlayer needs the most recent
-                    progskipplot += "<a href=\"http://g.bbcredux.com/programme/" + reduxchannel + "/" + progdatestring + "/" + progtimestring + "?start=" + str(60*minute[0]) + "\" target=\"_blank\">"
-                else:
-                    progskipplot += "<a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(minute[0]) + "m0s\" target=\"_blank\">"
-                progskipplot += "<div style=\"float: left; opacity: " + str(opacity) + ";cursor: pointer;background-color: #3333FF; height: 40px; width: " + str(slicewidth) + "px;filter:alpha(opacity=" + str(int(opacity * 100)) + ")\"></div></a>"
+            if elemitem != "channel":
+            #if 1:
+                # Not a channel page so print the slice plots too
                 if len(data) == 1:
-                    rawtweetplot += "<a href=\"/raw/" + pid + "/" + str(int(progtimestamp-progtimediff+(minute[0]*60))) + "\" target=\"_blank\"><div style=\"float: left; opacity: " + str(opacity) + ";cursor: pointer;background-color: #009933; height: 40px; width: " + str(slicewidth) + "px;filter:alpha(opacity=" + str(int(opacity * 100)) + ")\"></div></a>"
+                    meantweets = data[0].meantweets
+                    stdevtweets = data[0].stdevtweets
                 else:
-                    rawtweetplot += "<a href=\"/raw/" + pid + "/" + str(minute[0]) + "/aggregated\" target=\"_blank\"><div style=\"float: left; opacity: " + str(opacity) + ";cursor: pointer;background-color: #009933; height: 40px; width: " + str(slicewidth) + "px;filter:alpha(opacity=" + str(int(opacity * 100)) + ")\"></div></a>"
+                    meantweets = totaltweets / (master.duration / 60)
+                    stdevtotal = 0
+                    for minute in minuteitems:
+                        # Calculate standard deviation
+                        stdevtotal += (minute[1] - meantweets) * (minute[1] - meantweets)
+                    stdevtweets = math.sqrt(stdevtotal / len(minuteitems))
 
-                # Work out where the bookmarks should be
-                if minute[1] > (2.2*stdevtweets+meantweets) and minute[1] > 9: # Arbitrary value chosen for now - needs experimentation - was 9
+                slicewidth = int(1000/len(minuteitems))
+                if slicewidth < 1:
+                    slicewidth = 1
 
-                    wfdata = wordanalysis.objects.filter(timestamp=progtimestamp-progtimediff+(minute[0]*60),pid=pid,is_keyword=0,is_common=0).order_by('-count').all()
+                if redux == "redux":
+                    progdatetime = datetime.utcfromtimestamp(progtimestamp)
+                    progdatestring = progdatetime.strftime("%Y-%m-%d")
+                    progtimestring = progdatetime.strftime("%H-%M-%S")
 
-                    if len(wfdata) > 0:
-                        bookmarkstart = False
-                        bookmarkend = False
+                progskipplot = ""
+                bookmarkplot = ""
+                rawtweetplot = ""
+                bookmarks = list()
+                for minute in minuteitems:
+                    opacity = float(minute[1]) / maxtweets
+                    if redux == "redux":
+                        # Any channel will work fine for redux but iPlayer needs the most recent
+                        progskipplot += "<a href=\"http://g.bbcredux.com/programme/" + reduxchannel + "/" + progdatestring + "/" + progtimestring + "?start=" + str(60*minute[0]) + "\" target=\"_blank\">"
+                    else:
+                        progskipplot += "<a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(minute[0]) + "m0s\" target=\"_blank\">"
+                    progskipplot += "<div style=\"float: left; opacity: " + str(opacity) + ";cursor: pointer;background-color: #3333FF; height: 40px; width: " + str(slicewidth) + "px;filter:alpha(opacity=" + str(int(opacity * 100)) + ")\"></div></a>"
+                    if len(data) == 1:
+                        rawtweetplot += "<a href=\"/raw/" + pid + "/" + str(int(progtimestamp-progtimediff+(minute[0]*60))) + "\" target=\"_blank\"><div style=\"float: left; opacity: " + str(opacity) + ";cursor: pointer;background-color: #009933; height: 40px; width: " + str(slicewidth) + "px;filter:alpha(opacity=" + str(int(opacity * 100)) + ")\"></div></a>"
+                    else:
+                        rawtweetplot += "<a href=\"/raw/" + pid + "/" + str(minute[0]) + "/aggregated\" target=\"_blank\"><div style=\"float: left; opacity: " + str(opacity) + ";cursor: pointer;background-color: #009933; height: 40px; width: " + str(slicewidth) + "px;filter:alpha(opacity=" + str(int(opacity * 100)) + ")\"></div></a>"
 
-                        # Find most popular keyword
-                        is_word = True
-                        if wfdata[0].word != "":
-                            keyword = wfdata[0].word
-                        else:
-                            keyword = wfdata[0].phrase
-                            is_word = False
-                        # Now look at each previous minute until it's no longer the top keyword
-                        currentstamp = progtimestamp-progtimediff+(minute[0]*60)
-                        topkeyword = keyword
-                        while topkeyword == keyword:
-                            currentstamp -= 60
-                            try:
-                                dataset = wordanalysis.objects.filter(timestamp=currentstamp,pid=pid,is_keyword=0,is_common=0).order_by('-count').all()
-                            except ObjectDoesNotExist:
-                                break
-                            for line in dataset:
-                                if is_word:
-                                    topkeyword = line.word
-                                else:
-                                    topkeyword = line.phrase
-                                break
+                    # Work out where the bookmarks should be
+                    if minute[1] > (2.2*stdevtweets+meantweets) and minute[1] > 9: # Arbitrary value chosen for now - needs experimentation - was 9
 
-                        startstamp = currentstamp
-                        endstamp = currentstamp + 60
+                        wfdata = wordanalysis.objects.filter(timestamp=progtimestamp-progtimediff+(minute[0]*60),pid=pid,is_keyword=0,is_common=0).order_by('-count').all()
 
-                        # Investigate the previous minute to see if the keyword from above is in the top 10
-                        tweetset = False
-                        rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=startstamp,timestamp__lt=endstamp).order_by('timestamp').all()
-                        for tweet in rawtweets:
-                            tweettext = string.lower(tweet.text)
-                            for items in """!"#$%&(),:;?@~[]'`{|}""":
-                                tweettext = string.replace(tweettext,items,"")
-                            try:
-                                if str(keyword).lower() in tweettext:
-                                    bookmarkstart = int(tweet.timestamp)
-                                    tweetset = True
+                        if len(wfdata) > 0:
+                            bookmarkstart = False
+                            bookmarkend = False
+
+                            # Find most popular keyword
+                            is_word = True
+                            if wfdata[0].word != "":
+                                keyword = wfdata[0].word
+                            else:
+                                keyword = wfdata[0].phrase
+                                is_word = False
+                            # Now look at each previous minute until it's no longer the top keyword
+                            currentstamp = progtimestamp-progtimediff+(minute[0]*60)
+                            topkeyword = keyword
+                            while topkeyword == keyword:
+                                currentstamp -= 60
+                                try:
+                                    dataset = wordanalysis.objects.filter(timestamp=currentstamp,pid=pid,is_keyword=0,is_common=0).order_by('-count').all()
+                                except ObjectDoesNotExist:
                                     break
-                            except UnicodeEncodeError:
-                                break
+                                for line in dataset:
+                                    if is_word:
+                                        topkeyword = line.word
+                                    else:
+                                        topkeyword = line.phrase
+                                    break
 
-                        if not tweetset:
-                            rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=currentstamp,timestamp__lt=(currentstamp + 60)).order_by('timestamp').all()
+                            startstamp = currentstamp
+                            endstamp = currentstamp + 60
+
+                            # Investigate the previous minute to see if the keyword from above is in the top 10
+                            tweetset = False
+                            rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=startstamp,timestamp__lt=endstamp).order_by('timestamp').all()
                             for tweet in rawtweets:
                                 tweettext = string.lower(tweet.text)
                                 for items in """!"#$%&(),:;?@~[]'`{|}""":
@@ -839,46 +811,46 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
                                 try:
                                     if str(keyword).lower() in tweettext:
                                         bookmarkstart = int(tweet.timestamp)
+                                        tweetset = True
                                         break
                                 except UnicodeEncodeError:
                                     break
 
-                        # Now look at each next minute until it's no longer the top keyword
-                        currentstamp = progtimestamp-progtimediff+(minute[0]*60)
-                        topkeyword = keyword
-                        while topkeyword == keyword:
-                            currentstamp += 60
-                            try:
-                                dataset = wordanalysis.objects.filter(timestamp=currentstamp,pid=pid,is_keyword=0,is_common=0).order_by('-count').all()
-                            except ObjectDoesNotExist:
-                                break
-                            for line in dataset:
-                                if is_word:
-                                    topkeyword = line.word
-                                else:
-                                    topkeyword = line.phrase
-                                break
+                            if not tweetset:
+                                rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=currentstamp,timestamp__lt=(currentstamp + 60)).order_by('timestamp').all()
+                                for tweet in rawtweets:
+                                    tweettext = string.lower(tweet.text)
+                                    for items in """!"#$%&(),:;?@~[]'`{|}""":
+                                        tweettext = string.replace(tweettext,items,"")
+                                    try:
+                                        if str(keyword).lower() in tweettext:
+                                            bookmarkstart = int(tweet.timestamp)
+                                            break
+                                    except UnicodeEncodeError:
+                                        break
 
-                        startstamp = currentstamp
-                        endstamp = currentstamp + 60
-
-                        # Investigate the previous minute to see if the keyword from above is in the top 10
-                        tweetset = False
-                        rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=startstamp,timestamp__lt=endstamp).order_by('-timestamp').all()
-                        for tweet in rawtweets:
-                            tweettext = string.lower(tweet.text)
-                            for items in """!"#$%&(),:;?@~[]'`{|}""":
-                                tweettext = string.replace(tweettext,items,"")
-                            try:
-                                if str(keyword).lower() in tweettext:
-                                    bookmarkend = int(tweet.timestamp)
-                                    tweetset = True
+                            # Now look at each next minute until it's no longer the top keyword
+                            currentstamp = progtimestamp-progtimediff+(minute[0]*60)
+                            topkeyword = keyword
+                            while topkeyword == keyword:
+                                currentstamp += 60
+                                try:
+                                    dataset = wordanalysis.objects.filter(timestamp=currentstamp,pid=pid,is_keyword=0,is_common=0).order_by('-count').all()
+                                except ObjectDoesNotExist:
                                     break
-                            except UnicodeEncodeError:
-                                break
+                                for line in dataset:
+                                    if is_word:
+                                        topkeyword = line.word
+                                    else:
+                                        topkeyword = line.phrase
+                                    break
 
-                        if not tweetset:
-                            rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=currentstamp,timestamp__lt=(currentstamp + 60)).order_by('-timestamp').all()
+                            startstamp = currentstamp
+                            endstamp = currentstamp + 60
+
+                            # Investigate the previous minute to see if the keyword from above is in the top 10
+                            tweetset = False
+                            rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=startstamp,timestamp__lt=endstamp).order_by('-timestamp').all()
                             for tweet in rawtweets:
                                 tweettext = string.lower(tweet.text)
                                 for items in """!"#$%&(),:;?@~[]'`{|}""":
@@ -886,72 +858,86 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
                                 try:
                                     if str(keyword).lower() in tweettext:
                                         bookmarkend = int(tweet.timestamp)
+                                        tweetset = True
                                         break
                                 except UnicodeEncodeError:
                                     break
 
-                        if (bookmarkstart and bookmarkend) and (bookmarkstart != bookmarkend):
-                            if bookmarkstart < (progtimestamp - progtimediff):
-                                bookmarkstart = progtimestamp - progtimediff
-                            if bookmarkend > (progtimestamp - progtimediff + master.duration):
-                                bookmarkend = progtimestamp - progtimediff + master.duration
-                            # Only bookmark worthy if it creates 'buzz' for 60 seconds or more
-                            if (len(bookmarks) > 0):
-                                # Check if the bookmarks should be merged, allowing a slight overlap time of 20 seconds in case of a sudden lack of tweets
-                                checkkeyword = bookmarks[len(bookmarks)-1][3]
-                                originalkeyword = keyword
-                                #try:
-                                #    checkkeyword = string.lower(checkkeyword)
-                                #    originalkeyword = string.lower(originalkeyword)
-                                #except UnicodeEncodeError:
-                                #    pass
-                                if bookmarks[len(bookmarks)-1][1] >= (bookmarkstart - 20) and checkkeyword == originalkeyword:
-                                    bookmarks[len(bookmarks)-1][1] = bookmarkend
-                                    continue
-                            if (bookmarkend - bookmarkstart) > 60:
-                                bookmarks.append([bookmarkstart,bookmarkend,bookmarkstart-80,keyword])
+                            if not tweetset:
+                                rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=currentstamp,timestamp__lt=(currentstamp + 60)).order_by('-timestamp').all()
+                                for tweet in rawtweets:
+                                    tweettext = string.lower(tweet.text)
+                                    for items in """!"#$%&(),:;?@~[]'`{|}""":
+                                        tweettext = string.replace(tweettext,items,"")
+                                    try:
+                                        if str(keyword).lower() in tweettext:
+                                            bookmarkend = int(tweet.timestamp)
+                                            break
+                                    except UnicodeEncodeError:
+                                        break
 
-            # The +3 in the widths below gets around an IE CSS issue. All other browsers will ignore it
-            output += "<div id=\"blockcontainer\" style=\"margin-left: 28px; border: 1px solid #444444; max-width: " + str(len(minuteitems)*slicewidth) + "\">"
-            if redux == "redux":
-                output += "<div style=\"font-size: 8pt; padding: 2px 0px 2px 4px; background-color: #3333FF; opacity: 0.8; color: #FFFFFF; filter:alpha(opacity=30)\">Redux Links</div>"
-            else:
-                output += "<div style=\"font-size: 8pt; padding: 2px 0px 2px 4px; background-color: #3333FF; opacity: 0.8; color: #FFFFFF; filter:alpha(opacity=30)\">iPlayer Links</div>"
-            output += "<div style=\"width= " + str(len(minuteitems)*slicewidth+3) + "px;overflow: hidden;height: 40px;\">" + progskipplot + "</div>"
-            output += "<div style=\"font-size: 8pt; padding: 2px 0px 2px 4px; background-color: #FF6633; opacity: 0.8; color: #FFFFFF; filter:alpha(opacity=30)\">Bookmarks</div>"
-            bmtotal = len(bookmarks)
-            bmcurrent = 0
-            bmsecondwidth = float(len(minuteitems)*slicewidth) / master.duration
-            progstart = progtimestamp - progtimediff
-            progend = progtimestamp - progtimediff + master.duration
-            bookmarks.sort()
-            for bookmark in bookmarks:
-                if bmcurrent == 0 and bookmark[0] != progstart:
-                    bookmarkplot += "<div style=\"float: left; background-color: #FFFFFF; height: 40px; width: " + str(int((bookmark[0] - progstart)*bmsecondwidth)) + "px\"></div>"
-                bookmarkpos = bookmark[2] - progstart
-                # Need to check having taken some time off the bookmark to allow for tweeting that it doesn't underrun
-                if bookmarkpos < 0:
-                    bookmarkpos = 0
+                            if (bookmarkstart and bookmarkend) and (bookmarkstart != bookmarkend):
+                                if bookmarkstart < (progtimestamp - progtimediff):
+                                    bookmarkstart = progtimestamp - progtimediff
+                                if bookmarkend > (progtimestamp - progtimediff + master.duration):
+                                    bookmarkend = progtimestamp - progtimediff + master.duration
+                                # Only bookmark worthy if it creates 'buzz' for 60 seconds or more
+                                if (len(bookmarks) > 0):
+                                    # Check if the bookmarks should be merged, allowing a slight overlap time of 20 seconds in case of a sudden lack of tweets
+                                    checkkeyword = bookmarks[len(bookmarks)-1][3]
+                                    originalkeyword = keyword
+                                    #try:
+                                    #    checkkeyword = string.lower(checkkeyword)
+                                    #    originalkeyword = string.lower(originalkeyword)
+                                    #except UnicodeEncodeError:
+                                    #    pass
+                                    if bookmarks[len(bookmarks)-1][1] >= (bookmarkstart - 20) and checkkeyword == originalkeyword:
+                                        bookmarks[len(bookmarks)-1][1] = bookmarkend
+                                        continue
+                                if (bookmarkend - bookmarkstart) > 60:
+                                    bookmarks.append([bookmarkstart,bookmarkend,bookmarkstart-80,keyword])
+
+                # The +3 in the widths below gets around an IE CSS issue. All other browsers will ignore it
+                output += "<div id=\"blockcontainer\" style=\"margin-left: 28px; border: 1px solid #444444; max-width: " + str(len(minuteitems)*slicewidth) + "\">"
                 if redux == "redux":
-                    # Any channel will work fine for redux but iPlayer needs the most recent
-                    bookmarkplot += "<a href=\"http://g.bbcredux.com/programme/" + reduxchannel + "/" + progdatestring + "/" + progtimestring + "?start=" + str(int(bookmarkpos)) + "\" title=\"Caused by: " + keyword + "\" target=\"_blank\">"
+                    output += "<div style=\"font-size: 8pt; padding: 2px 0px 2px 4px; background-color: #3333FF; opacity: 0.8; color: #FFFFFF; filter:alpha(opacity=30)\">Redux Links</div>"
                 else:
-                    bookmarkmins = int(bookmarkpos / 60)
-                    bookmarksecs = int(bookmarkpos % 60)
-                    bookmarkplot += "<a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(bookmarkmins) + "m" + str(bookmarksecs) + "s\" title=\"Caused by: " + keyword + "\" target=\"_blank\">"
-                # Ensure that if the next bookmark overlaps, it is visible
-                if (bmcurrent + 2) < bmtotal:
-                    if bookmark[1] > bookmarks[bmcurrent+1][0]:
-                        bookmark[1] = bookmarks[bmcurrent+1][0]
-                bookmarkplot += "<div class=\"bmgradient\" style=\"background-color: #FF6633; cursor: pointer; float: left; opacity: 0.6; height: 40px; width: " + str(int((bookmark[1]-bookmark[0])*bmsecondwidth)) + "px; filter:alpha(opacity=40)\"></div></a>"
-                if bmcurrent == (bmtotal - 1) and bookmark[1] != progend:
-                    bookmarkplot += "<div style=\"float: left; background-color: #FFFFFF; height: 40px; width: " + str(int((progend - bookmark[1])*bmsecondwidth)) + "px\"></div>"
-                bmcurrent += 1
-            output += "<div style=\"width= " + str(len(minuteitems)*slicewidth+3) + "px;overflow: hidden;height: 40px;\">" + bookmarkplot + "</div>"
-            output += "<div style=\"font-size: 8pt; padding: 2px 0px 2px 4px; background-color: #009933; opacity: 0.8; color: #FFFFFF; filter:alpha(opacity=30)\">Raw Data</div>"
-            output += "<div style=\"width= " + str(len(minuteitems)*slicewidth+3) + "px;overflow: hidden;height: 40px;\">" + rawtweetplot + "</div>"
+                    output += "<div style=\"font-size: 8pt; padding: 2px 0px 2px 4px; background-color: #3333FF; opacity: 0.8; color: #FFFFFF; filter:alpha(opacity=30)\">iPlayer Links</div>"
+                output += "<div style=\"width= " + str(len(minuteitems)*slicewidth+3) + "px;overflow: hidden;height: 40px;\">" + progskipplot + "</div>"
+                output += "<div style=\"font-size: 8pt; padding: 2px 0px 2px 4px; background-color: #FF6633; opacity: 0.8; color: #FFFFFF; filter:alpha(opacity=30)\">Bookmarks</div>"
+                bmtotal = len(bookmarks)
+                bmcurrent = 0
+                bmsecondwidth = float(len(minuteitems)*slicewidth) / master.duration
+                progstart = progtimestamp - progtimediff
+                progend = progtimestamp - progtimediff + master.duration
+                bookmarks.sort()
+                for bookmark in bookmarks:
+                    if bmcurrent == 0 and bookmark[0] != progstart:
+                        bookmarkplot += "<div style=\"float: left; background-color: #FFFFFF; height: 40px; width: " + str(int((bookmark[0] - progstart)*bmsecondwidth)) + "px\"></div>"
+                    bookmarkpos = bookmark[2] - progstart
+                    # Need to check having taken some time off the bookmark to allow for tweeting that it doesn't underrun
+                    if bookmarkpos < 0:
+                        bookmarkpos = 0
+                    if redux == "redux":
+                        # Any channel will work fine for redux but iPlayer needs the most recent
+                        bookmarkplot += "<a href=\"http://g.bbcredux.com/programme/" + reduxchannel + "/" + progdatestring + "/" + progtimestring + "?start=" + str(int(bookmarkpos)) + "\" title=\"Caused by: " + keyword + "\" target=\"_blank\">"
+                    else:
+                        bookmarkmins = int(bookmarkpos / 60)
+                        bookmarksecs = int(bookmarkpos % 60)
+                        bookmarkplot += "<a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(bookmarkmins) + "m" + str(bookmarksecs) + "s\" title=\"Caused by: " + keyword + "\" target=\"_blank\">"
+                    # Ensure that if the next bookmark overlaps, it is visible
+                    if (bmcurrent + 2) < bmtotal:
+                        if bookmark[1] > bookmarks[bmcurrent+1][0]:
+                            bookmark[1] = bookmarks[bmcurrent+1][0]
+                    bookmarkplot += "<div class=\"bmgradient\" style=\"background-color: #FF6633; cursor: pointer; float: left; opacity: 0.6; height: 40px; width: " + str(int((bookmark[1]-bookmark[0])*bmsecondwidth)) + "px; filter:alpha(opacity=40)\"></div></a>"
+                    if bmcurrent == (bmtotal - 1) and bookmark[1] != progend:
+                        bookmarkplot += "<div style=\"float: left; background-color: #FFFFFF; height: 40px; width: " + str(int((progend - bookmark[1])*bmsecondwidth)) + "px\"></div>"
+                    bmcurrent += 1
+                output += "<div style=\"width= " + str(len(minuteitems)*slicewidth+3) + "px;overflow: hidden;height: 40px;\">" + bookmarkplot + "</div>"
+                output += "<div style=\"font-size: 8pt; padding: 2px 0px 2px 4px; background-color: #009933; opacity: 0.8; color: #FFFFFF; filter:alpha(opacity=30)\">Raw Data</div>"
+                output += "<div style=\"width= " + str(len(minuteitems)*slicewidth+3) + "px;overflow: hidden;height: 40px;\">" + rawtweetplot + "</div>"
 
-            output += "</div>"
+                output += "</div>"
         else:
             output += "No data found to generate graphs.<br />"
     elif element == "status":
@@ -1001,7 +987,7 @@ def rawtweets(request,pid,timestamp):
         #        tweetseccount[tweet.timestamp] = 1
             output += "<br /><strong>" + str(datetime.utcfromtimestamp(tweet.timestamp + progdata[0].utcoffset)) + ":</strong> " + "@" + tweet.user + ": " + tweet.text
         output += "</div><br /><br />"
-        output += "Tweets: <a href=\"/api/" + pid + "/" + str(timestamp) + ".json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + pid + "/" + str(timestamp) + ".xml\" target=\"_blank\">XML</a><br />"
+        output += "Tweets: <a href=\"/api/" + pid + "/" + str(timestamp) + "/tweets.json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + pid + "/" + str(timestamp) + "/tweets.xml\" target=\"_blank\">XML</a><br />"
         #if len(tweetseccount) > 0:
         #    tweetseccount = [(v,k) for k, v in tweetseccount.items()]
         #    tweetseccount.sort(reverse=True)
@@ -1101,6 +1087,7 @@ def rawtweetsv2(request,pid,timestamp,aggregated=False):
                 for tweet in minute[1]:
                     output += tweet
             output += "</div>"
+            output += "Tweets: <a href=\"/api/" + pid + "/" + str(timestamp) + "/aggregated/tweets.json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + pid + "/" + str(timestamp) + "/aggregated/tweets.xml\" target=\"_blank\">XML</a><br />"
         else:
             endstamp = timestamp + 60
             channel = progdata[0].channel
@@ -1132,7 +1119,7 @@ def rawtweetsv2(request,pid,timestamp,aggregated=False):
             for tweet in rawtweets:
                 output += "<br /><strong>" + str(datetime.utcfromtimestamp(tweet.timestamp + progdata[0].utcoffset)) + ":</strong> " + "@" + tweet.user + ": " + tweet.text
             output += "</div><br /><br />"
-            output += "Tweets: <a href=\"/api/" + pid + "/" + str(timestamp) + ".json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + pid + "/" + str(timestamp) + ".xml\" target=\"_blank\">XML</a><br />"
+            output += "Tweets: <a href=\"/api/" + pid + "/" + str(timestamp) + "/tweets.json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + pid + "/" + str(timestamp) + "/tweets.xml\" target=\"_blank\">XML</a><br />"
     output += footer
     return HttpResponse(output)
 
@@ -1162,7 +1149,9 @@ def tagcloud(request,pid,timestamp,params=False,wrapper=True):
     if len(progdata) == 0:
         output += "<br />Invalid pid supplied or no data has yet been captured for this programme."
     else:
-        output += "<ul id=\"tagcloud\" class=\"xmpl\" style=\"width: 700px; height: auto; position: static; list-style: none outside none; margin: 0px; padding: 0px\">"
+        starttag = "<ul id=\"tagcloud\" class=\"xmpl\" style=\"width: 700px; height: auto; position: static; list-style: none outside none; margin: 0px; padding: 0px\">"
+        endtag = "</ul>"
+        output += starttag
         if aggregated == "aggregated":
             progpos = timestamp*60
             # In this case the 'timestamp' is actually the programme position
@@ -1225,7 +1214,9 @@ def tagcloud(request,pid,timestamp,params=False,wrapper=True):
                 #output += "<br />" + entry.word + ": " + str(entry.count) + " " + str(entry.is_keyword) + " " + str(entry.is_entity) + " " + str(entry.is_common)
                 output += "<li style=\"cursor: pointer\" title=\"" + entry.word + "\" value=\"" + str(entry.count) + "\"><a title=\"" + str(entry.count) + "\">" + entry.word + " </a></li>"
                 currenttag += 1
-        output += "</ul>"
+        if output == starttag:
+            output += "<div style=\"font-size: 9pt\">No tweets recorded / this data uses an old timestamp format that doesn't support generation of tag clouds</div>"
+        output += endtag
     if wrapper:
         return HttpResponse(output)
     else:
