@@ -20,9 +20,6 @@ import cjson
 from dateutil.parser import parse
 import pytz
 
-# Should probably combine these all into one component given the amount of similarity
-# OR - create a generic requester component and link all of these to it (removing the urllib stuff)
-
 class GMT(tzinfo):
     def utcoffset(self,dt):
         return timedelta(hours=0,minutes=0)
@@ -84,12 +81,12 @@ class WhatsOn(component):
                 # Setup in case of URL errors later
                 data = None
 
+                # Define URLs for getting schedule data and DVB bridge information
                 scheduleurl = "http://www.bbc.co.uk" + self.channels[channel][1] + ".json"
                 #syncschedurl = "http://beta.kamaelia.org:8082/dvb-bridge?command=channel&args=" + urllib.quote(self.channels[channel][0])
                 #synctimeurl = "http://beta.kamaelia.org:8082/dvb-bridge?command=time"
                 syncschedurl = "http://10.92.164.147:8082/dvb-bridge?command=channel&args=" + urllib.quote(self.channels[channel][0])
                 synctimeurl = "http://10.92.164.147:8082/dvb-bridge?command=time"
-                #10.92.164.147
 
                 # Grab SyncTV time data to work out the offset between local (NTP) and BBC time (roughly)
                 self.send([synctimeurl], "dataout")
@@ -112,7 +109,7 @@ class WhatsOn(component):
                         print "cjson.DecodeError:", e.message
 
                 if 'difference' in locals():
-                # Grab actual programme start time from DVB bridge channel page
+                    # Grab actual programme start time from DVB bridge channel page
                     self.send([syncschedurl], "dataout")
                     while not self.dataReady("datain"):
                         self.pause()
@@ -156,14 +153,14 @@ class WhatsOn(component):
                         showdatetime = datetime.strptime(str(showdate[0]) + "-" + str(showdate[1]) + "-" + str(showdate[2]) +
                             " " + str(showtime[0]) + ":" + str(showtime[1]) + ":" + str(showtime[2]),"%Y-%m-%d %H:%M:%S")
 
-                        # SyncTV produced data - let's trust that
+                        # SyncTV (DVB Bridge) produced data - let's trust that
                         if 'decodedcontent' in locals():
                             for programme in decodedcontent['schedule']['day']['broadcasts']:
                                 starttime = parse(programme['start'])
                                 gmt = pytz.timezone("GMT")
                                 starttime = starttime.astimezone(gmt)
                                 starttime = starttime.replace(tzinfo=None)
-                                # Identify which DVB bridge programme corresponds to the /programmes schedule to get PID
+                                # Attempt to identify which DVB bridge programme corresponds to the /programmes schedule to get PID
                                 if showdatetime == starttime or (showdatetime + timedelta(minutes=1) == starttime and string.lower(proginfo['NOW']['name']) == string.lower(programme['programme']['display_titles']['title'])) or (showdatetime - timedelta(minutes=1) == starttime and string.lower(proginfo['NOW']['name']) == string.lower(programme['programme']['display_titles']['title'])):
                                     duration = (proginfo['NOW']['duration'][0] * 60 * 60) + (proginfo['NOW']['duration'][1] * 60) + proginfo['NOW']['duration'][2]
                                     progdate = parse(programme['start'])
@@ -178,7 +175,7 @@ class WhatsOn(component):
                                         offset = timestamp - actualstart
                                     pid = programme['programme']['pid']
                                     title =  programme['programme']['display_titles']['title']
-                                    # Attempted fix for unicode errors caused
+                                    # Fix for unicode errors caused by some /programmes titles
                                     if (not isinstance(title,str)) and (not isinstance(title,unicode)):
                                         title = str(title)
                                     print [pid,title,offset,duration,str(showdatetime) + " GMT",utcoffset]
@@ -186,7 +183,7 @@ class WhatsOn(component):
                                     
 
                     else:
-                        # Work out what's on NOW here
+                        # Couldn't use the DVB Bridge, so work out what's on NOW here
                         utcdatetime = datetime.now()
 
                         # Analyse schedule
@@ -199,10 +196,10 @@ class WhatsOn(component):
                                 if (utcdatetime >= starttime) & (utcdatetime < endtime):
                                     pid = programme['programme']['pid']
                                     title =  programme['programme']['display_titles']['title']
-                                    # Attempted fix for unicode errors caused
+                                    # Fix for unicode errors caused by some /programmes titles
                                     if (not isinstance(title,str)) and (not isinstance(title,unicode)):
                                         title = str(title)
-                                    # Has to assume no offset as it knows no better
+                                    # Has to assume no offset between scheduled and actual programme start time as it knows no better because of the lack of DVB bridge
                                     progdate = parse(programme['start'])
                                     tz = progdate.tzinfo
                                     utcoffset = datetime.strptime(str(tz.utcoffset(progdate)),"%H:%M:%S")
@@ -243,6 +240,7 @@ class NowPlaying(component):
     def main(self):
         while not self.finished():
             if self.dataReady("inbox"):
+                # TODO This component is unfinished as it was never found to be needed
                 channel = self.recv("inbox")
                 sleeper.sleep(1) # Temporary delay to ensure not hammering /programmes
                 nowplayingurl = "http://www.bbc.co.uk" + self.channels[channel] + ".json"
