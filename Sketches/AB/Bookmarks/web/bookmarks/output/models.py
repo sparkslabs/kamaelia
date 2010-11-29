@@ -7,11 +7,9 @@ from django.db import models
 class programmes(models.Model):
     pid = models.CharField(max_length=10,primary_key=True,db_column="pid")
     channel = models.CharField(max_length=20,db_column="channel")
-    title = models.CharField(max_length=200,db_column="title")
     timestamp = models.FloatField(db_column="timestamp",default=0)
     utcoffset = models.IntegerField(db_column="utcoffset",default=0)
     timediff = models.IntegerField(db_column="timediff",default=0)
-    duration = models.IntegerField(db_column="duration",default=0)
     imported = models.BooleanField(db_column="imported",default=0)
     analysed = models.BooleanField(db_column="analysed",default=0)
     totaltweets = models.IntegerField(db_column="totaltweets",default=0)

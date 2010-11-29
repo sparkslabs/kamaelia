@@ -446,7 +446,7 @@ class Requester(threadedcomponent):
                     cursor.execute("""SELECT duration FROM programmes_unique WHERE pid = %s""",(pid))
                     progtest2 = cursor.fetchone()
                     if progentrytest == None:
-                        cursor.execute("""INSERT INTO programmes (pid,title,timediff,duration,timestamp,utcoffset,channel) VALUES (%s,%s,%s,%s,%s)""", (pid,title,offset,duration,timestamp,utcoffset,self.channel))
+                        cursor.execute("""INSERT INTO programmes (pid,timediff,timestamp,utcoffset,channel) VALUES (%s,%s,%s)""", (pid,offset,timestamp,utcoffset,self.channel))
                         if progtest2 == None:
                             cursor.execute("""INSERT INTO programmes_unique (pid,title,duration) VALUES (%s,%s,%s)""", (pid,title,duration))
                             for word in keywords:
@@ -454,7 +454,7 @@ class Requester(threadedcomponent):
                     else:
                         # Fix for programmes where the duration is changed last minute
                         if progtest2[0] < duration:
-                            cursor.execute("""UPDATE programmes SET duration = %s WHERE pid = %s AND timestamp = %s""",(duration,pid,timestamp))
+                            #cursor.execute("""UPDATE programmes SET duration = %s WHERE pid = %s AND timestamp = %s""",(duration,pid,timestamp))
                             cursor.execute("""UPDATE programmes_unique SET duration = %s WHERE pid = %s""",(duration,pid))
                     keywords = list()
                 else:
@@ -497,7 +497,7 @@ class Requester(threadedcomponent):
                         cursor.execute("""SELECT duration FROM programmes_unique WHERE pid = %s""",(pid))
                         progtest2 = cursor.fetchone()
                         if progentrytest == None:
-                            cursor.execute("""INSERT INTO programmes (pid,title,timediff,duration,timestamp,utcoffset,channel) VALUES (%s,%s,%s,%s,%s,%s,%s)""", (pid,title,offset,duration,timestamp,utcoffset,channel))
+                            cursor.execute("""INSERT INTO programmes (pid,timediff,timestamp,utcoffset,channel) VALUES (%s,%s,%s,%s,%s)""", (pid,offset,timestamp,utcoffset,channel))
                             if progtest2 == None:
                                 cursor.execute("""INSERT INTO programmes_unique (pid,title,duration) VALUES (%s,%s,%s)""", (pid,title,duration))
                                 for word in keywordappender:
@@ -505,7 +505,7 @@ class Requester(threadedcomponent):
                         else:
                             # Fix for programmes where the duration is changed last minute
                             if progtest2[0] < duration:
-                                cursor.execute("""UPDATE programmes SET duration = %s WHERE pid = %s AND timestamp = %s""",(duration,pid,timestamp))
+                                #cursor.execute("""UPDATE programmes SET duration = %s WHERE pid = %s AND timestamp = %s""",(duration,pid,timestamp))
                                 cursor.execute("""UPDATE programmes_unique SET duration = %s WHERE pid = %s""",(duration,pid))
 
                 currentpids = list()
