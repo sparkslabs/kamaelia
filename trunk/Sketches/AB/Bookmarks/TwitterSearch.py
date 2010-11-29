@@ -3,20 +3,20 @@
 # Interface to Twitter search API
 # - Returns results of people searches as a dictionary
 
-import urllib2
-import urllib
-import time
-import os
-import cjson
-import string
+from datetime import datetime, timedelta
 import httplib
+import os
+import string
 import sys
-from datetime import datetime,timedelta
-
+import time
+import urllib
+import urllib2
 import urlparse
-import oauth2 as oauth
 
 from Axon.Component import component
+from Axon.Ipc import producerFinished, shutdownMicroprocess
+import cjson
+import oauth2 as oauth
 
 class PeopleSearch(component):
     Inboxes = {

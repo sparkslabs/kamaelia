@@ -35,3 +35,18 @@ Whilst the below are the current test packages, several earlier and later versio
 - nltk 2.0~b8
 - rdflib 2.4.2
 - oauth2 1.2.1 (https://github.com/simplegeo/python-oauth2)
+
+
+Using Django via Apache2
+- The following was added to the virtual host file for running with Apache
+- mod_wsgi has to be enabled for this to work
+
+WSGIScriptAlias / /path/to/web/django.wsgi
+Alias /media /path/to/web/media
+<Directory /path/to/web/>
+    # Tailor the below to your personal preference
+    Options Indexes FollowSymLinks MultiViews
+    AllowOverride All
+    Order allow,deny
+    allow from all
+</Directory>

@@ -14,21 +14,27 @@
 # It will also create files called namecache.conf, linkcache.conf and oversizedtweets.conf in your home directory
 # See the README for more information
 
-import cjson
 import os
+import sys
 
+from BBCProgrammes import WhatsOn
+from DataCollector import DataCollector
+from DataCollector import RawDataCollector
 from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Util.TwoWaySplitter import TwoWaySplitter
-
-from BBCProgrammes import WhatsOn
+from LiveAnalysis import FinalAnalysisNLTK
+from LiveAnalysis import LiveAnalysis
+from LiveAnalysis import LiveAnalysisNLTK
 from Requester import Requester
-from TwitterStream import TwitterStream
+from TweetFixer import LinkResolver
+from TweetFixer import RetweetCorrector
+from TweetFixer import RetweetFixer
+from TweetFixer import TweetCleaner
 from TwitterSearch import PeopleSearch
-from DataCollector import DataCollector, RawDataCollector
+from TwitterStream import TwitterStream
 from URLGetter import HTTPGetter
-from LiveAnalysis import LiveAnalysis, LiveAnalysisNLTK, FinalAnalysisNLTK
-from TweetFixer import RetweetFixer, TweetCleaner, LinkResolver, RetweetCorrector
+import cjson
 
 
 if __name__ == "__main__":

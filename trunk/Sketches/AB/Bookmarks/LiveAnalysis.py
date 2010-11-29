@@ -9,18 +9,21 @@
 
 # Having added this as a component, the printed output is a bit confusing, so 'Analysis component: ' has been added to everything.
 
-import MySQLdb
-import time
-from datetime import timedelta, datetime
+from datetime import datetime
+from datetime import timedelta
 import math
-import cjson
+import re
 import string
+import time
+
+from Axon.Component import component
+from Axon.Ipc import producerFinished
+from Axon.Ipc import shutdownMicroprocess
+from Axon.ThreadedComponent import threadedcomponent
+import MySQLdb
+import cjson
 import nltk
 from nltk import FreqDist
-import re
-
-from Axon.ThreadedComponent import threadedcomponent
-from Axon.Component import component
 
 class LiveAnalysis(threadedcomponent):
     Inboxes = {

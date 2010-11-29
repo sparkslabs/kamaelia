@@ -7,20 +7,11 @@
 # - Doesn't currently honour tweet deletion messages (TODO)
 
 import time
-#import urllib2
 import urllib
 import sys
-#from datetime import datetime
-#import os
-#import cjson
 import socket
 from Axon.Ipc import producerFinished, shutdownMicroprocess
-#from threading import Timer
 import Axon
-#import httplib
-
-#import oauth2 as oauth # TODO - Not fully implemented: Returns 401 unauthorised at the moment
-#import urlparse
 
 from Axon.Component import component
 import Axon
