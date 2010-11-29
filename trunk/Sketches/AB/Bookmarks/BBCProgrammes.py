@@ -86,6 +86,7 @@ class WhatsOn(component):
                 #synctimeurl = "http://beta.kamaelia.org:8082/dvb-bridge?command=time"
                 syncschedurl = "http://10.92.164.147:8082/dvb-bridge?command=channel&args=" + urllib.quote(self.channels[channel][0])
                 synctimeurl = "http://10.92.164.147:8082/dvb-bridge?command=time"
+                #10.92.164.147
 
                 # Grab SyncTV time data to work out the offset between local (NTP) and BBC time (roughly)
                 self.send([synctimeurl], "dataout")

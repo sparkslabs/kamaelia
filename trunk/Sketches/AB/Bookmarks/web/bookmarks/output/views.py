@@ -598,7 +598,7 @@ def programmev2(request,pid,timestamp=False,redux=False):
             output += "<br />Tweets: <a href=\"/api/" + pid + "/" + str(int(data[0].timestamp)) + ".json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + pid + "/" + str(int(data[0].timestamp)) + ".xml\" target=\"_blank\">XML</a><br /><br />"
         # TODO The channel linked to here won't necessarily be the right one
         #output += <a href=\"/channel-graph/" + row.channel + "/" + str(progdate.strftime("%Y/%m/%d")) + "/\">Back to channel page</a> -
-        output += "<a href=\"javascript:history.go(-1)\">Back to channel page</a> - "
+        output += "<a href=\"javascript:history.go(-1)\">Back to previous page</a> - "
         output += "<a href=\"http://www.bbc.co.uk/programmes/" + pid + "\" target=\"_blank\">View BBC /programmes page</a>"
 
     output += footer

@@ -371,9 +371,11 @@ class TwitterStream(threadedcomponent):
         "signal" : "",
     }
 
-    def __init__(self, username, password, proxy = False, reconnect = False, timeout = 120):
+    def __init__(self, username, password, proxy = None, reconnect = False, timeout = 120):
         super(TwitterStream, self).__init__()
         self.proxy = proxy
+        if self.proxy == False:
+            self.proxy = None
         self.username = username
         self.password = password
         # Reconnect on failure?
