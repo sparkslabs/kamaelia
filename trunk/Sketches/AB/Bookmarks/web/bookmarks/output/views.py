@@ -6,9 +6,8 @@ from pygooglechart import SimpleLineChart, Axis #lc
 import time
 import string
 import math
-#import re
 from django.core.exceptions import ObjectDoesNotExist
-#TODO: Replace ugly meta refresh tags with AJAX
+#TODO: Replace ugly meta refresh tags with AJAX in index
 
 tvchannels = ["bbcone","bbctwo","bbcthree","bbcfour","cbbc","cbeebies","bbcnews","bbcparliament"]
             
@@ -40,8 +39,12 @@ def index(request):
     for channel in allchannels:
         data = programmes.objects.filter(channel=channel).latest('timestamp')
         if isinstance(data,object):
+            try:
+                master = programmes_unique.objects.get(pid=data.pid)
+            except ObjectDoesNotExist, e:
+                pass # This is handled later
             progdate = datetime.utcfromtimestamp(data.timestamp + data.utcoffset)
-            progdate = progdate + timedelta(seconds=data.duration - data.timediff)
+            progdate = progdate + timedelta(seconds=master.duration - data.timediff)
             if data.stdevtweets > largeststdev and data.imported==0:
                 largeststdev = data.stdevtweets
 
@@ -142,11 +145,15 @@ def channel(request,channel,year=0,month=0,day=0):
                 endtimestamp = starttimestamp + 86400
                 data = programmes.objects.filter(channel__exact=channel,timestamp__gte=starttimestamp,timestamp__lt=endtimestamp).order_by('timestamp').all()
                 for programme in data:
+                    try:
+                        master = programmes_unique.objects.get(pid=programme.pid)
+                    except ObjectDoesNotExist, e:
+                        pass # This is handled later
                     progdate = datetime.utcfromtimestamp(programme.timestamp) + timedelta(seconds=programme.utcoffset)
                     if redux:
-                        output += "<br />" + str(progdate.strftime("%H:%M")) + ": <a href=\"/programmes/" + programme.pid + "/redux\">" + programme.title + "</a>"
+                        output += "<br />" + str(progdate.strftime("%H:%M")) + ": <a href=\"/programmes/" + programme.pid + "/redux\">" + master.title + "</a>"
                     else:
-                        output += "<br />" + str(progdate.strftime("%H:%M")) + ": <a href=\"/programmes/" + programme.pid + "\">" + programme.title + "</a>"
+                        output += "<br />" + str(progdate.strftime("%H:%M")) + ": <a href=\"/programmes/" + programme.pid + "\">" + master.title + "</a>"
                 if len(data) < 1:
                     output += "<br />No data for this date - please select another from the picker above.<br />"
             else:
@@ -210,21 +217,24 @@ def channelgraph(request,channel,year=0,month=0,day=0):
                 data = programmes.objects.filter(channel__exact=channel,timestamp__gte=starttimestamp,timestamp__lt=endtimestamp).order_by('timestamp').all()
                 for programme in data:
                     progdate = datetime.utcfromtimestamp(programme.timestamp) + timedelta(seconds=programme.utcoffset)
-
+                    try:
+                        master = programmes_unique.objects.get(pid=programme.pid)
+                    except ObjectDoesNotExist, e:
+                        pass # This is handled later
                     if programme.totaltweets > 0:
 
                         if redux:
-                            output += "<br />" + str(progdate.strftime("%H:%M")) + ": <a href=\"/programmes/" + programme.pid + "/redux\">" + programme.title + "</a> (see below)"
+                            output += "<br />" + str(progdate.strftime("%H:%M")) + ": <a href=\"/programmes/" + programme.pid + "/redux\">" + master.title + "</a> (see below)"
                         else:
-                            output += "<br />" + str(progdate.strftime("%H:%M")) + ": <a href=\"/programmes/" + programme.pid + "\">" + programme.title + "</a> (see below)"
+                            output += "<br />" + str(progdate.strftime("%H:%M")) + ": <a href=\"/programmes/" + programme.pid + "\">" + master.title + "</a> (see below)"
 
                         output += programmev2data(False,"graphs-channel",programme.pid,programme.timestamp,redux,False)
 
                     else:
                         if redux:
-                            output += "<br />" + str(progdate.strftime("%H:%M")) + ": <a href=\"/programmes/" + programme.pid + "/redux\">" + programme.title + "</a>"
+                            output += "<br />" + str(progdate.strftime("%H:%M")) + ": <a href=\"/programmes/" + programme.pid + "/redux\">" + master.title + "</a>"
                         else:
-                            output += "<br />" + str(progdate.strftime("%H:%M")) + ": <a href=\"/programmes/" + programme.pid + "\">" + programme.title + "</a>"
+                            output += "<br />" + str(progdate.strftime("%H:%M")) + ": <a href=\"/programmes/" + programme.pid + "\">" + master.title + "</a>"
                         output += " - No data available<br />"
 
                 if len(data) < 1:
@@ -240,6 +250,10 @@ def programme(request,pid,redux=False):
     # Now that this is live, would be clever to use AJAX to refresh graphs etc every minute whilst still unanalysed?
 
     output = header
+    try:
+        master = programmes_unique.objects.get(pid=pid)
+    except ObjectDoesNotExist, e:
+        pass # This is handled later
     data = programmes.objects.filter(pid=pid).all()
     if len(data) == 0:
         output += "<br />Invalid pid supplied or no data has yet been captured for this programme."
@@ -256,24 +270,12 @@ def programme(request,pid,redux=False):
         actualstart = progdate - timedelta(seconds=data[0].timediff)
         minutedata = analyseddata.objects.filter(pid=pid).order_by('timestamp').all()
         output += str(progdate.strftime("%d/%m/%Y")) + "<br />"
-        output += "<strong>" + data[0].title + "</strong><br />"
-        output += "Expected show times: " + str(progdate.strftime("%H:%M:%S")) + " to " + str((progdate + timedelta(seconds=data[0].duration)).strftime("%H:%M:%S")) + "<br />"
-        output += "Actual show times (estimated): " + str(actualstart.strftime("%H:%M:%S")) + " to " + str((actualstart + timedelta(seconds=data[0].duration)).strftime("%H:%M:%S")) + "<br />"
+        output += "<strong>" + master.title + "</strong><br />"
+        output += "Expected show times: " + str(progdate.strftime("%H:%M:%S")) + " to " + str((progdate + timedelta(seconds=master.duration)).strftime("%H:%M:%S")) + "<br />"
+        output += "Actual show times (estimated): " + str(actualstart.strftime("%H:%M:%S")) + " to " + str((actualstart + timedelta(seconds=master.duration)).strftime("%H:%M:%S")) + "<br />"
         output += "<br />Total tweets: " + str(data[0].totaltweets)
-        #rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=data[0].timestamp,timestamp__lt=data[0].timestamp+data[0].duration).order_by('timestamp').all()
-        #tweetseccount = dict()
-        #for tweet in rawtweets:
-        #    if tweetseccount.has_key(tweet.timestamp):
-        #        tweetseccount[tweet.timestamp] += 1
-        #    else:
-        #        tweetseccount[tweet.timestamp] = 1
-        #if len(tweetseccount) > 0:
-        #    tweetseccount = [(v,k) for k, v in tweetseccount.items()]
-        #    tweetseccount.sort(reverse=True)
-        #    output += "<br />Tweets per second: " + str(tweetseccount)
         tweetmins = dict()
         tweetstamps = dict()
-        #appender = ""
         lastwasbookmark = False
         bookmarks = list()
         bookmarkcont = list()
@@ -284,8 +286,8 @@ def programme(request,pid,redux=False):
             progmin = tweettime.minute - actualstart.minute
             progsec = tweettime.second - actualstart.second
             playertime = (((proghour * 60) + progmin) * 60) + progsec - 90 # needs between 60 and 120 secs removing to allow for tweeting time - using 90 for now
-            if playertime > (data[0].duration - 60):
-                playertimemin = (data[0].duration/60) - 1
+            if playertime > (master.duration - 60):
+                playertimemin = (master.duration/60) - 1
                 playertimesec = playertime%60
             elif playertime > 0:
                 playertimemin = playertime/60
@@ -293,14 +295,11 @@ def programme(request,pid,redux=False):
             else:
                 playertimemin = 0
                 playertimesec = 0
-            #appender += "<br />" + str(tweettime.strftime("%H:%M")) + ": <a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(playertimemin) + "m" + str(playertimesec) + "s\" target=\"_blank\">" + str(minute.totaltweets) + "</a>"
             if minute.totaltweets > (1.5*data[0].stdevtweets+data[0].meantweets):
                 if lastwasbookmark == True:
-                    #appender += " cont'd..."
                     bookmarkcont.append(playertimemin)
                 else:
                     if minute.totaltweets > (2.2*data[0].stdevtweets+data[0].meantweets) and minute.totaltweets > 9: # Arbitrary value chosen for now - needs experimentation - was 9
-                        #appender += " BOOKMARK!"
                         wfdata = wordanalysis.objects.filter(timestamp=minute.timestamp,pid=pid,is_keyword=0).order_by('-count').all()
                         if len(wfdata) > 0:
                             lastwasbookmark = True
@@ -372,7 +371,7 @@ def programme(request,pid,redux=False):
                 tweetstamps[str(playertimemin)] = int(minute.timestamp)
         if len(tweetmins) > 0:
             output += " - Tweets per minute - Mean: " + str(round(data[0].meantweets,2)) + " - Median: " + str(data[0].mediantweets) + " - Mode: " + str(data[0].modetweets) + " - STDev: " + str(round(data[0].stdevtweets,2)) + "<br />"
-            xlist = range(0,data[0].duration/60)
+            xlist = range(0,master.duration/60)
             ylist = list()
             for min in xlist:
                 if tweetmins.has_key(str(min)):
@@ -452,7 +451,6 @@ def programme(request,pid,redux=False):
             output += blockgraph
             output += blockgraph2
             output += blockgraph3
-            #output += appender
             if len(bookmarkstest) > 0:
                 output += "<br /><b>New Bookmark Testing</b>"
                 for entry in bookmarkstest:
@@ -461,8 +459,8 @@ def programme(request,pid,redux=False):
                     progmin = tweettime.minute - actualstart.minute
                     progsec = tweettime.second - actualstart.second
                     playertime = (((proghour * 60) + progmin) * 60) + progsec - 80 # needs between 60 and 120 secs removing to allow for tweeting time - using 90 for now
-                    if playertime > (data[0].duration - 60):
-                        playertimemin = (data[0].duration/60) - 1
+                    if playertime > (master.duration - 60):
+                        playertimemin = (master.duration/60) - 1
                         playertimesec = playertime%60
                     elif playertime > 0:
                         playertimemin = playertime/60
@@ -485,7 +483,7 @@ def programme(request,pid,redux=False):
         output += "<br /><br /><a href=\"/channel-graph/" + data[0].channel + "/" + str(progdate.strftime("%Y/%m/%d")) + "/\">Back to channel page</a> - <a href=\"http://www.bbc.co.uk/programmes/" + data[0].pid + "\" target=\"_blank\">View BBC /programmes page</a>"
 
     else:
-        output += "<br />Database consistency error - somehow a primary key appears twice. The world may have ended."
+        output += "<br />Database consistency error - This pid has been broadcast more than once and hence is only compatible with the new /programmes views."
         output += "<br /><br /><a href=\"/\">Back to index</a>"
 
     output += footer
@@ -585,9 +583,7 @@ def programmev2(request,pid,timestamp=False,redux=False):
                 progdate = progdatetime + timedelta(seconds=row.utcoffset)
                 output += str(progdate.strftime("%d/%m/%Y %H:%M:%S")) + " (" + str(row.channel) + ")"
                 output += "</a>"
-
-        # TODO The channel linked to here won't necessarily be the right one
-        output += "<br /><br />"#<a href=\"/channel-graph/" + row.channel + "/" + str(progdate.strftime("%Y/%m/%d")) + "/\">Back to channel page</a> -
+        output += "<br /><br />"
         if rowcount > 1:
             if redux == "redux":
                 output += "API: <a href=\"/api/" + pid + "/redux/stats.json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + pid + "/redux/stats.xml\" target=\"_blank\">XML</a>"
@@ -600,6 +596,9 @@ def programmev2(request,pid,timestamp=False,redux=False):
             else:
                 output += "API: <a href=\"/api/" + pid + "/" + str(int(data[0].timestamp)) + "/stats.json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + pid + "/" + str(int(data[0].timestamp)) + "/stats.xml\" target=\"_blank\">XML</a>"
             output += "<br />Tweets: <a href=\"/api/" + pid + "/" + str(int(data[0].timestamp)) + ".json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + pid + "/" + str(int(data[0].timestamp)) + ".xml\" target=\"_blank\">XML</a><br /><br />"
+        # TODO The channel linked to here won't necessarily be the right one
+        #output += <a href=\"/channel-graph/" + row.channel + "/" + str(progdate.strftime("%Y/%m/%d")) + "/\">Back to channel page</a> -
+        output += "<a href=\"javascript:history.go(-1)\">Back to channel page</a> - "
         output += "<a href=\"http://www.bbc.co.uk/programmes/" + pid + "\" target=\"_blank\">View BBC /programmes page</a>"
 
     output += footer
@@ -972,6 +971,10 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
 def rawtweets(request,pid,timestamp):
     output = header
     progdata = programmes.objects.filter(pid=pid).all()
+    try:
+        master = programmes_unique.objects.get(pid=pid)
+    except ObjectDoesNotExist, e:
+        pass # This is handled later
     timestamp = int(timestamp)
     if len(progdata) == 0:
         output += "<br />Invalid pid supplied or no data has yet been captured for this programme."
@@ -983,23 +986,14 @@ def rawtweets(request,pid,timestamp):
         starttime = datetime.utcfromtimestamp(timestamp) + timedelta(seconds=progdata[0].utcoffset)
         endtime = datetime.utcfromtimestamp(endstamp) + timedelta(seconds=progdata[0].utcoffset)
         output += str(progdate.strftime("%d/%m/%Y")) + "<br />"
-        output += "<strong>" + progdata[0].title + "</strong><br />"
+        output += "<strong>" + master.title + "</strong><br />"
         output += "Raw tweet output between " + str(starttime.strftime("%H:%M:%S")) + " and " + str(endtime.strftime("%H:%M:%S")) + "<br />"
         rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=timestamp,timestamp__lt=endstamp).order_by('timestamp').all()
         output += "<div id=\"rawtweets\" style=\"font-size: 9pt\">"
-        #tweetseccount = dict()
         for tweet in rawtweets:
-        #    if tweetseccount.has_key(tweet.timestamp):
-        #        tweetseccount[tweet.timestamp] += 1
-        #    else:
-        #        tweetseccount[tweet.timestamp] = 1
             output += "<br /><strong>" + str(datetime.utcfromtimestamp(tweet.timestamp + progdata[0].utcoffset)) + ":</strong> " + "@" + tweet.user + ": " + tweet.text
         output += "</div><br /><br />"
         output += "Tweets: <a href=\"/api/" + pid + "/" + str(timestamp) + "/tweets.json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + pid + "/" + str(timestamp) + "/tweets.xml\" target=\"_blank\">XML</a><br />"
-        #if len(tweetseccount) > 0:
-        #    tweetseccount = [(v,k) for k, v in tweetseccount.items()]
-        #    tweetseccount.sort(reverse=True)
-        #    output += "<br />" + str(tweetseccount)
         newanalysis = wordanalysis.objects.filter(pid=pid,timestamp__gte=timestamp,timestamp__lt=endstamp,is_common=0).order_by('-count').all()
         for entry in newanalysis:
             output += "<br />" + entry.word + ": " + str(entry.count) + " " + str(entry.is_keyword) + " " + str(entry.is_entity) + " " + str(entry.is_common)
