@@ -5,17 +5,20 @@
 # - Provides output for PIDs in a chosen format (XML, RDF etc)
 # - Identifies currently playing tracks on radio channels TODO
 
-import cjson
+from datetime import datetime
+from datetime import timedelta
+from datetime import tzinfo
+import string
+import time as sleeper
+from time import time
 import urllib
 
 from Axon.Component import component
-
-from datetime import datetime, tzinfo, timedelta
+from Axon.Ipc import producerFinished
+from Axon.Ipc import shutdownMicroprocess
+import cjson
 from dateutil.parser import parse
-from time import time
-import string
 import pytz
-import time as sleeper
 
 # Should probably combine these all into one component given the amount of similarity
 # OR - create a generic requester component and link all of these to it (removing the urllib stuff)

@@ -2,16 +2,16 @@
 # and provide the option to strip user mentions, hashtags and links from tweet text.
 # Links can also be resolved to their real URL - particularly helpful for finding hidden PIDs
 
+import os
+import re
+import sys
 
 from Axon.Component import component
-from Axon.Ipc import producerFinished, shutdownMicroprocess
-
-import re
-import os
-import cjson
+from Axon.Ipc import producerFinished
+from Axon.Ipc import shutdownMicroprocess
 import MySQLdb
 from URLGetter import HTTPGetter
-
+import cjson
 
 class RetweetFixer(component):
     # Steps:

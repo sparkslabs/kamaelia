@@ -4,18 +4,19 @@
 # One requester for ALL channels - avoids creating multiple Twitter streams
 # Only sends keywords to Twitter once per programme, then monitors for the next programme
 
-import re
-import time
-from rdflib.Graph import Graph
-import rdflib
-import cjson
-import os
-import string
-import MySQLdb
 from datetime import date
+import os
+import re
+import string
+import time
 
+from Axon.Ipc import producerFinished
+from Axon.Ipc import shutdownMicroprocess
 from Axon.ThreadedComponent import threadedcomponent
-from Axon.Ipc import producerFinished, shutdownMicroprocess
+import MySQLdb
+import cjson
+import rdflib
+from rdflib.Graph import Graph
 
 class Requester(threadedcomponent):
     Inboxes = {

@@ -8,12 +8,12 @@
 
 # May change to use httplib instead to better handle different types of requests
 
-import urllib2
 import httplib
 import time
+import urllib2
 
+from Axon.Ipc import producerFinished, shutdownMicroprocess
 from Axon.ThreadedComponent import threadedcomponent
-
 
 class HTTPGetter(threadedcomponent):
 
@@ -110,9 +110,3 @@ class HTTPGetter(threadedcomponent):
                 # Data format: [OK/Error,message]
                 self.send(urldata,"outbox")
             time.sleep(0.1)
-
-class StreamingHTTPGetter(threadedcomponent):
-    #TODO - will be created if hanging issue solved in Twitter streamer - possibly
-
-    def main(self):
-        pass

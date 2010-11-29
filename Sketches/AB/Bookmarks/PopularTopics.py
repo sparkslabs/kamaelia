@@ -1,15 +1,15 @@
 # This is a trial script to show the popular topics within a given programme with a view to using parts of it in the main application.
 # This could be used to generate current BBC trending topics.
 
+import os
+import re
+import string
+import sys
+
+import MySQLdb
+import cjson
 import nltk
 from nltk import FreqDist
-#from nltk.collocations import BigramCollocationFinder
-import re
-import os
-import cjson
-import sys
-import MySQLdb
-import string
 
 def spellingFixer(text):
         # Fix ahahahahahaha and hahahahaha

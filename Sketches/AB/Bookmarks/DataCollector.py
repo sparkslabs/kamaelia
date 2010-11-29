@@ -4,17 +4,19 @@
 # Needs to do limited analysis to work out which keywords in the tweet stream correspond to which programme
 # Keywords, and possibly PIDs and channels will most likely have to be passed here as well as to the TwitterStream from Requester
 
-import time as time2
-import MySQLdb
-import cjson
-import string
 from datetime import datetime
-from time import time
-from dateutil.parser import parse
-import _mysql_exceptions
 import os
+import string
+import time as time2
+from time import time
 
+from Axon.Ipc import producerFinished
+from Axon.Ipc import shutdownMicroprocess
 from Axon.ThreadedComponent import threadedcomponent
+import MySQLdb
+import _mysql_exceptions
+import cjson
+from dateutil.parser import parse
 
 class DataCollector(threadedcomponent):
     Inboxes = {
