@@ -18,19 +18,13 @@ import os
 import sys
 
 from BBCProgrammes import WhatsOn
-from DataCollector import DataCollector
-from DataCollector import RawDataCollector
+from DataCollector import DataCollector, RawDataCollector
 from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Util.TwoWaySplitter import TwoWaySplitter
-from LiveAnalysis import FinalAnalysisNLTK
-from LiveAnalysis import LiveAnalysis
-from LiveAnalysis import LiveAnalysisNLTK
+from LiveAnalysis import FinalAnalysisNLTK, LiveAnalysis, LiveAnalysisNLTK
 from Requester import Requester
-from TweetFixer import LinkResolver
-from TweetFixer import RetweetCorrector
-from TweetFixer import RetweetFixer
-from TweetFixer import TweetCleaner
+from TweetFixer import LinkResolver, RetweetCorrector, RetweetFixer, TweetCleaner
 from TwitterSearch import PeopleSearch
 from TwitterStream import TwitterStream
 from URLGetter import HTTPGetter
@@ -68,18 +62,20 @@ if __name__ == "__main__":
     # Set OAuth consumer keypair
     consumerkeypair = [config['consumerkey'],config['consumersecret']]
 
-    # Set OAuth keypair if available
+    # Set OAuth secret keypair if available - if not it will be sourced from Twitter
     if config.has_key('key') and config.has_key('secret'):
         keypair = [config['key'],config['secret']]
     else:
         keypair = False
 
+    # Linker component for LiveAnalysis
     LINKER = Graphline(LINKRESOLVE = LinkResolver(bitlyusername,bitlyapikey),
                         LINKREQUESTER = HTTPGetter(proxy, "BBC R&D Grabber"),
                         linkages = {("self", "inbox") : ("LINKRESOLVE", "inbox"),
                                     ("LINKRESOLVE", "outbox") : ("self", "outbox"),
                                     ("LINKRESOLVE", "urlrequests") : ("LINKREQUESTER", "inbox"),
                                     ("LINKREQUESTER", "outbox") : ("LINKRESOLVE", "responses")}).activate()
+    # Linker component for FinalAnalysis
     # This duplication could probably be avoided by doing some tagging/filtering TODO
     LINKERFINAL = Graphline(LINKRESOLVE = LinkResolver(bitlyusername,bitlyapikey),
                         LINKREQUESTER = HTTPGetter(proxy, "BBC R&D Grabber"),
@@ -89,7 +85,7 @@ if __name__ == "__main__":
                                     ("LINKREQUESTER", "outbox") : ("LINKRESOLVE", "responses")}).activate()
     system = Graphline(CURRENTPROG = WhatsOn(proxy),
                     REQUESTER = Requester("all",dbuser,dbpass), # Can set this for specific channels to limit Twitter requests whilst doing dev
-                    FIREHOSE = TwitterStream(username, password, proxy, True, 40), # Twitter API sends blank lines every 30 secs so timeout of 60 should be fine
+                    FIREHOSE = TwitterStream(username, password, proxy, True, 40), # Twitter API sends blank lines every 30 secs so timeout of 40 should be fine
                     SEARCH = PeopleSearch(consumerkeypair, keypair, proxy),
                     COLLECTOR = DataCollector(dbuser,dbpass),
                     RAWCOLLECTOR = RawDataCollector(dbuser,dbpass),
@@ -100,7 +96,6 @@ if __name__ == "__main__":
                     NLTKANALYSIS = LiveAnalysisNLTK(dbuser,dbpass),
                     TWEETCLEANER = Pipeline(LINKER,RetweetFixer(),RetweetCorrector(dbuser,dbpass),TweetCleaner(['user_mentions','urls','hashtags'])),
                     NLTKANALYSISFINAL = FinalAnalysisNLTK(dbuser,dbpass),
-                    # This duplication could probably be avoided by doing some tagging/filtering TODO
                     TWEETCLEANERFINAL = Pipeline(LINKERFINAL,RetweetFixer(),RetweetCorrector(dbuser,dbpass),TweetCleaner(['user_mentions','urls','hashtags'])),
                     linkages = {("REQUESTER", "whatson") : ("CURRENTPROG", "inbox"), # Request what's currently broadcasting
                                 ("CURRENTPROG", "outbox") : ("REQUESTER", "whatson"), # Pass back results of what's on
