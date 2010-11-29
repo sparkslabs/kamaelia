@@ -1,19 +1,25 @@
 #! /usr/bin/python
 
-# Bookmarks.py
+# Bookmarks.py - Main Executable
 # - Identifies current BBC programmes and generates keywords based on them.
 # - Collects Twitter streaming API data based on generated keywords.
-# Program run initially to join up all mailboxes etc
+# - Analyses the collected data to identify frequent words, hence allowing the web interface to generate bookmarks.
 
 ### Danger area: Adding OAuth to both Twitter components will result in them both trying to renew the received key and secret
 ### To avoid this, there needs to be a way to pass received keys and secrets to components needing them before they try to make requests too.
 ### Also need to farm out access to config file from OAuth utilising components so they're more generic
+
+# This program requires a config based on the included twitter-login.conf.dist saving to /home/<yourusername>/twitter-login.conf
+# During the running of the program, it will create a file called tempRDF.txt in the running directory
+# It will also create files called namecache.conf, linkcache.conf and oversizedtweets.conf in your home directory
+# See the README for more information
 
 import cjson
 import os
 
 from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Chassis.Pipeline import Pipeline
+from Kamaelia.Util.TwoWaySplitter import TwoWaySplitter
 
 from BBCProgrammes import WhatsOn
 from Requester import Requester
@@ -24,7 +30,6 @@ from URLGetter import HTTPGetter
 from LiveAnalysis import LiveAnalysis, LiveAnalysisNLTK, FinalAnalysisNLTK
 from TweetFixer import RetweetFixer, TweetCleaner, LinkResolver, RetweetCorrector
 
-from Kamaelia.Util.TwoWaySplitter import TwoWaySplitter
 
 if __name__ == "__main__":
 

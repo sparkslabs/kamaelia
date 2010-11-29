@@ -12,7 +12,6 @@ import urllib2
 import httplib
 import time
 
-from Axon.Component import component
 from Axon.ThreadedComponent import threadedcomponent
 
 

@@ -1,8 +1,37 @@
 TV Bookmarks
-- App designed to grab RDF data from BBC /programmes and use it to identify relevant conversation using Twitter.
+- Program designed to grab RDF data from BBC /programmes and use it to identify relevant conversation using the Twitter streaming API.
 - Data is then saved and analysed to create bookmarks in programmes which can be jumped to via the iPlayer interface.
 - Data will at a later date be enriched to provide some form of explanation to users, identifying why it forms a relevant bookmark.
-- If run live enough, could be used to give a live activity EPG with heavily discussed programmes highlighted
+- Could also be used to give a live activity EPG with heavily discussed programmes highlighted
 
 Installing
 - DB schema MUST be imported from the included SQL file BEFORE executing the Django DB sync as Django can't get it quite right
+- A copy of the included twitter-login.conf.dist must be modified and copied to your home directory with the name twitter-login.conf
+
+Running
+- From the console, type 'python Bookmarks.py' and hit enter, or if the file has executable permissions, simply enter './Bookmarks.py'
+
+Other Information
+- During the running of the program, it will create a file called tempRDF.txt in the running directory to hold the most recently downloaded RDF data/
+- It will also create files called namecache.conf, linkcache.conf and oversizedtweets.conf in your home directory
+
+namecache.conf - Holds a cache linking people's names to their Twitter screen names if they exist to prevent re-querying.
+               - Can be flushed periodically to enable grabbing of new Twitter users (shouldn't happen too frequently).
+
+linkcache.conf - Holds a cache linking http://bbc.in URLs to their bbc.co.uk representation.
+               - These will never change and as a result the cache should never be flushed.
+
+oversizedtweets.conf - Holds any tweets which exceed the database limitation for storage of the JSON representation.
+                     - This has never happened as yet, but the file remains for debugging purposes.
+
+Dependencies (versions as listed in Synaptic Package Manager if available)
+Whilst the below are the current test packages, several earlier and later versions of each package will no doubt work too
+- Tested with Python 2.6.5
+- MySQL Server 5.1.41
+- Django 1.1.1
+- cjson 1.0.5
+- dateutil 1.4.1
+- MySQLDB 1.2.2
+- nltk 2.0~b8
+- rdflib 2.4.2
+- oauth2 1.2.1 (https://github.com/simplegeo/python-oauth2)
