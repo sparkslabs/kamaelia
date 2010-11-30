@@ -12,7 +12,6 @@ from datetime import datetime
 from datetime import timedelta
 import math
 import re
-import string
 import time
 
 from Axon.Component import component
