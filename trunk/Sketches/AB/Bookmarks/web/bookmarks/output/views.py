@@ -27,6 +27,9 @@ header = '<html><head><title>Social Bookmarks</title><script type="text/javascri
 footer = '</div></div></body></html>'
 
 def index(request):
+    '''
+    Main index page for social bookmarks
+    '''
     currentdate = date.today()
     output = header
     output += "<meta http-equiv='refresh' content='60'>"
@@ -95,7 +98,9 @@ def index(request):
     return HttpResponse(output)
 
 def channel(request,channel,year=0,month=0,day=0):
-    # Channel page, accessible via /channels/bbcone etc
+    '''
+    Channel page, accessible via /channels/bbcone etc
+    '''
     output = header
     data = programmes.objects.filter(channel=channel)
     if channel not in radiochannels and channel not in tvchannels:
@@ -164,7 +169,9 @@ def channel(request,channel,year=0,month=0,day=0):
     return HttpResponse(output)
 
 def channelgraph(request,channel,year=0,month=0,day=0):
-    # Channel graph page, accessible via /channel-graph/bbcone etc
+    '''
+    Channel graph page, accessible via /channel-graph/bbcone etc
+    '''
     output = header
     data = programmes.objects.filter(channel=channel)
     if channel not in radiochannels and channel not in tvchannels:
@@ -254,10 +261,11 @@ def channelgraph(request,channel,year=0,month=0,day=0):
     return HttpResponse(output)
 
 def programme(request,pid,redux=False):
-    # This is a deprecated version of the /programmes/pid page
-    # Doesn't handle cases where a PID has been broadcast more than one - simply displays an error in this case
-    # Accessible via /programmes-old/pid
-
+    '''
+    This is a deprecated version of the /programmes/pid page
+    Doesn't handle cases where a PID has been broadcast more than one - simply displays an error in this case
+    Accessible via /programmes-old/pid
+    '''
     output = header
     try:
         master = programmes_unique.objects.get(pid=pid)
@@ -507,9 +515,10 @@ def programme(request,pid,redux=False):
     return HttpResponse(output)
 
 def programmev2(request,pid,timestamp=False,redux=False):
-    # Main programme viewing output, accessible via /programmes/pid
-    # Where a show has been broadcast before, its individual broadcasts can be viewed via /programmes/pid/timestamp
-
+    '''
+    Main programme viewing output, accessible via /programmes/pid
+    Where a show has been broadcast before, its individual broadcasts can be viewed via /programmes/pid/timestamp
+    '''
     output = header
 
     # 206 here (partial content) means the programme hasn't finished being analysed
@@ -629,8 +638,9 @@ def programmev2(request,pid,timestamp=False,redux=False):
     return HttpResponse(output)
 
 def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True):
-    # Data output for /programmes pages AJAX - accessible via /data/element/pid etc
-
+    '''
+    Data output for /programmes pages AJAX - accessible via /data/element/pid etc
+    '''
     output = "" # Initialise output buffer
     try:
         master = programmes_unique.objects.get(pid=pid)
@@ -997,7 +1007,9 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
         return output
 
 def rawtweets(request,pid,timestamp):
-    # Deprecated raw tweet output available via /programmes-old/pid/timestamp
+    '''
+    Deprecated raw tweet output available via /programmes-old/pid/timestamp
+    '''
     output = header
     progdata = programmes.objects.filter(pid=pid).all()
     try:
@@ -1030,7 +1042,9 @@ def rawtweets(request,pid,timestamp):
     return HttpResponse(output)
 
 def rawtweetsv2(request,pid,timestamp,aggregated=False):
-    # New raw tweet output accessible via /raw/pid/timestamp, or /raw/pid/progpos/aggregated for cases of multiple showings
+    '''
+    New raw tweet output accessible via /raw/pid/timestamp, or /raw/pid/progpos/aggregated for cases of multiple showings
+    '''
     output = header
     try:
         master = programmes_unique.objects.get(pid=pid)
@@ -1159,7 +1173,9 @@ def rawtweetsv2(request,pid,timestamp,aggregated=False):
     return HttpResponse(output)
 
 def tagcloud(request,pid,timestamp,params=False,wrapper=True):
-    # Tag cloud generation - accessible via /data/tagcloud/pid/progpos/aggregated or /data/tagcloud/pid/timestamp
+    '''
+    Tag cloud generation - accessible via /data/tagcloud/pid/progpos/aggregated or /data/tagcloud/pid/timestamp
+    '''
     output = ""
     if params:
         if "/" in params:

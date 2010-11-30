@@ -1,7 +1,9 @@
 #! /usr/bin/python
 
-# Saves relevant data fed back from TwitterStream etc next to its PID and timestamp ready for analysis
-# Needs to do limited analysis to work out which keywords in the tweet stream correspond to which programme
+'''
+Saves relevant data fed back from TwitterStream etc next to its PID and timestamp ready for analysis
+Needs to do limited analysis to work out which keywords in the tweet stream correspond to which programme
+'''
 
 from datetime import datetime
 import os
@@ -127,9 +129,11 @@ class DataCollector(threadedcomponent):
             else:
                 time2.sleep(0.1)
 
-# The raw data collector differs from the plain data collector in that it stores the raw JSON containers for tweets next to their unique IDs, but with no relation to PIDs
-# This is run concurrent to the other data collector, so the two won't necessarily run at the same rate and could be out of sync
-# This possible lack of sync must be handled later
+'''
+The raw data collector differs from the plain data collector in that it stores the raw JSON containers for tweets next to their unique IDs, but with no relation to PIDs
+This is run concurrent to the other data collector, so the two won't necessarily run at the same rate and could be out of sync
+This possible lack of sync must be handled later
+'''
 
 class RawDataCollector(threadedcomponent):
     Inboxes = {

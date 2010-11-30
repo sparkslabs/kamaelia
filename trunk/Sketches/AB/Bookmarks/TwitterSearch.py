@@ -1,7 +1,9 @@
 #! /usr/bin/python
 
-# Interface to Twitter search API
-# - Returns results of people searches as a dictionary
+'''
+Interface to Twitter search API
+- Returns results of people searches as a dictionary
+'''
 
 from datetime import datetime, timedelta
 import httplib

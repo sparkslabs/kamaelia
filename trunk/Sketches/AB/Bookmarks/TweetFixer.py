@@ -1,6 +1,8 @@
-# These are a set of test components aiming to translate retweets using 'RT @' into the proper form
-# and provide the option to strip user mentions, hashtags and links from tweet text.
-# Links can also be resolved to their real URL - particularly helpful for finding hidden PIDs
+'''
+These are a set of test components aiming to translate retweets using 'RT @' into the proper form
+and provide the option to strip user mentions, hashtags and links from tweet text.
+Links can also be resolved to their real URL - particularly helpful for finding hidden PIDs
+'''
 
 import os
 import re
@@ -14,12 +16,14 @@ from URLGetter import HTTPGetter
 import cjson
 
 class RetweetFixer(component):
+    '''
     # Steps:
     # - Receives tweet dictionary via 'inbox'
     # - Checks to see if retweeted_status key is set
     # - If it isn't, looks for mentions of 'RT @PersonName:' (or 'via @PersonName' - at a later date)
     # - Adds a retweeted_status key including as much information that can be gleaned from the tweet text as possible
     # - Sends the tweet dictionary back via 'outbox'
+    '''
 
     Inboxes = {
         "inbox" : "Receives tweet dict which may need its retweets fixing",
@@ -84,7 +88,9 @@ class RetweetFixer(component):
             yield 1
 
 class RetweetCorrector(component):
-    # This is a DB specific retweet fixer - the idea being to correct the retweet ID and text properly
+    '''
+    This is a DB specific retweet fixer - the idea being to correct the retweet ID and text properly
+    '''
 
     Inboxes = {
         "inbox" : "Receives tweet dict which may need elements removing",
@@ -158,12 +164,14 @@ class RetweetCorrector(component):
 
 
 class TweetCleaner(component):
+    '''
     # Steps:
     # - Receives tweet dictionary via 'inbox'
     # - Looks at 'self.filter' to determine what needs removing from the tweet text (selected from user_mentions,urls and/or hashtags)
     # - Uses the indices specified by Twitter to determine where these elements reside and to remove them
     # - Adds a new key to the tweet dictionary containing this 'filtered_text' (useful for NLTK analysis without Twitter specific content)
     # - Sends the tweet dictionary back via 'outbox'
+    '''
 
     Inboxes = {
         "inbox" : "Receives tweet dict which may need elements removing",
@@ -228,12 +236,14 @@ class TweetCleaner(component):
             yield 1
 
 class LinkResolver(component):
+    '''
     # Steps:
     # - Receives tweet dictionary via 'inbox'
     # - Looks at the ['entities']['urls'] elements to identify if URLs have their 'expanded_url' elements set.
     # - If these elements aren't set, bit.ly's API is checked to itentify the real URL
     # - The 'expanded_url' key is modified for each URL given the bit.ly result
     # - Sends the tweet dictionary back via 'outbox'
+    '''
 
     Inboxes = {
         "inbox" : "Receives tweet dict which may need links resolving",
