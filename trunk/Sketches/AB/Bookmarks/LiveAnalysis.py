@@ -1,9 +1,6 @@
 #! /usr/bin/python
 
-# NB: It is recommended that this file is used for analysis as opposed to DataAnalyser.py
-
 # Analyses saved data in DB to give something more useful. Saves to output DB ready for display in web interface
-# Need word freq analysis, tweet rate analysis etc
 # Any looking at natural language engines / subtitles should be done here or in components following this
 # Need to ensure one rogue user can't cause a trend - things must be mentioned by several
 
@@ -27,13 +24,13 @@ from nltk import FreqDist
 
 class LiveAnalysis(threadedcomponent):
     Inboxes = {
-        "inbox" : "",
+        "inbox" : "Unused",
         "nltk" : "Receives data back from the NLTK component",
         "nltkfinal" : "Receives data back from the final NLTK analysis component",
         "control" : ""
     }
     Outboxes = {
-        "outbox" : "",
+        "outbox" : "Unused",
         "nltk" : "Sends data out to the NLTK component",
         "nltkfinal" : "Sends data out to the final NLTK analysis component",
         "signal" : ""
@@ -43,6 +40,7 @@ class LiveAnalysis(threadedcomponent):
         super(LiveAnalysis, self).__init__()
         self.dbuser = dbuser
         self.dbpass = dbpass
+        # List of 'common' words so they can be labelled as such when the data is stored
         self.exclusions = ["a","able","about","across","after","all","almost","also","am",\
                     "among","an","and","any","are","as","at","be","because","been","but",\
                     "by","can","cannot","could","dear","did","do","does","either","else",\
@@ -69,101 +67,12 @@ class LiveAnalysis(threadedcomponent):
                 return True
         return False
 
-    def analyseTweet(self,cursor,pid,tweettext):
-        # Do word frequency analysis at this point
-        # Inefficient at the mo as if a tweet comes in at 48 or 59 secs etc, all previous tweets for that minute will be re-alanysed
-        keywords = dict()
-        cursor.execute("""SELECT uid,keyword,type FROM keywords WHERE pid = %s""",(pid))
-        keyworddata = cursor.fetchall()
-        for word in keyworddata:
-            wordname = word[1]
-            for items in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""":
-                wordname = string.replace(wordname,items,"")
-                wordname = string.lower(wordname)
-            keywords[wordname] = word[2]
-
-        wordfreqexpected = dict()
-        wordfrequnexpected = dict()
-        words = list()
-        filteredwords = list()
-
-        for keyword in keywords:
-            keyword = string.lower(keyword)
-            if keyword in string.lower(tweettext):
-                # Direct match (expected)
-                if wordfreqexpected.has_key(keyword):
-                    wordfreqexpected[keyword] = wordfreqexpected[keyword] + 1
-                else:
-                    wordfreqexpected[keyword] = 1
-            elif "^" in keyword:
-                splitter = keyword.split("^")
-                if splitter[0] in string.lower(tweettext):
-                    # Direct match (expected)
-                    if wordfreqexpected.has_key(splitter[0]):
-                        wordfreqexpected[splitter[0]] = wordfreqexpected[splitter[0]] + 1
-                    else:
-                        wordfreqexpected[splitter[0]] = 1
-
-        splittweet = tweettext.split()
-        newsplitlist = list()
-        for word in splittweet:
-            if not "http://" in word:
-                wordnew = word
-                for items in """*+-/<=>.\\_""":
-                    wordnew = string.replace(wordnew,items," ")
-                if wordnew != word:
-                    for item in wordnew.split():
-                        newsplitlist.append(item)
-                else:
-                    newsplitlist.append(word)
-            else:
-                newsplitlist.append(word)
-
-        for word in newsplitlist:
-            for items in """!"#$%&(),:;?@~[]'`{|}""":
-                word = string.replace(word,items,"")
-            if word != "":
-                words.append(string.lower(word))
-                if string.lower(word) not in self.exclusions:
-                    filteredwords.append(word)
-
-        for word in filteredwords:
-            word = string.lower(word)
-            if wordfrequnexpected.has_key(word) and not wordfreqexpected.has_key(word):
-                wordfrequnexpected[word] = wordfrequnexpected[word] + 1
-            elif not wordfreqexpected.has_key(word):
-                wordfrequnexpected[word] = 1
-
-        expecteditems = [(v,k) for k, v in wordfreqexpected.items()]
-        expecteditems.sort(reverse=True)
-        itemdict = dict()
-        index = 0
-        for item in expecteditems:
-            itemdict[item[1]] = item[0]
-            if index == 9:
-                break
-            index += 1
-        #itemdict = cjson.encode(itemdict)
-        unexpecteditems = [(v,k) for k, v in wordfrequnexpected.items()]
-        unexpecteditems.sort(reverse=True)
-        itemdict2 = dict()
-        index = 0
-        for item in unexpecteditems:
-            itemdict2[item[1]] = item[0]
-            if index == 9:
-                break
-            index += 1
-        #itemdict2 = cjson.encode(itemdict2)
-
-        return [itemdict,itemdict2]
-
     def main(self):
         # Calculate running total and mean etc
 
         cursor = self.dbConnect(self.dbuser,self.dbpass)
         while not self.finished():
             # The below does LIVE and FINAL analysis - do NOT run DataAnalyser at the same time
-            # Bookmarks could be made more accurate by applying the timediff offset to the tweettime here
 
             print "Analysis component: Checking for new data..."
 
@@ -172,14 +81,17 @@ class LiveAnalysis(threadedcomponent):
             cursor.execute("""SELECT tid,pid,timestamp,text,tweet_id,programme_position FROM rawdata WHERE analysed = 0 ORDER BY tid LIMIT 5000""")
             data = cursor.fetchall()
 
+            # Cycle through all the as yet unanalysed tweets
             for result in data:
                 tid = result[0]
                 pid = result[1]
-                tweettime = result[2]
+                tweettime = result[2] # Timestamp based on the tweet's created_at field
                 tweettext = result[3]
-                tweetid = result[4]
-                progpos = result[5]
+                tweetid = result[4] # This is the real tweet ID, tid just makes a unique identifier as each tweet can be stored against several pids
+                progpos = result[5] # Position through the programme that the tweet was made
                 dbtime = datetime.utcfromtimestamp(tweettime)
+                # Each tweet will be grouped into chunks of one minute to make display better, so set the seconds to zero
+                # This particular time is only used for console display now as a more accurate one calculated from programme position is found later
                 dbtime = dbtime.replace(second=0)
                 print "Analysis component: Analysing new tweet for pid", pid, "(" + str(dbtime) + "):"
                 print "Analysis component: '" + tweettext + "'"
@@ -189,6 +101,7 @@ class LiveAnalysis(threadedcomponent):
                 cursor.execute("""SELECT totaltweets,meantweets,mediantweets,modetweets,stdevtweets,timediff,timestamp,utcoffset FROM programmes WHERE pid = %s ORDER BY timestamp DESC""",(pid))
                 progdata2 = cursor.fetchone()
                 totaltweets = progdata2[0]
+                # Increment the total tweets recorded for this programme's broadcast
                 totaltweets += 1
                 meantweets = progdata2[1]
                 mediantweets = progdata2[2]
@@ -202,11 +115,13 @@ class LiveAnalysis(threadedcomponent):
                 progstart = timestamp - timediff
                 progmins = int(progpos / 60)
                 analysedstamp = int(progstart + (progmins * 60))
+                # Ensure that this tweet occurs within the length of the programme, otherwise for the purposes of this program it's useless
                 if progpos > 0 and progpos <= duration:
                     cursor.execute("""SELECT did,totaltweets,wordfreqexpected,wordfrequnexpected FROM analyseddata WHERE pid = %s AND timestamp = %s""",(pid,analysedstamp))
                     analyseddata = cursor.fetchone()
                     # Just in case of a missing raw json object (ie. programme terminated before it was stored - allow it to be skipped if not found after 30 secs)
                     failcounter = 0
+                    # Pass this tweet to the NLTK analysis component
                     self.send([pid,tweetid],"nltk")
                     while not self.dataReady("nltk"):
                         if failcounter >= 3000:
@@ -215,11 +130,13 @@ class LiveAnalysis(threadedcomponent):
                         time.sleep(0.01)
                         failcounter += 1
                     if failcounter < 3000:
+                        # Receive back a list of words and their frequency for this tweet, including whether or not they are common, an entity etc
                         nltkdata = self.recv("nltk")
                     if analyseddata == None: # No tweets yet recorded for this minute
                         minutetweets = 1
                         cursor.execute("""INSERT INTO analyseddata (pid,totaltweets,timestamp) VALUES (%s,%s,%s)""", (pid,minutetweets,analysedstamp))
                         for word in nltkdata:
+                            # Check if we're storing a word or phrase here
                             if nltkdata[word][0] == 1:
                                 cursor.execute("""INSERT INTO wordanalysis (pid,timestamp,phrase,count,is_keyword,is_entity,is_common) VALUES (%s,%s,%s,%s,%s,%s,%s)""", (pid,analysedstamp,word,nltkdata[word][1],nltkdata[word][2],nltkdata[word][3],nltkdata[word][4]))
                             else:
@@ -232,8 +149,10 @@ class LiveAnalysis(threadedcomponent):
                         cursor.execute("""UPDATE analyseddata SET totaltweets = %s WHERE did = %s""",(minutetweets,did))
 
                         for word in nltkdata:
+                            # Check if we're storing a word or phrase
                             if nltkdata[word][0] == 1:
                                 cursor.execute("""SELECT wid,count FROM wordanalysis WHERE pid = %s AND timestamp = %s AND phrase LIKE %s""",(pid,analysedstamp,word))
+                                # Check if this phrase has already been stored for this minute - if so, increment the count
                                 wordcheck = cursor.fetchone()
                                 if wordcheck == None:
                                     cursor.execute("""INSERT INTO wordanalysis (pid,timestamp,phrase,count,is_keyword,is_entity,is_common) VALUES (%s,%s,%s,%s,%s,%s,%s)""", (pid,analysedstamp,word,nltkdata[word][1],nltkdata[word][2],nltkdata[word][3],nltkdata[word][4]))
@@ -241,6 +160,7 @@ class LiveAnalysis(threadedcomponent):
                                     cursor.execute("""UPDATE wordanalysis SET count = %s WHERE wid = %s""",(nltkdata[word][1] + wordcheck[1],wordcheck[0]))
                             else:
                                 cursor.execute("""SELECT wid,count FROM wordanalysis WHERE pid = %s AND timestamp = %s AND word LIKE %s""",(pid,analysedstamp,word))
+                                # Check if this word has already been stored for this minute - if so, increment the count
                                 wordcheck = cursor.fetchone()
                                 if wordcheck == None:
                                     cursor.execute("""INSERT INTO wordanalysis (pid,timestamp,word,count,is_keyword,is_entity,is_common) VALUES (%s,%s,%s,%s,%s,%s,%s)""", (pid,analysedstamp,word,nltkdata[word][1],nltkdata[word][2],nltkdata[word][3],nltkdata[word][4]))
@@ -273,15 +193,18 @@ class LiveAnalysis(threadedcomponent):
                     tweetlist = list()
                     for result in analyseddata:
                         totaltweetsmin = result[0]
+                        # Create a list of each minute and the total tweets for that minute in the programme
                         tweetlist.append(int(totaltweetsmin))
 
                     # Ensure tweetlist has enough entries
+                    # If a minute has no tweets, it won't have a database record, so this has to be added
                     if len(tweetlist) < runningtime:
                         additions = runningtime - len(tweetlist)
                         while additions > 0:
                             tweetlist.append(0)
                             additions -= 1
 
+                    # Order by programme position 0,1,2, mins etc
                     tweetlist.sort()
 
                     mediantweets = tweetlist[int(len(tweetlist)/2)]
@@ -305,18 +228,20 @@ class LiveAnalysis(threadedcomponent):
                     except ZeroDivisionError, e:
                         stdevtweets = 0
 
-                    # Finished analysis
+                    # Finished analysis - update DB
                     cursor.execute("""UPDATE programmes SET totaltweets = %s, meantweets = %s, mediantweets = %s, modetweets = %s, stdevtweets = %s WHERE pid = %s AND timestamp = %s""",(totaltweets,meantweets,mediantweets,modetweets,stdevtweets,pid,timestamp))
 
                 else:
                     print "Analysis component: Skipping tweet - falls outside the programme's running time"
 
+                # Mark the tweet as analysed
                 cursor.execute("""UPDATE rawdata SET analysed = 1 WHERE tid = %s""",(tid))
                 print "Analysis component: Done!"
 
-            # Stage 2: If all raw tweets analysed and imported = 1, finalise the analysis - could do bookmark identification here too?
+            # Stage 2: If all raw tweets analysed and imported = 1 (all data for this programme stored and programme finished), finalise the analysis - could do bookmark identification here too?
             cursor.execute("""SELECT pid,totaltweets,meantweets,mediantweets,modetweets,stdevtweets,timestamp,timediff FROM programmes WHERE imported = 1 AND analysed = 0 LIMIT 5000""")
             data = cursor.fetchall()
+            # Cycle through each programme that's ready for final analysis
             for result in data:
                 pid = result[0]
                 cursor.execute("""SELECT duration,title FROM programmes_unique WHERE pid = %s""",(pid))
@@ -348,7 +273,7 @@ class LiveAnalysis(threadedcomponent):
                         totaltweetsmin = result[0]
                         tweetlist.append(int(totaltweetsmin))
 
-                    # Ensure tweetlist has enough entries
+                    # Ensure tweetlist has enough entries - as above, if no tweets are recorded for a minute it won't be present in the DB
                     if len(tweetlist) < runningtime:
                         additions = runningtime - len(tweetlist)
                         while additions > 0:
@@ -409,13 +334,13 @@ class LiveAnalysis(threadedcomponent):
 
 class LiveAnalysisNLTK(component):
     Inboxes = {
-        "inbox" : "",
-        "tweetfixer" : "",
+        "inbox" : "Receives a tweet ID and its related PID for NLTK analysis [pid,tweetid]",
+        "tweetfixer" : "Received data back from the tweet fixing components (tweet json)",
         "control" : ""
     }
     Outboxes = {
-        "outbox" : "",
-        "tweetfixer" : "",
+        "outbox" : "Sends out analysed words/phrases in the format {'word/phrase' : [is_phrase,count,is_keyword,is_entity,is_common]}",
+        "tweetfixer" : "Sends out data to the tweet fixing components (tweet json)",
         "signal" : ""
     }
 
@@ -450,6 +375,7 @@ class LiveAnalysisNLTK(component):
         return False
 
     def spellingFixer(self,text):
+        # This function attempts to normalise some common Twitter mis-spellings and accentuations
 	# Fix ahahahahahaha and hahahahaha
         # Doesn't catch bahahahaha TODO
         # Also seem to be missing HAHAHAHA - case issue? TODO
@@ -466,8 +392,6 @@ class LiveAnalysisNLTK(component):
 	return text
 
     def main(self):
-        # Calculate running total and mean etc
-
         cursor = self.dbConnect(self.dbuser,self.dbpass)
 
         while not self.finished():
@@ -487,6 +411,7 @@ class LiveAnalysisNLTK(component):
 
                 tweetdata = None
                 while tweetdata == None:
+                    # Retrieve the tweet json corresponding to the ID receieved
                     cursor.execute("""SELECT tweet_json FROM rawtweets WHERE tweet_id = %s""",(tweetid))
                     tweetdata = cursor.fetchone()
                     if tweetdata == None:
@@ -496,12 +421,14 @@ class LiveAnalysisNLTK(component):
                 tweetjson = cjson.decode(tweetdata[0])
 
                 keywords = dict()
+                # Find the keywords relating to the PID received
                 cursor.execute("""SELECT keyword,type FROM keywords WHERE pid = %s""",(pid))
                 keyworddata = cursor.fetchall()
                 for word in keyworddata:
                     wordname = word[0].lower()
                     keywords[wordname] = word[1]
 
+                # Send the tweet off to have retweets fixed, links analysed etc
                 self.send(tweetjson,"tweetfixer")
                 while not self.dataReady("tweetfixer"):
                     self.pause()
@@ -509,7 +436,6 @@ class LiveAnalysisNLTK(component):
                 tweetjson = self.recv("tweetfixer")
 
                 # Format: {"word" : [is_phrase,count,is_keyword,is_entity,is_common]}
-                # Need to change this for retweets as they should include all the text content if truncated - need some clever merging FIXME TODO
                 wordfreqdata = dict()
                 for item in tweetjson['entities']['user_mentions']:
                     if wordfreqdata.has_key("@" + item['screen_name']):
@@ -575,13 +501,13 @@ class LiveAnalysisNLTK(component):
 
 class FinalAnalysisNLTK(component):
     Inboxes = {
-        "inbox" : "",
-        "tweetfixer" : "",
+        "inbox" : "Receives a list of tweet IDs and their related PID for NLTK analysis [pid,[tweetid,tweetid]]",
+        "tweetfixer" : "Received data back from the tweet fixing components (tweet json)",
         "control" : ""
     }
     Outboxes = {
-        "outbox" : "",
-        "tweetfixer" : "",
+        "outbox" : "urrently sends nothing out, just prints to screen - needs work", #TODO
+        "tweetfixer" : "Sends out data to the tweet fixing components (tweet json)",
         "signal" : ""
     }
 
@@ -650,6 +576,7 @@ class FinalAnalysisNLTK(component):
                 # May actually store phrases AS WELL AS keywords
 
                 keywords = dict()
+                # Find keywords for this PID
                 cursor.execute("""SELECT keyword,type FROM keywords WHERE pid = %s""",(pid))
                 keyworddata = cursor.fetchall()
                 for word in keyworddata:
@@ -664,7 +591,7 @@ class FinalAnalysisNLTK(component):
 
                 filteredtext = list()
                 for tweetid in tweetids:
-
+                    # Cycle through each tweet and find its JSON
                     tweetdata = None
                     while tweetdata == None:
                         cursor.execute("""SELECT tweet_json FROM rawtweets WHERE tweet_id = %s""",(tweetid))
@@ -679,6 +606,7 @@ class FinalAnalysisNLTK(component):
                                 yield 1
                             tweetjson = self.recv("tweetfixer")
 
+                            # Identify retweets
                             if tweetjson.has_key('retweeted_status'):
                                 if tweetjson['retweeted_status'].has_key('id'):
                                     statusid = tweetjson['retweeted_status']['id']
@@ -716,6 +644,7 @@ class FinalAnalysisNLTK(component):
                 # Need to change this for retweets as they should include all the text content if truncated - need some clever merging FIXME TODO
                 wordfreqdata = dict()
 
+                # Look for phrases - very limited
                 bigram_fd = FreqDist(nltk.bigrams(filteredtext))
 
                 print bigram_fd

@@ -13,6 +13,7 @@ Running
 
 Other Information
 - During the running of the program, it will create a file called tempRDF.txt in the running directory to hold the most recently downloaded RDF data/
+- contentDebug.txt may also be created to keep track of in-stream messages from Twitter.
 - It will also create files called namecache.conf, linkcache.conf and oversizedtweets.conf in your home directory
 
 namecache.conf - Holds a cache linking people's names to their Twitter screen names if they exist to prevent re-querying.
@@ -23,6 +24,8 @@ linkcache.conf - Holds a cache linking http://bbc.in URLs to their bbc.co.uk rep
 
 oversizedtweets.conf - Holds any tweets which exceed the database limitation for storage of the JSON representation.
                      - This has never happened as yet, but the file remains for debugging purposes.
+
+contentDebug.txt - Stored in the running directory. Keeps track of 'delete', 'scrub_geo' and 'limit' messages from Twitter for debugging.
 
 Dependencies (versions as listed in Synaptic Package Manager if available)
 Whilst the below are the current test packages, several earlier and later versions of each package will no doubt work too

@@ -99,7 +99,7 @@ class WhatsOn(component):
                 else:
                     content = None
 
-                # Work out time difference
+                # Work out time difference between local time and BBC time
                 if content != None:
                     try:
                         decodedcontent = cjson.decode(content)

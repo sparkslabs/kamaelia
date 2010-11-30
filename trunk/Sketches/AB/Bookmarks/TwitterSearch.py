@@ -55,7 +55,8 @@ class PeopleSearch(component):
         postdata = None
 
         if self.keypair == False:
-            # Perform OAuth authentication
+            # Perform OAuth authentication - as we don't have the secret key pair we need to request it
+            # This will require some user input
             request_token_url = 'http://api.twitter.com/oauth/request_token'
             access_token_url = 'http://api.twitter.com/oauth/access_token'
             authorize_url = 'http://api.twitter.com/oauth/authorize'
