@@ -17,13 +17,8 @@ allchannels = tvchannels + radiochannels
 
 class ProgrammesHandler(BaseHandler):
     allowed_methods = ('GET',)
-    # The below could be used if I wasn't adding keywords too - not sure how to imply some sort of JOIN operation
-    #fields = ('pid', 'channel', 'title', 'expectedstart', 'timediff', 'duration', 'imported', 'analysed', 'totaltweets', 'meantweets', 'mediantweets', 'modetweets', 'stdevtweets')
-    #model = programmes
 
     def read(self, request, pid, timestamp=False, redux=False):
-        #redux = ""
-        #TODO: Add redux support for bookmarks here
         retdata = dict()
         try:
             master = programmes_unique.objects.get(pid=pid)
