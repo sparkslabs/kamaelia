@@ -41,7 +41,7 @@ class Requester(threadedcomponent):
         self.channel = channel
         self.dbuser = dbuser
         self.dbpass = dbpass
-        # Modify this to construct the dictionary based on the channel names passed in?
+        # Keep a record of the current PID for each channel here
         self.channels = {
             "bbcone" : "",
             "bbctwo" : "",
@@ -100,6 +100,7 @@ class Requester(threadedcomponent):
         return False
 
     def doStuff(self, channel):
+        # Check what's on for each channel
         self.send(channel, "whatson")
         while not self.dataReady("whatson"):
             pass
@@ -127,6 +128,7 @@ class Requester(threadedcomponent):
                 if recvdata[0] == "OK":
                     programmedata = recvdata[1]
                 else:
+                    # Fake programme data to prevent crash - not ideal
                     programmedata = '<?xml version="1.0" encoding="utf-8"?> \
                                     <rdf:RDF xmlns:rdf      = "http://www.w3.org/1999/02/22-rdf-syntax-ns#" \
                                              xmlns:rdfs     = "http://www.w3.org/2000/01/rdf-schema#" \
@@ -143,6 +145,8 @@ class Requester(threadedcomponent):
                                              xmlns:event    = "http://purl.org/NET/c4dm/event.owl#"> \
                                     </rdf:RDF>'
 
+                # RDF reader needs to read from a file so write out first
+                # Alternative is to read from a URL, but this lacks proper proxy support
                 filepath = "tempRDF.txt"
                 file = open(filepath, 'w')
                 file.write(programmedata)
@@ -216,6 +220,7 @@ class Requester(threadedcomponent):
                 g = Graph()
                 g.parse("tempRDF.txt")
 
+                # Identify if this is a change of programme, or the first time we've checked what's on for print clarity
                 if self.firstrun:
                     print (channel + ": " + title)
                 else:
@@ -236,7 +241,7 @@ class Requester(threadedcomponent):
                     title = title.replace(item,"")
 
                 keywords = dict()
-
+                # Save keywords next to a descriptor of what they are
                 keywords[pid] = "PID"
 
                 # Add official hashtags to the list
@@ -281,7 +286,7 @@ class Requester(threadedcomponent):
                         keywords[numchannel] = "Channel"
                         break
 
-                # Load NameCache
+                # Load NameCache (people we've already searched for on Twitter to avoid hammering PeopleSearch)
                 save = False
                 try:
                     homedir = os.path.expanduser("~")
@@ -321,6 +326,7 @@ class Requester(threadedcomponent):
                         screenname = ""
                         try:
                             for user in twitdata:
+                                # Only use this Twitter screen name if there's a good chance they're the person we're after
                                 if user.has_key('verified'):
                                     if (user['verified'] == True or user['followers_count'] > 10000) and string.lower(user['name']) == string.lower(firstname + " " + lastname):
                                         screenname = user['screen_name']
@@ -379,6 +385,7 @@ class Requester(threadedcomponent):
                     keywords[firstname + " " + lastname] = "Actor"
 
                 # Radio appears to have been forgotten about a bit in RDF / scheduling at the mo
+                # So, let's do some extra queries and see if the show title is a person's name on Twitter
                 if "radio" in channel or "6music" in channel or "asiannetwork" in channel or "sportsextra" in channel or "worldservice" in channel:
                     # However, radio shows are often named using the DJ - The cases where this isn't true will cause problems however as they'll be saved in json - DOH! TODO
                     if config.has_key(titlesave):
