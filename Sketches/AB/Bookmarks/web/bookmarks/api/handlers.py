@@ -290,7 +290,7 @@ class SummaryHandler(BaseHandler):
     '''
     def read(self, request):
         retdata = {"channels" : list()}
-
+        
         # Prevent division by zero later on...
         largeststdev = 1
 
@@ -298,8 +298,12 @@ class SummaryHandler(BaseHandler):
             retdata['channels'].append({"channel" : channel})
             data = programmes.objects.filter(channel=channel).latest('timestamp')
             if isinstance(data,object):
+                try:
+                    master = programmes_unique.objects.get(pid=data.pid)
+                except ObjectDoesNotExist, e:
+                    pass # This is handled later
                 progdate = datetime.utcfromtimestamp(data.timestamp + data.utcoffset)
-                progdate = progdate + timedelta(seconds=data.duration - data.timediff)
+                progdate = progdate + timedelta(seconds=master.duration - data.timediff)
                 datenow = datetime.now()
                 if data.imported == 0:
                     retdata['channels'][len(retdata['channels']) - 1]['pid'] = data.pid
