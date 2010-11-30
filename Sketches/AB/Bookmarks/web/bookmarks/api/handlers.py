@@ -1,3 +1,4 @@
+# API output handlers
 from piston.handler import BaseHandler
 from bookmarks.output.models import programmes, keywords, analyseddata, rawdata, rawtweets, programmes_unique, wordanalysis
 from datetime import timedelta,datetime
@@ -17,7 +18,8 @@ allchannels = tvchannels + radiochannels
 
 class ProgrammesHandler(BaseHandler):
     allowed_methods = ('GET',)
-
+    # API output from /api/pid/timestamp/stats.format or /api/pid/stats.format giving statistics available and bookmarks identified
+    # Including a timestamp restricts to a single broadcast
     def read(self, request, pid, timestamp=False, redux=False):
         retdata = dict()
         try:
@@ -29,10 +31,12 @@ class ProgrammesHandler(BaseHandler):
         else:
             data = programmes.objects.filter(pid=pid)
         if len(data) > 0:
+            # Found the PID, so return an 'OK' status with the data that's immediately available
             retdata['status'] = "OK"
             retdata['pid'] = master.pid
             retdata['title'] = master.title
             if len(data) == 1:
+                # If we're looking at a single broadcast, we can return all of the below
                 retdata['timestamp'] = data[0].timestamp
                 retdata['utcoffset'] = data[0].utcoffset
                 retdata['timediff'] = data[0].timediff
@@ -42,6 +46,7 @@ class ProgrammesHandler(BaseHandler):
             retdata['keywords'] = list()
             kwdata = keywords.objects.filter(pid=pid).all()
             for row in kwdata:
+                # List the keywords and what they represent (Participant, Title, Twitter etc)
                 retdata['keywords'].append({'keyword' : row.keyword, 'type' : row.type})
 
             minutegroups = dict()
@@ -52,6 +57,7 @@ class ProgrammesHandler(BaseHandler):
             progchannel = None
             progtimediff = 0
             reduxchannel = None
+            # Identify bookmarks and calculate stats if viewing aggregated broadcasts
             for row in data:
                 # This may not return some results at extreme ends, but should get the vast majority
                 # No point in looking for data outside this anyway as we can't link back into it
@@ -117,7 +123,7 @@ class ProgrammesHandler(BaseHandler):
 
 
             if 1:
-
+                # Identify bookmarks
                 retdata['bookmarks'] = list()
 
                 if redux == "redux":
@@ -258,12 +264,12 @@ class ProgrammesHandler(BaseHandler):
                                 if (bookmarkend - bookmarkstart) > 60:
                                     bookmarks.append([bookmarkstart,bookmarkend,bookmarkstart-80,keyword])
 
+                # Add the bookmarks found to the API output in the format specified
                 for bookmark in bookmarks:
-                    bookmarkpos = bookmark[2]-progtimestamp-progtimediff
+                    bookmarkpos = int(bookmark[2]-progtimestamp-progtimediff)
                     bookmarkmins = int(bookmarkpos / 60)
                     bookmarksecs = int(bookmarkpos % 60)
                     if redux == "redux":
-                        #TODO: Finish this!!!
                         retdata['bookmarks'].append({'redux' : "http://g.bbcredux.com/programme/" + reduxchannel + "/" + progdatestring + "/" + progtimestring + "?start=" + str(bookmarkpos), 'startseconds' : bookmark[2]-progtimestamp-progtimediff, 'endseconds' : bookmark[1]-progtimestamp-progtimediff})
                     else:
                         retdata['bookmarks'].append({'iplayer' : "http://bbc.co.uk/i/" + pid + "/?t=" + str(bookmarkmins) + "m" + str(bookmarksecs) + "s", 'startseconds' : bookmark[2]-progtimestamp-progtimediff, 'endseconds' : bookmark[1]-progtimestamp-progtimediff})
@@ -274,7 +280,8 @@ class ProgrammesHandler(BaseHandler):
 
 class SummaryHandler(BaseHandler):
     allowed_methods = ('GET',)
-
+    # API output from /api/summary.format
+    # Lists all channels, their current PID and a rough estimation of the programme's online activity compared to others airing at the same time
     def read(self, request):
         retdata = {"channels" : list()}
 
@@ -306,7 +313,7 @@ class SummaryHandler(BaseHandler):
 
 class TweetHandler(BaseHandler):
     allowed_methods = ('GET',)
-
+    # Output from /api/pid.format or /api/pid/timestamp.format showing raw tweets for entire programmes
     def read(self, request, pid, timestamp=False):
         retdata = {"tweets" : list()}
         try:
@@ -319,6 +326,7 @@ class TweetHandler(BaseHandler):
         else:
             data = programmes.objects.filter(pid=pid)
         if len(data) > 0:
+            # Find raw tweets for the broadcast identified by the timestamp included, or for all together
             if timestamp:
                 progstart = data[0].timestamp - data[0].timediff
                 duration = master.duration
@@ -327,6 +335,7 @@ class TweetHandler(BaseHandler):
                 data = rawdata.objects.filter(pid=pid,programme_position__gte=0,programme_position__lt=master.duration).order_by('programme_position').all()
             for tweet in data:
                 tweetid = int(tweet.tweet_id)
+                # Look for the tweets found in the rawtweets table to grab original JSON
                 try:
                     rawtweetquery = rawtweets.objects.get(tweet_id = tweetid)
                     tweetjson = rawtweetquery.tweet_json
@@ -334,6 +343,7 @@ class TweetHandler(BaseHandler):
                 except ObjectDoesNotExist, e:
                     legacy = True
                 if legacy:
+                    # If no JSON found, return a legacy output giving all that's available
                     retdata['tweets'].append({"created_at" : tweet.timestamp,"programme_position" : tweet.programme_position,"screen_name" : tweet.user,"text" : tweet.text, "legacy" : legacy})
                 else:
                     retdata['tweets'].append({"id" : tweetid,"created_at" : tweet.timestamp,"programme_position" : tweet.programme_position,"json" : tweetjson, "legacy" : legacy})
@@ -341,7 +351,8 @@ class TweetHandler(BaseHandler):
 
 class TimestampHandler(BaseHandler):
     allowed_methods = ('GET',)
-
+    # Output from /api/pid/timestamp/tweets.format or /api/pid/timestamp/aggregated/tweets.format
+    # Provides raw tweet output for a specific minute period in a programme, either aggregated across broadcasts or not
     def read(self, request, pid, timestamp, aggregated=False):
         retdata = {"tweets" : list()}
         timestamp = int(timestamp)
@@ -354,6 +365,7 @@ class TimestampHandler(BaseHandler):
 
         for tweet in data:
             tweetid = int(tweet.tweet_id)
+            # Check for existence of the original JSON
             try:
                 rawtweetquery = rawtweets.objects.get(tweet_id = tweetid)
                 tweetjson = rawtweetquery.tweet_json
@@ -361,6 +373,7 @@ class TimestampHandler(BaseHandler):
             except ObjectDoesNotExist, e:
                 legacy = True
             if legacy:
+                # If no JSON found, return what's available
                 retdata['tweets'].append({"created_at" : tweet.timestamp,"programme_position" : tweet.programme_position,"screen_name" : tweet.user,"text" : tweet.text, "legacy" : legacy})
             else:
                 retdata['tweets'].append({"id" : tweetid,"created_at" : tweet.timestamp,"programme_position" : tweet.programme_position,"json" : tweetjson, "legacy" : legacy})
