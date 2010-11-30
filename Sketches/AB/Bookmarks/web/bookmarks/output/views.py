@@ -1,12 +1,11 @@
-# Create your views here.
 from django.http import HttpResponse
 from bookmarks.output.models import programmes,analyseddata,rawdata,wordanalysis,programmes_unique
 from datetime import date,timedelta,datetime
-from pygooglechart import SimpleLineChart, Axis #lc
+from pygooglechart import SimpleLineChart, Axis #lc (line chart)
+from django.core.exceptions import ObjectDoesNotExist
 import time
 import string
 import math
-from django.core.exceptions import ObjectDoesNotExist
 #TODO: Replace ugly meta refresh tags with AJAX in index
 
 tvchannels = ["bbcone","bbctwo","bbcthree","bbcfour","cbbc","cbeebies","bbcnews","bbcparliament"]
@@ -35,28 +34,29 @@ def index(request):
     # Prevent division by zero later on...
     largeststdev = 1
 
-    # Identify the total tweets for each current programme (provided the grabber is still running)
+    # Find the largest standard deviation recorded for a current programme to act as a normaliser
     for channel in allchannels:
         data = programmes.objects.filter(channel=channel).latest('timestamp')
         if isinstance(data,object):
-            try:
-                master = programmes_unique.objects.get(pid=data.pid)
-            except ObjectDoesNotExist, e:
-                pass # This is handled later
-            progdate = datetime.utcfromtimestamp(data.timestamp + data.utcoffset)
-            progdate = progdate + timedelta(seconds=master.duration - data.timediff)
+            #try:
+            #    master = programmes_unique.objects.get(pid=data.pid)
+            #except ObjectDoesNotExist, e:
+            #    pass # This is handled later
+            #progdate = datetime.utcfromtimestamp(data.timestamp + data.utcoffset)
+            #progdate = progdate + timedelta(seconds=master.duration - data.timediff)
             if data.stdevtweets > largeststdev and data.imported==0:
                 largeststdev = data.stdevtweets
 
     normaliser = 1/float(largeststdev)
 
-    #output += "<h2>Note:</h2><p>- Some programme durations are currently identified incorrectly. Despite this, all data for the period will have been collected.</p>
+    # Display all TV channels
     output += "<div style=\"display: inline; position: relative\"><h2>TV</h2>"
     for channel in tvchannels:
         data = programmes.objects.filter(channel=channel).latest('timestamp')
         if isinstance(data,object):
-            progdate = datetime.utcfromtimestamp(data.timestamp + data.utcoffset)
+            #progdate = datetime.utcfromtimestamp(data.timestamp + data.utcoffset)
             if data.imported==0:
+                # Generate a colour (opacity) based on this channel's standard deviation and the normaliser
                 opacity = normaliser * data.stdevtweets
                 if opacity < 0.5:
                     fontcolour = "#000000"
@@ -73,12 +73,14 @@ def index(request):
             output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channel-graph/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
             output += "No Data</div>"
 
+    # Display all radio channels
     output += "<br /><br /></div><br /><br /><div style=\"display: inline; position: relative\"><h2>Radio</h2>"
     for channel in radiochannels:
         data = programmes.objects.filter(channel=channel).latest('timestamp')
         if isinstance(data,object):
-            progdate = datetime.utcfromtimestamp(data.timestamp + data.utcoffset)
+            #progdate = datetime.utcfromtimestamp(data.timestamp + data.utcoffset)
             if data.imported==0:
+                # Generate a colour (opacity) based on this channel's standard deviation and the normaliser
                 opacity = normaliser * data.stdevtweets
                 if opacity < 0.5:
                     fontcolour = "#000000"
@@ -94,7 +96,8 @@ def index(request):
         else:
             output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channel-graph/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
             output += "No Data</div>"
-        
+
+    # Print API links
     output += "<br /><br /></div><br /><br />API: <a href=\"/api/summary.json\" target=\"_blank\">JSON</a> - <a href=\"/api/summary.xml\" target=\"_blank\">XML</a>" + footer
 
     return HttpResponse(output)
