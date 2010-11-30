@@ -38,12 +38,6 @@ def index(request):
     for channel in allchannels:
         data = programmes.objects.filter(channel=channel).latest('timestamp')
         if isinstance(data,object):
-            #try:
-            #    master = programmes_unique.objects.get(pid=data.pid)
-            #except ObjectDoesNotExist, e:
-            #    pass # This is handled later
-            #progdate = datetime.utcfromtimestamp(data.timestamp + data.utcoffset)
-            #progdate = progdate + timedelta(seconds=master.duration - data.timediff)
             if data.stdevtweets > largeststdev and data.imported==0:
                 largeststdev = data.stdevtweets
 
@@ -54,7 +48,6 @@ def index(request):
     for channel in tvchannels:
         data = programmes.objects.filter(channel=channel).latest('timestamp')
         if isinstance(data,object):
-            #progdate = datetime.utcfromtimestamp(data.timestamp + data.utcoffset)
             if data.imported==0:
                 # Generate a colour (opacity) based on this channel's standard deviation and the normaliser
                 opacity = normaliser * data.stdevtweets
@@ -78,7 +71,6 @@ def index(request):
     for channel in radiochannels:
         data = programmes.objects.filter(channel=channel).latest('timestamp')
         if isinstance(data,object):
-            #progdate = datetime.utcfromtimestamp(data.timestamp + data.utcoffset)
             if data.imported==0:
                 # Generate a colour (opacity) based on this channel's standard deviation and the normaliser
                 opacity = normaliser * data.stdevtweets
@@ -103,12 +95,14 @@ def index(request):
     return HttpResponse(output)
 
 def channel(request,channel,year=0,month=0,day=0):
+    # Channel page, accessible via /channels/bbcone etc
     output = header
     data = programmes.objects.filter(channel=channel)
     if channel not in radiochannels and channel not in tvchannels:
         output += "<br />Invalid channel supplied."
         output += "<br /><br /><a href=\"/\">Back to index</a>"
     else:
+        # Print the date picker (requires up to dat jQuery - included)
         output += '<style type="text/css">@import "/media/jquery/jquery.datepick.css";</style>\n \
                     <script type="text/javascript" src="/media/jquery/jquery.datepick.js"></script>\n'
         output += "<script type=\"text/javascript\">\n \
@@ -132,7 +126,8 @@ def channel(request,channel,year=0,month=0,day=0):
                             window.location = '/channels/" + channel + "/' + pickerYear + '/' + pickerMonth + '/' + pickerDay + '/';\n \
                         }\n \
                     </script>\n"
-        
+
+        # Print channel logo
         output += "<br /><a href=\"http://www.bbc.co.uk/" + channel + "\" target=\"_blank\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
         if len(data) < 1:
             output += "<br />Please note: No data has yet been captured for this channel."
@@ -141,6 +136,7 @@ def channel(request,channel,year=0,month=0,day=0):
             if len(str(day)) == 2 and len(str(month)) == 2 and len(str(year)) == 4:
                 output += "<br />Currently viewing shows for " + day + "/" + month + "/" + year + "<br />"
                 starttimestamp = time.mktime(datetime(int(year),int(month),int(day),0,0,0,0).timetuple())
+                # Work out (roughly) whether or not the iPlayer programme will have expired - if so, show redux
                 if starttimestamp + (86400 * 8) < time.time():
                     redux = True
                 else:
@@ -153,6 +149,7 @@ def channel(request,channel,year=0,month=0,day=0):
                     except ObjectDoesNotExist, e:
                         pass # This is handled later
                     progdate = datetime.utcfromtimestamp(programme.timestamp) + timedelta(seconds=programme.utcoffset)
+                    # For each programme on the day specified, print the time and link to the programme's page
                     if redux:
                         output += "<br />" + str(progdate.strftime("%H:%M")) + ": <a href=\"/programmes/" + programme.pid + "/redux\">" + master.title + "</a>"
                     else:
@@ -167,12 +164,14 @@ def channel(request,channel,year=0,month=0,day=0):
     return HttpResponse(output)
 
 def channelgraph(request,channel,year=0,month=0,day=0):
+    # Channel graph page, accessible via /channel-graph/bbcone etc
     output = header
     data = programmes.objects.filter(channel=channel)
     if channel not in radiochannels and channel not in tvchannels:
         output += "<br />Invalid channel supplied."
         output += "<br /><br /><a href=\"/\">Back to index</a>"
     else:
+        # Print date picker - must use jQuery with noConflict option to avoid conflict with Prototype JS namespace
         output += '<style type="text/css">@import "/media/jquery/jquery.datepick.css";</style>\n \
                     <script type="text/javascript" src="/media/jquery/jquery.datepick.js"></script>\n'
         output += "<script type=\"text/javascript\">\n \
@@ -197,6 +196,7 @@ def channelgraph(request,channel,year=0,month=0,day=0):
                             window.location = '/channel-graph/" + channel + "/' + pickerYear + '/' + pickerMonth + '/' + pickerDay + '/';\n \
                         }\n \
                     </script>\n"
+        # Include prototype JS for graph generation
         output += """<!--[if IE]><script type=\"text/javascript\" src=\"/media/prototypejs/excanvas.js\"></script><![endif]-->
                 <script type=\"text/javascript\" src=\"/media/prototypejs/prototype.js\"></script>
                 <script type=\"text/javascript\" src=\"/media/prototypejs/base64.js\"></script>
@@ -212,6 +212,7 @@ def channelgraph(request,channel,year=0,month=0,day=0):
             if len(str(day)) == 2 and len(str(month)) == 2 and len(str(year)) == 4:
                 output += "<br />Currently viewing shows for " + day + "/" + month + "/" + year + "<br />"
                 starttimestamp = time.mktime(datetime(int(year),int(month),int(day),0,0,0,0).timetuple())
+                # Roughly identify if the iPlayer programmes have expired - if so show redux instead
                 if starttimestamp + (86400 * 8) < time.time():
                     redux = True
                 else:
@@ -219,21 +220,24 @@ def channelgraph(request,channel,year=0,month=0,day=0):
                 endtimestamp = starttimestamp + 86400
                 data = programmes.objects.filter(channel__exact=channel,timestamp__gte=starttimestamp,timestamp__lt=endtimestamp).order_by('timestamp').all()
                 for programme in data:
+                    # Cycle through each programme printing its name and time along with a graph
                     progdate = datetime.utcfromtimestamp(programme.timestamp) + timedelta(seconds=programme.utcoffset)
                     try:
                         master = programmes_unique.objects.get(pid=programme.pid)
                     except ObjectDoesNotExist, e:
                         pass # This is handled later
                     if programme.totaltweets > 0:
-
+                        # Only print the graph if there is actually some data
                         if redux:
                             output += "<br />" + str(progdate.strftime("%H:%M")) + ": <a href=\"/programmes/" + programme.pid + "/redux\">" + master.title + "</a> (see below)"
                         else:
                             output += "<br />" + str(progdate.strftime("%H:%M")) + ": <a href=\"/programmes/" + programme.pid + "\">" + master.title + "</a> (see below)"
 
+                        # Use the data generating function to get the graph
                         output += programmev2data(False,"graphs-channel",programme.pid,programme.timestamp,redux,False)
 
                     else:
+                        # No data so don't print a graph
                         if redux:
                             output += "<br />" + str(progdate.strftime("%H:%M")) + ": <a href=\"/programmes/" + programme.pid + "/redux\">" + master.title + "</a>"
                         else:
@@ -250,7 +254,9 @@ def channelgraph(request,channel,year=0,month=0,day=0):
     return HttpResponse(output)
 
 def programme(request,pid,redux=False):
-    # Now that this is live, would be clever to use AJAX to refresh graphs etc every minute whilst still unanalysed?
+    # This is a deprecated version of the /programmes/pid page
+    # Doesn't handle cases where a PID has been broadcast more than one - simply displays an error in this case
+    # Accessible via /programmes-old/pid
 
     output = header
     try:
@@ -262,7 +268,9 @@ def programme(request,pid,redux=False):
         output += "<br />Invalid pid supplied or no data has yet been captured for this programme."
         output += "<br /><br /><a href=\"/\">Back to index</a>"
     elif len(data) == 1:
+        # Only display data if the programme has a single recorded broadcast
         if data[0].analysed == 0:
+            # If the programme is still running (or rather hasn't been fully analysed) keep refreshing the page
             output += "<meta http-equiv='refresh' content='30'>"
         channel = data[0].channel
         output += "<br /><a href=\"http://www.bbc.co.uk/" + channel + "\" target=\"_blank\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br /><br />"
@@ -280,14 +288,18 @@ def programme(request,pid,redux=False):
         tweetmins = dict()
         tweetstamps = dict()
         lastwasbookmark = False
+        # Bookmarks is a list containing the starting minute for identified bookmarks
         bookmarks = list()
+        # Should bookmarks span more than one minute, they are added to bookmarkcont
         bookmarkcont = list()
+        # New version bookmarks including some word frequency analysis are held in bookmarkstest
         bookmarkstest = list()
         for minute in minutedata:
             tweettime = datetime.utcfromtimestamp(minute.timestamp) + timedelta(seconds=data[0].utcoffset)
             proghour = tweettime.hour - actualstart.hour
             progmin = tweettime.minute - actualstart.minute
             progsec = tweettime.second - actualstart.second
+            # Identify where in the programme the tweets occurred - not needed in the new version of /programmes
             playertime = (((proghour * 60) + progmin) * 60) + progsec - 90 # needs between 60 and 120 secs removing to allow for tweeting time - using 90 for now
             if playertime > (master.duration - 60):
                 playertimemin = (master.duration/60) - 1
@@ -298,6 +310,7 @@ def programme(request,pid,redux=False):
             else:
                 playertimemin = 0
                 playertimesec = 0
+            # Identify where bookmarks should occur by comparing the standard deviation to the mean
             if minute.totaltweets > (1.5*data[0].stdevtweets+data[0].meantweets):
                 if lastwasbookmark == True:
                     bookmarkcont.append(playertimemin)
@@ -374,6 +387,7 @@ def programme(request,pid,redux=False):
                 tweetstamps[str(playertimemin)] = int(minute.timestamp)
         if len(tweetmins) > 0:
             output += " - Tweets per minute - Mean: " + str(round(data[0].meantweets,2)) + " - Median: " + str(data[0].mediantweets) + " - Mode: " + str(data[0].modetweets) + " - STDev: " + str(round(data[0].stdevtweets,2)) + "<br />"
+            # The below xlist and ylist variables allow for the generation of the data points to be passed to the Google Chart API
             xlist = range(0,master.duration/60)
             ylist = list()
             for min in xlist:
@@ -386,7 +400,7 @@ def programme(request,pid,redux=False):
             maxx = max(xlist)
 
             mainwidth = int(1000/(maxx+1)) * (maxx + 1)
-            # blockgraph = main gradient based output
+            # blockgraph = main gradient based output with iPlayer links
             # blockgraph2 = iPlayer bookmarks selection
             # blockgraph3 = raw tweets selection
             blockgraph = "<div style=\"border-top: 1px #CCCCCC solid; border-left: 1px #CCCCCC solid; border-right: 1px #CCCCCC solid; height: 50px; width: " + str(mainwidth) + "px; overflow: hidden\">"
@@ -444,7 +458,7 @@ def programme(request,pid,redux=False):
             graph = SimpleLineChart(mainwidth,300,y_range=[0,maxy])
             graph.add_data(ylist)
 
-            #TODO: Fix the bad labelling! - perhaps see if flotr is any better
+            # Labelling on these graphs is poor (in terms of what numbers are shown where) - Flotr handles this better in the new /programmes
             graph.set_title("Tweets per minute")
             left_axis = ['',int(maxy/4),int(maxy/2),int(3*maxy/4),int(maxy)]
             bottom_axis = [0,int(maxx/8),int(maxx/4),int(3*maxx/8),int(maxx/2),int(5*maxx/8),int(3*maxx/4),int(7*maxx/8),int(maxx)]
@@ -493,10 +507,12 @@ def programme(request,pid,redux=False):
     return HttpResponse(output)
 
 def programmev2(request,pid,timestamp=False,redux=False):
-    # Now that this is live, would be clever to use AJAX to refresh graphs etc every minute whilst still unanalysed?
+    # Main programme viewing output, accessible via /programmes/pid
+    # Where a show has been broadcast before, its individual broadcasts can be viewed via /programmes/pid/timestamp
 
     output = header
 
+    # 206 here (partial content) means the programme hasn't finished being analysed
     if programmev2data(False,"status",pid,timestamp,redux,False) == "206":
 
         # Ajax refresh code for divs TODO: Each time, request to /data/status to see if we need to keep refreshing
@@ -526,6 +542,7 @@ def programmev2(request,pid,timestamp=False,redux=False):
         # Allowance for non-JS browsers
         output += "<noscript><meta http-equiv='refresh' content='30'></noscript>"
 
+    # Graph generation JS
     output += """<!--[if IE]><script type=\"text/javascript\" src=\"/media/prototypejs/excanvas.js\"></script><![endif]-->
                 <script type=\"text/javascript\" src=\"/media/prototypejs/prototype.js\"></script>
                 <script type=\"text/javascript\" src=\"/media/prototypejs/base64.js\"></script>
@@ -550,6 +567,7 @@ def programmev2(request,pid,timestamp=False,redux=False):
     else:
         output += "<br />Can't see any bookmarks? Programmes broadcast before 24/11/10 only show bookmarks using the old /programmes pages available via <a href=\"/programmes-old/" + pid + "\">this link</a>.<br />"
         if rowcount == 1:
+            # If there has only been one broadcast of this programme, we can include show times, otherwise we can only show the duration
             channel = data[0].channel
             output += "<br /><a href=\"http://www.bbc.co.uk/" + channel + "\" target=\"_blank\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br /><br />"
             progdatetime = datetime.utcfromtimestamp(data[0].timestamp)
@@ -567,7 +585,8 @@ def programmev2(request,pid,timestamp=False,redux=False):
                 output += "Duration: " + str(proghours) + " hours, " + str(progmins) + " minutes<br />"
             else:
                 output += "Duration: " + str(progmins) + " minutes<br />"
-        
+
+        # Print statistics and graphs in references divs so they can be refreshed
         output += "<br /><div id=\"statistics\">"
         output += programmev2data(False,"statistics",pid,timestamp,redux,False)
         output += "</div>"
@@ -576,6 +595,7 @@ def programmev2(request,pid,timestamp=False,redux=False):
         output += "</div>"
 
         if rowcount > 1:
+            # Print links to each individual broadcast if there has been more than one
             output += "<br /><br /><strong>Broadcasts</strong>"
             for row in data:
                 output += "<br /><a href=\"/programmes/" + pid + "/" + str(int(row.timestamp))
@@ -587,6 +607,7 @@ def programmev2(request,pid,timestamp=False,redux=False):
                 output += str(progdate.strftime("%d/%m/%Y %H:%M:%S")) + " (" + str(row.channel) + ")"
                 output += "</a>"
         output += "<br /><br />"
+        # Print API links to general stats and the raw tweets
         if rowcount > 1:
             if redux == "redux":
                 output += "API: <a href=\"/api/" + pid + "/redux/stats.json\" target=\"_blank\">JSON</a> - <a href=\"/api/" + pid + "/redux/stats.xml\" target=\"_blank\">XML</a>"
@@ -608,6 +629,7 @@ def programmev2(request,pid,timestamp=False,redux=False):
     return HttpResponse(output)
 
 def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True):
+    # Data output for /programmes pages AJAX - accessible via /data/element/pid etc
 
     output = "" # Initialise output buffer
     try:
@@ -619,6 +641,7 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
     else:
         data = programmes.objects.filter(pid=pid).all()
     elemitem = "all"
+    # Splitter used by /channel-graph to get the first graph rather than the block plot
     if "-" in element and "graphs" in element:
         splitter = element.split("-")
         element = splitter[0]
@@ -896,6 +919,8 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
                                     # Check if the bookmarks should be merged, allowing a slight overlap time of 20 seconds in case of a sudden lack of tweets
                                     checkkeyword = bookmarks[len(bookmarks)-1][3]
                                     originalkeyword = keyword
+                                    # TODO Fix this so that two bookmarks aren't identified instead of one if 'Ha' and 'ha' are identified as the keywords respectively
+                                    # Need to take account of the fact there could be some unicode here
                                     #try:
                                     #    checkkeyword = string.lower(checkkeyword)
                                     #    originalkeyword = string.lower(originalkeyword)
@@ -972,6 +997,7 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
         return output
 
 def rawtweets(request,pid,timestamp):
+    # Deprecated raw tweet output available via /programmes-old/pid/timestamp
     output = header
     progdata = programmes.objects.filter(pid=pid).all()
     try:
@@ -1004,6 +1030,7 @@ def rawtweets(request,pid,timestamp):
     return HttpResponse(output)
 
 def rawtweetsv2(request,pid,timestamp,aggregated=False):
+    # New raw tweet output accessible via /raw/pid/timestamp, or /raw/pid/progpos/aggregated for cases of multiple showings
     output = header
     try:
         master = programmes_unique.objects.get(pid=pid)
@@ -1022,6 +1049,7 @@ def rawtweetsv2(request,pid,timestamp,aggregated=False):
                         </style>
                         <script type=\"text/javascript\" src=\"/media/jquery/jquery.tagcloud.min.js\"></script>
                         <script type=\"text/javascript\" src=\"/media/jquery/jquery.tinysort.min.js\"></script>"""
+        # Tag cloud JS
         output += """<script type=\"text/javascript\">
                             $(document).ready(function() {
                             if ((document.cloudopts.keyword.checked == true) | (document.cloudopts.entity.checked == true) | (document.cloudopts.common.checked == true)) {
@@ -1036,6 +1064,7 @@ def rawtweetsv2(request,pid,timestamp,aggregated=False):
             output += "/aggregated\";"
         else:
             output += "\";"
+        # Handling Ajax request for tag cloud refresh when new parameters selected from checkboxes
         output += """           if ((document.cloudopts.keyword.checked == true) | (document.cloudopts.entity.checked == true) | (document.cloudopts.common.checked == true)) {
                                     urlappender += "/";
                                 }
@@ -1059,6 +1088,7 @@ def rawtweetsv2(request,pid,timestamp,aggregated=False):
             progpos = timestamp*60
             endstamp = progpos + 60
             output += "<br /><strong>" + master.title + "</strong><br /><br />"
+            # Allow skipping from this minute to the next and previous
             if timestamp > 0:
                 # Print previous button
                 output += "<a href=\"/raw/" + pid + "/" + str(timestamp - 1) + "/aggregated\"><- Previous</a>"
@@ -1129,6 +1159,7 @@ def rawtweetsv2(request,pid,timestamp,aggregated=False):
     return HttpResponse(output)
 
 def tagcloud(request,pid,timestamp,params=False,wrapper=True):
+    # Tag cloud generation - accessible via /data/tagcloud/pid/progpos/aggregated or /data/tagcloud/pid/timestamp
     output = ""
     if params:
         if "/" in params:
@@ -1163,6 +1194,8 @@ def tagcloud(request,pid,timestamp,params=False,wrapper=True):
             analysedwords = dict()
             for row in progdata:
                 searchstamp = row.timestamp-row.timediff+progpos
+                # Identify which elements to show in the tag cloud based on the parameters specified
+                # Overcomplicated number of queries - could be simplified I expect TODO
                 if elements:
                     if "k" in elements and "e" in elements and "c" in elements:
                         newanalysis = wordanalysis.objects.filter(pid=pid,timestamp=searchstamp,is_keyword=0,is_entity=0,is_common=0).order_by('-count').all()
@@ -1191,6 +1224,7 @@ def tagcloud(request,pid,timestamp,params=False,wrapper=True):
             for word in worditems:
                 if currenttag >= 100:
                     break
+                # Print an <li> for each tag, which will be converted by JS into a cloud
                 output += "<li style=\"cursor: pointer\" title=\"" + word[1] + "\" value=\"" + str(word[0]) + "\"><a title=\"" + str(word[0]) + "\">" + word[1] + " </a></li>"
                 currenttag += 1
         else:
@@ -1216,7 +1250,6 @@ def tagcloud(request,pid,timestamp,params=False,wrapper=True):
             for entry in newanalysis:
                 if currenttag >= 100:
                     break
-                #output += "<br />" + entry.word + ": " + str(entry.count) + " " + str(entry.is_keyword) + " " + str(entry.is_entity) + " " + str(entry.is_common)
                 output += "<li style=\"cursor: pointer\" title=\"" + entry.word + "\" value=\"" + str(entry.count) + "\"><a title=\"" + str(entry.count) + "\">" + entry.word + " </a></li>"
                 currenttag += 1
         if output == starttag:
