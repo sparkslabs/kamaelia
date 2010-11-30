@@ -1,9 +1,11 @@
 #! /usr/bin/python
 
-# Interface to BBC /programmes JSON etc
-# - Identifies PID of current programme on a chosen channel
-# - Provides output for PIDs in a chosen format (XML, RDF etc)
-# - Identifies currently playing tracks on radio channels TODO
+'''
+Interface to BBC /programmes JSON etc
+- Identifies PID of current programme on a chosen channel
+- Provides output for PIDs in a chosen format (XML, RDF etc)
+- Identifies currently playing tracks on radio channels TODO
+'''
 
 from datetime import datetime
 from datetime import timedelta

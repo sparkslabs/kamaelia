@@ -1,10 +1,12 @@
 #! /usr/bin/python
 
-# Interface to Twitter streaming API
-# - Grabs JSON data based on chosen keywords
-# - Also relays the PIDs related to the JSON responses to ensure they match up
-# TODO: Add watching for in-stream rate limiting / error messages
-# - Doesn't currently honour tweet deletion messages (TODO)
+'''
+Interface to Twitter streaming API
+- Grabs JSON data based on chosen keywords
+- Also relays the PIDs related to the JSON responses to ensure they match up
+TODO: Add watching for in-stream rate limiting / error messages
+- Doesn't currently honour tweet deletion messages (TODO)
+'''
 
 import time
 import urllib

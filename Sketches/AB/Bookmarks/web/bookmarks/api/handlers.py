@@ -1,4 +1,6 @@
-# API output handlers
+'''
+API output handlers
+'''
 from piston.handler import BaseHandler
 from bookmarks.output.models import programmes, keywords, analyseddata, rawdata, rawtweets, programmes_unique, wordanalysis
 from datetime import timedelta,datetime
@@ -18,8 +20,10 @@ allchannels = tvchannels + radiochannels
 
 class ProgrammesHandler(BaseHandler):
     allowed_methods = ('GET',)
-    # API output from /api/pid/timestamp/stats.format or /api/pid/stats.format giving statistics available and bookmarks identified
-    # Including a timestamp restricts to a single broadcast
+    '''
+    API output from /api/pid/timestamp/stats.format or /api/pid/stats.format giving statistics available and bookmarks identified
+    Including a timestamp restricts to a single broadcast
+    '''
     def read(self, request, pid, timestamp=False, redux=False):
         retdata = dict()
         try:
@@ -280,8 +284,10 @@ class ProgrammesHandler(BaseHandler):
 
 class SummaryHandler(BaseHandler):
     allowed_methods = ('GET',)
-    # API output from /api/summary.format
-    # Lists all channels, their current PID and a rough estimation of the programme's online activity compared to others airing at the same time
+    '''
+    API output from /api/summary.format
+    Lists all channels, their current PID and a rough estimation of the programme's online activity compared to others airing at the same time
+    '''
     def read(self, request):
         retdata = {"channels" : list()}
 
@@ -313,7 +319,9 @@ class SummaryHandler(BaseHandler):
 
 class TweetHandler(BaseHandler):
     allowed_methods = ('GET',)
-    # Output from /api/pid.format or /api/pid/timestamp.format showing raw tweets for entire programmes
+    '''
+    Output from /api/pid.format or /api/pid/timestamp.format showing raw tweets for entire programmes
+    '''
     def read(self, request, pid, timestamp=False):
         retdata = {"tweets" : list()}
         try:
@@ -351,8 +359,10 @@ class TweetHandler(BaseHandler):
 
 class TimestampHandler(BaseHandler):
     allowed_methods = ('GET',)
-    # Output from /api/pid/timestamp/tweets.format or /api/pid/timestamp/aggregated/tweets.format
-    # Provides raw tweet output for a specific minute period in a programme, either aggregated across broadcasts or not
+    '''
+    Output from /api/pid/timestamp/tweets.format or /api/pid/timestamp/aggregated/tweets.format
+    Provides raw tweet output for a specific minute period in a programme, either aggregated across broadcasts or not
+    '''
     def read(self, request, pid, timestamp, aggregated=False):
         retdata = {"tweets" : list()}
         timestamp = int(timestamp)

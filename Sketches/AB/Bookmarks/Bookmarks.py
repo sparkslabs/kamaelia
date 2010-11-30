@@ -1,9 +1,11 @@
 #! /usr/bin/python
 
-# Bookmarks.py - Main Executable
-# - Identifies current BBC programmes and generates keywords based on them.
-# - Collects Twitter streaming API data based on generated keywords.
-# - Analyses the collected data to identify frequent words, hence allowing the web interface to generate bookmarks.
+'''
+Bookmarks.py - Main Executable
+- Identifies current BBC programmes and generates keywords based on them.
+- Collects Twitter streaming API data based on generated keywords.
+- Analyses the collected data to identify frequent words, hence allowing the web interface to generate bookmarks.
+'''
 
 ### Danger area: Adding OAuth to both Twitter components will result in them both trying to renew the received key and secret
 ### To avoid this, there needs to be a way to pass received keys and secrets to components needing them before they try to make requests too.

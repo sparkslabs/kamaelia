@@ -1,8 +1,10 @@
 #! /usr/bin/python
 
-# Analyses saved data in DB to give something more useful. Saves to output DB ready for display in web interface
-# Any looking at natural language engines / subtitles should be done here or in components following this
-# Need to ensure one rogue user can't cause a trend - things must be mentioned by several
+'''
+Analyses saved data in DB to give something more useful. Saves to output DB ready for display in web interface
+Any looking at natural language engines / subtitles should be done here or in components following this
+Need to ensure one rogue user can't cause a trend - things must be mentioned by several
+'''
 
 # Having added this as a component, the printed output is a bit confusing, so 'Analysis component: ' has been added to everything.
 
