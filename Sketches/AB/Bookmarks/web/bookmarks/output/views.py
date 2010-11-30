@@ -810,10 +810,12 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
                         rawtweetplot += "<a href=\"/raw/" + pid + "/" + str(minute[0]) + "/aggregated\" target=\"_blank\"><div style=\"float: left; opacity: " + str(opacity) + ";cursor: pointer;background-color: #009933; height: 40px; width: " + str(slicewidth) + "px;filter:alpha(opacity=" + str(int(opacity * 100)) + ")\"></div></a>"
 
                     # Work out where the bookmarks should be
+                    #TODO: Bookmarks for aggregated programme pages haven't been done yet
+                    # Need adding to the API when done
                     if minute[1] > (2.2*stdevtweets+meantweets) and minute[1] > 9: # Arbitrary value chosen for now - needs experimentation - was 9
-
+                        
                         wfdata = wordanalysis.objects.filter(timestamp=progtimestamp-progtimediff+(minute[0]*60),pid=pid,is_keyword=0,is_common=0).order_by('-count').all()
-
+                        
                         if len(wfdata) > 0:
                             bookmarkstart = False
                             bookmarkend = False
