@@ -5,12 +5,12 @@ import alsaaudio
 import time
 
 class AlsaRecorder(Axon.ThreadedComponent.threadedcomponent):
-    channels = 2
-    rate = 44100
+    channels = 1
+    rate = 8000
     format = alsaaudio.PCM_FORMAT_S16_LE
     periodsize = 160
     maxloops = 1000000
-    delay = 0.001
+    delay = 0.05
     def main(self):
         inp = alsaaudio.PCM(alsaaudio.PCM_CAPTURE,alsaaudio.PCM_NONBLOCK)
         inp.setchannels(self.channels)

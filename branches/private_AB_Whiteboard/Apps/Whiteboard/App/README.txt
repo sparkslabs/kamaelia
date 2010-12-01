@@ -53,4 +53,6 @@ Whilst other cameras may work, some can exhibit issues of a varying nature.
 - cjson 1.0.5
 - python-tk 2.6.6
 - python-alsaaudio 0.5
+- speex 1.0.5
+- pyspeex 0.2
 - pyusb 1.0.0 (only required for SMART Board experimentation)

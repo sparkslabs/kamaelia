@@ -20,12 +20,12 @@ class SimpleReader(Axon.Component.component):
         print "finished reading"
 
 class AlsaPlayer(Axon.ThreadedComponent.threadedcomponent):
-    channels = 2
-    rate = 44100
+    channels = 1
+    rate = 8000
     format = alsaaudio.PCM_FORMAT_S16_LE
     periodsize = 160
     maxloops = 1000000
-    delay = 0.001
+    delay = 0.05
 
     def main(self):
         out = alsaaudio.PCM(alsaaudio.PCM_PLAYBACK)
