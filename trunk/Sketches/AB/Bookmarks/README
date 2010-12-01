@@ -30,6 +30,7 @@ contentDebug.txt - Stored in the running directory. Keeps track of 'delete', 'sc
 Dependencies (versions as listed in Synaptic Package Manager if available)
 Whilst the below are the current test packages, several earlier and later versions of each package will no doubt work too
 - Tested with Python 2.6.5
+- python-dev 2.6.6
 - MySQL Server 5.1.41
 - Django 1.1.1
 - cjson 1.0.5
