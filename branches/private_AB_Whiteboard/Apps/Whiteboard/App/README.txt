@@ -49,8 +49,8 @@ Whilst other cameras may work, some can exhibit issues of a varying nature.
 ## Dependencies ##
 - Tested with Python 2.6.5
 - python-dev 2.6.6
-- pygame 1.9.1
-- cjson 1.0.5
+- python-pygame 1.9.1
+- python-cjson 1.0.5
 - python-tk 2.6.6
 - python-alsaaudio 0.5
 - speex 1.0.5
