@@ -33,11 +33,11 @@ Whilst the below are the current test packages, several earlier and later versio
 - python-dev 2.6.6
 - MySQL Server 5.1.41
 - Django 1.1.1
-- cjson 1.0.5
-- dateutil 1.4.1
-- MySQLDB 1.2.2
-- nltk 2.0~b8
-- rdflib 2.4.2
+- python-cjson 1.0.5
+- python-dateutil 1.4.1
+- python-mysqldb 1.2.2
+- python-nltk 2.0~b8
+- python-rdflib 2.4.2
 - oauth2 1.2.1 (https://github.com/simplegeo/python-oauth2)
 
 
