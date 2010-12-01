@@ -44,3 +44,13 @@ support the use of this function from behind a proxy server.
 ## Webcams ##
 Please ensure that when using a webcam with the whiteboard it is UVC compatible.
 Whilst other cameras may work, some can exhibit issues of a varying nature.
+
+
+## Dependencies ##
+- Tested with Python 2.6.5
+- python-dev 2.6.6
+- pygame 1.9.1
+- cjson 1.0.5
+- python-tk 2.6.6
+- python-alsaaudio 0.5
+- pyusb 1.0.0 (only required for SMART Board experimentation)
