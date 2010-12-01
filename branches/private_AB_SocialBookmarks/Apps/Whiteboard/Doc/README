@@ -1,0 +1,56 @@
+=== This file needs writing really ===
+
+** Temporary docs **
+
+Install:
+   sudo python setup.py install
+
+Necessary bindings:
+   pygame - this is necessary for the drawing surface, etc.
+
+Suggested bindings:
+   pyspeex-0.2 - from http://www.freenet.org.nz/python/pySpeex/
+   requires pyrex for build. This version works:
+       http://www.kamaelia.org/release/deps/Pyrex-0.9.3.1.tar.gz
+
+   These are both included in the deps directory. Note: you do NOT need to
+   install these for the whiteboard to work, but the audio features will
+   not work if you do not. The whiteboard fails gracefully in this case.
+
+    (For audio chatting over the network and local recording of whiteboard
+    sessions. Since you can do presentations this way, it can be pretty
+    neat)
+
+Usage:
+
+After install of libraries,
+
+   cd App
+   ./Whiteboard.py  # for basic usage
+
+Acting as a server:
+   ./Whiteboard.py --serveport [port number]
+
+Acting as a client:
+   ./Whiteboard.py --connectto [host ip]:[port number]
+
+Acting as a client to one machine and server for others:
+   ./Whiteboard.py --connectto [host ip]:[port number] --serveport [port number]
+
+Recording a session from a whiteboard acting as a server:
+   ./WhiteboardRecorder.py [recording_filename] [host ip] [port number]
+
+Playing back a session to a whiteboard acting as a server:
+   ./WhiteboardPlayer.py [recording_filename] [host ip] [port number]
+
+Playing an MP3 over a whiteboard session:
+   ./MP3Player filename host port
+
+TODO:
+   * Allow multiple note pads
+   * Interface for saving/loading/recording sessions locally
+   * Better file format for recordings.
+   * Conversion of recordings to some standard video format(!)
+
+
+Michael, July 2009

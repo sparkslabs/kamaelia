@@ -1,0 +1,82 @@
+Apps Tree:
+
+    Index: Apps/GSOCPaint/App/KamPaint.py
+
+        Main Application File - need to tweak copyright notice.
+        (wrong year)
+
+    Index: Apps/icons/
+
+        Icons for the paint program
+
+    Index: Apps/GSOCPaint/MANIFEST.in
+    Index: Apps/GSOCPaint/DistBuild/Build.Paint.sh
+    Index: Apps/GSOCPaint/DistBuild/CleanBuild.sh
+    Index: Apps/GSOCPaint/DistBuild/setup.py.src
+    Index: Apps/GSOCPaint/DistBuild/upload.sh
+
+        Scripts for managing the application's distribution & template setup
+        file, along with manifest template.
+
+
+    Index: Apps/GSOCPaint/Doc/README
+
+        Needs writing
+
+    Index: Apps/GSOCPaint/ps_gfxcursor.py
+
+        External dependency for changing mouse cursor
+
+    Index: Apps/GSOCPaint/Icons.Attribution
+
+        File for attributing icons
+    
+Main Kamaelia Tree:
+
+    Index: Kamaelia/Kamaelia/Apps/GSOCPaint/Core.py
+
+        Core paint layer. Derived from Magnadoodle. For this to be generally
+        useful, really needs to be replaced by the Whiteboard's canvas.
+
+    Index: Kamaelia/Kamaelia/Apps/GSOCPaint/Paint.py
+
+        Confusing. Should this even be here? Looks like an earlier iteration.
+
+    Index: Kamaelia/Kamaelia/Apps/GSOCPaint/Button.py
+
+        Docs are incorrect, need deleting.
+        Creates an ImageButton component by subclassing component.
+        ImageButton would be useful to rework for general use.
+        
+    Index: Kamaelia/Kamaelia/Apps/GSOCPaint/__init__.py
+
+        To allow import
+
+    Index: Kamaelia/Kamaelia/Apps/GSOCPaint/Slider.py
+
+        New component, appears to be derived from XYPad, which acts as a slider.
+        I have a suspicion that it's actually trying to do too much.
+
+    Index: Kamaelia/Kamaelia/Apps/GSOCPaint/ColourSelector.py
+
+        Again derived from XYPad, suggest refactoring. Used to represent colours
+        from the RGB spectrum as square with RG, GB, RB along the edges, and
+        colurs generated in the plane. Would be reuseful to rework for general
+        usage.
+
+    Index: Kamaelia/Kamaelia/Apps/GSOCPaint/UI/XYPad.py
+
+        Maybe the original XYPad written by Joe. Need to check this and check
+        it's actually used. If it isn't actually used, need to delete it really.
+
+    Index: Kamaelia/Kamaelia/Apps/GSOCPaint/ToolBox.py
+
+        This is the "Tool box" window for GSOC Paint, it brings together
+        all the widgets used by the paint app and places them on a surface.
+
+
+    Index: Kamaelia/setup.py
+        Adds in pulling in the GSOC Paint namespace.
+
+
+Notes by Michael Sparks, July 2009
