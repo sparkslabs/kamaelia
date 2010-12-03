@@ -296,8 +296,8 @@ class SummaryHandler(BaseHandler):
 
         for channel in allchannels:
             retdata['channels'].append({"channel" : channel})
-            data = programmes.objects.filter(channel=channel).latest('timestamp')
-            if isinstance(data,object):
+            try:
+                data = programmes.objects.filter(channel=channel).latest('timestamp')
                 try:
                     master = programmes_unique.objects.get(pid=data.pid)
                 except ObjectDoesNotExist, e:
@@ -311,6 +311,9 @@ class SummaryHandler(BaseHandler):
                     retdata['channels'][len(retdata['channels']) - 1]['interestingness'] = 0
                 if data.stdevtweets > largeststdev and datenow <= progdate:
                     largeststdev = data.stdevtweets
+            except ObjectDoesNotExist, e:
+                pass
+
 
         normaliser = 1/float(largeststdev)
         for channelgroup in retdata['channels']:
