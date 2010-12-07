@@ -271,6 +271,8 @@ def clientconnectorwc(webcamBackplane="WEBCAM", port=1501):
             FRAMER = DataChunker(),
             CONSOLE = ConsoleEchoer(),
             DEFRAMER = DataDeChunker(),
+            SIZER = PureTransformer(lambda x: pygame.transform.scale(x,(190,140))), # This is a temporary fix - we should really be sending full resolution images
+            # The issue is that to do this we need to send the original size as metadata and this needs more work to include
             linkages = {
                 # Receive data from the network - deframe and convert to image for display
                 ("self", "inbox") : ("DEFRAMER", "inbox"),
@@ -278,7 +280,8 @@ def clientconnectorwc(webcamBackplane="WEBCAM", port=1501):
                 # Send to display
                 ("SURFACECONVERTER", "outbox") : ("WEBCAM", "inbox"),
                 # Forward local images to the network - convert to strings and frame
-                ("WEBCAM", "outbox") : ("STRINGCONVERTER", "inbox"),
+                ("WEBCAM", "outbox") : ("SIZER", "inbox"),
+                ("SIZER", "outbox") : ("STRINGCONVERTER", "inbox"),
                 ("STRINGCONVERTER", "outbox") : ("FRAMER", "inbox"),
                 # Send to network
                 ("FRAMER", "outbox") : ("self", "outbox"),

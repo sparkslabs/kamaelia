@@ -145,7 +145,7 @@ class WebcamManager(component):
                     # Remove unused cameras from the camera list
                     self.cameralist.pop(entry)
                 
-                if isinstance(data,list):
+                if isinstance(data,tuple):
                     # Received a remote camera image
                     tag = data[0]
                     snapshot = data[1]
