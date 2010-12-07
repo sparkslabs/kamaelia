@@ -484,10 +484,10 @@ if __name__=="__main__":
             
     # primary sound IO - tagged and filtered, so can't hear self
     Pipeline( SubscribeTo("AUDIO"),
-              TagAndFilterWrapperKeepingTag(
+              TagAndFilterWrapper(
                   Pipeline(
                       #RawAudioMixer(),
-                      PureTransformer(lambda x : x[1]),
+                      #PureTransformer(lambda x : x[1]),
                       AlsaPlayer(),
                       ######
                       AlsaRecorder(),
