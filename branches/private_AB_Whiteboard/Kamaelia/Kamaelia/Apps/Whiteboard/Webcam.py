@@ -140,10 +140,11 @@ class WebcamManager(component):
                         surf.fill((0,0,255,255),pygame.Rect(1000,0,200,700))
                         surf = pygame.transform.scale(surf,self.camerasize)
                         self.send([surf,camera[1]], "outbox")
+                        removallist.append(camera)
                         
                 for entry in removallist:
                     # Remove unused cameras from the camera list
-                    self.cameralist.pop(entry)
+                    self.cameralist.remove(entry)
                 
                 if isinstance(data,tuple):
                     # Received a remote camera image
