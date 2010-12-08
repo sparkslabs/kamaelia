@@ -15,7 +15,9 @@ The config file is saved in JSON format and features the following entries:
 	 "from" : ""},
  "directories" : 
 	{"scribbles" : "",
-	 "decks" : ""}
+	 "decks" : ""},
+ "webcam" : 
+	{"device" : ""}
 }
 
 NOTE: If setting either the 'email' or 'directories' element, all entries within
@@ -44,6 +46,7 @@ support the use of this function from behind a proxy server.
 ## Webcams ##
 Please ensure that when using a webcam with the whiteboard it is UVC compatible.
 Whilst other cameras may work, some can exhibit issues of a varying nature.
+To use a device other than '/dev/video0' please set it in the config file.
 
 
 ## Dependencies ##
