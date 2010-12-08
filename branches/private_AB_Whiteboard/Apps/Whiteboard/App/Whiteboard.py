@@ -103,7 +103,8 @@ except Exception, e:
 
 defaults = {"email" : {"server" : "","port" : "","user" : "","pass": "","from" : ""},\
             "directories" : {"scribbles" : os.path.expanduser("~") + "/.kamaelia/Kamaelia.Apps.Whiteboard/Scribbles",\
-                             "decks" : os.path.expanduser("~") + "/Whiteboard/Decks"}}
+                             "decks" : os.path.expanduser("~") + "/Whiteboard/Decks"},\
+            "webcam" : {"device" : "/dev/video0"}}
 config = defaults
 emailavailable = False
 # Load Config
@@ -118,7 +119,7 @@ try:
         if raw_config:
             try:
                 temp_config = cjson.decode(raw_config)
-                entries = ["email","directories"]
+                entries = ["email","directories", "webcam"]
                 for entry in entries:
                     if temp_config.has_key(entry):
                         for key in temp_config[entry].keys():
@@ -489,7 +490,7 @@ if __name__=="__main__":
                               }
                      )
 
-    camera = Graphline( LOCALWEBCAM = VideoCaptureSource(),
+    camera = Graphline( LOCALWEBCAM = VideoCaptureSource(config['webcam']['device']),
                         WCMANAGER = WebcamManager(camerasize = (190,140), vertical = True),
                         DISPLAY = ProperSurfaceDisplayer(displaysize = (190,height-34), position=(1024-191,32+2), bgcolour=(0,0,0)),
                         CAM_SPLITTER = TwoWaySplitter(),

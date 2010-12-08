@@ -54,7 +54,10 @@ class VideoCaptureSource(threadedcomponent):
     capturesize = (1024, 768)
     delay = 0.1
     fps = -1
-    device = "/dev/video0"
+    
+    def __init__(self, device="/dev/video0"):
+        super(VideoCaptureSource, self).__init__()
+        self.device = device
 
     def shutdown(self):
        """Return 0 if a shutdown message is received, else return 1."""
