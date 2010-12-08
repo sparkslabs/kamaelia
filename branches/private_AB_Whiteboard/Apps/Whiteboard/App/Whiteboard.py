@@ -388,7 +388,7 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768):
 
                       HISTORY = CheckpointSequencer(lambda X: [["LOAD", SLIDESPEC % (X,)]],
                                                     lambda X: [["SAVE", SLIDESPEC % (X,)]],
-                                                    lambda X: [["CLEAR"]],
+                                                    lambda X: [["NEW"]],
                                                     initial = 1,
                                                     last = num_pages,
                                 ),

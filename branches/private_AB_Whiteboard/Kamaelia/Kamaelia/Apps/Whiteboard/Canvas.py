@@ -169,6 +169,11 @@ class Canvas(Axon.Component.component):
             self.clear(args)
             self.clean = True
             self.dirty_sent = False
+        elif cmd=="NEW":
+	    self.clear(args)
+	    self.remotenew(args)
+            self.clean = True
+            self.dirty_sent = False
         elif cmd=="LINE":
              self.line(args)
         elif cmd=="CIRCLE":
@@ -199,6 +204,10 @@ class Canvas(Axon.Component.component):
         self.redrawNeeded = True
         if not((sy <0) or (ey <0)):
             self.clean = False
+            
+    def remotenew(self, args):
+        self.send([['CLEAR']], "outbox") # New page remote send # There's probably a better way to resolve this #TODO
+        # This was added as new page triggers (ie. a sending of clear) to remote clients wasn't happening
 
     def clear(self, args):
         if len(args) == 3:
