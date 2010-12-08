@@ -364,25 +364,41 @@ SLIDESPEC = config['directories']['scribbles'] +"/slide.%d.png"
 
 
 
-def makeBasicSketcher(left=0,top=0,width=1024,height=768):
+def makeBasicSketcher(left=0,top=0,width=1024,height=768,is_client=False):
+    if is_client:
+        # This is a temporary addition to prevent slide synchronisation issues between server and client
+        # This could be removed should full synchronisation of files between clients and servers be achieved
+        CLEAR = nullSinkComponent()
+        SAVEDECK = nullSinkComponent()
+        LOADDECK = nullSinkComponent()
+        DELETE = nullSinkComponent()
+        CLOSEDECK = nullSinkComponent()
+        PAGINGCONTROLS = nullSinkComponent()
+    else:
+        CLEAR = ClearPage(left+(64*5)+32*len(colours)+1,top)                 
+        SAVEDECK = SaveDeck(left+(64*8)+32*len(colours)+1,top)
+        LOADDECK = LoadDeck(left+(64*7)+32*len(colours)+1,top)
+        DELETE = Delete(left+(64*6)+32*len(colours)+1,top)
+        CLOSEDECK = ClearScribbles(left+(64*9)+32*len(colours)+1,top)
+        PAGINGCONTROLS = PagingControls(left+64+32*len(colours)+1,top)
     return Graphline( CANVAS  = Canvas( position=(left,top+32+1),size=(width-192,(height-(32+15)-1)),bgcolour=(255,255,255) ),
                       PAINTER = Painter(),
                       PALETTE = buildPalette( cols=colours, order=colours_order, topleft=(left+64,top), size=32 ),
                       ERASER  = Eraser(left,top),
-                      CLEAR = ClearPage(left+(64*5)+32*len(colours)+1,top),
+                      CLEAR = CLEAR,
                       
-                      SAVEDECK = SaveDeck(left+(64*8)+32*len(colours)+1,top),
-                      LOADDECK = LoadDeck(left+(64*7)+32*len(colours)+1,top),
+                      SAVEDECK = SAVEDECK,
+                      LOADDECK = LOADDECK,
                       
                       DECKMANAGER = Decks(config['directories']['scribbles'],config['directories']['decks'],emailavailable),
                       
   #                    SMARTBOARD = SmartBoard(),
                       
-                      DELETE = Delete(left+(64*6)+32*len(colours)+1,top),
-                      CLOSEDECK = ClearScribbles(left+(64*9)+32*len(colours)+1,top),
+                      DELETE = DELETE,
+                      CLOSEDECK = CLOSEDECK,
                       QUIT = Quit(left+(64*10)+32*len(colours)+1,top),
 
-                      PAGINGCONTROLS = PagingControls(left+64+32*len(colours)+1,top),
+                      PAGINGCONTROLS = PAGINGCONTROLS,
                       #LOCALPAGINGCONTROLS = LocalPagingControls(left+(64*6)+32*len(colours),top),
                       LOCALPAGEEVENTS = LocalPageEventsFilter(),
 
@@ -457,8 +473,15 @@ if __name__=="__main__":
     
     BACKGROUND = ProperSurfaceDisplayer(displaysize = (width, height), position = (left, top), bgcolour=(0,0,0)).activate()
     
+    rhost, rport, serveport = parseOptions()
+    
+    if rhost and rport:
+        is_client = True
+    else:
+        is_client = False
+    
     mainsketcher = \
-        Graphline( SKETCHER = makeBasicSketcher(left,top+1,width,height-1),
+        Graphline( SKETCHER = makeBasicSketcher(left,top+1,width,height-1,is_client),
                    CONSOLE = CommandConsole(),
                    linkages = { ('self','inbox'):('SKETCHER','inbox'),
                                 ('SKETCHER','outbox'):('self','outbox'),
@@ -504,8 +527,6 @@ if __name__=="__main__":
               TagAndFilterWrapperKeepingTag(camera),
               PublishTo("WEBCAM"),
             ).activate()
-
-    rhost, rport, serveport = parseOptions()
 
     # setup a server, if requested
     if serveport:
