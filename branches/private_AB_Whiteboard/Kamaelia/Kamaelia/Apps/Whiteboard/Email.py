@@ -28,11 +28,12 @@ from email.MIMEBase import MIMEBase
 from email.encoders import encode_base64
 import socket
 import os
+import time
 
-from Axon.Component import component
+from Axon.ThreadedComponent import threadedcomponent
 from Axon.Ipc import WaitComplete, producerFinished, shutdownMicroprocess
 
-class Email(component):
+class Email(threadedcomponent):
     # Sends e-mails from a specific mail account - could be modified to relay via servers, but that doesn't tend to work due to restrictions
     Inboxes = {
         "inbox" : "Receives a list containing details to send out e-mails with",
@@ -107,5 +108,4 @@ class Email(component):
                     self.send("SSL/TLS support not found","outbox")
                 except socket.error, e:
                     self.send("Socket error: " + str(e), "outbox")
-            self.pause()
-            yield 1
+            time.sleep(0.5)

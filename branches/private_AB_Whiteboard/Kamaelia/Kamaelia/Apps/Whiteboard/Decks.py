@@ -32,11 +32,12 @@ from datetime import datetime
 import os
 import shutil
 import sys
+import time
 
-from Axon.Component import component
+from Axon.ThreadedComponent import threadedcomponent
 from Axon.Ipc import WaitComplete, producerFinished, shutdownMicroprocess
 
-class Decks(component):
+class Decks(threadedcomponent):
     # Many of these inboxes and outboxes are temporary until the structure is finalised
     Inboxes = {
         "inbox" : "Button click events result in messages to this inbox",
@@ -82,9 +83,10 @@ class Decks(component):
                         self.deleteslide(cmd[1])
                 else:
                     self.handleCommand(cmd)
-                yield 1
-            self.pause()
-            yield 1
+#                yield 1
+#            self.pause()
+#            yield 1
+	    time.sleep(0.1)
                 
     def fixNumbering(self):
         exists = 1
