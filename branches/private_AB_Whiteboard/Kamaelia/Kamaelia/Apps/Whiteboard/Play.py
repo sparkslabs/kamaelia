@@ -25,7 +25,7 @@ class AlsaPlayer(Axon.ThreadedComponent.threadedcomponent):
     format = alsaaudio.PCM_FORMAT_S16_LE
     periodsize = 160
     maxloops = 1000000
-    delay = 0.01
+    delay = 0.008
 
     def main(self):
         out = alsaaudio.PCM(alsaaudio.PCM_PLAYBACK)
