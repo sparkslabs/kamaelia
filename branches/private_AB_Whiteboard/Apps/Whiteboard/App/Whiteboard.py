@@ -403,7 +403,8 @@ def makeBasicSketcher(left=0,top=0,width=1024,height=768,is_client=False):
                       #LOCALPAGINGCONTROLS = LocalPagingControls(left+(64*6)+32*len(colours),top),
                       LOCALPAGEEVENTS = LocalPageEventsFilter(),
 
-                      HISTORY = CheckpointSequencer(lambda X: [["LOAD", SLIDESPEC % (X,)]],
+                      HISTORY = CheckpointSequencer(lambda X: [["LOAD", SLIDESPEC % (X,), 'nopropogate']],
+						    lambda X: [["LOAD", SLIDESPEC % (X,)]],
                                                     lambda X: [["SAVE", SLIDESPEC % (X,)]],
                                                     lambda X: [["NEW"]],
                                                     initial = 1,

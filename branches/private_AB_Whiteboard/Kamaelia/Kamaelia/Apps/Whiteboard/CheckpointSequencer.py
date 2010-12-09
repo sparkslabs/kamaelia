@@ -36,19 +36,21 @@ class CheckpointSequencer(Axon.Component.component):
         "toDecks" : "Sends messages relating to slide deletions", # Can't be moved to decks component as it needs to know the current slide number
     }
     
-    def __init__(self, rev_access_callback = None,
+    def __init__(self, rev_init_callback = None,
+		       rev_access_callback = None,
                        rev_checkpoint_callback = None,
                        blank_slate_callback = None,
                        initial = 1,
                        last = 1):
         super(CheckpointSequencer, self).__init__()
+        if rev_init_callback: self.initMessage = rev_init_callback
         if rev_access_callback: self.loadMessage = rev_access_callback
         if rev_checkpoint_callback: self.saveMessage = rev_checkpoint_callback
         if blank_slate_callback: self.newMessage = blank_slate_callback
         self.initial = initial
         self.last = last
 
-
+    def initMessage(self, current): return current
     def loadMessage(self, current): return current
     def saveMessage(self, current): return current
     def newMessage(self, current): return current
@@ -65,7 +67,7 @@ class CheckpointSequencer(Axon.Component.component):
     def main(self):
         current = self.initial
         last = self.last
-        self.send( self.loadMessage(current), "outbox")
+        self.send( self.initMessage(current), "outbox")
         dirty = False
         loadsafe = False
         while self.shutdown():
