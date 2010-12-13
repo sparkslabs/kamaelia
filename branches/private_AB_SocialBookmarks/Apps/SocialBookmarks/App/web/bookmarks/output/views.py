@@ -690,7 +690,7 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
             modetweets = data[0].modetweets
             stdevtweets = data[0].stdevtweets
         else:
-            meantweets = totaltweets / (master.duration / 60)
+            meantweets = totaltweets / float(master.duration / 60)
             stdevtotal = 0
             medianlist = list()
             modelist = dict()
