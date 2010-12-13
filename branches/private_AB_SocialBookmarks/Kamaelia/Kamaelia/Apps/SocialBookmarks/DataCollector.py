@@ -95,11 +95,11 @@ class DataCollector(threadedcomponent):
                                             progdata = cursor.fetchone()
                                             if progdata != None:
                                                 # Ensure the user hasn't already tweeted the same text
-                                                #TODO Should also prevent the same user tweeting anything again in the same minute to prevent false peaks
-                                                cursor.execute("""SELECT * FROM rawdata WHERE pid = %s AND text = %s AND user = %s""",(pid,newdata['text'],newdata['user']['screen_name']))
+                                                # Also ensure they haven't tweeted in the past 10 seconds
+                                                timestamp = time2.mktime(parse(newdata['created_at']).timetuple())
+                                                cursor.execute("""SELECT * FROM rawdata WHERE (pid = %s AND text = %s AND user = %s) OR (pid = %s AND user = %s AND timestamp >= %s AND timestamp < %s)""",(pid,newdata['text'],newdata['user']['screen_name'],pid,newdata['user']['screen_name'],timestamp-10,timestamp+10))
                                                 if cursor.fetchone() == None:
                                                     print ("Storing tweet for pid " + pid)
-                                                    timestamp = time2.mktime(parse(newdata['created_at']).timetuple())
                                                     # Work out where this tweet really occurred in the programme using timestamps and DVB bridge data
                                                     progposition = timestamp - (progdata[0] - progdata[1])
                                                     cursor.execute("""INSERT INTO rawdata (tweet_id,pid,timestamp,text,user,programme_position) VALUES (%s,%s,%s,%s,%s,%s)""", (tweetid,pid,timestamp,newdata['text'],newdata['user']['screen_name'],progposition))
@@ -111,11 +111,11 @@ class DataCollector(threadedcomponent):
                                         progdata = cursor.fetchone()
                                         if progdata != None:
                                             # Ensure the user hasn't already tweeted the same text for this programme
-                                            #TODO Should also prevent the same user tweeting anything again in the same minute to prevent false peaks
-                                            cursor.execute("""SELECT * FROM rawdata WHERE pid = %s AND text = %s AND user = %s""",(pid,newdata['text'],newdata['user']['screen_name']))
+                                            # Also ensure they haven't tweeted in the past 10 seconds
+                                            timestamp = time2.mktime(parse(newdata['created_at']).timetuple())
+                                            cursor.execute("""SELECT * FROM rawdata WHERE (pid = %s AND text = %s AND user = %s) OR (pid = %s AND user = %s AND timestamp >= %s AND timestamp < %s)""",(pid,newdata['text'],newdata['user']['screen_name'],pid,newdata['user']['screen_name'],timestamp-10,timestamp+10))
                                             if cursor.fetchone() == None:
                                                 print ("Storing tweet for pid " + pid)
-                                                timestamp = time2.mktime(parse(newdata['created_at']).timetuple())
                                                 # Work out where this tweet really occurred in the programme using timestamps and DVB bridge data
                                                 progposition = timestamp - (progdata[0] - progdata[1])
                                                 cursor.execute("""INSERT INTO rawdata (tweet_id,pid,timestamp,text,user,programme_position) VALUES (%s,%s,%s,%s,%s,%s)""", (tweetid,pid,timestamp,newdata['text'],newdata['user']['screen_name'],progposition))
