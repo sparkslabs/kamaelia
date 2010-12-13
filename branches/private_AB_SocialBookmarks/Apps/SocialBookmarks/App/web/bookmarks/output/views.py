@@ -1121,13 +1121,12 @@ def rawtweetsv2(request,pid,timestamp,aggregated=False):
             output += "<br /><br />"
             # In this case the 'timestamp' is actually the programme position
             rawtweetdict = dict()
-            for row in progdata:
-                rawtweets = rawdata.objects.filter(pid=pid,programme_position__gte=progpos,programme_position__lt=endstamp).order_by('timestamp').all()
-                for tweet in rawtweets:
-                    if rawtweetdict.has_key(int(tweet.programme_position)):
-                        rawtweetdict[int(tweet.programme_position)].append("<br /><strong>" + str(datetime.utcfromtimestamp(tweet.timestamp + row.utcoffset)) + ":</strong> " + "@" + tweet.user + ": " + tweet.text)
-                    else:
-                        rawtweetdict[int(tweet.programme_position)] = ["<br /><strong>" + str(datetime.utcfromtimestamp(tweet.timestamp + row.utcoffset)) + ":</strong> " + "@" + tweet.user + ": " + tweet.text]
+            rawtweets = rawdata.objects.filter(pid=pid,programme_position__gte=progpos,programme_position__lt=endstamp).order_by('timestamp').all()
+            for tweet in rawtweets:
+                if rawtweetdict.has_key(int(tweet.programme_position)):
+                    rawtweetdict[int(tweet.programme_position)].append("<br /><strong>" + str(timestamp) + "m" + str(int(tweet.programme_position)-timestamp*60) + "s:</strong> " + "@" + tweet.user + ": " + tweet.text)
+                else:
+                    rawtweetdict[int(tweet.programme_position)] = ["<br /><strong>" + str(timestamp) + "m" + str(int(tweet.programme_position)-timestamp*60) + "s:</strong> " + "@" + tweet.user + ": " + tweet.text]
             tweetitems = rawtweetdict.items()
             tweetitems.sort()
             output += "<form name=\"cloudopts\" style=\"font-size: 9pt\">Hide Keywords: <input type=\"checkbox\" value=\"keyword\" name=\"keyword\" onClick=\"updateCloud();\">&nbsp; Hide Twitter Entities: <input type=\"checkbox\" value=\"entity\" name=\"entity\" onClick=\"updateCloud();\">&nbsp; Hide Common Words: <input type=\"checkbox\" value=\"common\" name=\"common\" onClick=\"updateCloud();\"></form><div id=\"cloudcontainer\">"
