@@ -831,9 +831,12 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
                                 is_word = False
                             # Now look at each previous minute until it's no longer the top keyword
                             currentstamp = progtimestamp-progtimediff+(minute[0]*60)
+                            minstamp = progtimestamp-progtimediff
                             topkeyword = keyword
                             while topkeyword == keyword:
                                 currentstamp -= 60
+                                if currentstamp < minstamp:
+				    break
                                 try:
                                     dataset = wordanalysis.objects.filter(timestamp=currentstamp,pid=pid,is_keyword=0,is_common=0).order_by('-count').all()
                                 except ObjectDoesNotExist:
@@ -878,9 +881,12 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
 
                             # Now look at each next minute until it's no longer the top keyword
                             currentstamp = progtimestamp-progtimediff+(minute[0]*60)
+                            maxstamp = progtimestamp-progtimediff+master.duration
                             topkeyword = keyword
                             while topkeyword == keyword:
                                 currentstamp += 60
+                                if currentstamp > maxstamp:
+				    break
                                 try:
                                     dataset = wordanalysis.objects.filter(timestamp=currentstamp,pid=pid,is_keyword=0,is_common=0).order_by('-count').all()
                                 except ObjectDoesNotExist:
