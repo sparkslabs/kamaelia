@@ -12,7 +12,7 @@ from datetime import timedelta
 from datetime import tzinfo
 import string
 import time as sleeper
-from time import time
+from time import time,strftime,gmtime
 import urllib
 
 from Axon.Component import component
@@ -46,7 +46,7 @@ class WhatsOn(component):
         super(WhatsOn, self).__init__()
         self.proxy = proxy
         # Define channel schedule URLs and DVB bridge channel formats
-        self.channels = {"bbcone" : ["bbc one", "/bbcone/programmes/schedules/north_west/today"],
+        self.channels = {"bbcone" : ["bbc one", "/bbcone/programmes/schedules/north_west"],
                 "bbctwo" : ["bbc two", "/bbctwo/programmes/schedules/england"],
                 "bbcthree" : ["bbc three", "/bbcthree/programmes/schedules"],
                 "bbcfour" : ["bbc four", "/bbcfour/programmes/schedules"],
@@ -84,7 +84,11 @@ class WhatsOn(component):
                 data = None
 
                 # Define URLs for getting schedule data and DVB bridge information
-                scheduleurl = "http://www.bbc.co.uk" + self.channels[channel][1] + ".json"
+                # By BBC convention, schedule info runs to 5am the next day
+                if datetime.hour < 5:
+		    scheduleurl = "http://www.bbc.co.uk" + self.channels[channel][1] + "/" + strftime("%Y/%m/%d",gmtime(time()-86400)) + ".json"
+		else:
+                    scheduleurl = "http://www.bbc.co.uk" + self.channels[channel][1] + "/" + strftime("%Y/%m/%d",gmtime(time())) + ".json"
                 #syncschedurl = "http://beta.kamaelia.org:8082/dvb-bridge?command=channel&args=" + urllib.quote(self.channels[channel][0])
                 #synctimeurl = "http://beta.kamaelia.org:8082/dvb-bridge?command=time"
                 syncschedurl = "http://10.92.164.147:8082/dvb-bridge?command=channel&args=" + urllib.quote(self.channels[channel][0])
