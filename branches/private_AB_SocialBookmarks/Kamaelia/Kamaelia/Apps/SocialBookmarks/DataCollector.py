@@ -91,7 +91,7 @@ class DataCollector(threadedcomponent):
                                     keywords = row[0].split("^")
                                     if len(keywords) == 2:
                                         if string.lower(keywords[0]) in string.lower(newdata['text']) and string.lower(keywords[1]) in string.lower(newdata['text']):
-                                            cursor.execute("""SELECT timestamp,timediff FROM programmes WHERE pid = %s""",(pid))
+                                            cursor.execute("""SELECT timestamp,timediff FROM programmes WHERE pid = %s ORDER BY timestamp DESC""",(pid))
                                             progdata = cursor.fetchone()
                                             if progdata != None:
                                                 # Ensure the user hasn't already tweeted the same text
@@ -107,7 +107,7 @@ class DataCollector(threadedcomponent):
                                                 else:
                                                     print ("Duplicate tweet from user - ignoring")
                                     if string.lower(row[0]) in string.lower(newdata['text']):
-                                        cursor.execute("""SELECT timestamp,timediff FROM programmes WHERE pid = %s""",(pid))
+                                        cursor.execute("""SELECT timestamp,timediff FROM programmes WHERE pid = %s ORDER BY timestamp DESC""",(pid))
                                         progdata = cursor.fetchone()
                                         if progdata != None:
                                             # Ensure the user hasn't already tweeted the same text for this programme
