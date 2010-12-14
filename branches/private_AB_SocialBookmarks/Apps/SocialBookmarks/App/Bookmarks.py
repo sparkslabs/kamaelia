@@ -91,7 +91,7 @@ if __name__ == "__main__":
                     SEARCH = PeopleSearch(consumerkeypair, keypair, proxy),
                     COLLECTOR = DataCollector(dbuser,dbpass),
                     RAWCOLLECTOR = RawDataCollector(dbuser,dbpass),
-                    HTTPGETTER = HTTPGetter(proxy, "BBC R&D Grabber"),
+                    HTTPGETTER = HTTPGetter(proxy, "BBC R&D Grabber", 5),
                     HTTPGETTERRDF = HTTPGetter(proxy, "BBC R&D Grabber"),
                     TWOWAY = TwoWaySplitter(),
                     ANALYSIS = LiveAnalysis(dbuser,dbpass),
