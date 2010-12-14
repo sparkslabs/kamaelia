@@ -39,18 +39,20 @@ def index(request):
 
     # Find the largest standard deviation recorded for a current programme to act as a normaliser
     for channel in allchannels:
-        data = programmes.objects.filter(channel=channel).latest('timestamp')
-        if isinstance(data,object):
+        try:
+            data = programmes.objects.filter(channel=channel).latest('timestamp')
             if data.stdevtweets > largeststdev and data.imported==0:
                 largeststdev = data.stdevtweets
+        except ObjectDoesNotExist, e:
+            data = None
 
     normaliser = 1/float(largeststdev)
 
     # Display all TV channels
     output += "<div style=\"display: inline; position: relative\"><h2>TV</h2>"
     for channel in tvchannels:
-        data = programmes.objects.filter(channel=channel).latest('timestamp')
-        if isinstance(data,object):
+        try:
+            data = programmes.objects.filter(channel=channel).latest('timestamp')
             if data.imported==0:
                 # Generate a colour (opacity) based on this channel's standard deviation and the normaliser
                 opacity = normaliser * data.stdevtweets
@@ -65,15 +67,15 @@ def index(request):
             else:
                 output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channel-graph/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
                 output += "Off Air</div>"
-        else:
+        except ObjectDoesNotExist, e:
             output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channel-graph/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
             output += "No Data</div>"
 
     # Display all radio channels
     output += "<br /><br /></div><br /><br /><div style=\"display: inline; position: relative\"><h2>Radio</h2>"
     for channel in radiochannels:
-        data = programmes.objects.filter(channel=channel).latest('timestamp')
-        if isinstance(data,object):
+        try:
+            data = programmes.objects.filter(channel=channel).latest('timestamp')
             if data.imported==0:
                 # Generate a colour (opacity) based on this channel's standard deviation and the normaliser
                 opacity = normaliser * data.stdevtweets
@@ -88,7 +90,7 @@ def index(request):
             else:
                 output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channel-graph/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
                 output += "Off Air</div>"
-        else:
+        except ObjectDoesNotExist, e:
             output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channel-graph/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
             output += "No Data</div>"
 

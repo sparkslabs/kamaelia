@@ -249,11 +249,13 @@ class Requester(threadedcomponent):
                     keywords[tag] = "Twitter"
 
                 # Duplicates will be removed later
+                # If the title has 'The' in it, add hashtags both with and without the 'the' to the keyword list
+                # This simply broadens the list of search terms
                 if string.find(title,"The",0,3) != -1:
                     newtitle = string.replace(re.sub("\s+","",title),"The ","",1)
                     keywords[channel] = "Channel"
                     keywords["#" + string.lower(re.sub("\s+","",title))] = "Title"
-                    # Check for and remove year too
+                    # Check for and remove year too - some programmes contain a year which may be undesirable from a search point of view
                     keywords["#" + string.replace(string.lower(re.sub("\s+","",title))," " + str(date.today().year),"",1)] = "Title"
                     keywords['#' + string.lower(re.sub("\s+","",newtitle))] = "Title"
                     # Check for and remove year too
@@ -272,9 +274,11 @@ class Requester(threadedcomponent):
                     keywords[allwordtitle] = "Title"
                 else:
                     # Trial fix for issue of one word titles producing huge amounts of data
+                    # This occurs for keywords like 'Weather' and 'Breakfast' which aren't BBC limited terms
                     keywords[allwordtitle + "^" + "bbc"] = "Title"
                 keywords["#" + re.sub("\s+","",allwordtitle)] = "Title"
 
+                # Where a channel uses text for a number, we also want to search using the numeric representation
                 numwords = dict({"one" : 1, "two" : 2, "three": 3, "four" : 4, "five": 5, "six" : 6, "seven": 7})
                 for word in numwords:
                     if word in channel.lower() and channel != "asiannetwork": # Bug fix! asianne2rk
@@ -305,6 +309,7 @@ class Requester(threadedcomponent):
                 else:
                     config = dict()
 
+                # Find people's names in retrieved RDF
                 s = g.subjects(predicate=rdflib.URIRef('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'),object=rdflib.URIRef('http://purl.org/ontology/po/Role'))
 
                 for x in s:
@@ -314,11 +319,11 @@ class Requester(threadedcomponent):
                     lastname = str(g.value(subject=rdflib.BNode(pid),predicate=rdflib.URIRef('http://xmlns.com/foaf/0.1/familyName')))
 
                     if config.has_key(firstname + " " + lastname):
-                        # Found a cached value
+                        # Found a cached value - this person has been searched for using Twitter
                         if config[firstname + " " + lastname] != "":
                             keywords[config[firstname + " " + lastname]] = "Twitter"
                     else:
-                        # Not cached yet - new request
+                        # Not cached yet - new request to Twitter people search
                         self.send(firstname + " " + lastname, "search")
                         while not self.dataReady("search"):
                             pass
@@ -346,6 +351,9 @@ class Requester(threadedcomponent):
                     firstname = str(g.value(subject=rdflib.BNode(pid),predicate=rdflib.URIRef('http://xmlns.com/foaf/0.1/givenName')))
                     lastname = str(g.value(subject=rdflib.BNode(pid),predicate=rdflib.URIRef('http://xmlns.com/foaf/0.1/familyName')))
                     # This ^ is a temporary fix until I work out a better DB structure
+                    # Character names can sometimes be single common words, like 'James'.
+                    # For this reason, using this as a search term we require that either the channel name or programme title also appears in the tweet
+                    # The ^ signals to later states of this program that the channel name / title doesn't necessarily have to appear next to the character name
                     keywords[character + "^" + channel] = "Character"
                     keywords[character + "^" + title] = "Character"
                     if " " in character:
@@ -453,8 +461,10 @@ class Requester(threadedcomponent):
                     progentrytest = cursor.fetchone()
                     cursor.execute("""SELECT duration FROM programmes_unique WHERE pid = %s""",(pid))
                     progtest2 = cursor.fetchone()
+                    # If the pid and timestamp don't already appear together in the database...
                     if progentrytest == None:
                         cursor.execute("""INSERT INTO programmes (pid,timediff,timestamp,utcoffset,channel) VALUES (%s,%s,%s)""", (pid,offset,timestamp,utcoffset,self.channel))
+                        # If the pid doesn't exist with ANY timestamps in the database...
                         if progtest2 == None:
                             cursor.execute("""INSERT INTO programmes_unique (pid,title,duration) VALUES (%s,%s,%s)""", (pid,title,duration))
                             for word in keywords:
@@ -472,6 +482,7 @@ class Requester(threadedcomponent):
                 keywordquery = cursor.fetchall()
                 for keyword in keywordquery:
                     # This ^ is a temporary fix until I work out a better DB structure
+                    # As mentioned earlier, the ^ is only relevant to the program, not to Twitter, so it must be removed
                     if "^" in keyword[0]:
                         keywords.append(string.replace(keyword[0],"^"," "))
                     else:
