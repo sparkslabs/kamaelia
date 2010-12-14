@@ -576,7 +576,6 @@ def programmev2(request,pid,timestamp=False,redux=False):
         output += "<br />Invalid pid supplied or no data has yet been captured for this programme."
         output += "<br /><br /><a href=\"/\">Back to index</a>"
     else:
-        output += "<br />Can't see any bookmarks? Programmes broadcast before 24/11/10 only show bookmarks using the old /programmes pages available via <a href=\"/programmes-old/" + pid + "\">this link</a>.<br />"
         if rowcount == 1:
             # If there has only been one broadcast of this programme, we can include show times, otherwise we can only show the duration
             channel = data[0].channel
