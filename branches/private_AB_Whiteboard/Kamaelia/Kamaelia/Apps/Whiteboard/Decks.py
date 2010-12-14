@@ -134,7 +134,11 @@ class Decks(threadedcomponent):
                         unzipped.extractall(path=self.scribblesdir,pwd=password)
                     else:
                         unzipped.extractall(path=self.scribblesdir,pwd="")
-                    self.send("first", "toSequencer")
+                    num_pages = 0
+                    for x in os.listdir(self.scribblesdir):
+                        if (os.path.splitext(x)[1] == ".png"):
+                            num_pages += 1
+                    self.send(["first",num_pages], "toSequencer")
                     self.send(chr(0) + "CLRTKR", "toTicker")
                     self.send("Deck loaded successfully","toTicker")
                 except Exception, e:

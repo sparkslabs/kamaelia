@@ -73,6 +73,13 @@ class CheckpointSequencer(Axon.Component.component):
         while self.shutdown():
             while self.dataReady("inbox"):
                 command = self.recv("inbox")
+                if isinstance(command,list):
+                    if command[0] == "first":
+                        last = command[1]
+                    command = command[0]
+                if command == "first":
+                    current = 1
+                    self.send( self.loadMessage(current), "outbox")
                 if command == "delete":
                     if (current == last and last > 1) or (current < last and current != 1):
                         # go to previous slide
