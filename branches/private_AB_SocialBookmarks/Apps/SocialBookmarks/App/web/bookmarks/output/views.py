@@ -816,8 +816,15 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
                     # Need adding to the API when done
                     if minute[1] > (2.2*stdevtweets+meantweets) and minute[1] > 9: # Arbitrary value chosen for now - needs experimentation - was 9
                         
-                        wfdata = wordanalysis.objects.filter(timestamp=progtimestamp-progtimediff+(minute[0]*60),pid=pid,is_keyword=0,is_common=0).order_by('-count').all()
-                        
+                        wfdata = None
+                        for row in data:
+                            wfdatatemp = wordanalysis.objects.filter(timestamp=row.timestamp-row.timediff+(minute[0]*60),pid=pid,is_keyword=0,is_common=0).order_by('-count').all()
+                            if wfdata is None:
+                                wfdata = wfdatatemp
+                            else:
+                                # TODO: Modify this to merge the data properly
+                                wfdata = wfdata | wfdatatemp
+
                         if len(wfdata) > 0:
                             bookmarkstart = False
                             bookmarkend = False
@@ -832,13 +839,22 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
                             # Now look at each previous minute until it's no longer the top keyword
                             currentstamp = progtimestamp-progtimediff+(minute[0]*60)
                             minstamp = progtimestamp-progtimediff
+                            minutediff = minute[0]*60
                             topkeyword = keyword
                             while topkeyword == keyword:
                                 currentstamp -= 60
+                                minutediff -= 60
                                 if currentstamp < minstamp:
-				    break
+                                    break
                                 try:
-                                    dataset = wordanalysis.objects.filter(timestamp=currentstamp,pid=pid,is_keyword=0,is_common=0).order_by('-count').all()
+                                    dataset = None
+                                    for row in data:
+                                        datasettemp = wordanalysis.objects.filter(timestamp=row.timestamp-row.timediff+minutediff,pid=pid,is_keyword=0,is_common=0).order_by('-count').all()
+                                        if dataset is None:
+                                            dataset = datasettemp
+                                        else:
+                                            # TODO: Modify this to merge the data properly
+                                            dataset = dataset | datasettemp
                                 except ObjectDoesNotExist:
                                     break
                                 for line in dataset:
@@ -853,28 +869,40 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
 
                             # Investigate the previous minute to see if the keyword from above is in the top 10
                             tweetset = False
-                            rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=startstamp,timestamp__lt=endstamp).order_by('timestamp').all()
+                            rawtweets = None
+                            for row in data:
+                                rawtweetstemp = rawdata.objects.filter(pid=pid,timestamp__gte=row.timestamp-row.timediff+minutediff,timestamp__lt=row.timestamp-row.timediff+minutediff+60).order_by('timestamp').all()
+                                if rawtweets is None:
+                                    rawtweets = rawtweetstemp
+                                else:
+                                    rawtweets = rawtweets | rawtweetstemp
                             for tweet in rawtweets:
                                 tweettext = string.lower(tweet.text)
                                 for items in """!"#$%&(),:;?@~[]'`{|}""":
                                     tweettext = string.replace(tweettext,items,"")
                                 try:
                                     if str(keyword).lower() in tweettext:
-                                        bookmarkstart = int(tweet.timestamp)
+                                        bookmarkstart = int(tweet.programme_position)
                                         tweetset = True
                                         break
                                 except UnicodeEncodeError:
                                     break
 
                             if not tweetset:
-                                rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=currentstamp,timestamp__lt=(currentstamp + 60)).order_by('timestamp').all()
+                                rawtweets = None
+                                for row in data:
+                                    rawtweetstemp = rawdata.objects.filter(pid=pid,timestamp__gte=row.timestamp-row.timediff+minutediff+60,timestamp__lt=row.timestamp-row.timediff+minutediff+120).order_by('timestamp').all()
+                                    if rawtweets is None:
+                                        rawtweets = rawtweetstemp
+                                    else:
+                                        rawtweets = rawtweets | rawtweetstemp
                                 for tweet in rawtweets:
                                     tweettext = string.lower(tweet.text)
                                     for items in """!"#$%&(),:;?@~[]'`{|}""":
                                         tweettext = string.replace(tweettext,items,"")
                                     try:
                                         if str(keyword).lower() in tweettext:
-                                            bookmarkstart = int(tweet.timestamp)
+                                            bookmarkstart = int(tweet.programme_position)
                                             break
                                     except UnicodeEncodeError:
                                         break
@@ -882,13 +910,22 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
                             # Now look at each next minute until it's no longer the top keyword
                             currentstamp = progtimestamp-progtimediff+(minute[0]*60)
                             maxstamp = progtimestamp-progtimediff+master.duration
+                            minutediff = minute[0]*60
                             topkeyword = keyword
                             while topkeyword == keyword:
                                 currentstamp += 60
+                                minutediff += 60
                                 if currentstamp > maxstamp:
-				    break
+                                    break
                                 try:
-                                    dataset = wordanalysis.objects.filter(timestamp=currentstamp,pid=pid,is_keyword=0,is_common=0).order_by('-count').all()
+                                    dataset = None
+                                    for row in data:
+                                        # TODO: Modify this to merge the data properly
+                                        datasettemp = wordanalysis.objects.filter(timestamp=row.timestamp-row.timediff+minutediff,pid=pid,is_keyword=0,is_common=0).order_by('-count').all()
+                                        if dataset is None:
+                                            dataset = datasettemp
+                                        else:
+                                            dataset = dataset | datasettemp
                                 except ObjectDoesNotExist:
                                     break
                                 for line in dataset:
@@ -903,37 +940,49 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
 
                             # Investigate the previous minute to see if the keyword from above is in the top 10
                             tweetset = False
-                            rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=startstamp,timestamp__lt=endstamp).order_by('-timestamp').all()
+                            rawtweets = None
+                            for row in data:
+                                rawtweetstemp = rawdata.objects.filter(pid=pid,timestamp__gte=row.timestamp-row.timediff+minutediff,timestamp__lt=row.timestamp-row.timediff+minutediff+60).order_by('timestamp').all()
+                                if rawtweets is None:
+                                    rawtweets = rawtweetstemp
+                                else:
+                                    rawtweets = rawtweets | rawtweetstemp
                             for tweet in rawtweets:
                                 tweettext = string.lower(tweet.text)
                                 for items in """!"#$%&(),:;?@~[]'`{|}""":
                                     tweettext = string.replace(tweettext,items,"")
                                 try:
                                     if str(keyword).lower() in tweettext:
-                                        bookmarkend = int(tweet.timestamp)
+                                        bookmarkend = int(tweet.programme_position)
                                         tweetset = True
                                         break
                                 except UnicodeEncodeError:
                                     break
 
                             if not tweetset:
-                                rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=currentstamp,timestamp__lt=(currentstamp + 60)).order_by('-timestamp').all()
+                                rawtweets = None
+                                for row in data:
+                                    rawtweetstemp = rawdata.objects.filter(pid=pid,timestamp__gte=row.timestamp-row.timediff+minutediff+60,timestamp__lt=row.timestamp-row.timediff+minutediff+120).order_by('timestamp').all()
+                                    if rawtweets is None:
+                                        rawtweets = rawtweetstemp
+                                    else:
+                                        rawtweets = rawtweets | rawtweetstemp
                                 for tweet in rawtweets:
                                     tweettext = string.lower(tweet.text)
                                     for items in """!"#$%&(),:;?@~[]'`{|}""":
                                         tweettext = string.replace(tweettext,items,"")
                                     try:
                                         if str(keyword).lower() in tweettext:
-                                            bookmarkend = int(tweet.timestamp)
+                                            bookmarkend = int(tweet.programme_position)
                                             break
                                     except UnicodeEncodeError:
                                         break
 
                             if (bookmarkstart and bookmarkend) and (bookmarkstart != bookmarkend):
-                                if bookmarkstart < (progtimestamp - progtimediff):
-                                    bookmarkstart = progtimestamp - progtimediff
-                                if bookmarkend > (progtimestamp - progtimediff + master.duration):
-                                    bookmarkend = progtimestamp - progtimediff + master.duration
+                                if bookmarkstart < 0:
+                                    bookmarkstart = 0
+                                if bookmarkend > master.duration:
+                                    bookmarkend = master.duration
                                 # Only bookmark worthy if it creates 'buzz' for 60 seconds or more
                                 if (len(bookmarks) > 0):
                                     # Check if the bookmarks should be merged, allowing a slight overlap time of 20 seconds in case of a sudden lack of tweets
