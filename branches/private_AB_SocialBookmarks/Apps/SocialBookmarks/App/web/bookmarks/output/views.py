@@ -30,74 +30,106 @@ def index(request):
     '''
     Main index page for social bookmarks
     '''
-    currentdate = date.today()
     output = header
-    output += "<meta http-equiv='refresh' content='60'>"
+    # Ajax refresh code for divs
+    scripting = """<script>
+                        jQuery.noConflict();
+                        jQuery(document).ready(function() {
+                            var refreshId = setInterval(function() {
+                                jQuery('#tv').load('/data/index/tv?randval='+Math.random());
+                                jQuery('#radio').load('/data/index/radio?randval='+Math.random());}, 20000);
+                });
+                </script>"""
+
+    output += scripting
+
+    # Allowance for non-JS browsers
+    output += "<noscript><meta http-equiv='refresh' content='60'></noscript>"
     output += "<style type=\"text/css\">.box a:link, .box a:visited, .box a:active, .box a:hover { color: inherit; }</style>"
+
+    # Display all TV channels
+    output += "<div style=\"display: inline; position: relative\" id=\"tv\">"
+    output += indexdata(False,"tv",False)
+
+    # Display all radio channels
+    output += "</div><br /><br /><div style=\"display: inline; position: relative\" id=\"radio\">"
+    output += indexdata(False,"radio",False)
+
+    # Print API links
+    output += "</div><br /><br />API: <a href=\"/api/summary.json\" target=\"_blank\">JSON</a> - <a href=\"/api/summary.xml\" target=\"_blank\">XML</a>" + footer
+
+    return HttpResponse(output)
+
+def indexdata(request,channelgroup,wrapper=True):
+    '''
+    Data generator for index page for AJAX
+    '''
+
+    output = ""
+
+    currentdate = date.today()
     # Prevent division by zero later on...
     largeststdev = 1
 
     # Find the largest standard deviation recorded for a current programme to act as a normaliser
     for channel in allchannels:
-        try:
-            data = programmes.objects.filter(channel=channel).latest('timestamp')
+        data = programmes.objects.filter(channel=channel).latest('timestamp')
+        if isinstance(data,object):
             if data.stdevtweets > largeststdev and data.imported==0:
                 largeststdev = data.stdevtweets
-        except ObjectDoesNotExist, e:
-            data = None
 
     normaliser = 1/float(largeststdev)
 
-    # Display all TV channels
-    output += "<div style=\"display: inline; position: relative\"><h2>TV</h2>"
-    for channel in tvchannels:
-        try:
+    if channelgroup == "tv":
+        output += "<h2>TV</h2>"
+        for channel in tvchannels:
             data = programmes.objects.filter(channel=channel).latest('timestamp')
-            if data.imported==0:
-                # Generate a colour (opacity) based on this channel's standard deviation and the normaliser
-                opacity = normaliser * data.stdevtweets
-                if opacity < 0.5:
-                    fontcolour = "#000000"
+            if isinstance(data,object):
+                if data.imported==0:
+                    # Generate a colour (opacity) based on this channel's standard deviation and the normaliser
+                    opacity = normaliser * data.stdevtweets
+                    if opacity < 0.5:
+                        fontcolour = "#000000"
+                    else:
+                        fontcolour = "#FFFFFF"
+                    bgval = str(int(255 - (255 * opacity)))
+                    bgcolour = "rgb(" + bgval + "," + bgval + "," + bgval + ")"
+                    output += "<div style=\"float: left; margin-right: 5px;\"><a href=\"/channel-graph/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
+                    output += "<div id=\"" + channel + "\" class=\"box\" style=\"width: 77px; background-color: " + bgcolour + "; color: " + fontcolour + "; text-align: center;\"><a href=\"/programmes/" + data.pid + "/\" style=\"text-decoration: none; color: " + fontcolour + "\">" + str(data.totaltweets) + "</a></div></div>"
                 else:
-                    fontcolour = "#FFFFFF"
-                bgval = str(int(255 - (255 * opacity)))
-                bgcolour = "rgb(" + bgval + "," + bgval + "," + bgval + ")"
-                output += "<div style=\"float: left; margin-right: 5px;\"><a href=\"/channel-graph/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
-                output += "<div id=\"" + channel + "\" class=\"box\" style=\"width: 77px; background-color: " + bgcolour + "; color: " + fontcolour + "; text-align: center;\"><a href=\"/programmes/" + data.pid + "/\" style=\"text-decoration: none; color: " + fontcolour + "\">" + str(data.totaltweets) + "</a></div></div>"
+                    output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channel-graph/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
+                    output += "Off Air</div>"
             else:
                 output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channel-graph/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
-                output += "Off Air</div>"
-        except ObjectDoesNotExist, e:
-            output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channel-graph/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
-            output += "No Data</div>"
-
-    # Display all radio channels
-    output += "<br /><br /></div><br /><br /><div style=\"display: inline; position: relative\"><h2>Radio</h2>"
-    for channel in radiochannels:
-        try:
+                output += "No Data</div>"
+    elif channelgroup == "radio":
+        output += "<h2>Radio</h2>"
+        for channel in radiochannels:
             data = programmes.objects.filter(channel=channel).latest('timestamp')
-            if data.imported==0:
-                # Generate a colour (opacity) based on this channel's standard deviation and the normaliser
-                opacity = normaliser * data.stdevtweets
-                if opacity < 0.5:
-                    fontcolour = "#000000"
+            if isinstance(data,object):
+                if data.imported==0:
+                    # Generate a colour (opacity) based on this channel's standard deviation and the normaliser
+                    opacity = normaliser * data.stdevtweets
+                    if opacity < 0.5:
+                        fontcolour = "#000000"
+                    else:
+                        fontcolour = "#FFFFFF"
+                    bgval = str(int(255 - (255 * opacity)))
+                    bgcolour = "rgb(" + bgval + "," + bgval + "," + bgval + ")"
+                    output += "<div style=\"float: left; margin-right: 5px;\"><a href=\"/channel-graph/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
+                    output += "<div id=\"" + channel + "\" class=\"box\" style=\"width: 77px; background-color: " + bgcolour + "; color: " + fontcolour + "; text-align: center;\"><a href=\"/programmes/" + data.pid + "/\" style=\"text-decoration: none; color: " + fontcolour + "\">" + str(data.totaltweets) + "</a></div></div>"
                 else:
-                    fontcolour = "#FFFFFF"
-                bgval = str(int(255 - (255 * opacity)))
-                bgcolour = "rgb(" + bgval + "," + bgval + "," + bgval + ")"
-                output += "<div style=\"float: left; margin-right: 5px;\"><a href=\"/channel-graph/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
-                output += "<div id=\"" + channel + "\" class=\"box\" style=\"width: 77px; background-color: " + bgcolour + "; color: " + fontcolour + "; text-align: center;\"><a href=\"/programmes/" + data.pid + "/\" style=\"text-decoration: none; color: " + fontcolour + "\">" + str(data.totaltweets) + "</a></div></div>"
+                    output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channel-graph/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
+                    output += "Off Air</div>"
             else:
                 output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channel-graph/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
-                output += "Off Air</div>"
-        except ObjectDoesNotExist, e:
-            output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channel-graph/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
-            output += "No Data</div>"
+                output += "No Data</div>"
 
-    # Print API links
-    output += "<br /><br /></div><br /><br />API: <a href=\"/api/summary.json\" target=\"_blank\">JSON</a> - <a href=\"/api/summary.xml\" target=\"_blank\">XML</a>" + footer
-
-    return HttpResponse(output)
+    output += "<br /><br />"
+    if wrapper:
+        return HttpResponse(output)
+    else:
+        return output
 
 def channel(request,channel,year=0,month=0,day=0):
     '''
