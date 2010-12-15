@@ -186,7 +186,7 @@ class LiveAnalysis(threadedcomponent):
                     except ZeroDivisionError, e:
                         meantweets = 0
 
-                    cursor.execute("""SELECT totaltweets FROM analyseddata WHERE pid = %s AND timestamp >= %s AND timestamp < %s""",(pid,analysedstamp,analysedstamp+duration))
+                    cursor.execute("""SELECT totaltweets FROM analyseddata WHERE pid = %s AND timestamp >= %s AND timestamp < %s""",(pid,progstart,analysedstamp+duration))
                     analyseddata = cursor.fetchall()
 
                     runningtime = int(runningtime)
