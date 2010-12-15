@@ -99,6 +99,7 @@ class Calibrate(component):
                                  )
               )
 
+        pygame.display.set_caption("Pygame Calibration Utility")
         pygame.display.toggle_fullscreen()
 
         self.clear()
