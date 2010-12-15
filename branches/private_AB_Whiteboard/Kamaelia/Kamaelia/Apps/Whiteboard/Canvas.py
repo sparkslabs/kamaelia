@@ -118,6 +118,7 @@ class Canvas(Axon.Component.component):
                                    position = self.position,
                                  )
               )
+	pygame.display.set_caption("Kamaelia Whiteboard")
 
         self.surface.fill( (self.bgcolour) )
         self.send({"REDRAW":True, "surface":self.surface}, "toDisplay")
