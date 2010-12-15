@@ -998,6 +998,7 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
                                         bookmarks[len(bookmarks)-1][1] = bookmarkend
                                         continue
                                 if (bookmarkend - bookmarkstart) > 60:
+                                    output += "<br />" + str(bookmarkstart) + " " + str(bookmarkend) + " " + str(bookmarkstart-80) + " " + keyword
                                     bookmarks.append([bookmarkstart,bookmarkend,bookmarkstart-80,keyword])
 
                 # The +3 in the widths below gets around an IE CSS issue. All other browsers will ignore it
@@ -1017,17 +1018,20 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
                 for bookmark in bookmarks:
                     if bmcurrent == 0 and bookmark[0] != progstart:
                         bookmarkplot += "<div style=\"float: left; background-color: #FFFFFF; height: 40px; width: " + str(int((bookmark[0] - progstart)*bmsecondwidth)) + "px\"></div>"
+                    elif bmmcurrent > 0 and bmcurrent < bmtotal:
+                        if bookmarks[bmcurrent-1][1] < bookmark[0]:
+                            bookmarkplot += "<div style=\"float: left; background-color: #FFFFFF; height: 40px; width: " + str(int((bookmark[0]-bookmarks[bmcurrent-1][1])*bmsecondwidth)) + "px\"></div>"
                     bookmarkpos = bookmark[2] - progstart
                     # Need to check having taken some time off the bookmark to allow for tweeting that it doesn't underrun
                     if bookmarkpos < 0:
                         bookmarkpos = 0
                     if redux == "redux":
                         # Any channel will work fine for redux but iPlayer needs the most recent
-                        bookmarkplot += "<a href=\"http://g.bbcredux.com/programme/" + reduxchannel + "/" + progdatestring + "/" + progtimestring + "?start=" + str(int(bookmarkpos)) + "\" title=\"Caused by: " + keyword + "\" target=\"_blank\">"
+                        bookmarkplot += "<a href=\"http://g.bbcredux.com/programme/" + reduxchannel + "/" + progdatestring + "/" + progtimestring + "?start=" + str(int(bookmarkpos)) + "\" title=\"Caused by: " + bookmark[3] + "\" target=\"_blank\">"
                     else:
                         bookmarkmins = int(bookmarkpos / 60)
                         bookmarksecs = int(bookmarkpos % 60)
-                        bookmarkplot += "<a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(bookmarkmins) + "m" + str(bookmarksecs) + "s\" title=\"Caused by: " + keyword + "\" target=\"_blank\">"
+                        bookmarkplot += "<a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(bookmarkmins) + "m" + str(bookmarksecs) + "s\" title=\"Caused by: " + bookmark[3] + "\" target=\"_blank\">"
                     # Ensure that if the next bookmark overlaps, it is visible
                     if (bmcurrent + 2) < bmtotal:
                         if bookmark[1] > bookmarks[bmcurrent+1][0]:
