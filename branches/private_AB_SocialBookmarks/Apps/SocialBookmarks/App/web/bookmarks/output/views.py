@@ -677,8 +677,8 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
                 if minlimit < group:
                     minlimit = group
                 if minutegroups.has_key(group):
-                    minutegroups[group] += line.totaltweets
-                    totaltweets += line.totaltweets
+                    minutegroups[group] += int(line.totaltweets)
+                    totaltweets += int(line.totaltweets)
 
         minuteitems = minutegroups.items()
         minuteitems.sort()
