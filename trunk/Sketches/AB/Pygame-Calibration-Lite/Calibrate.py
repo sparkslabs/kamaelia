@@ -98,7 +98,9 @@ class Calibrate(component):
                                    position = (0,0),
                                  )
               )
-        
+
+        pygame.display.toggle_fullscreen()
+
         self.clear()
         self.redraw()
 
