@@ -416,6 +416,7 @@ class TwitterStream(threadedcomponent):
 
         self.datacapture = None
         counter = 0
+        blanklinecount = 0
 
         while not self.finished():
             if self.dataReady("inbox"):
@@ -436,7 +437,12 @@ class TwitterStream(threadedcomponent):
                 self.connect(args,pids)
             while self.dataReady("tweetsin"):
                 counter = 0
-                self.send(self.recv("tweetsin"),"outbox")
+                tweetdata = self.recv("tweetsin")
+                if tweetdata[0] == "\r\n":
+                    blanklinkcount += 1
+                else:
+                    blanklinecount = 0
+                self.send(tweetdata,"outbox")
                 if self.dataReady("inbox"):
                     break
             if not self.dataReady("tweetsin"):
@@ -446,7 +452,9 @@ class TwitterStream(threadedcomponent):
                 else:
                     counter = 0
                 # This still isn't great at reducing busy wait CPU usage
-            if counter > self.timeout and self.datacapture != None and self.reconnect:
+                # Blank line count ensures we reconnect if we get 10 successive keepalives with no data - likely an error
+            if (counter > self.timeout and self.datacapture != None and self.reconnect) or (blanklinecount >= 10 and self.reconnect):
+                blanklinecount = 0
                 sys.stderr.write("API Connection Failed: Reconnecting")
                 self.unlink(self.datacapture)
                 self.datacapture.stop()
