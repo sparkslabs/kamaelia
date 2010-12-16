@@ -377,20 +377,20 @@ class LiveAnalysisNLTK(component):
 
     def spellingFixer(self,text):
         # This function attempts to normalise some common Twitter mis-spellings and accentuations
-	# Fix ahahahahahaha and hahahahaha
+        # Fix ahahahahahaha and hahahahaha
         # Doesn't catch bahahahaha TODO
         # Also seem to be missing HAHAHAHA - case issue? TODO
         # Some sort of issue with Nooooooo too - it's just getting erased? #TODO
-	text = re.sub("\S{0,}(ha){2,}\S{0,}","haha",text,re.I)
-	# fix looooooool and haaaaaaaaaaa - fails for some words at the mo, for example welllll will be converted to wel, and hmmm to hm etc
-	# Perhaps we could define both 'lol' and 'lool' as words, then avoid the above problem by reducing repeats to a max of 2
-	x = re.findall(r'((\D)\2*)',text,re.I)
-	for entry in sorted(x,reverse=True):
+        text = re.sub("\S{0,}(ha){2,}\S{0,}","haha",text,re.I)
+        # fix looooooool and haaaaaaaaaaa - fails for some words at the mo, for example welllll will be converted to wel, and hmmm to hm etc
+        # Perhaps we could define both 'lol' and 'lool' as words, then avoid the above problem by reducing repeats to a max of 2
+        x = re.findall(r'((\D)\2*)',text,re.I)
+        for entry in sorted(x,reverse=True):
             if len(entry[0])>2:
                 text = text.replace(entry[0],entry[1]).strip()
             if len(text) == 1:
                 text += text
-	return text
+        return text
 
     def main(self):
         cursor = self.dbConnect(self.dbuser,self.dbpass)
