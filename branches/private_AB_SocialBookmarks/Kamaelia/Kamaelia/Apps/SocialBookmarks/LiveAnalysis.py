@@ -121,16 +121,17 @@ class LiveAnalysis(threadedcomponent):
                     cursor.execute("""SELECT did,totaltweets,wordfreqexpected,wordfrequnexpected FROM analyseddata WHERE pid = %s AND timestamp = %s""",(pid,analysedstamp))
                     analyseddata = cursor.fetchone()
                     # Just in case of a missing raw json object (ie. programme terminated before it was stored - allow it to be skipped if not found after 30 secs)
-                    failcounter = 0
+                    #failcounter = 0
                     # Pass this tweet to the NLTK analysis component
                     self.send([pid,tweetid],"nltk")
                     while not self.dataReady("nltk"):
-                        if failcounter >= 3000:
-                            nltkdata = list()
-                            break
+                    #    if failcounter >= 3000:
+                    #        nltkdata = list()
+                    #        break
                         time.sleep(0.01)
-                        failcounter += 1
-                    if failcounter < 3000:
+                    #    failcounter += 1
+                    #if failcounter < 3000:
+                    if 1:
                         # Receive back a list of words and their frequency for this tweet, including whether or not they are common, an entity etc
                         nltkdata = self.recv("nltk")
                     if analyseddata == None: # No tweets yet recorded for this minute
@@ -314,15 +315,16 @@ class LiveAnalysis(threadedcomponent):
 
                         if len(tweetids) > 0:
                             # Just in case of a missing raw json object (ie. programme terminated before it was stored - allow it to be skipped if not found after 30 secs)
-                            failcounter = 0
+                            #failcounter = 0
                             self.send([pid,tweetids],"nltkfinal")
                             while not self.dataReady("nltkfinal"):
-                                if failcounter >= 3000:
-                                    nltkdata = list()
-                                    break
+                            #    if failcounter >= 3000:
+                            #        nltkdata = list()
+                            #        break
                                 time.sleep(0.01)
-                                failcounter += 1
-                            if failcounter < 3000:
+                            #    failcounter += 1
+                            #if failcounter < 3000:
+                            if 1:
                                 nltkdata = self.recv("nltkfinal")
 
                     cursor.execute("""UPDATE programmes SET meantweets = %s, mediantweets = %s, modetweets = %s, stdevtweets = %s, analysed = 1 WHERE pid = %s AND timestamp = %s""",(meantweets,mediantweets,modetweets,stdevtweets,pid,timestamp))
