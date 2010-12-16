@@ -93,9 +93,15 @@ class HTTPGetter(threadedcomponent):
         
         # Read and return programme data
         if conn1:
-            content = conn1.read()
+            ret = True
+            try:
+                content = conn1.read()
+            except socket.timeout, e:
+                return ['SocketTimeout',e]
+                ret = False
             conn1.close()
-            return ["OK",content]
+            if ret:
+                return ["OK",content]
 
     def main(self):
         while not self.finished():
