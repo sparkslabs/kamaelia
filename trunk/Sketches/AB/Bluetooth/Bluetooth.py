@@ -23,18 +23,21 @@
 
 from Axon.ThreadedComponent import threadedcomponent
 from Axon.Ipc import producerFinished, shutdownMicroprocess
-from bluetooth import *
-import sys
+import bluetooth
+#import sys
 import time
+from Kamaelia.Chassis.Pipeline import Pipeline
+from Kamaelia.Util.Console import ConsoleEchoer, ConsoleReader
+from Kamaelia.Util.PureTransformer import PureTransformer
 
 class Bluetooth(threadedcomponent):
     '''
     Playing around with Bluetooth (PyBluez) - not currently in a useable state
     '''
 
-    Inboxes = {"inbox":"Receives data back from the file writer",
+    Inboxes = {"inbox":"Receives instructions / data to send",
                "control":""}
-    Outboxes = {"outbox":"For sending data to the file writer",
+    Outboxes = {"outbox":"Sends out responses / data received",
                 "signal":""}
 
     def shutdown(self):
@@ -45,25 +48,38 @@ class Bluetooth(threadedcomponent):
                self.send(producerFinished(self),"signal")
                return 0
        return 1
-
+   
     def discover(self,id=False,name=False):
-        devices = discover_devices(lookup_names=True)
+        devices = bluetooth.discover_devices(lookup_names=True)
+        if len(devices) > 0:
+            services = bluetooth.find_service()
         if id:
             for device in devices:
                 if device[0] == id:
-                    self.send(["OK",device],"outbox")
+                    localservices = list()
+                    for service in services:
+                        if service['host'] == device[0]:
+                            localservices.append(service)
+                    self.send(["OK",device,localservices],"outbox")
                     break
             else:
                 self.send(["ERROR",id])
         elif name:
             for device in devices:
-                if device[1].lower() == name.lower():
-                    self.send(["OK",device],"outbox")
+                if device[1] == name:
+                    localservices = list()
+                    for service in services:
+                        if service['host'] == device[0]:
+                            localservices.append(service)
+                    self.send(["OK",device,localservices],"outbox")
                     break
             else:
                 self.send(["ERROR",name])
         else:
-            self.send(devices,"outbox")
+            if len(devices) == 0:
+                self.send(["ERROR","No Devices Found"],"outbox")
+            else:
+                self.send([devices,services],"outbox")
 
     def senddata(self):
         pass
@@ -76,21 +92,25 @@ class Bluetooth(threadedcomponent):
 
     def main(self):
         # Accepts requests in the forms:
-        # ['DISCOVER'] - returns [(device_id,device_name),(device_id,device_name)]
-        # ['FINDBYID',device_id] - returns ["OK",(device_id,device_name)] or ["ERROR",device_id]
-        # ['FINDBYNAME',device_name] - returns ["OK",(device_id,device_name)] or ["ERROR",device_name]
+        # ['DISCOVER'] - returns [[(device_id,device_name),(device_id,device_name)],[servicedict,servicedict]] or ["ERROR"]
+        # ['FINDBYID',device_id] - returns ["OK",(device_id,device_name),[servicedict,servicedict]] or ["ERROR",device_id]
+        # ['FINDBYNAME',device_name] - returns ["OK",(device_id,device_name),[servicedict,servicedict]] or ["ERROR",device_name]
         while self.shutdown():
             while self.dataReady("inbox"):
                 data = self.recv("inbox")
-                data[0] = data[0].upper()
-                if data[0] == "DISCOVER":
-                    self.discover()
-                elif data[0] == "FINDBYID":
-                    self.discover(id=data[1])
-                elif data[0] == "FINDBYNAME":
-                    self.discover(name=data[1])
+                cmd = data[0].upper()
+                try:
+                    if cmd == "DISCOVER":
+                        self.discover()
+                    elif cmd == "FINDBYID":
+                        self.discover(id=data[1])
+                    elif cmd == "FINDBYNAME":
+                        self.discover(name=data[1])
+                except IndexError:
+                    self.send(["ERROR","Missing Argument"],"outbox")
+            
             time.sleep(0.1)
 
 
 if __name__=="__main__":
-    Bluetooth().run()
+    Pipeline(ConsoleReader(),PureTransformer(lambda x: x.replace("\n","")),PureTransformer(lambda x: x.split(",")),Bluetooth(),ConsoleEchoer()).run()
