@@ -299,7 +299,7 @@ Level 2 content types/genres::
     
     # social/political/economic
     0x80 : "General",
-    0x81 : "Magazine/Report/Domentary",
+    0x81 : "Magazine/Report/Documentary",
     0x82 : "Economics/Social Advisory",
     0x83 : "Remarkable People",
     
@@ -2116,7 +2116,7 @@ _content_types_level_2 = {
     
     # social/political/economic
     0x80 : "General",
-    0x81 : "Magazine/Report/Domentary",
+    0x81 : "Magazine/Report/Documentary",
     0x82 : "Economics/Social Advisory",
     0x83 : "Remarkable People",
     
