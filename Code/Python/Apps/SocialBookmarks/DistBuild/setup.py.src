@@ -1,0 +1,40 @@
+#!/usr/bin/env python
+#
+# Copyright 2010 British Broadcasting Corporation and Kamaelia Contributors(1)
+#
+# (1) Kamaelia Contributors are listed in the AUTHORS file and at
+#     http://www.kamaelia.org/AUTHORS - please extend this file,
+#     not this notice.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# -------------------------------------------------------------------------
+
+from distutils.core import setup
+
+setup(name = "Kamaelia-SocialBookmarks",
+      version = "1.0.0",
+      description = "Kamaelia Social Bookmarks bundle + Axon + Kamaelia",
+      author = "Michael Sparks, Andrew Bonney & Kamaelia Contributors",
+      author_email = "ms_@users.sourceforge.net",
+      url = "http://www.kamaelia.org/Home.html",
+      license = "Copyright (c)2010 BBC & Kamaelia Contributors, All Rights Reserved. Use allowed under Apache 2 license",
+      packages = [\
+# REPLACE
+                  ""],
+      long_description = """
+Application built to grab RDF data from BBC /programmes, identify useful Twitter search terms and collect real time data from the streaming API
+Data is analysed with help from NLTK before being presented in a Django based web interface powered by a MySQL back end
+Once running, the app will display current and past collected Twitter data plotted against time for BBC programmes, along with various statistics.
+""",
+      )
+
