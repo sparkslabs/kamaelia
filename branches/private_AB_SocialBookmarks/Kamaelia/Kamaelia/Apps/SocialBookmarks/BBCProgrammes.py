@@ -86,8 +86,8 @@ class WhatsOn(component):
                 # Define URLs for getting schedule data and DVB bridge information
                 # By BBC convention, schedule info runs to 5am the next day
                 if datetime.utcnow().hour < 5:
-		    scheduleurl = "http://www.bbc.co.uk" + self.channels[channel][1] + "/" + strftime("%Y/%m/%d",gmtime(time()-86400)) + ".json"
-		else:
+                    scheduleurl = "http://www.bbc.co.uk" + self.channels[channel][1] + "/" + strftime("%Y/%m/%d",gmtime(time()-86400)) + ".json"
+                else:
                     scheduleurl = "http://www.bbc.co.uk" + self.channels[channel][1] + "/" + strftime("%Y/%m/%d",gmtime(time())) + ".json"
                 #syncschedurl = "http://beta.kamaelia.org:8082/dvb-bridge?command=channel&args=" + urllib.quote(self.channels[channel][0])
                 #synctimeurl = "http://beta.kamaelia.org:8082/dvb-bridge?command=time"

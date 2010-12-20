@@ -545,19 +545,19 @@ class FinalAnalysisNLTK(component):
         return False
 
     def spellingFixer(self,text):
-	# Fix ahahahahahaha and hahahahaha
-	text = re.sub("\S{0,}(ha){2,}\S{0,}","haha",text,re.I)
+        # Fix ahahahahahaha and hahahahaha
+        text = re.sub("\S{0,}(ha){2,}\S{0,}","haha",text,re.I)
         # E-mail filter
         text = re.sub("\S{1,}@\S{1,}.\S{1,}","",text,re.I)
-	# fix looooooool and haaaaaaaaaaa - fails for some words at the mo, for example welllll will be converted to wel, and hmmm to hm etc
-	# Perhaps we could define both 'lol' and 'lool' as words, then avoid the above problem by reducing repeats to a max of 2
-	x = re.findall(r'((\D)\2*)',text,re.I)
-	for entry in sorted(x,reverse=True):
+        # fix looooooool and haaaaaaaaaaa - fails for some words at the mo, for example welllll will be converted to wel, and hmmm to hm etc
+        # Perhaps we could define both 'lol' and 'lool' as words, then avoid the above problem by reducing repeats to a max of 2
+        x = re.findall(r'((\D)\2*)',text,re.I)
+        for entry in sorted(x,reverse=True):
             if len(entry[0])>2:
                 text = text.replace(entry[0],entry[1]).strip()
             if len(text) == 1:
                 text += text
-	return text
+        return text
 
     def main(self):
         # Calculate running total and mean etc

@@ -1145,9 +1145,9 @@ def rawtweetsv2(request,pid,timestamp,aggregated=False):
     except ObjectDoesNotExist, e:
         pass # This is handled later
     if aggregated:
-	progdata = programmes.objects.filter(pid=pid).all()
+        progdata = programmes.objects.filter(pid=pid).all()
     else:
-	progdata = programmes.objects.filter(pid=pid,timestamp__lte=timestamp).order_by('-timestamp').all()
+        progdata = programmes.objects.filter(pid=pid,timestamp__lte=timestamp).order_by('-timestamp').all()
     timestamp = int(timestamp)
     if len(progdata) == 0:
         output += "<br />Invalid pid supplied or no data has yet been captured for this programme."
