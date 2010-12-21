@@ -1,0 +1,36 @@
+entity Talent:
+    simpleattributes artisticname genre
+
+entity Artist(Talent):
+    simpleattributes firstname lastname middlenames gender age
+
+entity Group(Talent):
+    simpleattributes name
+
+entity Manager:
+    simpleattributes ID name1 telephone
+
+entity ContractInfo:
+    simpleattributes contractID data_from data_to duration1
+
+entity MasterTrack:
+    simpleattributes trackID working_title duration2
+
+entity SoundEngineer:
+    simpleattributes sound_eng_ID name2
+
+entity FinishedTrack:
+    simpleattributes version final_duration released_title
+
+entity Album:
+    simpleattributes album_ID title
+
+relation ManagedBy(Talent,Manager)
+relation HasContract(Talent,ContractInfo)
+relation RecordedBy(MasterTrack,Talent)
+relation EditedBy(SoundEngineer,MasterTrack)
+relation OriginatesFrom(FinishedTrack,MasterTrack)
+relation GroupedOn(FinishedTrack,Album)
+#       simpleattributes sequence
+relation CreatedBy(Album,Talent)
+relation BelongsTo(Artist,Group)
