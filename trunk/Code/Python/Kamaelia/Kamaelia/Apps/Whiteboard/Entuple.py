@@ -84,18 +84,17 @@ class Entuple(component):
         self.postfix = postfix
     
     def shutdown(self):
-        """Returns True if a shutdown message is received. Forwards on any
-        messages."""
-        while self.dataReady("control"):
-            msg = self.recv("control")
-            self.send(msg,"signal")
-            if isinstance(msg, (producerFinished, shutdownMicroprocess)):
-                return True
-        return False
+       """Return 0 if a shutdown message is received, else return 1."""
+       if self.dataReady("control"):
+           msg=self.recv("control")
+           if isinstance(msg,producerFinished) or isinstance(msg,shutdownMicroprocess):
+               self.send(producerFinished(self),"signal")
+               return 0
+       return 1
         
     def main(self):
         """Main loop."""
-        while not self.shutdown():
+        while self.shutdown():
             while self.dataReady("inbox"):
                 data = self.recv("inbox")
                 entupled = self.prefix + [data] + self.postfix

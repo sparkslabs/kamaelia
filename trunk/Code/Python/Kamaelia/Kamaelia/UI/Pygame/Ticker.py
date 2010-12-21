@@ -121,9 +121,9 @@ sending a message to its "unpausebox" inbox.
 
 import pygame
 import Axon
+import time
 from Kamaelia.UI.GraphicDisplay import PygameDisplay
 from Axon.Ipc import WaitComplete
-import time
 
 class GotShutdownException(Exception):
     pass
@@ -262,6 +262,11 @@ class Ticker(Axon.Component.component):
                raise GotShutdownException()
            if self.dataReady("inbox"):
               word = self.recv("inbox")
+              if word == chr(0) + "CLRTKR":
+                  word = ""
+                  self.clearDisplay()
+                  position[0] = initial_postition[0]
+                  position[1] = initial_postition[1]
               if word =="\n":
                  word = ""
               if "\n" in word:

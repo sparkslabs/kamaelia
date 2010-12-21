@@ -30,6 +30,7 @@ class TwoWaySplitter(Axon.Component.component):
                  "signal"  : "",
                  "signal2" : "",
                }
+    
 
     def main(self):
         done=False

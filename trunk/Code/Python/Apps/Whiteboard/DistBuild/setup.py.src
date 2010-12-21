@@ -22,12 +22,12 @@
 from distutils.core import setup
 
 setup(name = "Kamaelia-Whiteboard",
-      version = "1.0.0",
-      description = "Kamaelia Whiteboard bundle + Axon + Kamaelia 0.9.7.0",
-      author = "Michael Sparks, Matt Hammond & Kamaelia Contributors",
+      version = "1.1.0",
+      description = "Kamaelia Whiteboard bundle + Axon + Kamaelia 1.0.12.0",
+      author = "Michael Sparks, Matt Hammond, Andrew Bonney & Kamaelia Contributors",
       author_email = "ms_@users.sourceforge.net",
       url = "http://kamaelia.sourceforge.net/Whiteboard",
-      license = "Copyright (c)2009 BBC & Kamaelia Contributors, All Rights Reserved. Use allowed under MPL 1.1, GPL 2.0, LGPL 2.1",
+      license = "Copyright (c)2010 BBC & Kamaelia Contributors, All Rights Reserved. Use allowed Apache 2 License",
       packages = [\
 # REPLACE
                   ""],
