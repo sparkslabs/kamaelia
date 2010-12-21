@@ -41,19 +41,20 @@ class UidTagger(component):
                  "uid"    : "uid used for tagging, emitted at start",
                }
 
-    def finished(self):
-        while self.dataReady("control"):
-            msg = self.recv("control")
-            self.send(msg, "signal")
-            if isinstance(msg, (producerFinished,shutdownMicroprocess)):
-                return True
-        return False
+    def shutdown(self):
+       """Return 0 if a shutdown message is received, else return 1."""
+       if self.dataReady("control"):
+           msg=self.recv("control")
+           if isinstance(msg,producerFinished) or isinstance(msg,shutdownMicroprocess):
+               self.send(producerFinished(self),"signal")
+               return 0
+       return 1
 
     def main(self):
         uid = self.name
         self.send(uid, "uid")
 
-        while not self.finished():
+        while self.shutdown():
             while self.dataReady("inbox"):
                 item = self.recv("inbox")
                 self.send( (uid,item), "outbox" )
@@ -71,18 +72,19 @@ class FilterTag(component):
                  "signal" : "shutdown signalling",
                }
 
-    def finished(self):
-        while self.dataReady("control"):
-            msg = self.recv("control")
-            self.send(msg, "signal")
-            if isinstance(msg, (producerFinished,shutdownMicroprocess)):
-                return True
-        return False
+    def shutdown(self):
+       """Return 0 if a shutdown message is received, else return 1."""
+       if self.dataReady("control"):
+           msg=self.recv("control")
+           if isinstance(msg,producerFinished) or isinstance(msg,shutdownMicroprocess):
+               self.send(producerFinished(self),"signal")
+               return 0
+       return 1
 
     def main(self):
         uid = object()
 
-        while not self.finished():
+        while self.shutdown():
             while self.dataReady("uid"):
                 uid = self.recv("uid")
 
@@ -104,18 +106,19 @@ class FilterButKeepTag(component):
                  "signal" : "shutdown signalling",
                }
 
-    def finished(self):
-        while self.dataReady("control"):
-            msg = self.recv("control")
-            self.send(msg, "signal")
-            if isinstance(msg, (producerFinished,shutdownMicroprocess)):
-                return True
-        return False
+    def shutdown(self):
+       """Return 0 if a shutdown message is received, else return 1."""
+       if self.dataReady("control"):
+           msg=self.recv("control")
+           if isinstance(msg,producerFinished) or isinstance(msg,shutdownMicroprocess):
+               self.send(producerFinished(self),"signal")
+               return 0
+       return 1
 
     def main(self):
         uid = object()
 
-        while not self.finished():
+        while self.shutdown():
             while self.dataReady("uid"):
                 uid = self.recv("uid")
 

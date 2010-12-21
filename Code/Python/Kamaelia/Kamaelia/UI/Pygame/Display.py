@@ -231,7 +231,10 @@ and display creation is not done in the main thread of the program.
 """
 
 import pygame
+import cjson #MODIFICATION FOR CALIBRATION
 import Axon
+import time
+import os # MODIFICATION FOR CALIBRATION
 
 _cat = Axon.CoordinatingAssistantTracker
 
@@ -241,7 +244,7 @@ class Bunch: pass
 
 from Axon.ThreadedComponent import threadedcomponent
 from Axon.AxonExceptions import noSpaceInBox
-import time
+from Axon.Ipc import producerFinished, shutdownMicroprocess
  
 class _PygameEventSource(threadedcomponent):
     """\
@@ -256,12 +259,19 @@ class _PygameEventSource(threadedcomponent):
 
     def __init__(self):
         super(_PygameEventSource,self).__init__(queuelengths=1)
-        
+
+    def finished(self):
+        while self.dataReady("control"):
+            msg = self.recv("control")
+            if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
+                self.send(msg, "signal")
+                return True
+        return False
 
     def main(self):
         waitevents = [pygame.VIDEORESIZE, pygame.VIDEOEXPOSE, pygame.MOUSEMOTION, pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN]
         
-        while 1:
+        while not self.finished():
             time.sleep(0.01)
             eventswaiting = pygame.event.peek(waitevents)  # and get any others waiting - wait for specific events...
             if self.dataReady("control"):
@@ -337,7 +347,15 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
       super(PygameDisplay,self).__init__()
       self.width = argd.get("width",1024)
       self.height = argd.get("height",768)
-      self.background_colour = argd.get("background_colour", (255,255,255))
+      self.background_colour = argd.get("background_colour", (255,255,255))      
+      if argd.get("offsets", None) is None:
+          self.offsets = {'topleftx' : 20, 'toplefty' : 30, 'toprightx' : 1004, 'toprighty' : 30,\
+                          'bottomleftx' : 20, 'bottomlefty' : 718, 'bottomrightx' : 1004, 'bottomrighty' : 718}
+          self.calibrated = False
+      else:
+          self.offsets = argd["offsets"]
+          self.calibrated = True
+      
       self.fullscreen = pygame.FULLSCREEN * argd.get("fullscreen", 0)
       self.next_position = (0,0)
       self.surfaces = []  ##HERE
@@ -564,6 +582,13 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
    def handleEvents(self):
       # pre-fetch all waiting events in one go
       events = []
+      #
+      # Calibration information unpacked from cached location into 
+      # actual variables for performance reasons.
+      #
+      topleft, topright, bottomleft, bottomright = self.calibration_corners
+      topxratio, bottomxratio, leftyratio, rightyratio = self.calibration_ratios
+
       if self.dataReady("events"):
           while 1:
               event = pygame.event.poll()
@@ -605,7 +630,26 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                                         continue # Don't forward event
                                 e = Bunch()
                                 e.type = event.type
-                                pos = event.pos[0],event.pos[1]
+                                
+                                if self.calibrated:
+                                      # CALIBRATION - Currently relies on 1024x768??? Possible that weird things will happen if display is another size - or it may just work anyway
+                                      # When clicking top left, co-ords should be [21,62] (add 32 to all y co-ords in calib data, they show as 30)
+                                      # When clicking top right, co-ords should be [1005,62]
+                                      # When clicking bottom left, co-ords should be [21,750]
+                                      # When clicking bottom right, co-ords should be [1005,750]
+                                      # Max co-ords are 1024 x 768 or whatever specified in self.width and self.height
+                                      
+                                      correctx = ((((float(event.pos[0]) * topxratio) - topleft[0]) * (1 - (float(event.pos[1]) / self.height))) + (((float(event.pos[0]) * bottomxratio) - bottomleft[0]) * (float(event.pos[1]) / self.height)))
+                                      correcty = ((((float(event.pos[1]) * leftyratio) - topleft[1]) * (1 - (float(event.pos[0]) / self.width))) + (((float(event.pos[1]) * rightyratio) - topright[1]) * (float(event.pos[0]) / self.width)))
+                                      #print (event.pos[0],event.pos[1])
+                                      # BASIC CALIB BELOW
+                                      """offsetx = (1005-21)/(self.offsets[6]-self.offsets[0])
+                                      offsety = (750-62)/(self.offsets[3]-self.offsets[5])
+                                      pos = event.pos[0]*offsetx,event.pos[1]*offsety"""
+                                      pos = int(correctx),(int(correcty)-32)
+                                else:
+                                    pos = event.pos[0],event.pos[1]
+
                                 try:
                                     e.pos  = ( pos[0]-self.visibility[listener][2][0], pos[1]-self.visibility[listener][2][1] )
                                     if event.type == pygame.MOUSEMOTION:
@@ -632,6 +676,57 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
           pygame.mixer.quit()
       except NotImplementedError:
           pass # If it's not implemented, it not closing isn't a problem because it doesn't need/can't be
+      
+
+      #
+      # FIXME: Farm this off to another function
+      # FIXME: Still needs to avoid any modifications to offsets (not even using default ones) if no conf file is available
+      #
+      # CALIBRATION
+          
+      # Try to load config locally first - if it doesn't exist, look in machine locations like /etc/...
+      try:
+          dirs = [os.path.expanduser("~") + "/.kamaelia/Kamaelia.UI.Pygame","/usr/local/etc/kamaelia/Kamaelia.UI.Pygame","/etc/kamaelia/Kamaelia.UI.Pygame"]
+          raw_config = False
+          for directory in dirs:
+              if os.path.isfile(directory + "/pygame-calibration.conf"):
+                  file = open(directory + "/pygame-calibration.conf")
+                  raw_config = file.read()
+                  file.close()
+                  break
+      except IOError, e:
+          print ("Failed to load calibration data - read error")                    
+
+      if raw_config:
+         try:
+             self.offsets = cjson.decode(raw_config)
+             self.calibrated = True
+         except cjson.DecodeError, e:
+             print ("Failed to load calibration data - corrupt config file : pygame-calibration.conf")
+      else:
+          print("Pygame calibration file could not be found - defaults loaded")
+
+      # 
+      # Calculate these values once for calibration purposes, and cache then for later use
+      # Performance optimisation
+      # 
+      topleft = [float(int(self.offsets['topleftx'])-21),float(int(self.offsets['toplefty'])-62)]
+      topright = [float(int(self.offsets['toprightx'])+19),float(int(self.offsets['toprighty'])-62)]
+      bottomleft = [float(int(self.offsets['bottomleftx'])-21),float(int(self.offsets['bottomlefty'])+18)]
+      bottomright = [float(int(self.offsets['bottomrightx'])+19),float(int(self.offsets['bottomrighty'])+18)]
+      self.calibration_corners = topleft, topright, bottomleft, bottomright
+      #
+      # More calibration calculations cached for reuse.  Not stored as
+      # attributes in their own right to force unpacking, and hence gain
+      # performance boost when used.
+      #      
+      topxratio = float(self.width / (topright[0] - topleft[0]))
+      bottomxratio = float(self.width / (bottomright[0] - bottomleft[0]))
+      leftyratio = float(self.height / (bottomleft[1] - topleft[1]))
+      rightyratio = float(self.height / (bottomright[1] - topright[1])) # ok up to here, any problems are in the two lines below...
+      self.calibration_ratios = topxratio, bottomxratio, leftyratio, rightyratio
+
+          
       display = pygame.display.set_mode((self.width, self.height), self.fullscreen|pygame.DOUBLEBUF)
       eventsource = _PygameEventSource().activate()
       self.addChildren(eventsource)
@@ -781,3 +876,5 @@ To strive, to seek, to find, and not to yield.
               ).activate()
 
    Axon.Scheduler.scheduler.run.runThreads()
+
+

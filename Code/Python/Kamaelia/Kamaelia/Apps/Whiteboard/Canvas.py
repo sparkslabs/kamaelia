@@ -23,9 +23,22 @@
 
 import Axon
 import zlib
+import os
+import pygame
+
+from datetime import datetime
+from zipfile import ZipFile
+
+from Tkinter import Tk
+from tkFileDialog import askopenfilename
+from tkSimpleDialog import askstring
+from tkMessageBox import askyesno
+
 from Axon.Ipc import WaitComplete, producerFinished, shutdownMicroprocess
 from Kamaelia.UI.PygameDisplay import PygameDisplay
-import pygame
+
+
+
 
 try:
     import Image
@@ -56,6 +69,7 @@ class Canvas(Axon.Component.component):
         self.size = size
         self.antialias = False
         self.bgcolour = bgcolour
+
         if self.antialias == True:
             self.pygame_draw_line = pygame.draw.aaline
         else:
@@ -73,27 +87,29 @@ class Canvas(Axon.Component.component):
     def requestDisplay(self, **argd):
         displayservice = PygameDisplay.getDisplayService()
         self.link((self,"toDisplay"), displayservice)
-        argd["transparency"] = self.bgcolour
+        #argd["transparency"] = self.bgcolour # This causes problems when using OpenGL or a black background. Needs work TODO FIXME
+        argd["transparency"] = (255,255,180)
         self.send(argd, "toDisplay")
         for _ in self.waitBox("fromDisplay"):
             yield 1
         self.surface = self.recv("fromDisplay")
 
-    def finished(self):
-        while self.dataReady("control"):
-            msg = self.recv("control")
-            if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
-                self.send(msg, "signal")
-                return True
-        return False
+    def shutdown(self):
+       """Return 0 if a shutdown message is received, else return 1."""
+       if self.dataReady("control"):
+           msg=self.recv("control")
+           if isinstance(msg,producerFinished) or isinstance(msg,shutdownMicroprocess):
+               self.send(producerFinished(self),"signal")
+               return 0
+       return 1
 
 
     def main(self):
         """Main loop"""
-        yield 1 #FIXME: AWFUL CODE VOMIT
-        yield 1 #FIXME: AWFUL CODE VOMIT
-        yield 1 #FIXME: AWFUL CODE VOMIT
-        yield 1 #FIXME: AWFUL CODE VOMIT
+        #yield 1 #FIXME
+        #yield 1 #FIXME
+        #yield 1 #FIXME
+        #yield 1 #FIXME
         yield WaitComplete(
               self.requestDisplay( DISPLAYREQUEST=True,
                                    callback = (self,"fromDisplay"),
@@ -102,6 +118,7 @@ class Canvas(Axon.Component.component):
                                    position = self.position,
                                  )
               )
+	pygame.display.set_caption("Kamaelia Whiteboard")
 
         self.surface.fill( (self.bgcolour) )
         self.send({"REDRAW":True, "surface":self.surface}, "toDisplay")
@@ -114,13 +131,13 @@ class Canvas(Axon.Component.component):
         self.send( {"ADDLISTENEVENT" : pygame.MOUSEBUTTONUP, "surface" : self.surface},
                    "toDisplay" )
 
-        while not self.finished():
-            
+        while self.shutdown():
+
             self.redrawNeeded = False
             while self.dataReady("inbox"):
                 msgs = self.recv("inbox")
 #                \
-#print repr(msgs)
+#                print repr(msgs)
                 for msg in msgs:
                     cmd = msg[0]
                     args = msg[1:]
@@ -148,8 +165,14 @@ class Canvas(Axon.Component.component):
         # Would then be pluggable.
         #
         cmd = cmd.upper()
-        if   cmd=="CLEAR":
+        
+        if cmd=="CLEAR":
             self.clear(args)
+            self.clean = True
+            self.dirty_sent = False
+        elif cmd=="NEW":
+	    self.clear(args)
+	    self.remotenew(args)
             self.clean = True
             self.dirty_sent = False
         elif cmd=="LINE":
@@ -182,6 +205,10 @@ class Canvas(Axon.Component.component):
         self.redrawNeeded = True
         if not((sy <0) or (ey <0)):
             self.clean = False
+            
+    def remotenew(self, args):
+        self.send([['CLEAR']], "outbox") # New page remote send # There's probably a better way to resolve this #TODO
+        # This was added as new page triggers (ie. a sending of clear) to remote clients wasn't happening
 
     def clear(self, args):
         if len(args) == 3:
@@ -189,6 +216,7 @@ class Canvas(Axon.Component.component):
         else:
             self.surface.fill( (self.bgcolour) )
         self.redrawNeeded = True
+        self.send("dirty", "surfacechanged")
         self.dirty_sent = True
         self.clean = True
 
@@ -198,18 +226,17 @@ class Canvas(Axon.Component.component):
         self.redrawNeeded = True
 
     def load(self, args):
-            filename = args[0]
-#            print "ARGS", args
-            try:
-                loadedimage = pygame.image.load(filename)
-            except:
-                pass
-            else:
-                self.surface.blit(loadedimage, (0,0))
-            self.redrawNeeded = True
-            if not ( (len(args) >1) and args[1] == "nopropogate" ):
-                self.getimg(())
-            self.clean = True
+        filename = args[0]
+        try:
+            loadedimage = pygame.image.load(filename)
+        except:
+            pass
+        else:
+            self.surface.blit(loadedimage, (0,0))
+        self.redrawNeeded = True
+        if not ( (len(args) >1) and args[1] == "nopropogate" ):
+            self.getimg(())
+        self.clean = True
 
     def save(self, args):
         filename = args[0]
@@ -219,7 +246,7 @@ class Canvas(Axon.Component.component):
             pilImage.save(filename)
         except NameError:
             pygame.image.save(self.surface, filename)
-        self.clean = True
+        self.clean = True       
 
     def getimg(self, args):
             imagestring = pygame.image.tostring(self.surface,"RGB")
@@ -243,3 +270,4 @@ class Canvas(Axon.Component.component):
             self.surface.blit(textimg, (x,y))
             self.redrawNeeded = True
 
+   
