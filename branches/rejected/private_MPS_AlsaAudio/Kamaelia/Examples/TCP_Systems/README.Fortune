@@ -1,0 +1,13 @@
+The example in this directory has the following structure:
+
+   * Creates a simple TCP server using the SimpleServer Component
+   * Sets the protocol to be used for dealing with client connects
+     to the FortuneCookieProtocol. (When the FortuneCookieProtocol
+     component is started, it sends a single fortune cookie to it's
+     outbox as a series of messages, time delayed)
+   * Creates a simple TCP Client that connects to this service and
+     links it to a protocol handler - in this case the client side
+     protocol handler is a simple console echoer.
+
+
+Michael, April 2005
