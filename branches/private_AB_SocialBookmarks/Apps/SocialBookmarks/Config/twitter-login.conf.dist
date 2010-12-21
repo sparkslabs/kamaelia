@@ -1,5 +1,0 @@
-# Remove comment lines and move file to /home/<yourusername>/twitter-login.conf
-# 'key' and 'secret' are automatically generated for oauth. 'proxy' can also be added to the dictionary if required.
-# 'consumerkey' and 'consumersecret' must be obtained from your Twitter account by registering a new app with read/write access - actually this isn't strictly true - we could provide the key and secret for the app we've already made.
-# 'bitlyapikey' must be obtained from bit.ly if you wish to use the link resolver. If not some code will currently need commenting out
-{"username": "YourTwitterUsername", "password": "YourTwitterPassword", "dbuser" : "YourMySQLUsername", "dbpass" : "YourMySQLPassword", "consumerkey" : "yourtwitterkeyhere", "consumersecret" : "yourtwittersecrethere", "bitlyusername" : "yourusernamehere", "bitlyapikey" : "yourapikeyhere"}
