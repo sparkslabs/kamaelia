@@ -1,0 +1,31 @@
+In the directories below you will find:
+    * channels - This is a collection of hand crafted replacements made by
+      Michael Sparks to replace the images from the iPlayer. The reason for
+      this is because I'm pretty sure that the Kamaelia project (despite
+      being a BBC project) does not own the rights to distribute the
+      originals under the Apache 2 license.  As a result the images in the
+      channels directory were created to fall under that constraint.  In
+      particular, they can't really be mistaken for the genuine article, so
+      they do not run the risk of looking like "official" images, making
+      everyone's lives easier.
+
+    * jquery - The files included here are used by the django front end.
+      They are generally dual licensed under the MIT and GPL license, but
+      the usage here I believe falls under either "use" or "mere
+      aggregation", and therefore should not cause any licensing issues.  In
+      particular they are included *unmodified*. If this causes a problem
+      for you, then bear in mind - the MIT licensed code can be happily used
+      with apache 2 licensed code cleanly. If you're choosing the GPL
+      license, and kamaelia causes you problems here, just use kamaelia
+      under the terms of the GPL. This is fine because we're giving you
+      permission here to do that OK? Basically, share, enjoy, if we're
+      causing you problems, please assume a license (Apache2 or GPL 2) that
+      doesn't.
+
+    * prototypejs - Same points as for jquery.
+
+The file bbclogo.gif may not be changed, and may not be used outside the
+scope of this application.
+
+
+Michael Sparks, BBC R&D, 20th December 2010
