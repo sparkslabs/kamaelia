@@ -1,0 +1,1 @@
+{"email" : {"server" : "smtp.yourserver.com", "port" : 587, "user" : "yourusername", "pass" : "yourpassword", "from" : "yourname@yourdomain.com"}, "directories" : {"scribbles" : "", "decks" : ""}, "webcam" : {"device" : "/dev/video0"}}
