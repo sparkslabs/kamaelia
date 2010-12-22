@@ -233,16 +233,14 @@ if __name__ == "__main__":
     from Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3DWithParams import TopologyViewer3DWithParams
     from Kamaelia.Chassis.Graphline import Graphline
     
-    # Data can be from both DataSource and console inputs
+
     Graphline(
         CONSOLEREADER = ConsoleReader('>>>'),
-        DATASOURCE = DataSource(["http://fooshed.net/foaf.rdf 2 10"]),
         PARSER = RDFParser(),
         VIEWER = TopologyViewer3DWithParams(),
         CONSOLEECHOER = ConsoleEchoer(),
     linkages = {
         ("CONSOLEREADER","outbox") : ("PARSER","inbox"),
-        ("DATASOURCE","outbox") : ("PARSER","inbox"),   
         ("PARSER","outbox")   : ("VIEWER","inbox"),
         ("VIEWER","outbox")  : ("CONSOLEECHOER","inbox"),     
         #("PARSER","outbox") : ("CONSOLEECHOER","inbox"),
