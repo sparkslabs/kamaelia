@@ -211,8 +211,8 @@ class CollabParser(component):
 #    from Kamaelia.Util.DataSource import DataSource
 #    from Kamaelia.Util.Console import ConsoleReader,ConsoleEchoer
 #    from Kamaelia.Chassis.Graphline import Graphline
-#    from Kamaelia.Codec.JSON import JSONEncoder, JSONDecoder
-#    from Kamaelia.File.Writing import SimpleFileWriterWithOutput
+#    from Kamaelia.Apps.CL.JSON import JSONEncoder, JSONDecoder
+#    from Kamaelia.Apps.CL.SimpleFileWriterWithOutput import SimpleFileWriterWithOutput
 #    from Kamaelia.File.TriggeredFileReader import TriggeredFileReader
 #    from Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3DWithParams import TopologyViewer3DWithParams
 #    from Kamaelia.Support.Particles.SimpleLaws import SimpleLaws
@@ -368,12 +368,12 @@ __kamaelia_components__  = ( CollabParser, CollabWithViewParser, )
 if __name__ == "__main__":
     from Kamaelia.Util.Console import ConsoleReader,ConsoleEchoer
     from Kamaelia.Chassis.Graphline import Graphline
-    from Kamaelia.Codec.JSON import JSONDecoder
+    from Kamaelia.CL.JSON import JSONDecoder
     from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
     from Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3DWithParams import TopologyViewer3DWithParams
     from Kamaelia.Support.Particles.SimpleLaws import SimpleLaws
     from Kamaelia.UI.OpenGL.Button import Button
-    from Kamaelia.Util.DictChooser import DictChooser
+    from Kamaelia.Apps.CL.DictChooser import DictChooser
     
     laws = SimpleLaws(bondLength=2.2)
     
