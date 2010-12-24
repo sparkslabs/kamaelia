@@ -73,19 +73,18 @@ See http://www.w3.org/TR/rdf-sparql-query/ for more information about SPARQL que
 http://www.w3.org/RDF/ about for more information about RDF.
 """
                     
-if __name__ == "__main__":
-    from Kamaelia.Util.DataSource import DataSource
-    from Kamaelia.Util.Console import ConsoleReader,ConsoleEchoer
-    from Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3DWithParams import TopologyViewer3DWithParams
-    from Kamaelia.Chassis.Graphline import Graphline
-    from Kamaelia.Apps.CL.FOAFViewer.RDFParsing import RDFParser
-    
+from Kamaelia.Util.DataSource import DataSource
+from Kamaelia.Util.Console import ConsoleReader,ConsoleEchoer
+from Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3DWithParams import TopologyViewer3DWithParams
+from Kamaelia.Chassis.Graphline import Graphline
+from Kamaelia.Apps.CL.FOAFViewer.RDFParsing import RDFParser
 
-    Graphline(
-        CONSOLEREADER = ConsoleReader('>>>'),
-        PARSER = RDFParser(),
-        VIEWER = TopologyViewer3DWithParams(),
-        CONSOLEECHOER = ConsoleEchoer(),
+
+Graphline(
+    CONSOLEREADER = ConsoleReader('>>>'),
+    PARSER = RDFParser(),
+    VIEWER = TopologyViewer3DWithParams(),
+    CONSOLEECHOER = ConsoleEchoer(),
     linkages = {
         ("CONSOLEREADER","outbox") : ("PARSER","inbox"),
         ("PARSER","outbox")   : ("VIEWER","inbox"),

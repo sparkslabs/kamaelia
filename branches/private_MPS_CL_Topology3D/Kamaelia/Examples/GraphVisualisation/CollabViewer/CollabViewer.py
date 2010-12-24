@@ -122,30 +122,29 @@ in the collaboration or belonging to the organization. Click button to swith bet
 """
 
 
-if __name__ == "__main__":
-    from Kamaelia.Util.Console import ConsoleReader,ConsoleEchoer
-    from Kamaelia.Chassis.Graphline import Graphline
-    from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
-    from Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3DWithParams import TopologyViewer3DWithParams
-    from Kamaelia.Support.Particles.SimpleLaws import SimpleLaws
-    from Kamaelia.UI.OpenGL.Button import Button
-    from Kamaelia.Apps.CL.DictChooser import DictChooser
-    from Kamaelia.Apps.CL.JSON import JSONDecoder
-    from Kamaelia.Apps.CL.CollabViewer.CollabParsing import CollabWithViewParser
-    
-    laws = SimpleLaws(bondLength=2.2)
-    
-    # Data can be from both DataSource and console inputs
-    Graphline(
-        CONSOLEREADER = ConsoleReader('>>>'),
-        READER = ReadFileAdaptor('Data/collab.json'),
-        JSONDECODER = JSONDecoder(),
-        CONSOLEECHOER = ConsoleEchoer(),
-        COLLABPARSER = CollabWithViewParser(),
-        BUTTONORG = Button(caption="orgView", msg="orgView", position=(-10,8,-20)),
-        BUTTONSTAFF = Button(caption="staffView", msg="staffView", position=(-8,8,-20)),
-        DICTCHOOSER = DictChooser(allowDefault = True),
-        VIEWER = TopologyViewer3DWithParams(laws=laws),
+from Kamaelia.Util.Console import ConsoleReader,ConsoleEchoer
+from Kamaelia.Chassis.Graphline import Graphline
+from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
+from Kamaelia.Visualisation.PhysicsGraph3D.TopologyViewer3DWithParams import TopologyViewer3DWithParams
+from Kamaelia.Support.Particles.SimpleLaws import SimpleLaws
+from Kamaelia.UI.OpenGL.Button import Button
+from Kamaelia.Apps.CL.DictChooser import DictChooser
+from Kamaelia.Apps.CL.JSON import JSONDecoder
+from Kamaelia.Apps.CL.CollabViewer.CollabParsing import CollabWithViewParser
+
+laws = SimpleLaws(bondLength=2.2)
+
+# Data can be from both DataSource and console inputs
+Graphline(
+    CONSOLEREADER = ConsoleReader('>>>'),
+    READER = ReadFileAdaptor('Data/collab.json'),
+    JSONDECODER = JSONDecoder(),
+    CONSOLEECHOER = ConsoleEchoer(),
+    COLLABPARSER = CollabWithViewParser(),
+    BUTTONORG = Button(caption="orgView", msg="orgView", position=(-10,8,-20)),
+    BUTTONSTAFF = Button(caption="staffView", msg="staffView", position=(-8,8,-20)),
+    DICTCHOOSER = DictChooser(allowDefault = True),
+    VIEWER = TopologyViewer3DWithParams(laws=laws),
     linkages = {
         ("CONSOLEREADER","outbox") : ("JSONDECODER","inbox"),
         ("READER","outbox") : ("JSONDECODER","inbox"),
