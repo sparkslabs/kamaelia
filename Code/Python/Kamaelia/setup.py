@@ -32,6 +32,9 @@ setup(name = "Kamaelia",
       packages = [\
                   "Kamaelia", # START
                   "Kamaelia.Apps",
+                  "Kamaelia.Apps.CL",
+                  "Kamaelia.Apps.CL.CollabViewer",
+                  "Kamaelia.Apps.CL.FOAFViewer",
                   "Kamaelia.Apps.Compose",
                   "Kamaelia.Apps.Compose.GUI",
                   "Kamaelia.Apps.Europython09",
