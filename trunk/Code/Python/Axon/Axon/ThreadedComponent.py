@@ -344,7 +344,6 @@ XXX *TODO*: Thread shutdown - no true support for killing threads in python
 
 """
 
-from __future__ import generators
 
 import Component
 from AdaptiveCommsComponent import _AdaptiveCommsable as _AC
