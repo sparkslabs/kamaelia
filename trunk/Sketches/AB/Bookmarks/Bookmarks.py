@@ -72,7 +72,7 @@ if __name__ == "__main__":
 
     # Linker component for LiveAnalysis
     LINKER = Graphline(LINKRESOLVE = LinkResolver(bitlyusername,bitlyapikey),
-                        LINKREQUESTER = HTTPGetter(proxy, "BBC R&D Grabber"),
+                        LINKREQUESTER = HTTPGetter(proxy, "BBC R&D Grabber", 10),
                         linkages = {("self", "inbox") : ("LINKRESOLVE", "inbox"),
                                     ("LINKRESOLVE", "outbox") : ("self", "outbox"),
                                     ("LINKRESOLVE", "urlrequests") : ("LINKREQUESTER", "inbox"),
@@ -80,7 +80,7 @@ if __name__ == "__main__":
     # Linker component for FinalAnalysis
     # This duplication could probably be avoided by doing some tagging/filtering TODO
     LINKERFINAL = Graphline(LINKRESOLVE = LinkResolver(bitlyusername,bitlyapikey),
-                        LINKREQUESTER = HTTPGetter(proxy, "BBC R&D Grabber"),
+                        LINKREQUESTER = HTTPGetter(proxy, "BBC R&D Grabber", 10),
                         linkages = {("self", "inbox") : ("LINKRESOLVE", "inbox"),
                                     ("LINKRESOLVE", "outbox") : ("self", "outbox"),
                                     ("LINKRESOLVE", "urlrequests") : ("LINKREQUESTER", "inbox"),
@@ -91,8 +91,8 @@ if __name__ == "__main__":
                     SEARCH = PeopleSearch(consumerkeypair, keypair, proxy),
                     COLLECTOR = DataCollector(dbuser,dbpass),
                     RAWCOLLECTOR = RawDataCollector(dbuser,dbpass),
-                    HTTPGETTER = HTTPGetter(proxy, "BBC R&D Grabber"),
-                    HTTPGETTERRDF = HTTPGetter(proxy, "BBC R&D Grabber"),
+                    HTTPGETTER = HTTPGetter(proxy, "BBC R&D Grabber", 10),
+                    HTTPGETTERRDF = HTTPGetter(proxy, "BBC R&D Grabber", 10),
                     TWOWAY = TwoWaySplitter(),
                     ANALYSIS = LiveAnalysis(dbuser,dbpass),
                     NLTKANALYSIS = LiveAnalysisNLTK(dbuser,dbpass),

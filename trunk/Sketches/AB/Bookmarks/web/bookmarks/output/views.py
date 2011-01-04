@@ -30,74 +30,106 @@ def index(request):
     '''
     Main index page for social bookmarks
     '''
-    currentdate = date.today()
     output = header
-    output += "<meta http-equiv='refresh' content='60'>"
+    # Ajax refresh code for divs
+    scripting = """<script>
+                        jQuery.noConflict();
+                        jQuery(document).ready(function() {
+                            var refreshId = setInterval(function() {
+                                jQuery('#tv').load('/data/index/tv?randval='+Math.random());
+                                jQuery('#radio').load('/data/index/radio?randval='+Math.random());}, 20000);
+                });
+                </script>"""
+
+    output += scripting
+
+    # Allowance for non-JS browsers
+    output += "<noscript><meta http-equiv='refresh' content='60'></noscript>"
     output += "<style type=\"text/css\">.box a:link, .box a:visited, .box a:active, .box a:hover { color: inherit; }</style>"
+
+    # Display all TV channels
+    output += "<div style=\"display: inline; position: relative\" id=\"tv\">"
+    output += indexdata(False,"tv",False)
+
+    # Display all radio channels
+    output += "</div><br /><br /><div style=\"display: inline; position: relative\" id=\"radio\">"
+    output += indexdata(False,"radio",False)
+
+    # Print API links
+    output += "</div><br /><br />API: <a href=\"/api/summary.json\" target=\"_blank\">JSON</a> - <a href=\"/api/summary.xml\" target=\"_blank\">XML</a>" + footer
+
+    return HttpResponse(output)
+
+def indexdata(request,channelgroup,wrapper=True):
+    '''
+    Data generator for index page for AJAX
+    '''
+
+    output = ""
+
+    currentdate = date.today()
     # Prevent division by zero later on...
     largeststdev = 1
 
     # Find the largest standard deviation recorded for a current programme to act as a normaliser
     for channel in allchannels:
-        try:
-            data = programmes.objects.filter(channel=channel).latest('timestamp')
+        data = programmes.objects.filter(channel=channel).latest('timestamp')
+        if isinstance(data,object):
             if data.stdevtweets > largeststdev and data.imported==0:
                 largeststdev = data.stdevtweets
-        except ObjectDoesNotExist, e:
-            data = None
 
     normaliser = 1/float(largeststdev)
 
-    # Display all TV channels
-    output += "<div style=\"display: inline; position: relative\"><h2>TV</h2>"
-    for channel in tvchannels:
-        try:
+    if channelgroup == "tv":
+        output += "<h2>TV</h2>"
+        for channel in tvchannels:
             data = programmes.objects.filter(channel=channel).latest('timestamp')
-            if data.imported==0:
-                # Generate a colour (opacity) based on this channel's standard deviation and the normaliser
-                opacity = normaliser * data.stdevtweets
-                if opacity < 0.5:
-                    fontcolour = "#000000"
+            if isinstance(data,object):
+                if data.imported==0:
+                    # Generate a colour (opacity) based on this channel's standard deviation and the normaliser
+                    opacity = normaliser * data.stdevtweets
+                    if opacity < 0.5:
+                        fontcolour = "#000000"
+                    else:
+                        fontcolour = "#FFFFFF"
+                    bgval = str(int(255 - (255 * opacity)))
+                    bgcolour = "rgb(" + bgval + "," + bgval + "," + bgval + ")"
+                    output += "<div style=\"float: left; margin-right: 5px;\"><a href=\"/channel-graph/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
+                    output += "<div id=\"" + channel + "\" class=\"box\" style=\"width: 77px; background-color: " + bgcolour + "; color: " + fontcolour + "; text-align: center;\"><a href=\"/programmes/" + data.pid + "/\" style=\"text-decoration: none; color: " + fontcolour + "\">" + str(data.totaltweets) + "</a></div></div>"
                 else:
-                    fontcolour = "#FFFFFF"
-                bgval = str(int(255 - (255 * opacity)))
-                bgcolour = "rgb(" + bgval + "," + bgval + "," + bgval + ")"
-                output += "<div style=\"float: left; margin-right: 5px;\"><a href=\"/channel-graph/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
-                output += "<div id=\"" + channel + "\" class=\"box\" style=\"width: 77px; background-color: " + bgcolour + "; color: " + fontcolour + "; text-align: center;\"><a href=\"/programmes/" + data.pid + "/\" style=\"text-decoration: none; color: " + fontcolour + "\">" + str(data.totaltweets) + "</a></div></div>"
+                    output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channel-graph/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
+                    output += "Off Air</div>"
             else:
                 output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channel-graph/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
-                output += "Off Air</div>"
-        except ObjectDoesNotExist, e:
-            output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channel-graph/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
-            output += "No Data</div>"
-
-    # Display all radio channels
-    output += "<br /><br /></div><br /><br /><div style=\"display: inline; position: relative\"><h2>Radio</h2>"
-    for channel in radiochannels:
-        try:
+                output += "No Data</div>"
+    elif channelgroup == "radio":
+        output += "<h2>Radio</h2>"
+        for channel in radiochannels:
             data = programmes.objects.filter(channel=channel).latest('timestamp')
-            if data.imported==0:
-                # Generate a colour (opacity) based on this channel's standard deviation and the normaliser
-                opacity = normaliser * data.stdevtweets
-                if opacity < 0.5:
-                    fontcolour = "#000000"
+            if isinstance(data,object):
+                if data.imported==0:
+                    # Generate a colour (opacity) based on this channel's standard deviation and the normaliser
+                    opacity = normaliser * data.stdevtweets
+                    if opacity < 0.5:
+                        fontcolour = "#000000"
+                    else:
+                        fontcolour = "#FFFFFF"
+                    bgval = str(int(255 - (255 * opacity)))
+                    bgcolour = "rgb(" + bgval + "," + bgval + "," + bgval + ")"
+                    output += "<div style=\"float: left; margin-right: 5px;\"><a href=\"/channel-graph/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
+                    output += "<div id=\"" + channel + "\" class=\"box\" style=\"width: 77px; background-color: " + bgcolour + "; color: " + fontcolour + "; text-align: center;\"><a href=\"/programmes/" + data.pid + "/\" style=\"text-decoration: none; color: " + fontcolour + "\">" + str(data.totaltweets) + "</a></div></div>"
                 else:
-                    fontcolour = "#FFFFFF"
-                bgval = str(int(255 - (255 * opacity)))
-                bgcolour = "rgb(" + bgval + "," + bgval + "," + bgval + ")"
-                output += "<div style=\"float: left; margin-right: 5px;\"><a href=\"/channel-graph/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
-                output += "<div id=\"" + channel + "\" class=\"box\" style=\"width: 77px; background-color: " + bgcolour + "; color: " + fontcolour + "; text-align: center;\"><a href=\"/programmes/" + data.pid + "/\" style=\"text-decoration: none; color: " + fontcolour + "\">" + str(data.totaltweets) + "</a></div></div>"
+                    output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channel-graph/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
+                    output += "Off Air</div>"
             else:
                 output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channel-graph/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
-                output += "Off Air</div>"
-        except ObjectDoesNotExist, e:
-            output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channel-graph/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
-            output += "No Data</div>"
+                output += "No Data</div>"
 
-    # Print API links
-    output += "<br /><br /></div><br /><br />API: <a href=\"/api/summary.json\" target=\"_blank\">JSON</a> - <a href=\"/api/summary.xml\" target=\"_blank\">XML</a>" + footer
-
-    return HttpResponse(output)
+    output += "<br /><br />"
+    if wrapper:
+        return HttpResponse(output)
+    else:
+        return output
 
 def channel(request,channel,year=0,month=0,day=0):
     '''
@@ -576,7 +608,6 @@ def programmev2(request,pid,timestamp=False,redux=False):
         output += "<br />Invalid pid supplied or no data has yet been captured for this programme."
         output += "<br /><br /><a href=\"/\">Back to index</a>"
     else:
-        output += "<br />Can't see any bookmarks? Programmes broadcast before 24/11/10 only show bookmarks using the old /programmes pages available via <a href=\"/programmes-old/" + pid + "\">this link</a>.<br />"
         if rowcount == 1:
             # If there has only been one broadcast of this programme, we can include show times, otherwise we can only show the duration
             channel = data[0].channel
@@ -678,8 +709,8 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
                 if minlimit < group:
                     minlimit = group
                 if minutegroups.has_key(group):
-                    minutegroups[group] += line.totaltweets
-                    totaltweets += line.totaltweets
+                    minutegroups[group] += int(line.totaltweets)
+                    totaltweets += int(line.totaltweets)
 
         minuteitems = minutegroups.items()
         minuteitems.sort()
@@ -690,7 +721,7 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
             modetweets = data[0].modetweets
             stdevtweets = data[0].stdevtweets
         else:
-            meantweets = totaltweets / (master.duration / 60)
+            meantweets = totaltweets / float(master.duration / 60)
             stdevtotal = 0
             medianlist = list()
             modelist = dict()
@@ -816,8 +847,15 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
                     # Need adding to the API when done
                     if minute[1] > (2.2*stdevtweets+meantweets) and minute[1] > 9: # Arbitrary value chosen for now - needs experimentation - was 9
                         
-                        wfdata = wordanalysis.objects.filter(timestamp=progtimestamp-progtimediff+(minute[0]*60),pid=pid,is_keyword=0,is_common=0).order_by('-count').all()
-                        
+                        wfdata = None
+                        for row in data:
+                            wfdatatemp = wordanalysis.objects.filter(timestamp=row.timestamp-row.timediff+(minute[0]*60),pid=pid,is_keyword=0,is_common=0).order_by('-count').all()
+                            if wfdata is None:
+                                wfdata = wfdatatemp
+                            else:
+                                # TODO: Modify this to merge the data properly
+                                wfdata = wfdata | wfdatatemp
+
                         if len(wfdata) > 0:
                             bookmarkstart = False
                             bookmarkend = False
@@ -831,11 +869,23 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
                                 is_word = False
                             # Now look at each previous minute until it's no longer the top keyword
                             currentstamp = progtimestamp-progtimediff+(minute[0]*60)
+                            minstamp = progtimestamp-progtimediff
+                            minutediff = minute[0]*60
                             topkeyword = keyword
                             while topkeyword == keyword:
                                 currentstamp -= 60
+                                minutediff -= 60
+                                if currentstamp < minstamp:
+                                    break
                                 try:
-                                    dataset = wordanalysis.objects.filter(timestamp=currentstamp,pid=pid,is_keyword=0,is_common=0).order_by('-count').all()
+                                    dataset = None
+                                    for row in data:
+                                        datasettemp = wordanalysis.objects.filter(timestamp=row.timestamp-row.timediff+minutediff,pid=pid,is_keyword=0,is_common=0).order_by('-count').all()
+                                        if dataset is None:
+                                            dataset = datasettemp
+                                        else:
+                                            # TODO: Modify this to merge the data properly
+                                            dataset = dataset | datasettemp
                                 except ObjectDoesNotExist:
                                     break
                                 for line in dataset:
@@ -850,39 +900,63 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
 
                             # Investigate the previous minute to see if the keyword from above is in the top 10
                             tweetset = False
-                            rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=startstamp,timestamp__lt=endstamp).order_by('timestamp').all()
+                            rawtweets = None
+                            for row in data:
+                                rawtweetstemp = rawdata.objects.filter(pid=pid,timestamp__gte=row.timestamp-row.timediff+minutediff,timestamp__lt=row.timestamp-row.timediff+minutediff+60).order_by('timestamp').all()
+                                if rawtweets is None:
+                                    rawtweets = rawtweetstemp
+                                else:
+                                    rawtweets = rawtweets | rawtweetstemp
                             for tweet in rawtweets:
                                 tweettext = string.lower(tweet.text)
                                 for items in """!"#$%&(),:;?@~[]'`{|}""":
                                     tweettext = string.replace(tweettext,items,"")
                                 try:
                                     if str(keyword).lower() in tweettext:
-                                        bookmarkstart = int(tweet.timestamp)
+                                        bookmarkstart = int(tweet.programme_position)
                                         tweetset = True
                                         break
                                 except UnicodeEncodeError:
                                     break
 
                             if not tweetset:
-                                rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=currentstamp,timestamp__lt=(currentstamp + 60)).order_by('timestamp').all()
+                                rawtweets = None
+                                for row in data:
+                                    rawtweetstemp = rawdata.objects.filter(pid=pid,timestamp__gte=row.timestamp-row.timediff+minutediff+60,timestamp__lt=row.timestamp-row.timediff+minutediff+120).order_by('timestamp').all()
+                                    if rawtweets is None:
+                                        rawtweets = rawtweetstemp
+                                    else:
+                                        rawtweets = rawtweets | rawtweetstemp
                                 for tweet in rawtweets:
                                     tweettext = string.lower(tweet.text)
                                     for items in """!"#$%&(),:;?@~[]'`{|}""":
                                         tweettext = string.replace(tweettext,items,"")
                                     try:
                                         if str(keyword).lower() in tweettext:
-                                            bookmarkstart = int(tweet.timestamp)
+                                            bookmarkstart = int(tweet.programme_position)
                                             break
                                     except UnicodeEncodeError:
                                         break
 
                             # Now look at each next minute until it's no longer the top keyword
                             currentstamp = progtimestamp-progtimediff+(minute[0]*60)
+                            maxstamp = progtimestamp-progtimediff+master.duration
+                            minutediff = minute[0]*60
                             topkeyword = keyword
                             while topkeyword == keyword:
                                 currentstamp += 60
+                                minutediff += 60
+                                if currentstamp > maxstamp:
+                                    break
                                 try:
-                                    dataset = wordanalysis.objects.filter(timestamp=currentstamp,pid=pid,is_keyword=0,is_common=0).order_by('-count').all()
+                                    dataset = None
+                                    for row in data:
+                                        # TODO: Modify this to merge the data properly
+                                        datasettemp = wordanalysis.objects.filter(timestamp=row.timestamp-row.timediff+minutediff,pid=pid,is_keyword=0,is_common=0).order_by('-count').all()
+                                        if dataset is None:
+                                            dataset = datasettemp
+                                        else:
+                                            dataset = dataset | datasettemp
                                 except ObjectDoesNotExist:
                                     break
                                 for line in dataset:
@@ -897,37 +971,49 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
 
                             # Investigate the previous minute to see if the keyword from above is in the top 10
                             tweetset = False
-                            rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=startstamp,timestamp__lt=endstamp).order_by('-timestamp').all()
+                            rawtweets = None
+                            for row in data:
+                                rawtweetstemp = rawdata.objects.filter(pid=pid,timestamp__gte=row.timestamp-row.timediff+minutediff,timestamp__lt=row.timestamp-row.timediff+minutediff+60).order_by('timestamp').all()
+                                if rawtweets is None:
+                                    rawtweets = rawtweetstemp
+                                else:
+                                    rawtweets = rawtweets | rawtweetstemp
                             for tweet in rawtweets:
                                 tweettext = string.lower(tweet.text)
                                 for items in """!"#$%&(),:;?@~[]'`{|}""":
                                     tweettext = string.replace(tweettext,items,"")
                                 try:
                                     if str(keyword).lower() in tweettext:
-                                        bookmarkend = int(tweet.timestamp)
+                                        bookmarkend = int(tweet.programme_position)
                                         tweetset = True
                                         break
                                 except UnicodeEncodeError:
                                     break
 
                             if not tweetset:
-                                rawtweets = rawdata.objects.filter(pid=pid,timestamp__gte=currentstamp,timestamp__lt=(currentstamp + 60)).order_by('-timestamp').all()
+                                rawtweets = None
+                                for row in data:
+                                    rawtweetstemp = rawdata.objects.filter(pid=pid,timestamp__gte=row.timestamp-row.timediff+minutediff+60,timestamp__lt=row.timestamp-row.timediff+minutediff+120).order_by('timestamp').all()
+                                    if rawtweets is None:
+                                        rawtweets = rawtweetstemp
+                                    else:
+                                        rawtweets = rawtweets | rawtweetstemp
                                 for tweet in rawtweets:
                                     tweettext = string.lower(tweet.text)
                                     for items in """!"#$%&(),:;?@~[]'`{|}""":
                                         tweettext = string.replace(tweettext,items,"")
                                     try:
                                         if str(keyword).lower() in tweettext:
-                                            bookmarkend = int(tweet.timestamp)
+                                            bookmarkend = int(tweet.programme_position)
                                             break
                                     except UnicodeEncodeError:
                                         break
 
                             if (bookmarkstart and bookmarkend) and (bookmarkstart != bookmarkend):
-                                if bookmarkstart < (progtimestamp - progtimediff):
-                                    bookmarkstart = progtimestamp - progtimediff
-                                if bookmarkend > (progtimestamp - progtimediff + master.duration):
-                                    bookmarkend = progtimestamp - progtimediff + master.duration
+                                if bookmarkstart < 0:
+                                    bookmarkstart = 0
+                                if bookmarkend > master.duration:
+                                    bookmarkend = master.duration
                                 # Only bookmark worthy if it creates 'buzz' for 60 seconds or more
                                 if (len(bookmarks) > 0):
                                     # Check if the bookmarks should be merged, allowing a slight overlap time of 20 seconds in case of a sudden lack of tweets
@@ -944,6 +1030,7 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
                                         bookmarks[len(bookmarks)-1][1] = bookmarkend
                                         continue
                                 if (bookmarkend - bookmarkstart) > 60:
+                                    output += "<br />" + str(bookmarkstart) + " " + str(bookmarkend) + " " + str(bookmarkstart-80) + " " + keyword
                                     bookmarks.append([bookmarkstart,bookmarkend,bookmarkstart-80,keyword])
 
                 # The +3 in the widths below gets around an IE CSS issue. All other browsers will ignore it
@@ -963,17 +1050,20 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
                 for bookmark in bookmarks:
                     if bmcurrent == 0 and bookmark[0] != progstart:
                         bookmarkplot += "<div style=\"float: left; background-color: #FFFFFF; height: 40px; width: " + str(int((bookmark[0] - progstart)*bmsecondwidth)) + "px\"></div>"
+                    elif bmmcurrent > 0 and bmcurrent < bmtotal:
+                        if bookmarks[bmcurrent-1][1] < bookmark[0]:
+                            bookmarkplot += "<div style=\"float: left; background-color: #FFFFFF; height: 40px; width: " + str(int((bookmark[0]-bookmarks[bmcurrent-1][1])*bmsecondwidth)) + "px\"></div>"
                     bookmarkpos = bookmark[2] - progstart
                     # Need to check having taken some time off the bookmark to allow for tweeting that it doesn't underrun
                     if bookmarkpos < 0:
                         bookmarkpos = 0
                     if redux == "redux":
                         # Any channel will work fine for redux but iPlayer needs the most recent
-                        bookmarkplot += "<a href=\"http://g.bbcredux.com/programme/" + reduxchannel + "/" + progdatestring + "/" + progtimestring + "?start=" + str(int(bookmarkpos)) + "\" title=\"Caused by: " + keyword + "\" target=\"_blank\">"
+                        bookmarkplot += "<a href=\"http://g.bbcredux.com/programme/" + reduxchannel + "/" + progdatestring + "/" + progtimestring + "?start=" + str(int(bookmarkpos)) + "\" title=\"Caused by: " + bookmark[3] + "\" target=\"_blank\">"
                     else:
                         bookmarkmins = int(bookmarkpos / 60)
                         bookmarksecs = int(bookmarkpos % 60)
-                        bookmarkplot += "<a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(bookmarkmins) + "m" + str(bookmarksecs) + "s\" title=\"Caused by: " + keyword + "\" target=\"_blank\">"
+                        bookmarkplot += "<a href=\"http://bbc.co.uk/i/" + pid + "/?t=" + str(bookmarkmins) + "m" + str(bookmarksecs) + "s\" title=\"Caused by: " + bookmark[3] + "\" target=\"_blank\">"
                     # Ensure that if the next bookmark overlaps, it is visible
                     if (bmcurrent + 2) < bmtotal:
                         if bookmark[1] > bookmarks[bmcurrent+1][0]:
@@ -1054,7 +1144,10 @@ def rawtweetsv2(request,pid,timestamp,aggregated=False):
         master = programmes_unique.objects.get(pid=pid)
     except ObjectDoesNotExist, e:
         pass # This is handled later
-    progdata = programmes.objects.filter(pid=pid).all()
+    if aggregated:
+        progdata = programmes.objects.filter(pid=pid).all()
+    else:
+        progdata = programmes.objects.filter(pid=pid,timestamp__lte=timestamp).order_by('-timestamp').all()
     timestamp = int(timestamp)
     if len(progdata) == 0:
         output += "<br />Invalid pid supplied or no data has yet been captured for this programme."
@@ -1121,13 +1214,12 @@ def rawtweetsv2(request,pid,timestamp,aggregated=False):
             output += "<br /><br />"
             # In this case the 'timestamp' is actually the programme position
             rawtweetdict = dict()
-            for row in progdata:
-                rawtweets = rawdata.objects.filter(pid=pid,programme_position__gte=progpos,programme_position__lt=endstamp).order_by('timestamp').all()
-                for tweet in rawtweets:
-                    if rawtweetdict.has_key(int(tweet.programme_position)):
-                        rawtweetdict[int(tweet.programme_position)].append("<br /><strong>" + str(datetime.utcfromtimestamp(tweet.timestamp + row.utcoffset)) + ":</strong> " + "@" + tweet.user + ": " + tweet.text)
-                    else:
-                        rawtweetdict[int(tweet.programme_position)] = ["<br /><strong>" + str(datetime.utcfromtimestamp(tweet.timestamp + row.utcoffset)) + ":</strong> " + "@" + tweet.user + ": " + tweet.text]
+            rawtweets = rawdata.objects.filter(pid=pid,programme_position__gte=progpos,programme_position__lt=endstamp).order_by('timestamp').all()
+            for tweet in rawtweets:
+                if rawtweetdict.has_key(int(tweet.programme_position)):
+                    rawtweetdict[int(tweet.programme_position)].append("<br /><strong>" + str(timestamp) + "m" + str(int(tweet.programme_position)-timestamp*60) + "s:</strong> " + "@" + tweet.user + ": " + tweet.text)
+                else:
+                    rawtweetdict[int(tweet.programme_position)] = ["<br /><strong>" + str(timestamp) + "m" + str(int(tweet.programme_position)-timestamp*60) + "s:</strong> " + "@" + tweet.user + ": " + tweet.text]
             tweetitems = rawtweetdict.items()
             tweetitems.sort()
             output += "<form name=\"cloudopts\" style=\"font-size: 9pt\">Hide Keywords: <input type=\"checkbox\" value=\"keyword\" name=\"keyword\" onClick=\"updateCloud();\">&nbsp; Hide Twitter Entities: <input type=\"checkbox\" value=\"entity\" name=\"entity\" onClick=\"updateCloud();\">&nbsp; Hide Common Words: <input type=\"checkbox\" value=\"common\" name=\"common\" onClick=\"updateCloud();\"></form><div id=\"cloudcontainer\">"

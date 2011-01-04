@@ -12,6 +12,7 @@ TODO: Build in the facility to handle a second urllib connection so they overlap
 import httplib
 import time
 import urllib2
+import socket
 
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 from Axon.ThreadedComponent import threadedcomponent
@@ -27,10 +28,11 @@ class HTTPGetter(threadedcomponent):
         "signal" : ""
     }
 
-    def __init__(self, proxy = False, useragent = False):
+    def __init__(self, proxy = False, useragent = False, timeout = 30):
         super(HTTPGetter, self).__init__()
         self.proxy = proxy
         self.useragent = useragent
+        self.timeout = timeout
 
     def finished(self):
         while self.dataReady("control"):
@@ -71,6 +73,7 @@ class HTTPGetter(threadedcomponent):
             for value in extraheaders:
                 headers[value] = extraheaders[value]
 
+        socket.setdefaulttimeout(self.timeout)
         # Grab data
         try:
             req = urllib2.Request(url,postdata,headers)
@@ -84,12 +87,21 @@ class HTTPGetter(threadedcomponent):
         except urllib2.URLError, e:
             return ['URLError',e.reason]
             conn1 = False
+        except socket.timeout, e:
+            return ['SocketTimeout',e]
+            conn1 = False
         
         # Read and return programme data
         if conn1:
-            content = conn1.read()
+            ret = True
+            try:
+                content = conn1.read()
+            except socket.timeout, e:
+                return ['SocketTimeout',e]
+                ret = False
             conn1.close()
-            return ["OK",content]
+            if ret:
+                return ["OK",content]
 
     def main(self):
         while not self.finished():
