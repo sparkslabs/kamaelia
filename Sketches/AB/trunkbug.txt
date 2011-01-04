@@ -1,0 +1,5 @@
+Kamaelia.Apps.SocialBookmarks TwitterStream.py
+Line 442 change required:
+
+- blanklinkcount += 1
++ blanklinecount += 1
