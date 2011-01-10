@@ -1,0 +1,19 @@
+#!/usr/bin/python
+
+import cgitb; cgitb.enable()
+import os
+
+from kamweb import santise_env, scrub_filename
+
+env = dict(os.environ)
+santise_env(env)
+path_info = scrub_filename(env["PATH_INFO"])
+
+print """\
+Status: 301 Moved Permanently
+Location: http://www.kamaelia.org/%s
+Connection: close
+
+
+""" % path_info
+        
