@@ -8,6 +8,9 @@ def santise_env(env, cgipath="/cgi-bin/404"):
     env["DOCUMENT_ROOT"] = env.get("DOCUMENT_ROOT", "/srv/d_kamaelia/Sites/beta.kamaelia.org/docs")
     env["PATH_TRANSLATED"] = env.get("PATH_TRANSLATED",  env["DOCUMENT_ROOT"]+env["PATH_INFO"])
 
+    env["here"] = here = os.path.realpath(os.getcwd())
+    env["appbase"] = here[:here.rfind("/")]
+
     if env.get("REDIRECT_REQUEST_METHOD", None):
         env["REQUEST_METHOD"] = env.get("REQUEST_METHOD", env["REDIRECT_REQUEST_METHOD"])
         del env["REDIRECT_REQUEST_METHOD"]

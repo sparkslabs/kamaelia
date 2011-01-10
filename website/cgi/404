@@ -6,9 +6,10 @@ import cgi
 
 from kamweb import santise_env, debug_dump, serve_file, scrub_filename
 
-base = "/srv/d_kamaelia/Sites/beta.kamaelia.org/as_published"
 env = dict(os.environ)
 santise_env(env)
+appbase = env.get("appbase", "/srv/d_kamaelia/Sites/beta.kamaelia.org")
+base = os.path.join(appbase, "as_published")
 
 if "debug" in env["REQUEST_URI"]:
     debug_dump(env)
