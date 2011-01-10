@@ -14,8 +14,8 @@ pre {
      font-size: 80%;
      overflow: auto;
      padding: 0.25em;
-     background-color: #FFF7bf; 
-/*     background-color: #F0FFC0; */
+/*     background-color: #FFF7bf;  */
+     background-color: #F0FFC0;
      margin-left: 0.25em;
      margin-right: 0.5em;
 }
@@ -34,11 +34,10 @@ pre {
     width: 972px;
     margin-top:0;
     margin-left: 8px;
-/*    background-color: #FFF0A0; */
-    background-color: #C2E75A; 
-/*    background-image: url(/images/background2.png);  */
-/*    background-image: url(/images/xmasbackground.png);*/
-    background-image: url(/images/xmasbackground2.png);
+    background-color: #FFF0A0;
+/*    background-color: #C2E75A; */
+    background-image: url(/images/background2.png);
+/*    background-image: url(/images/xmasbackground2.png);*/
     background-repeat: no-repeat;
     padding:0;
 }
