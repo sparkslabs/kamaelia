@@ -22,7 +22,7 @@
 from distutils.core import setup
 
 setup(name = "Kamaelia",
-      version = "1.0.12.0", # Year.Year.Month.ReleaseCountThisMonth
+      version = "1.1.2.0", # Year.Year.Month.ReleaseCountThisMonth
       description = "Kamaelia - Multimedia & Server Development Kit",
 
       author = "Kamaelia Contributors.",
