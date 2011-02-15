@@ -118,7 +118,7 @@ specified; this is not currently used.
 """
 
 from Axon.idGen import strId
-#from Microprocess import microprocess
+#from Axon.Microprocess import microprocess
 from Axon.AxonExceptions import BadParentTracker
 from Axon.AxonExceptions import ServiceAlreadyExists
 from Axon.AxonExceptions import BadComponent
