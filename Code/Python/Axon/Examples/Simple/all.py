@@ -14,7 +14,7 @@ class Consumer(component):
     def dosomething(self):
         if self.dataReady("source"):
             op = self.recv("source")
-            print self.name,"received --> ",op
+            print(self.name,"received --> ",op)
             return op
 
     def main(self):
@@ -24,7 +24,7 @@ class Consumer(component):
             self.i = self.i - 1
             R = self.dosomething()
             yield 1
-        print "Consumer has finished consumption !!!"
+        print ("Consumer has finished consumption !!!")
         self.send(R,"result")
 
 class Producer(component):
@@ -37,9 +37,9 @@ class Producer(component):
       while(i):
          i = i - 1
          self.send("hello"+str(i), "result")
-         print self.name," sent --> hello"+str(i)
+         print(self.name," sent --> hello"+str(i))
          yield 1
-      print "Producer has finished production !!!"
+      print("Producer has finished production !!!")
 
 class testComponent(component):
     Inboxes = ["_input"]
@@ -67,7 +67,7 @@ class testComponent(component):
         while not self.dataReady("_input"):
             yield 1
         result = self.recv("_input")
-        print "consumer finished with result: ", result , "!"
+        print("consumer finished with result: ", result , "!")
 
 p = testComponent()
 p.activate()
