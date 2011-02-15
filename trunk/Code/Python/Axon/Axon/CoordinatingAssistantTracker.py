@@ -117,15 +117,15 @@ specified; this is not currently used.
 
 """
 
-from idGen import strId
+from Axon.idGen import strId
 #from Microprocess import microprocess
-from AxonExceptions import BadParentTracker
-from AxonExceptions import ServiceAlreadyExists
-from AxonExceptions import BadComponent
-from AxonExceptions import BadInbox
-from AxonExceptions import MultipleServiceDeletion
-from AxonExceptions import NamespaceClash
-from AxonExceptions import AccessToUndeclaredTrackedVariable
+from Axon.AxonExceptions import BadParentTracker
+from Axon.AxonExceptions import ServiceAlreadyExists
+from Axon.AxonExceptions import BadComponent
+from Axon.AxonExceptions import BadInbox
+from Axon.AxonExceptions import MultipleServiceDeletion
+from Axon.AxonExceptions import NamespaceClash
+from Axon.AxonExceptions import AccessToUndeclaredTrackedVariable
 
 
 #### class coordinatingassistanttracker(microprocess):

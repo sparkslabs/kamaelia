@@ -119,8 +119,8 @@ Or you can replace the entire set::
 
 import time
 import random
-import debugConfigFile
-import debugConfigDefaults
+import Axon.debugConfigFile as debugConfigFile
+import Axon.debugConfigDefaults as debugConfigDefaults
 
 class debug(object):
    """\

@@ -278,8 +278,8 @@ more often than linkages are created and destroyed - which should justify this
 tradeoff.
 """
 
-from AxonExceptions import noSpaceInBox
-from AxonExceptions import BoxAlreadyLinkedToDestination
+from Axon.AxonExceptions import noSpaceInBox
+from Axon.AxonExceptions import BoxAlreadyLinkedToDestination
 
 ShowAllTransits = False
 

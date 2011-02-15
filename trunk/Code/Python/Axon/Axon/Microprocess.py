@@ -230,7 +230,7 @@ they are expected to subclass the microprocess class. Subclasses do need
 however to call the microprocess constructor. A minimal client class could
 look like this::
 
-    from microprocess import microprocess
+    from Axon.Microprocess import microprocess
     class automaton(microprocess):
         def __init__(self):
             self.Microprocess() # Call superclass constructor
@@ -241,7 +241,8 @@ look like this::
 
 This microprocess would then be run by a wrapper as follows::
 
-    import microprocess, scheduler
+    import Axon.Microprocess as microprocess
+    import Axon.Scheduler as scheduler
     s = scheduler.scheduler()
     a = automaton()
     a.activate()
@@ -287,12 +288,12 @@ managed by the scheduler; not the microprocess itself.
 """
 
 import time
-from util import removeAll
-from idGen import strId, numId, tupleId
-from debug import debug
+from Axon.util import removeAll
+from Axon.idGen import strId, numId, tupleId
+from Axon.debug import debug
 
 import Axon.Base
-import CoordinatingAssistantTracker as cat
+import Axon.CoordinatingAssistantTracker as cat
 
 class _NullScheduler(object):
     """\

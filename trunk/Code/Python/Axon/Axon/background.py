@@ -104,11 +104,11 @@ components running in it had all terminated too.
 """
 
 
-from Scheduler import scheduler
-from Component import component
+from Axon.Scheduler import scheduler
+from Axon.Component import component
 import threading
 
-import CoordinatingAssistantTracker as cat
+import Axon.CoordinatingAssistantTracker as cat
 
 class background(threading.Thread):
     """\

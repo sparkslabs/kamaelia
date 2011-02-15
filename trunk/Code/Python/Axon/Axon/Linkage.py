@@ -52,12 +52,12 @@ the inventors of programs/components never envisioned.
 """
 import time
 
-from AxonExceptions import AxonException, ArgumentsClash
+from Axon.AxonExceptions import AxonException, ArgumentsClash
 from Axon.Base import AxonObject
-import Box
-from util import removeAll
-from idGen import strId, numId,Debug
-from debug import debug
+import Axon.Box as Box
+from Axon.util import removeAll
+from Axon.idGen import strId, numId,Debug
+from Axon.debug import debug
 
 
 class linkage(AxonObject):

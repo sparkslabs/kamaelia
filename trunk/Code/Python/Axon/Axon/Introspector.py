@@ -129,9 +129,9 @@ sequence of "ADD NODE", "DEL NODE", "ADD LINK" and "DEL LINK" commands.
 """
 
 
-import Component
-import Scheduler
-import Ipc
+import Axon.Component as Component
+import Axon.Scheduler as Scheduler
+import Axon.Ipc as Ipc
 
 class Introspector(Component.component):
     """\

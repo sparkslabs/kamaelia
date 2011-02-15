@@ -68,7 +68,7 @@ Examples::
 """
 
 
-import debug;
+import Axon.debug as debug
 debugger = debug.debug()
 debugger.useConfig()
 Debug = debugger.debug
