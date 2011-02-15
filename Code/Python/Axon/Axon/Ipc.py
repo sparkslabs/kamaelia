@@ -323,4 +323,4 @@ class errorInformation(ipc):
       self.message = message # the message with bad data that caused the exception or error
 
 if __name__ == '__main__':
-   print "This class currently contains no test code."
+   print ("This class currently contains no test code.")
