@@ -22,7 +22,7 @@ class Consumer(component):
       self.count = 0
       self.i = 30
    def doSomething(self):
-      print self.name, "Woo",self.i
+      print (self.name, "Woo",self.i)
       if self.dataReady("source"):
          self.recv("source")
          self.count = self.count +1
@@ -52,7 +52,7 @@ class testComponent(component):
       while not self.dataReady("_input"):
          yield 1
       result = self.recv("_input")
-      print "Consumer finished with result:", result, "!"
+      print ("Consumer finished with result:", result, "!")
 
 p = testComponent()
 p.activate()
