@@ -29,11 +29,11 @@ class Philosopher(Axon.ThreadedComponent.threadedcomponent):
                 time.sleep(random.random())
             except Axon.STM.BusyRetry:
                 time.sleep(random.random())
-        print "Got forks!", self.name, self.forks
+        print ("Got forks!", self.name, self.forks)
         return X
 
     def releaseforks(self,X):
-        print "releasing forks", self.name
+        print ("releasing forks", self.name)
         for fork in self.forks:
             X[fork].value = None
         X.commit()
