@@ -6,7 +6,7 @@ import random
 class myException(Exception):
     pass
 
-print "Please look at the source of this file to see what's going on"
+print ("Please look at the source of this file to see what's going on")
 
 #
 # Doing the following will make the schedule call .stop() on any components
@@ -30,16 +30,16 @@ class Crasher(Axon.Component.component):
             c = 0
             while 1:
                 if random.randint(0,100) < 5:
-                    print "Returning Normally"
+                    print ("Returning Normally")
                     return
                 elif random.randint(0,100) < 10:
-                    print "Raising Exception"
+                    print ("Raising Exception")
                     raise myException()
                 else:
                     yield c
                 c = c+1
     def stop(self):
-        print ".stop() called in Crasher"
+        print (".stop() called in Crasher")
         super(Crasher, self).stop()
 
 Crasher().run()
