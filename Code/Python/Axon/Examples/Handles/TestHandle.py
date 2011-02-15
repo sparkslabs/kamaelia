@@ -6,7 +6,12 @@ from Kamaelia.UI.Pygame.Text import Textbox, TextDisplayer
 from Axon.Handle import Handle
 background().start()
 
-import Queue
+try:
+   import Queue
+   queue = Queue # Python 3 compatibility change
+except ImportError:
+   # Python 3 compatibility change
+   import queue
 TD = Handle(
          TextDisplayer(position=(20, 90),
                        text_height=36,
@@ -32,8 +37,8 @@ while 1:
     time.sleep(1)
     try:
        data = TB.get("outbox")
-       print data
+       print (data)
        message = data
-    except Queue.Empty:
+    except queue.Empty:
        pass
     TD.put(message, "inbox")

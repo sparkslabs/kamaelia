@@ -2,7 +2,13 @@
 import time, sys, Axon
 from Axon.Handle import Handle
 from Axon.background import background
-import Queue
+try:
+   import Queue
+   queue = Queue # Python 3 compatibility change
+except ImportError:
+   # Python 3 compatibility change
+   import queue
+
 background().start()
 
 
@@ -31,7 +37,7 @@ while True:
         try:
             enil = reverser.get("outbox")
             break
-        except Queue.Empty:
+        except queue.Empty:
             time.sleep(0.1)
             
-    print enil # This is doesn't necessarily put the right whitespace back
+    print (enil) # This is doesn't necessarily put the right whitespace back
