@@ -15,15 +15,17 @@ class Consumer(component):
         if self.dataReady("source"):
             op = self.recv("source")
             print self.name,"received --> ",op
-            self.send(op,"result")
+            return op
 
     def main(self):
         yield 1
+        R = None
         while(self.i):
             self.i = self.i - 1
-            self.dosomething()
+            R = self.dosomething()
             yield 1
         print "Consumer has finished consumption !!!"
+        self.send(R,"result")
 
 class Producer(component):
    Inboxes=[]
@@ -54,13 +56,8 @@ class testComponent(component):
         #sink_component       --> self
         #sourcebox            --> result
         #sinkbox              --> _input
-        #postoffice           --> self.postoffice
-        #i.e. create a linkage between the consumer (in consumer.py) and 
-        #ourselves. The output from the consumer will be used by us. The
-        #sourcebox (outbox) would be "result" and the sinkbox (inbox) would
-        #be our box "_input"
-        #this is the arrow no. 2
-        linkage(self.consumer,self,"result","_input",self.postoffice)
+
+        self.link((self.consumer,"result"), (self,"_input"))
 
     def childComponents(self):
         return [self.producer,self.consumer]
