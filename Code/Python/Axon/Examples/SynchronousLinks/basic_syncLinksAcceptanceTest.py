@@ -2,22 +2,23 @@
 
 import Axon
 import time
+import sys
 
 class SlowConsumer(Axon.Component.component):    
     delay = 0.2
     def main(self):
-        print "     Consumer starting"
+        print ("     Consumer starting")
         yield 1
         t = time.time()
         i = 0
         while i < 10: # Only accepting 10 items at most
             if time.time() - t > self.delay:
                 if self.dataReady("inbox"):
-                    print "     C: got:", self.recv("inbox"), i
+                    print ("     C: got:", self.recv("inbox"), i)
                     t = time.time()
                     i = i + 1
             yield 1
-        print "     Consumer has finished consumption !"
+        print ("     Consumer has finished consumption !")
 
 class Producer(Axon.Component.component):
    def main(self):
@@ -28,15 +29,18 @@ class Producer(Axon.Component.component):
              yield 1
              try:
                 self.send(message, "outbox")
-                print "     P: sent:", message
+                print ("     P: sent:", message)
                 success = True
-             except Axon.AxonExceptions.noSpaceInBox, e:
-                print "                                ","P: fail:", message, "PAUSING UNTIL READY TO SEND"
+#             except Axon.AxonExceptions.noSpaceInBox, e:  # python2.6 and earlier
+#             except Axon.AxonExceptions.noSpaceInBox as e: # python2.6, later and python 3
+             except Axon.AxonExceptions.noSpaceInBox: # cross versions of python
+                e = sys.exc_info()[1]                 # cross versions of python
+                print ("                                ","P: fail:", message, "PAUSING UNTIL READY TO SEND")
                 self.pause()
-      print "     Producer has finished production !!!"
+      print ("     Producer has finished production !!!")
 
-print "======================================="
-print "Synchronous Link"
+print ("=======================================")
+print ("Synchronous Link")
 
 class testComponent(Axon.Component.component):
     def main(self):
@@ -52,10 +56,10 @@ class testComponent(Axon.Component.component):
                 self.pause() # Awoken when children exit
 
 testComponent().run()
-print "---------------------------------------"
-print
-print "======================================="
-print "link - Explicit Pipewidth = 1"
+print ("---------------------------------------")
+print ()
+print ("=======================================")
+print ("link - Explicit Pipewidth = 1")
 
 class testComponent(Axon.Component.component):
     def main(self):
