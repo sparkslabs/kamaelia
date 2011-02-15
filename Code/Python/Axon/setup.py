@@ -26,7 +26,6 @@ import sys
 if len(sys.argv) >= 2:
     if "install" in sys.argv:
         try:
-            import Axon
             import os
             for dir in sys.path:
                 if dir == "": continue
