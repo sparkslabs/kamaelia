@@ -151,6 +151,6 @@ if __name__ == '__main__':
    class foo: pass
    class bar: pass
    class bibble: pass
-   print newId(foo())
-   print newId(bar())
-   print newId(bibble())
+   print (newId(foo()))
+   print (newId(bar()))
+   print (newId(bibble()))
