@@ -82,7 +82,7 @@ the inbox of "component" like so::
     p.put("http://google.com")
     google = p.get()
     p.shutdown()
-    print "google's homepage is", len(google), "bytes long.
+    print ("google's homepage is", len(google), "bytes long.")
 
 for both get() and put(), there is an optional extra parameter boxname,
 allowing you to interact with different boxes, for example to send a message
@@ -172,12 +172,22 @@ on an appropriate scheduler. _addThread calls wakeThread, which places the reque
 
 """
 
+import sys
+
 from Axon.Scheduler import scheduler
 from Axon.Component import component
 from Axon.ThreadedComponent import threadedadaptivecommscomponent
 from Axon.AdaptiveCommsComponent import AdaptiveCommsComponent
 from Axon.AxonExceptions import noSpaceInBox
-import Queue, threading, time, copy, warnings
+import threading, time, copy, warnings
+try:
+    import Queue # Python2.6 and earlier
+    queue = Queue # Allow rest of source to remain unchanged
+    python_lang_type = 2
+except ImportError:
+    import queue # Python 3 onwards
+    python_lang_type = 3
+
 import Axon.Ipc as Ipc
 queuelengths = 0
 
@@ -195,7 +205,7 @@ def addBox(names, boxMap, addBox): # XXX REVIEW: Using the function name as a pa
         """
         for boxname in names:
             if boxname in boxMap:
-                raise ValueError, "%s %s already exists!" % (direction, boxname) # XXX REVIEW: *direction* doesn't actually exist. If this appeared in any other line besides a "raise..." line this would be a problem.
+                raise ValueError( "%s %s already exists!" % (direction, boxname) ) # XXX REVIEW: *direction* doesn't actually exist. If this appeared in any other line besides a "raise..." line this would be a problem.
             realboxname = addBox(boxname)
             boxMap[boxname] = realboxname
 
@@ -220,17 +230,17 @@ class background(threading.Thread):
         self.zap = zap
     def run(self):
         if self.zap:
-#            print "zapping", scheduler.run.threads
+#            print ("zapping", scheduler.run.threads)
             X = scheduler()
             scheduler.run = X
-#            print "zapped", scheduler.run.threads
+#            print ("zapped", scheduler.run.threads)
             cat.coordinatingassistanttracker.basecat.zap()
-#        print "Here? (run)"
+#        print ("Here? (run)")
         dummyComponent().activate() # to keep the scheduler from exiting immediately.
-#        print "zoiped", scheduler.run.threads
+#        print ("zoiped", scheduler.run.threads)
         # TODO - what happens if the foreground calls scheduler.run.runThreads() ? We should stop this from happening.
         scheduler.run.runThreads(slowmo = self.slowmo)
-#        print "There?"
+#        print ("There?")
         background.lock.release()
 
 
@@ -248,7 +258,7 @@ class componentWrapperInput(threadedadaptivecommscomponent):
         # This queue is used by the foreground to tell us what queue it has sent us
         # data on, so that we do not need to check all our input queues,
         # and also so that we can block on reading it.
-        self.whatInbox = Queue.Queue()
+        self.whatInbox = queue.Queue()
         self.isDead = threading.Event()
 
 
@@ -256,8 +266,13 @@ class componentWrapperInput(threadedadaptivecommscomponent):
         # box creation by connecting the "basic two" in the same way as, e.g. a pipeline.
         self.childInboxMapping = dict()
         addBox(inboxes, self.childInboxMapping, self.addOutbox)
-        for childSink, parentSource in self.childInboxMapping.iteritems():
-            self.inQueues[childSink] = Queue.Queue(self.queuelengths)
+        if python_lang_type == 2:
+            items = self.childInboxMapping.iteritems()
+        else:
+           items = self.childInboxMapping.items()
+
+        for childSink, parentSource in items:
+            self.inQueues[childSink] = queue.Queue(self.queuelengths)
             self.link((self, parentSource),(self.child, childSink))
 
         # This outbox is used to tell the output wrapper when to shut down.
@@ -284,10 +299,13 @@ class componentWrapperInput(threadedadaptivecommscomponent):
                 msg = queue.get_nowait() # won't fail, we're the only one reading from the queue.
                 try:
                     self.send(msg, parentSource)
-                except noSpaceInBox, e:
+#                except noSpaceInBox, e:     # python 2.6 & earlier
+#                except noSpaceInBox as e:   # python 2.6 and later
+                except noSpaceInBox:         # python 2 & 3
+                    e = sys.exc_info()[1]    # python 2 & 3
                     raise RuntimeError("Box delivery failed despite box (earlier) reporting being not full. Is more than one thread directly accessing boxes?")
                 if isinstance(msg, (Ipc.shutdownMicroprocess, Ipc.producerFinished)):
-#                    print "Quietly dieing?"
+#                    print ("Quietly dieing?")
                     return False
             else:
                 # if the component's inboxes are full, do something here. Preferably not succeed.
@@ -318,12 +336,17 @@ class componentWrapperOutput(AdaptiveCommsComponent):
         self.childOutboxMapping = dict()
         addBox(outboxes, self.childOutboxMapping, self.addInbox)
 
-        for childSource, parentSink in self.childOutboxMapping.iteritems():
-            self.outQueues[childSource] = Queue.Queue(self.queuelengths)
+        if python_lang_type == 2:
+            items = self.childOutboxMapping.iteritems()
+        else:
+           items = self.childOutboxMapping.items()
+
+        for childSource, parentSink in items:
+            self.outQueues[childSource] = queue.Queue(self.queuelengths)
             self.link((self.child, childSource),(self, parentSink))
 
     def main(self):
-#        print "componentWrapperOutput", self.child
+#        print ("componentWrapperOutput", self.child)
         self.child.activate()
         while True:
             self.pause()
@@ -336,7 +359,12 @@ class componentWrapperOutput(AdaptiveCommsComponent):
     def sendPendingOutput(self):
         """This method will take any outgoing data sent to us from a child component and stick it on a queue 
         to the outside world."""
-        for childSource, parentSink in self.childOutboxMapping.iteritems():
+        if python_lang_type == 2:
+            items = self.childOutboxMapping.iteritems()
+        else:
+            items = self.childOutboxMapping.items()
+
+        for childSource, parentSink in items:
             queue = self.outQueues[childSource]
             while self.dataReady(parentSink):
                 if not queue.full():
@@ -353,7 +381,7 @@ class likefile(object):
     def __init__(self, child, extraInboxes = (), extraOutboxes = (), wrapDefault = True):
         if background.lock.acquire(False): 
             background.lock.release()
-            raise AttributeError, "no running scheduler found."
+            raise AttributeError("no running scheduler found.")
         # prevent a catastrophe: if we treat a string like "extrainbox" as a tuple, we end up adding one new inbox per
         # letter. TODO - this is unelegant code.
         if not isinstance(extraInboxes, tuple):
@@ -361,8 +389,8 @@ class likefile(object):
         if not isinstance(extraOutboxes, tuple):
             extraOutboxes = (extraOutboxes, )
         # If the component to wrap is missing, say, "inbox", then don't fail but silently neglect to wrap it.
-        validInboxes = type(child).Inboxes.keys()
-        validOutboxes = type(child).Outboxes.keys()
+        validInboxes = list(type(child).Inboxes.keys())
+        validOutboxes = list(type(child).Outboxes.keys())
         inboxes = []
         outboxes = []
         if wrapDefault:
@@ -373,13 +401,22 @@ class likefile(object):
         inboxes += list(extraInboxes)
         outboxes += list(extraOutboxes)
 
-        try: inputComponent = componentWrapperInput(child, inboxes)
-        except KeyError, e:
-            raise KeyError, 'component to wrap has no such inbox: %s' % e
-        try: outputComponent = componentWrapperOutput(child, inputComponent, outboxes)
-        except KeyError, e:
+        try:
+            inputComponent = componentWrapperInput(child, inboxes)
+#        except KeyError, e:       # python 2.6 & earlier
+#        except KeyError as e:     # python 2.6 and later
+        except KeyError:           # python 2 & 3
+            e = sys.exc_info()[1]  # python 2 & 3
+            raise KeyError ('component to wrap has no such inbox: %s' % e)
+
+        try:
+            outputComponent = componentWrapperOutput(child, inputComponent, outboxes)
+#        except KeyError, e:       # python 2.6 & earlier 
+#        except KeyError as e:     # python 2.6 and later
+        except KeyError:           # python 2 & 3
+            e = sys.exc_info()[1]  # python 2 & 3
             del inputComponent
-            raise KeyError, 'component to wrap has no such outbox: %s' % e
+            raise KeyError('component to wrap has no such outbox: %s' % e)
         self.inQueues = copy.copy(inputComponent.inQueues)
         self.outQueues = copy.copy(outputComponent.outQueues)
         # reaching into the component and its child like this is threadsafe since it has not been activated yet.
@@ -404,7 +441,7 @@ class likefile(object):
 
     def anyReady(self):
         names = []
-        for boxname in self.outQueues.keys():
+        for boxname in list(self.outQueues.keys()):
             if self.qsize(boxname):
                 names.append(boxname)
 
@@ -417,22 +454,24 @@ class likefile(object):
         """Performs a blocking read on the queue corresponding to the named outbox on the wrapped component.
         raises AttributeError if the likefile is not alive. Optional parameters blocking and timeout function
         the same way as in Queue objects, since that is what's used under the surface."""
-#        print "self.get boxname ",boxname,"blocking =",blocking,"timeout=",timeout
+#        print ("self.get boxname ",boxname,"blocking =",blocking,"timeout=",timeout)
         if self.alive:
             return self.outQueues[boxname].get(blocking, timeout)
             # TODO - remove this.
             # Specifying any timeout allows ctrl-c to interrupt the wait, even if the timeout is excessive.
             # This is one day. this may be a problem, in which case retry after an "empty" exception is raised.
-        else: raise AttributeError, "shutdown was previously called, or we were never activated."
+        else:
+            raise AttributeError("shutdown was previously called, or we were never activated.")
 
     def put(self, msg, boxname = "inbox"):
         """Places an object on a queue which will be directed to a named inbox on the wrapped component."""
-#        print "self.put msg", repr(msg), "boxname", boxname
+#        print ("self.put msg", repr(msg), "boxname", boxname)
         if self.alive:
             queue = self.inQueues[boxname]
             queue.put_nowait(msg)
             self.inputComponent.whatInbox.put_nowait(boxname)
-        else: raise AttributeError, "shutdown was previously called, or we were never activated."
+        else:
+            raise AttributeError("shutdown was previously called, or we were never activated.")
 
     def shutdown(self):
         """Sends terminatory signals to the wrapped component, and shut down the componentWrapper.
@@ -443,7 +482,7 @@ class likefile(object):
             self.put(Ipc.producerFinished(),       "control") # some components only honour this one
             self.put(Ipc.shutdownMicroprocess(),   "control") # should be last, this is what we honour
         else:
-            raise AttributeError, "shutdown was previously called, or we were never activated."
+            raise AttributeError("shutdown was previously called, or we were never activated.")
         self.inputComponent.isDead.wait(1)
         if not self.inputComponent.isDead.isSet(): # we timed out instead of someone else setting the flag
             warnings.warn("Timed out waiting on shutdown confirmation, may not be dead.")
@@ -468,4 +507,5 @@ if __name__ == "__main__":
     slashdot = p.get()
     whatismyip = p.get()
     p.shutdown()
-    print "google is", len(google), "bytes long, and slashdot is", len(slashdot), "bytes long. Also, our IP address is:", whatismyip
+    print ("google is", len(google), "bytes long, and slashdot is", len(slashdot), "bytes long. Also, our IP address is:", whatismyip)
+    
