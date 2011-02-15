@@ -275,7 +275,7 @@ from util import removeAll
 from idGen import strId, numId
 from debug import debug
 from Microprocess import microprocess
-from Axon import AxonObject as _AxonObject
+from Axon.Base import AxonObject as _AxonObject
 from Ipc import *
 import Queue
 

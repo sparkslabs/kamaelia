@@ -53,7 +53,7 @@ the inventors of programs/components never envisioned.
 import time
 
 from AxonExceptions import AxonException, ArgumentsClash
-from Axon import AxonObject
+from Axon.Base import AxonObject
 import Box
 from util import removeAll
 from idGen import strId, numId,Debug
