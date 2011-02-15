@@ -10,7 +10,7 @@ import pprint
 # --- Support code, this will go back into the library. ---------------------------------------------------------
 class ProcessWrapComponent(object):
     def __init__(self, somecomponent):
-#        print "somecomponent.name",somecomponent.name
+#        print ("somecomponent.name",somecomponent.name)
         self.exchange = pprocess.Exchange()
         self.channel = None
         self.inbound = []
@@ -20,32 +20,32 @@ class ProcessWrapComponent(object):
 
     def ticking(self):
         if time.time() - self.tick > 1:
-#            print "TICK", self.thecomponent.name
+#            print ("TICK", self.thecomponent.name)
             self.tick = time.time()
 
     def run(self, channel):
         self.exchange.add(channel)
         self.channel = channel
-#        print "ZZZZZZZZ"
+#        print ("ZZZZZZZZ")
         from Axon.experimental._pprocess_support import likefile, background
-#        print "Hi",scheduler.run.threads
+#        print ("Hi",scheduler.run.threads)
         background(zap=True).start()
         time.sleep(0.1)
-#        print "Bye",scheduler.run.threads
-#        print "Here???"
+#        print ("Bye",scheduler.run.threads)
+#        print ("Here???")
 
         self.ce = likefile(self.thecomponent)
         for i in self.main():
             pass
 
     def activate(self):
-#        print "XXXXXXX"
+#        print ("XXXXXXX")
         channel = pprocess.start(self.run)
-#        print "YYYYYYY"
+#        print ("YYYYYYY")
         return channel
 
     def main(self):
-#        print "Running?"
+#        print ("Running?")
         t = 0
         while 1:
 #            self.ticking()
@@ -55,28 +55,29 @@ class ProcessWrapComponent(object):
             if self.exchange.ready(0):
                 chan = self.exchange.ready(0)[0]
                 D = chan._receive()
-#                print "pwc:- SEND", D, "TO", self.thecomponent.name, ".",".", 
+#                print ("pwc:- SEND", D, "TO", self.thecomponent.name, ".",".", )
                 self.ce.put(*D)
-#                print ".","SENT"
+#                print (".","SENT")
 
             D = self.ce.anyReady()
             if D:
                 for boxname in D:
-#                    print "DUM, DUM DUM! 1 ",D
+#                    print ("DUM, DUM DUM! 1 ",D)
                     D = self.ce.get(boxname)
-#                    print "DUM, DUM DUM! 2 ",D
+#                    print ("DUM, DUM DUM! 2 ",D)
                     self.channel._send((D, boxname))
-#                    print "DUM, DUM DUM! 3 ",D
-#                print "GAH!"
+#                    print ("DUM, DUM DUM! 3 ",D)
+#                print ("GAH!")
             yield 1
 #            if self.channel.closed:
-#                print self.channel.closed
+#                print (self.channel.closed)
+#                pass
 
 def ProcessPipeline(*components):
     exchange = pprocess.Exchange()
     debug = False
     chans = []
-#    print "TESTING ME"
+#    print ("TESTING ME")
     for comp in components:
         A = ProcessWrapComponent( comp )
         chan = A.activate()
@@ -84,7 +85,7 @@ def ProcessPipeline(*components):
         exchange.add(chan )
 
     mappings = {}
-    for i in xrange(len(components)-1):
+    for i in range(len(components)-1):
          mappings[ (chans[i], "outbox") ] = (chans[i+1], "inbox")
          mappings[ (chans[i], "signal") ] = (chans[i+1], "control")
 
@@ -94,7 +95,7 @@ def ProcessPipeline(*components):
             try:
                 dest = mappings[ ( chan, D[1] ) ]
                 dest[0]._send( (D[0], dest[1] ) )
-#                print "FORWARDED", D
+#                print ("FORWARDED", D)
             except KeyError:
                 # This error means that some component in the graphline spat out some data,
                 # but the outbox it was sent to isn't linked anyway. This may be an error,
@@ -108,8 +109,8 @@ def ProcessPipeline(*components):
                 # If someone needs to debug this, they can enable this:
                 #
                 if debug:
-                    print "WARNING: Data sent to outbox not linked to anywhere. Error?"
-                    print "chan, D[1] D[0]", chan, D[1], repr(D[0])
+                    print ("WARNING: Data sent to outbox not linked to anywhere. Error?")
+                    print ("chan, D[1] D[0]", chan, D[1], repr(D[0]))
                     pprint.pprint( mappings )
 
         time.sleep(0.1)
@@ -132,7 +133,7 @@ def ProcessGraphline(**graphline_spec):
             chan_to_compname[ chan ] = comp
             exchange.add(chan )
             component_to_chan[comp] = chan
-#            print comp, chan
+#            print (comp, chan)
             count += 1
 
     linkages = graphline_spec.get("linkages", {})
@@ -142,9 +143,9 @@ def ProcessGraphline(**graphline_spec):
 
     while 1:
         for chan in exchange.ready(0):
-#            print "CHAN", chan, chan_to_compname[ chan ]
+#            print ("CHAN", chan, chan_to_compname[ chan ])
             D = chan._receive()
-#            print "DO WE EVEN GET HERE", D
+#            print ("DO WE EVEN GET HERE", D)
             try:
                 dest = mappings[ ( chan, D[1] ) ]
                 dest[0]._send( (D[0], dest[1] ) )
@@ -161,8 +162,8 @@ def ProcessGraphline(**graphline_spec):
                 # If someone needs to debug this, they can enable this:
                 #
                 if debug:
-                    print "WARNING: Data sent to outbox not linked to anywhere. Error?"
-                    print "chan, D[1] D[0]", chan, D[1], repr(D[0])
+                    print ("WARNING: Data sent to outbox not linked to anywhere. Error?")
+                    print ("chan, D[1] D[0]", chan, D[1], repr(D[0]))
                     pprint.pprint( mappings )
         time.sleep(0.001)
 
@@ -182,7 +183,7 @@ class ProcessPipelineComponent(Axon.Component.component):
             exchange.add(chan )
 
         mappings = {}
-        for i in xrange(len(self.components)-1):
+        for i in range(len(self.components)-1):
              mappings[ (chans[i], "outbox") ] = (chans[i+1], "inbox")
              mappings[ (chans[i], "signal") ] = (chans[i+1], "control")
 
