@@ -186,7 +186,7 @@ implications:
 # component that creates and encapsulates a Pipeline of components, connecting
 # their outbox to inbox, and signal to control to form the Pipeline chain.
 
-import ThreadedComponent
+import Axon.ThreadedComponent as ThreadedComponent
 import time
 import Queue
 

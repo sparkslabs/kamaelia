@@ -154,9 +154,9 @@ box name with a suffixed unique ID number until there is no longer any clash.
 """
 
 import sys
-from Component import component
-import idGen
-from Box import makeInbox, makeOutbox
+from Axon.Component import component
+import Axon.idGen as idGen
+from Axon.Box import makeInbox, makeOutbox
 
 class _AdaptiveCommsable(object):
    """\

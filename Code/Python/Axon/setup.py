@@ -21,8 +21,35 @@
 
 from distutils.core import setup
 
+import sys
+
+if len(sys.argv) >= 2:
+    if "install" in sys.argv:
+        try:
+            import Axon
+            import os
+            for dir in sys.path:
+                if dir == "": continue
+                if os.path.exists(dir+"/Axon/Axon.py"):
+                    print("You have an older version of Axon installed that has an")
+                    print("internal incompatibility with current codebase.  I am removing")
+                    print("Axon/Axon.py to fix this issue.  This should not affect any code")
+                    print("that uses Axon.")
+                    print("")
+                    print("I am moving it to Axon/Old_Axon.py")
+                    try:
+                        # Remove any old and busted version of Axon.py
+                        os.rename(dir+"/Axon/Axon.py", dir+"/Axon/Old_Axon.py")
+                    except:
+                        # If that fails for any reason, we either don't have permission, or Axon wasn't installed.
+                        pass
+                
+        except:
+            # Axon wasn't installed beforehand, so there won't be a problem
+            pass
+
 setup(name = "Axon",
-      version = "1.6.0",
+      version = "1.7.0",
       description = "Axon - Asynchronous Isolated Generator Component System",
       author = "Kamaelia Contributors.",
       author_email = "sparks.m@gmail.com",

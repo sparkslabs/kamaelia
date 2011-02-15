@@ -371,18 +371,18 @@ Attributes:
 """
 import time
 
-from util import removeAll
-from idGen import strId, numId
-from debug import debug
-from Microprocess import microprocess
-from Postoffice import postoffice
-from Scheduler import scheduler
-from AxonExceptions import noSpaceInBox
-from Linkage import linkage
-from Ipc import *
+from Axon.util import removeAll
+from Axon.idGen import strId, numId
+from Axon.debug import debug
+from Axon.Microprocess import microprocess
+from Axon.Postoffice import postoffice
+from Axon.Scheduler import scheduler
+from Axon.AxonExceptions import noSpaceInBox
+from Axon.Linkage import linkage
+from Axon.Ipc import *
 
 
-from Box import makeInbox,makeOutbox
+from Axon.Box import makeInbox,makeOutbox
 
 TraceAllSends = False
 TraceAllRecvs = False

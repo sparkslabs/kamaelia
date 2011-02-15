@@ -345,12 +345,12 @@ XXX *TODO*: Thread shutdown - no true support for killing threads in python
 """
 
 
-import Component
-from AdaptiveCommsComponent import _AdaptiveCommsable as _AC
-from AxonExceptions import noSpaceInBox
+import Axon.Component as Component
+from Axon.AdaptiveCommsComponent import _AdaptiveCommsable as _AC
+from Axon.AxonExceptions import noSpaceInBox
 import threading
 import Queue
-from idGen import numId
+from Axon.idGen import numId
 import sys
 
 DefaultQueueSize = 1000

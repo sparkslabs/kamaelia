@@ -90,12 +90,12 @@ after its own collection of linkages. A linkage created at one postoffice will
 
 import time
 
-from util import removeAll
-from idGen import strId, numId
-from debug import debug
-from AxonExceptions import AxonException
-from AxonExceptions import BoxAlreadyLinkedToDestination
-from Linkage import linkage
+from Axon.util import removeAll
+from Axon.idGen import strId, numId
+from Axon.debug import debug
+from Axon.AxonExceptions import AxonException
+from Axon.AxonExceptions import BoxAlreadyLinkedToDestination
+from Axon.Linkage import linkage
 
 class postoffice(object):
    """\

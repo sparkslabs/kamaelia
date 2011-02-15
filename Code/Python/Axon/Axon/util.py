@@ -25,7 +25,7 @@ General utility functions & common includes
 
 """
 
-from AxonExceptions import invalidComponentInterface
+from Axon.AxonExceptions import invalidComponentInterface
 
 try:
     set                         # Exists in 2.5 & 2.6
