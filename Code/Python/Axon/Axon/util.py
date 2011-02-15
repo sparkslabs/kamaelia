@@ -24,7 +24,7 @@ General utility functions & common includes
 ===========================================
 
 """
-
+import sys
 from Axon.AxonExceptions import invalidComponentInterface
 
 try:
@@ -58,9 +58,12 @@ def removeAll(xs, y):
    try:
       while 1:
          del xs[xs.index(y)]
-   except ValueError, reason:
+#   except ValueError, reason:     # Not python 3
+#   except ValueError as reason:   # python 3
+   except ValueError:              # Both
+      reason = sys.exc_info()[1]   # Both
       if not reason.__str__() == "list.index(x): x not in list":
-         raise ValueError, reason
+         raise ValueError(reason)
 
 def listSubset(requiredList, suppliedList):
    """Returns true if the requiredList is a subset of the suppliedList."""
