@@ -17,7 +17,7 @@ class testit(Thread):
       self.data = data
    def run(self):
       while 1:
-         print self.data
+         print (self.data)
          time.sleep(0.2)
 
 class Philosopher(Thread):
@@ -52,11 +52,11 @@ class Philosopher(Thread):
                 time.sleep(random.random())
             except BusyRetry:
                 time.sleep(random.random())
-        print "Got forks!", self.name, self.forks
+        print ("Got forks!", self.name, self.forks)
         return X
 
     def releaseforks(self,X):
-        print "releasing forks", self.name
+        print ("releasing forks", self.name)
         for fork in self.forks:
             X[fork].value = None
         X.commit()
