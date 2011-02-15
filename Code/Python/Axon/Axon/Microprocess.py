@@ -291,7 +291,7 @@ from util import removeAll
 from idGen import strId, numId, tupleId
 from debug import debug
 
-import Axon
+import Axon.Base
 import CoordinatingAssistantTracker as cat
 
 class _NullScheduler(object):
@@ -315,7 +315,7 @@ class _NullScheduler(object):
 
 _nullscheduler = _NullScheduler()
 
-class microprocess(Axon.AxonObject):
+class microprocess(Axon.Base.AxonObject):
    """\
    microprocess([thread][,closeDownValue]) -> new microprocess object
 

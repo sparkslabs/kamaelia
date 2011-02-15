@@ -95,7 +95,7 @@ Services, statistics, Instrospection
 Exceptions, Messages and Misc
 -----------------------------
 
-* **Axon.Axon**
+* **Axon.Base**
 
   - base metaclass for key Axon classes
 
@@ -171,23 +171,23 @@ Debugging support
 
   - defines a method that supplies a default debugging configuration.
 """
-import Component
-import Ipc
-import Linkage
-import Microprocess
-import Postoffice
-import Scheduler
-import debug
-import util
-import AdaptiveCommsComponent
-import AxonExceptions
-import CoordinatingAssistantTracker
-import debugConfigFile
-import Box
-import ThreadedComponent
-import Introspector
+import Axon.Component as Component
+import Axon.Ipc as Ipc
+import Axon.Linkage as Linkage
+import Axon.Microprocess as Microprocess
+import Axon.Postoffice as Postoffice
+import Axon.Scheduler as Scheduler
+import Axon.debug as debug
+import Axon.util as util
+import Axon.AdaptiveCommsComponent as AdaptiveCommsComponent
+import Axon.AxonExceptions as AxonExceptions
+import Axon.CoordinatingAssistantTracker as CoordinatingAssistantTracker
+import Axon.debugConfigFile as debugConfigFile
+import Axon.Box as Box
+import Axon.ThreadedComponent as ThreadedComponent
+import Axon.Introspector as Introspector
 
-from Axon import AxonObject, AxonType
+from Axon.Base import AxonObject, AxonType
 
 Microprocess.microprocess.setSchedulerClass(Scheduler.scheduler)
 #Microprocess.microprocess.setTrackerClass(CoordinatingAssistantTracker.coordinatingassistanttracker)
