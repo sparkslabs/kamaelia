@@ -67,6 +67,7 @@ The final *location* field is currently not used. It is recommended to specify
 
 import re
 from string import atoi
+from Axon.util import next
 
 debugConfig = dict()
 
@@ -101,10 +102,10 @@ def readConfig(filename):
 
    def nextLine(lines,filterFuncs=(comment)):
       """Return next line, filtering out undesirable lines, eg. comments"""
-      data = lines.next()
+      data = next(lines)
       if data:
          while applyFuncs(data,filterFuncs):
-            data = lines.next()
+            data = next(lines)
             if not data: break
       return data
 
@@ -135,6 +136,6 @@ def readConfig(filename):
 if __name__=="__main__":
    config = readConfig("debug.conf")
 
-   for tag in config.keys():
+   for tag in list(config.keys()):
       level,location = config[tag]
-      print tag,level,location
+      print((tag,level,location))
