@@ -157,6 +157,7 @@ import sys
 from Axon.Component import component
 import Axon.idGen as idGen
 from Axon.Box import makeInbox, makeOutbox
+from Axon.util import next
 
 class _AdaptiveCommsable(object):
    """\
@@ -274,7 +275,7 @@ class _AdaptiveCommsable(object):
       Otherwise the name will be returned with a number appended
       """
       while name in self.inboxes:
-          name =name+str(idGen.idGen().next())
+          name =name+str(next(idGen.idGen()))
       return name
    #
    def _newOutboxName(self, name="outbox"):
@@ -285,7 +286,7 @@ class _AdaptiveCommsable(object):
       Otherwise the name will be returned with a number appended
       """
       while name in self.outboxes:
-         name =name+str(idGen.idGen().next())
+         name =name+str(next(idGen.idGen()))
       return name
 
 
@@ -307,5 +308,5 @@ class AdaptiveCommsComponent(component, _AdaptiveCommsable):
           
 
 if __name__=="__main__":
-   print "Tests are separated into test/test_AdaptiveCommsableComponent.py"
+   print("Tests are separated into test/test_AdaptiveCommsableComponent.py")
 
