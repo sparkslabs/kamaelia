@@ -28,6 +28,13 @@ import sys
 from Axon.AxonExceptions import invalidComponentInterface
 
 try:
+    import Queue
+    def next(g):   # Not built into python 2
+        return g.next()
+except: # Built into python 3
+    next = next
+
+try:
     set                         # Exists in 2.5 & 2.6
 except NameError:
     from sets import Set as set # Exists in 2.3 onwards, deprecated in 2.6
