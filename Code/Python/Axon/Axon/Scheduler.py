@@ -277,7 +277,14 @@ from Axon.debug import debug
 from Axon.Microprocess import microprocess
 from Axon.Base import AxonObject as _AxonObject
 from Axon.Ipc import *
-import Queue
+try:
+    import Queue as queue
+    vrange = xrange
+except ImportError:
+    import queue
+    vrange = range
+
+from Axon.util import next
 
 def _sort(somelist):
    a=[ x for x in somelist]
@@ -311,9 +318,9 @@ class scheduler(microprocess):
       self.time = time.time()
       
       self.threads = {}    # current set of threads and their states (whether sleeping, or running)
-      self.stopRequests = Queue.Queue()
-      self.wakeRequests = Queue.Queue()
-      self.pauseRequests = Queue.Queue()
+      self.stopRequests = queue.Queue()
+      self.wakeRequests = queue.Queue()
+      self.pauseRequests = queue.Queue()
       self.exception_caught = StopIteration
       self.debuggingon = False
       if self.wait_for_one:
@@ -364,7 +371,7 @@ class scheduler(microprocess):
    def listAllThreads(self):
        """Returns a list of all microprocesses (both active and sleeping)"""
        self.debuggingon = True
-       return self.threads.keys()
+       return list(self.threads.keys())
    
    def handleMicroprocessShutdownKnockon(self, knockon):
      if isinstance(knockon, shutdownMicroprocess):
@@ -373,7 +380,7 @@ class scheduler(microprocess):
         # corresponding entry in self.threads - but its being deleted here!
         # also what about calling stop() and _closeDownMicroprocess() for this
         # one too??? (Matt, 22 March 2007)
-        for i in xrange(len(self.threads)):
+        for i in vrange(len(self.threads)):
            if self.threads[i] in knockon.microprocesses():
               self.threads[i] = None
               
@@ -461,16 +468,17 @@ class scheduler(microprocess):
            
            # run microprocesses in the runqueue
 #           if self.debuggingon:
-#               print "-->", [ x.name for x in self.threads], [ x.name for x in runqueue]
+#               print("-->", [ x.name for x in self.threads], [ x.name for x in runqueue])
            for mprocess in runqueue:
 #               if self.debuggingon:
-#                   print "Before Run", mprocess
+#                   print("Before Run", mprocess)
 
                yield 1
                
                if self.threads[mprocess] == _ACTIVE:
                    try:
-                       result = mprocess.next()
+#                       result = mprocess.next()
+                       result = next(mprocess)
                        
                        if isinstance(result, newComponent):
                            for c in result.components():
@@ -485,7 +493,7 @@ class scheduler(microprocess):
                            mprocess = None
                            
 #                       if self.debuggingon:
-#                           print "After Run", mprocess
+#                           print("After Run", mprocess)
                        if mprocess:
                            nextrunqueue.append(mprocess)
                    except exception_caught:
@@ -509,7 +517,8 @@ class scheduler(microprocess):
                mprocess = self.pauseRequests.get()
                # only sleep if we're actually in the set of threads(!)
                # otherwise it inadvertently gets added!
-               if self.threads.has_key(mprocess):
+#               if self.threads.has_key(mprocess):
+               if mprocess in self.threads:
                    self.threads[mprocess] = _GOINGTOSLEEP
                # marked as going to sleep, rather than asleep since mprocess
                # is still in runqueue (more efficient to leave it to be
@@ -539,28 +548,28 @@ class scheduler(microprocess):
                             self.threads[mprocess] = _ACTIVE
                             allsleeping = False
 
-               except Queue.Empty:
+               except queue.Empty:
                     # catch timeout
                     pass
                if not self.stopRequests.empty():
-#                   print "Do we get here? 1"
+#                   print("Do we get here? 1")
                    break
 
            if not self.stopRequests.empty():
-#               print "Do we get here? 2"
+#               print("Do we get here? 2")
                break
-#           print "len(self.threads), wakeRequests" , len(self.threads), self.wakeRequests
+#           print("len(self.threads), wakeRequests" , len(self.threads), self.wakeRequests)
            running = len(self.threads) + self.extra
 
        if not self.stopRequests.empty():
-#           print "WE GOT HERE! :-)"
+#           print("WE GOT HERE! :-)")
            for X in self.threads:
-#               print "We now call .stop() on ", X.name, type(X)
+#               print("We now call .stop() on ", X.name, type(X))
                X.stop()
-#       print "All microprocesses now stopped. Halting"
+#       print("All microprocesses now stopped. Halting")
 
    def stop(self):
-#       print "ADDING STOP REQUEST"
+#       print("ADDING STOP REQUEST")
        self.stopRequests.put( self )
        super(scheduler, self).stop()
 
@@ -583,13 +592,13 @@ scheduler() # Initialise the class.
 
 
 if __name__ == '__main__':
-   print "This code current has no test code"
+   print("This code current has no test code")
    class foo(microprocess):
       def main(self):
          while 1:
             yield 1
    a=foo()
    a.activate()
-   print a
+   print(a)
    scheduler.run.runThreads()
 
