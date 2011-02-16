@@ -294,6 +294,7 @@ from Axon.debug import debug
 
 import Axon.Base
 import Axon.CoordinatingAssistantTracker as cat
+from Axon.util import next
 
 class _NullScheduler(object):
     """\
@@ -372,7 +373,7 @@ class microprocess(Axon.Base.AxonObject):
 
       # If the client has defined a debugger in their class we don't want to override it.
       # However if they haven't, we provide them with one
-      if not 'debugger' in self.__dict__.keys():
+      if not 'debugger' in list(self.__dict__.keys()):
          self.debugger = debug()
          self.debugger.useConfig()
          if self.debugger.areDebugging("microprocess.__init__", 5):
@@ -388,6 +389,9 @@ class microprocess(Axon.Base.AxonObject):
       result = result + self.__stopped.__str__() + " :"
       return result
 
+   def __next__(self):   # Python 3 compatibility
+      return self.next()
+
    def next(self):
       """\
       Calls next() of the internal generator - lets you drop a microprocess in
@@ -396,7 +400,8 @@ class microprocess(Axon.Base.AxonObject):
       Internally this calls self.__thread.next() to pass the timeslice down to
       the actual generator
       """
-      return self.__thread.next()
+#      return self.__thread.next()
+      return next(self.__thread) # Python 3 idiom (via helper in python2)
 
    def _isStopped(self):
       """\
@@ -460,7 +465,7 @@ class microprocess(Axon.Base.AxonObject):
        if self.debugger.areDebugging("microprocess._unpause", 1):
            self.debugger.debugmessage("microprocess._unpause", "Microprocess UNPAUSED", self.id,self.name,self)
        noisydeprecationwarning = "Use self.unpause() rather than self._unpause(). self._unpause() will be deprecated."
-       print noisydeprecationwarning
+       print (noisydeprecationwarning)
        return self.unpause()
 
    def main(self):
@@ -505,7 +510,8 @@ class microprocess(Axon.Base.AxonObject):
               yield None
               return
           else:
-              v = pc.next()
+#              v = pc.next()    # python 2
+              v = next(pc)
               yield v           # Yield control back - making us into a generator function
 
    def activate(self, Scheduler=None, Tracker=None, mainmethod="main"):
@@ -575,7 +581,7 @@ class microprocess(Axon.Base.AxonObject):
       self.__class__.schedulerClass.run.runThreads()
 
 if __name__ == '__main__':
-   print "Test code currently disabled"
+   print ("Test code currently disabled")
    if 0:
       def microProcessThreadTest():
          class myProcess(microprocess):
@@ -584,7 +590,7 @@ if __name__ == '__main__':
                yield wouldblock(self)
                while(i):
                   i = i -1
-                  print "myProcess",self.name, ":", "hello World"
+                  print ("myProcess",self.name, ":", "hello World")
                   yield notify(self,None, 10, "this")
          threadfactory = microthread()
          r = scheduler()
