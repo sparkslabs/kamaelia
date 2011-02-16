@@ -31,8 +31,12 @@ try:
     import Queue
     def next(g):   # Not built into python 2
         return g.next()
+    vrange = xrange
+    apply = apply
 except: # Built into python 3
     next = next
+    vrange = range
+
 
 try:
     set                         # Exists in 2.5 & 2.6

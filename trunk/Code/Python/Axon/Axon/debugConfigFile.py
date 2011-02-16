@@ -66,7 +66,7 @@ The final *location* field is currently not used. It is recommended to specify
 """
 
 import re
-from string import atoi
+# from string import atoi
 from Axon.util import next
 
 debugConfig = dict()
@@ -114,7 +114,7 @@ def readConfig(filename):
       Parse a configuration line, returning (tag,level,location) tuple
       """
       [ tag, level, location ] = re.split(" *", line)
-      level = atoi(level)
+      level = int(level)
       location = location[0:len(location)-1] # Remove trailing \n
       return tag,level,location
 
