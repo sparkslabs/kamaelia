@@ -28,6 +28,7 @@ import unittest
 import Axon.Scheduler as Scheduler
 from test___str__ import str_Test
 from Axon.Microprocess import microprocess as microprocess
+from Axon.util import next,vrange
 
 class MicroProcess_Test(str_Test):
    """A full set of tests for the Microprocess class."""
@@ -66,11 +67,14 @@ class MicroProcess_Test(str_Test):
 #id
    def init_test(self,mpsubclass=microprocess, args=()):
       "This is an internal method that can be used to create a microprocess object with the arguments that you want.  It also runs the duplicate ID check by creating a couple of objects.  Although there is only one optional argument to init a tuple is used here in case of future extension."
-      m=apply(mpsubclass,args)
+#      m=apply(mpsubclass,args)
+      m = mpsubclass(*args)
       self.failUnless(m.init," Microprocess initialization failed with no arguments")
       # This is weak test for duplicate IDs but might catch some silly errors
-      n=apply(mpsubclass,(args))
-      o=apply(mpsubclass,(args))
+#      n=apply(mpsubclass,(args))
+      n=mpsubclass(*args)
+#      o=apply(mpsubclass,(args))
+      o=mpsubclass(*args)
       self.failUnless(m.id and n.id and o.id,"All microprocesses should have id values.")
       self.failIf(m.id == n.id or n.id == o.id , "Non-unique IDs")
       return m
@@ -132,7 +136,7 @@ class MicroProcess_Test(str_Test):
       
       thr = self.init_test(testthread)
       thr.activate(self.DummySched())
-      for i in xrange(1,101):
+      for i in vrange(1,101):
          self.failUnless(thr.next(), "Unexpected false return value")
          self.failUnless(thr.i == i, "Iteration of main not performed!")
       #self.failIf(thr.next(), "Should return false as has returned at this point.")
@@ -176,15 +180,15 @@ class MicroProcess_Test(str_Test):
       thr = self.init_test(testthread)
       sched = self.DummySched()
       thr.activate(sched)
-      for x in xrange(1,5):
+      for x in vrange(1,5):
          self.failUnless(thr.next())
          self.failUnless(thr.i == x)
       thr.pause()
-      for x in xrange(5,10):
+      for x in vrange(5,10):
          self.failUnless(thr.next())
          self.assert_(thr.i == x, "Thread does not pause itself, that is down to the scheduler")
       thr.unpause()
-      for x in xrange(10,15):
+      for x in vrange(10,15):
          self.failUnless(thr.next())
          self.failUnless(thr.i == x)
       thr.stop()
