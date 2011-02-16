@@ -22,9 +22,18 @@
 
 # Test the module loads
 import unittest
-
+import sys
 from Axon.ThreadedComponent import threadedcomponent, threadedadaptivecommscomponent
-import thread,Queue,threading
+# import thread,Queue,threading
+import threading
+
+try:
+    import Queue as queue
+    import thread
+except ImportError:
+    import queue
+    import _thread as thread
+    
 import time
 from Axon.Component import component
 from Axon.Scheduler import scheduler
@@ -58,8 +67,8 @@ class ThreadedSender(threadedcomponent):
         else:
             self.delay=None
         super(ThreadedSender,self).__init__(*argl,**argd)
-        self.feedback = Queue.Queue()
-        self.howManyToSend = Queue.Queue()
+        self.feedback = queue.Queue()
+        self.howManyToSend = queue.Queue()
     def main(self):
         while 1:
             qty = self.howManyToSend.get()
@@ -137,7 +146,7 @@ class threadedcomponent_Test(unittest.TestCase):
         class Test(threadedcomponent):
             def __init__(self):
                 super(Test,self).__init__()
-                self.threadid = Queue.Queue()
+                self.threadid = queue.Queue()
             def main(self):
                 self.threadid.put( thread.get_ident() )
                 
@@ -207,7 +216,7 @@ class threadedcomponent_Test(unittest.TestCase):
         oldunlink = t.postoffice.unlink
         
         safetycheck = threading.RLock()          # re-entrancy permitting mutex
-        failures = Queue.Queue()
+        failures = queue.Queue()
         
         def link_mock(*argL,**argD):      # wrapper for postoffice.link() method
             if not safetycheck.acquire(False):  # returns False if should block (meaning its not thread safe!)
@@ -520,8 +529,8 @@ class threadedadaptivecommscomponent_Test(unittest.TestCase):
         class T(threadedadaptivecommscomponent):
             def __init__(self):
                 super(T,self).__init__()
-                self.toTestCase = Queue.Queue()
-                self.fromTestCase = Queue.Queue()
+                self.toTestCase = queue.Queue()
+                self.fromTestCase = queue.Queue()
             def main(self):
                 try:
                     boxname=self.addInbox("newbox")
@@ -531,7 +540,9 @@ class threadedadaptivecommscomponent_Test(unittest.TestCase):
                         self.toTestCase.put( (True,"Data should have been ready at the new inbox") )
                         return
                     self.toTestCase.put( (False,self.recv(boxname)) )
-                except Exception, e:
+#                except Exception, e:
+                except Exception:
+                    e = sys.exc_info()[1]
                     self.toTestCase.put( (True, str(e.__clas__.__name__) + str(e.args)) )
                     return
         sched=scheduler()
@@ -564,8 +575,8 @@ class threadedadaptivecommscomponent_Test(unittest.TestCase):
         class T(threadedadaptivecommscomponent):
             def __init__(self,dst):
                 super(T,self).__init__()
-                self.toTestCase = Queue.Queue()
-                self.fromTestCase = Queue.Queue()
+                self.toTestCase = queue.Queue()
+                self.fromTestCase = queue.Queue()
                 self.dst = dst
             def main(self):
                 try:
@@ -575,7 +586,9 @@ class threadedadaptivecommscomponent_Test(unittest.TestCase):
                     
                     self.send(msg,boxname)
                     self.toTestCase.put( (False, msg) )
-                except Exception, e:
+#                except Exception, e:
+                except Exception:
+                    e = sys.exc_info()[1]
                     self.toTestCase.put( (True, str(e.__clas__.__name__) + str(e.args)) )
                     return
                 
