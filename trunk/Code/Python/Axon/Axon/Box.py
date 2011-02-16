@@ -45,14 +45,14 @@ Creation
 Creating an outbox::
 
     def outboxNotify():
-        print "A message was collected from an inbox that this outbox is linked to."
+        print("A message was collected from an inbox that this outbox is linked to.")
     
     myOutbox = makeOutbox(outboxNotify)
 
 Creating an inbox::
 
     def inboxNotify():
-        print "A new message has arrived at this inbox."
+        print("A new message has arrived at this inbox.")
 
     myInbox = makeInbox(inboxNotify)
 
@@ -306,7 +306,7 @@ class nullsink(object):
         Append item to the list - though actually it just gets discarded.
         """
         if self.showtransit:
-            print "Discarding Delivery via [", self.tag, "] of ", repr(data)
+            print("Discarding Delivery via [", self.tag, "] of ", repr(data))
 
     def setShowTransit(self,showtransit, tag):
         """\
@@ -362,7 +362,7 @@ class realsink(list):
         Calls self.notify() callback
         """
         if self.showtransit or ShowAllTransits:
-            print "Delivery via [", self.tag, "] of ", repr(data)
+            print("Delivery via [", self.tag, "] of ", repr(data))
         if self.size is not None:
            if len(self) >= self.size:
                raise noSpaceInBox(len(self),self.size)
