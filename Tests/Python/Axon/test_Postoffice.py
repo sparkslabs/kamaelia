@@ -35,6 +35,7 @@ from Axon.Scheduler import scheduler
 from Axon.Postoffice import postoffice
 from Axon.AxonExceptions import noSpaceInBox
 from Axon.AxonExceptions import BoxAlreadyLinkedToDestination
+from Axon.util import next,vrange
 
 class Dummybox(list):
     def __init__(self,*argl,**argd):
@@ -306,7 +307,7 @@ class linkagechaining_Test(unittest.TestCase):
             
             try:
                 for _ in range(0,waitcycles):
-                    execute.next()
+                    next(execute)
             except StopIteration:
                 self.fail("Scheduler terminated unexpectedly")
             
@@ -404,7 +405,7 @@ class SizeLimitedBoxes_Test(unittest.TestCase):
     
     def runForAWhile(self, cycles=100):
         for _ in range(0,cycles):
-            self.schedthread.next()
+            next(self.schedthread)
     
     def test_smoketest(self):
         """You can call mycomponent.inboxes[boxname].setSize(n) to set the box size."""
