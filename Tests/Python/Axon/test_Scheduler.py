@@ -595,7 +595,8 @@ class scheduler_Test(unittest.TestCase):
                except:
                     exception = sys.exc_info()
                     def throwexception(exception):
-                        raise exception[0], exception[1], exception[2]
+                        raise exception[1]
+#                        raise exception[0], exception[1], exception[2]
                     self.exception = sys.exc_info()
                     
        thread = SchedLaunch()
@@ -603,7 +604,8 @@ class scheduler_Test(unittest.TestCase):
        thread.join(5.0)
        self.assert_(not thread.isAlive(), "Scheduler should not have taken this long")
        if thread.exception:
-           raise thread.exception[0],thread.exception[1],thread.exception[2]
+           raise thread.exception[1]
+#           raise thread.exception[0],thread.exception[1],thread.exception[2]
     
    def test_runThreadsUsesNonBusyWaitingMode(self):
        """If run using the runThreads method, then the scheduler may/will block for short periods, relinquishing processor time, if all microprocesses are paused."""
