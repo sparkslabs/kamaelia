@@ -141,10 +141,11 @@ class postoffice(object):
        (sourcecomp, sourcebox) = source
        (sinkcomp, sinkbox) = sink
        thelink = linkage(sourcecomp,sinkcomp,sourcebox,sinkbox,*optionalargs,**kwoptionalargs)
-       try:
-           thelink.getSinkbox().addsource( thelink.getSourcebox() )
-       except BoxAlreadyLinkedToDestination, e:
-           raise e
+#       try:
+#           thelink.getSinkbox().addsource( thelink.getSourcebox() )
+#       except BoxAlreadyLinkedToDestination, e:
+#           raise e
+       thelink.getSinkbox().addsource( thelink.getSourcebox() ) # Cease  rethrowing messages from here - also python 2/3 fix
        self.linkages.append(thelink)
        return thelink
 
@@ -189,7 +190,7 @@ class postoffice(object):
        """Stub for legacy"""
        noisy_deprecation_warning = "Use Postoffice.unlink() method instead. Or if writing components, use component.unlink() in preference Component: " + str(thecomponent) + " Linkage: "+ str(thelinkage)
        # raise DeprecationWarning(noisy_deprecation_warning)
-       print noisy_deprecation_warning
+       print (noisy_deprecation_warning)
        return self.unlink(thecomponent,thelinkage)
 
 
