@@ -370,6 +370,7 @@ Attributes:
 
 """
 import time
+import sys
 
 from Axon.util import removeAll
 from Axon.idGen import strId, numId
@@ -487,12 +488,13 @@ class component(microprocess):
       try:
           child._callOnCloseDown.append(self.unpause)
           self.children.append(child)
-      except Exception, e:
-          print "WARNING, I really REALLY should not be showing you this error for", str(child)
-          print "         What you have probably done is used a CLASS where you "
-          print "         should have used an instance"
-          print "         eg You meant to use ExampleProtocol() but actually had"
-          print "                             ExampleProtocol - ie you missed off instantiation"
+      except Exception:
+          e = sys.exc_info()[1]   # We do it this way because it works with both python 2 and 3
+          print("WARNING, I really REALLY should not be showing you this error for", str(child))
+          print("         What you have probably done is used a CLASS where you ")
+          print("         should have used an instance")
+          print("         eg You meant to use ExampleProtocol() but actually had")
+          print("                             ExampleProtocol - ie you missed off instantiation")
           raise e
 
    def addChildren(self,*children):
@@ -572,7 +574,7 @@ class component(microprocess):
 
       See Axon.Postoffice.postoffice.link() for more information.
       """
-#      print "DEBUGLINK", self.name, source, sink
+#      print("DEBUGLINK", self.name, source, sink)
       return self.postoffice.link(source, sink, *optionalargs, **kwoptionalargs)
 
 
@@ -611,7 +613,7 @@ class component(microprocess):
    def _debug_recv(self,boxname="inbox"):
       shortname = self.name[self.name.rfind(".")+1:]
       message = self._o_recv(boxname)
-      print "RECV: %s %s '%s' : %s" % (str(id(message)), shortname , boxname, str(message))
+      print("RECV: %s %s '%s' : %s" % (str(id(message)), shortname , boxname, str(message)))
       return message
 
 
@@ -638,7 +640,7 @@ class component(microprocess):
    def _debug_send(self,message, boxname="outbox"):
       shortname = self.name[self.name.rfind(".")+1:]
       
-      print "SEND: %s %s '%s' : %s" % (str(id(message)), shortname , boxname, str(message))
+      print("SEND: %s %s '%s' : %s" % (str(id(message)), shortname , boxname, str(message)))
       self._o_send(message, boxname)
        
 
@@ -717,7 +719,7 @@ if 0: # if __name__ == '__main__':
             self.count = 0
             self.i = 30
          def doSomething(self):
-            print self.name, "Woo",self.i
+            print(self.name, "Woo",self.i)
             if self.dataReady("source"):
                self.recv("source")
                self.count = self.count +1
@@ -754,12 +756,12 @@ if 0: # if __name__ == '__main__':
             if len(self.inboxes["_output"]) > 0:
                result = self.recv("_output")
                self.total = self.total + result
-               print "Result recieved from consumer : ", result, "!"
-               print "New Total : ", self.total, "!"
+               print("Result recieved from consumer : ", result, "!")
+               print("New Total : ", self.total, "!")
             else:
                self.lackofinterestingthingscount = self.lackofinterestingthingscount +1
                if self.lackofinterestingthingscount > 2:
-                  print "Exiting. Nothing interesting for ", self.lackofinterestingthingscount, " iterations"
+                  print("Exiting. Nothing interesting for ", self.lackofinterestingthingscount, " iterations")
                   return 0
             return 1
 
