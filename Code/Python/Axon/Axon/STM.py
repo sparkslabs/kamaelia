@@ -362,10 +362,10 @@ class Store(object):
 
     def dump(self):
         # Who cares really? This is a debug :-)
-        print "DEBUG: Store dump ------------------------------"
+        print("DEBUG: Store dump ------------------------------")
         for k in self.store:
-            print "     ",k, ":", self.store[k]
-        print
+            print("     ",k, ":", self.store[k])
+        print ()
 
 if __name__ == "__main__":
     if 0:
@@ -425,26 +425,26 @@ if __name__ == "__main__":
         D.set(X)
         D.commit()  # Third - This Should fail
         S.dump()
-        print "Committed", D.value["myaccount"]
+        print ("Committed", D.value["myaccount"])
 
     if 1:
         S = Store()
         greeting = S.usevar("hello")
-        print repr(greeting.value)
+        print (repr(greeting.value))
         greeting.set("Hello World")
         greeting.commit()
         # ------------------------------------------------------
-        print greeting
+        print (greeting)
         S.dump()
         # ------------------------------------------------------
         par = S.usevar("hello")
         par.set("Woo")
         par.commit()
         # ------------------------------------------------------
-        print greeting
+        print (greeting)
         S.dump()
         # ------------------------------------------------------
         greeting.set("Woo")
         greeting.commit() # Should fail
-        print repr(greeting), repr(greeting.value)
+        print (repr(greeting), repr(greeting.value))
         S.dump()
