@@ -194,20 +194,20 @@ class Introspector(Component.component):
                 dellinkmsgs = ""
                                         
                 # build topology nodes - one node per component, one per postbox on each component
-                for id in components.iterkeys():
-                    if not nodes.has_key(id):         # incase component activated twice (twice in scheduler.threads)
+                for id in components.keys():
+                    if id not in nodes:         # incase component activated twice (twice in scheduler.threads)
                         name = components[id]
                         nodes[ id ] = name
-                        if oldNodes.has_key( id ):
+                        if id in oldNodes:
                             del oldNodes[id]
                         else:
                             addnodemsgs += 'ADD NODE "'+str(id)+'" "'+str(name)+'" randompos component\n'
 
                 # build nodes for postboxes, and also link them to the components to which they belong
                 for id in postboxes:
-                    if not nodes.has_key(id):
+                    if id not in nodes:
                         nodes[ id ] = name
-                        if oldNodes.has_key( id ):
+                        if id in oldNodes:
                             del oldNodes[id]
                         else:
                             (cid, io, name) = id
@@ -221,20 +221,20 @@ class Introspector(Component.component):
                 # now addmsgs contains msgs to create new nodes
                 # and oldNodes only contains nodes that no longer exist
                 
-                for id in oldNodes.iterkeys():
+                for id in oldNodes.keys():
                     delnodemsgs += 'DEL NODE "'+str(id)+'"\n'
                 
                 # now go through inter-postbox linkages and do the same as we did for nodes
                 # note, we check not only that the link exists, but that it still goes to the same thing!
                 # otherwise leave the old link to be destroyed, and add a new one
-                for (src,dst) in linkages.iterkeys():
-                    if oldLinkages.has_key((src, dst)): 
+                for (src,dst) in linkages.keys():
+                    if (src, dst) in oldLinkages: 
                         del oldLinkages[(src,dst)]
                     else:
                         addlinkmsgs += 'ADD LINK "'+str(src)+'" "'+str(dst)+'"\n'
                         
                 # delete linkages that no longer exist
-                for (src,dst) in oldLinkages.iterkeys():
+                for (src,dst) in oldLinkages.keys():
                     dellinkmsgs += 'DEL LINK "'+str(src)+'" "'+str(dst)+'"\n'
 
                 # note: order of the final messages is important - delete old things
@@ -265,7 +265,7 @@ class Introspector(Component.component):
         
         # go through all components' postoffices and find all linkages
         linkages = {}
-        components_to_scan = components.keys()  # list
+        components_to_scan = list(components.keys())  # list
         for postoffice in [ c.postoffice for c in components_to_scan ]:
             for link in postoffice.linkages:
                 src = (link.source.id, Introspector.srcBoxType[link.passthrough], link.sourcebox)
@@ -275,23 +275,23 @@ class Introspector(Component.component):
                 # but maybe linked to, so we need to detect them now
                 # 1) append to the list we're scanning now
                 # 2) add to the dictionary of components we're building
-                if not components.has_key(link.source):
+                if link.source not in components:
                     components_to_scan.append(link.source)
                     components[link.source] = (link.source.id, link.source.name)
-                if not components.has_key(link.sink):
+                if link.sink not in components:
                     components_to_scan.append(link.sink)
                     components[link.sink] = (link.sink.id, link.sink.name)
                            
         # now we have a comprehensive list of all components (not just those the scheduler
         # admits to!) we can now build the list of all postboxes
         postboxes = []
-        for c in components.iterkeys():
+        for c in components.keys():
             postboxes += [ (c.id, "i", boxname) for boxname in c.inboxes.keys()  ]
             postboxes += [ (c.id, "o", boxname) for boxname in c.outboxes.keys() ]
             
         # strip the direct reference to component objects from the dictionary, leaving
         # just a mapping from 'id' to 'name'
-        cdict = dict([ components[c] for c in components.iterkeys() ])
+        cdict = dict([ components[c] for c in components.keys() ])
         
         return cdict, postboxes, linkages
 
@@ -307,8 +307,8 @@ if __name__ == '__main__':
    e.activate()
    i.link((i,"outbox"), (e, "inbox"))
    
-   print "You should see the Introspector find that it and a consoleEchoer component exist."
-   print "We both have inbox, control, signal and outbox postboxes"
-   print "The Introspector's outbox is linked to the consoleEchoer's inbox"
-   print
+   print("You should see the Introspector find that it and a consoleEchoer component exist.")
+   print("We both have inbox, control, signal and outbox postboxes")
+   print("The Introspector's outbox is linked to the consoleEchoer's inbox")
+   print()
    Scheduler.scheduler.run.runThreads(slowmo=0)
