@@ -110,9 +110,9 @@ class linkage(AxonObject):
                 return self.source.outboxes[self.sourcebox]
             except KeyError:
                 import time
-                print "Linkage isn't being made correctly - does the following component"
-                print "have a comma trailing it in the linkage description?"
-                print self.source
+                print("Linkage isn't being made correctly - does the following component")
+                print("have a comma trailing it in the linkage description?")
+                print(self.source)
                 time.sleep(3)
                 raise
         
@@ -151,4 +151,4 @@ class linkage(AxonObject):
 
 
 if __name__ == '__main__':
-   print "This code current has no test code"
+   print("This code current has no test code")
