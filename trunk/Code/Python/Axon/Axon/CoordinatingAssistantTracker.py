@@ -175,11 +175,11 @@ class coordinatingassistanttracker(object):
 
    def informationItemsLogged(self):
       """Returns list of names values are being tracked under."""
-      return self._informationLogged.keys()
+      return list(self._informationLogged.keys())
 
    def servicesRegistered(self):
       """Returns list of names of registered services"""
-      return self._servicesRegistered.keys()
+      return list(self._servicesRegistered.keys())
 
    def registerService(self, service, thecomponent, inbox):
       """\
@@ -282,4 +282,4 @@ class coordinatingassistanttracker(object):
          yield 1
 
 if __name__ == '__main__':
-   print "This code currently has no test code"
+   print ("This code currently has no test code")
