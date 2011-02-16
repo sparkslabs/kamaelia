@@ -121,6 +121,7 @@ import time
 import random
 import Axon.debugConfigFile as debugConfigFile
 import Axon.debugConfigDefaults as debugConfigDefaults
+import sys
 
 class debug(object):
    """\
@@ -174,7 +175,7 @@ class debug(object):
 #            debug.noConfig = True
       if debug.configs:
          try:
-            for section in debug.configs.keys():
+            for section in list(debug.configs.keys()):
                level,location = debug.configs[section]
                self.addDebugSection(section, level)
          except KeyError:
@@ -202,7 +203,7 @@ class debug(object):
          
       This does not affect the configuration of other debug objects.
       """
-      sections = debugSections.keys()
+      sections = list(debugSections.keys())
       for section in sections:
          self.addDebugSection(section, debugSections[section])
 
@@ -252,9 +253,13 @@ class debug(object):
       try:
          if self.debugSections[section] >= level:
             return True
-      except KeyError, key:
+#      except KeyError, key: # Python 2
+#      except KeyError as key: # Python 3
+      except KeyError: # Both
          pass
-      except AttributeError, error:
+#      except AttributeError, error:    # Python 2
+#      except AttributeError as error:  # Python 3
+      except AttributeError:            # Both
          pass
       return False
 
@@ -267,10 +272,10 @@ class debug(object):
       - section   -- 
       - \*message  -- object(s) to print as the debugging output
       """ 
-      print time.asctime(), "|", section, "|",
+      sys.stdout.write( str(time.asctime()) + " | " + str(section) + " | ")
       for arg in message:
-         print arg,
-      print # Force new line
+         sys.stdout.write( str(arg) + " ")
+      sys.stdout.write("\n") # Force new line
 
    def debug(self,section, level, *message):
       """\
@@ -295,24 +300,31 @@ class debug(object):
       """
       try:
          if self.debugSections[section] >= level:
-            print time.asctime(), "|", section, "|",
+            sys.stdout.write( str(time.asctime()) + " | " + str(section) + " | ")
             for arg in message:
-               print arg,
-            print # Force new line
-      except KeyError, key:
+               sys.stdout.write( str(arg) + " ")
+            sys.stdout.write("\n") # Force new line
+#      except KeyError, key:       # Python 2
+#      except KeyError as key:     # Python 3
+      except KeyError:             # Both
+         key = sys.exc_info()[1]   # Both
          if not debug.noConfig:
-            print "OI! YOU TRIED TO USE A NON-DEFINED DEBUG SECTION", key
-            print "This may be due to the following:"
-            print "   * You haven't added the debug section to the debug.conf file"
-            print "   * You have misspelt (typo?) the debug section"
-            print "   * You have trailling or leading spaces in your use of the debug section"
+            print("OI! YOU TRIED TO USE A NON-DEFINED DEBUG SECTION", key)
+            print("This may be due to the following:")
+            print("   * You haven't added the debug section to the debug.conf file")
+            print("   * You have misspelt (typo?) the debug section")
+            print("   * You have trailling or leading spaces in your use of the debug section")
             if self.assertBadDebug:
                m=""
                for arg in message:
-                 print arg,
+                 sys.stdout.write( arg )
+                 sys.stdout.write( " " )
                  m=m+str(arg)
                raise AxonException("BadDebug Undefined section: "+section+", Message: "+m)
-      except AttributeError, error:
+#      except AttributeError, error: # Python 2
+#      except AttributeError, error: # Python 3
+      except AttributeError:         # Both
+          error = sys.exc_info()[1]  # Both
           try:
              self.debugSections # we expect this to be the reason we go
                                 # here, so this should fail. If it doesn't
