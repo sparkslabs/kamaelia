@@ -48,12 +48,16 @@ class util_Test(unittest.TestCase):
             self.failUnlessRaises(normalShutdown, axonRaise, normalShutdown, "a","b","c")
             try:
                 axonRaise(AxonException, "a","b")
-            except Exception, e:
+#            except Exception, e:
+            except Exception:
+                e = sys.exc_info()[1]
                 self.failUnless(isinstance(e, AxonException), "Unexpected exception type.")
                 self.failUnless(e.args==("a","b"), "Extra args not passed to exception.")
             try:
                 axonRaise(normalShutdown, "a","b","c")
-            except Exception, e:
+#            except Exception, e:
+            except Exception:
+                e = sys.exc_info()[1] 
                 self.failUnless(isinstance(e, normalShutdown), "Unexpected exception type.")
                 self.failUnless(e.args==("a","b","c"), "Extra args not passed to exception.")
             
@@ -99,25 +103,29 @@ class util_Test(unittest.TestCase):
           exceptioncount=0
           try:
               testInterface(c,(["fred"],[]))
-          except Exception, e:
+          except Exception:
+              e = sys.exc_info()[1]
               self.failUnless(isinstance(e, invalidComponentInterface))
               self.failUnless(e.args == ("inboxes", c, (["fred"],[])), "Exception not as expected.")
               exceptioncount=exceptioncount+1
           try:
               testInterface(c,([],["fred"]))
-          except Exception, e:
+          except Exception:
+              e = sys.exc_info()[1]
               self.failUnless(isinstance(e, invalidComponentInterface))
               self.failUnless(e.args == ("outboxes", c, ([],["fred"])), "Exception not as expected.")
               exceptioncount=exceptioncount+1
           try:
               testInterface(c,(["inbox","control","fred"],[]))
-          except Exception, e:
+          except Exception:
+              e = sys.exc_info()[1]
               self.failUnless(isinstance(e, invalidComponentInterface))
               self.failUnless(e.args == ("inboxes", c, (["inbox","control","fred"],[])), "Exception not as expected.")
               exceptioncount=exceptioncount+1
           try:
               testInterface(c,(["inbox","control"],["outbox","signal","fred"]))
-          except Exception, e:
+          except Exception:
+              e = sys.exc_info()[1]
               self.failUnless(isinstance(e, invalidComponentInterface))
               self.failUnless(e.args == ("outboxes", c, (["inbox","control"],["outbox","signal","fred"])), "Exception not as expected.")
               exceptioncount=exceptioncount+1

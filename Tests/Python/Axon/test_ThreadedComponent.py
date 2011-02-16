@@ -26,6 +26,7 @@ import sys
 from Axon.ThreadedComponent import threadedcomponent, threadedadaptivecommscomponent
 # import thread,Queue,threading
 import threading
+from Axon.util import next
 
 try:
     import Queue as queue
@@ -152,7 +153,7 @@ class threadedcomponent_Test(unittest.TestCase):
                 
         sched=scheduler()
         t=Test().activate(Scheduler=sched)
-        t.next()            # get the thread started
+        next(t)            # get the thread started
         self.assert_(t.threadid.get() != thread.get_ident(), "main() returns a different value for thread.get_ident()")
     
     def test_flow_in(self):
@@ -170,11 +171,11 @@ class threadedcomponent_Test(unittest.TestCase):
         r = ThreadedReceiver().activate(Scheduler=sched)
         msg = "hello!"
         o=OneShotTo( (r,"inbox"), msg).activate(Scheduler=sched)
-        r.next()
-        o.next()
-        r.next()
+        next(r)
+        next(o)
+        next(r)
         time.sleep(0.1)
-        r.next()
+        next(r)
         self.assert_(r.rec==[msg])
         
     def test_flow_out(self):
@@ -193,11 +194,11 @@ class threadedcomponent_Test(unittest.TestCase):
         for i in range(10):
             time.sleep(0.1)
             try:
-                t.next()
+                next(t)
             except StopIteration:
                 pass
             try:
-                r.next()
+                next(r)
             except StopIteration:
                 pass
         self.assert_(r.rec == [msg])
@@ -244,7 +245,7 @@ class threadedcomponent_Test(unittest.TestCase):
         done=False
         for i in range(10):
             try:
-                t.next()
+                next(t)
             except StopIteration:
                 done=True
             linkage = t.link( (t,"signal"),(t,"control") )
@@ -252,7 +253,7 @@ class threadedcomponent_Test(unittest.TestCase):
         
         while not done:
             try:
-                t.next()
+                next(t)
             except StopIteration:
                 done=True
             
@@ -278,7 +279,7 @@ class threadedcomponent_Test(unittest.TestCase):
         try:
             s=sched.main()
             for _ in range(0,10):
-                s.next()
+                next(s)
                 
             t.howManyToSend.put(99999)
         
@@ -302,7 +303,7 @@ class threadedcomponent_Test(unittest.TestCase):
         try:
             s=sched.main()
             for _ in range(0,10):
-                s.next()
+                next(s)
                 
             t.howManyToSend.put(99999)
         
@@ -329,11 +330,11 @@ class threadedcomponent_Test(unittest.TestCase):
         
         s=sched.main()
         for _ in range(0,10):
-            s.next()
+            next(s)
         for _ in range(QSIZE+BSIZE):
             d.send(object(),"outbox")
             for __ in range(0,10):
-                s.next()
+                next(s)
         self.failUnlessRaises(noSpaceInBox, d.send, object(), "outbox")
     
     def test_NoSpaceInBoxExceptionsReachThread(self):
@@ -349,7 +350,7 @@ class threadedcomponent_Test(unittest.TestCase):
 
         s=sched.main()
         for _ in range(0,10):
-            s.next()
+            next(s)
         
         t.activate(Scheduler=sched)
         
@@ -357,7 +358,7 @@ class threadedcomponent_Test(unittest.TestCase):
             t.howManyToSend.put(QSIZE+BSIZE+10)
         
             while t.feedback.qsize() == 0:
-                s.next()
+                next(s)
             
             result = t.feedback.get()
             self.assert_(result != "ALL SENT")
@@ -379,13 +380,13 @@ class threadedcomponent_Test(unittest.TestCase):
         
         s=sched.main()
         for _ in range(10):
-            s.next()
+            next(s)
         
         t.activate(Scheduler=sched)
         
         try:
             for _ in range(10):
-                s.next()
+                next(s)
             
             t.howManyToSend.put(QSIZE+BSIZE+10)
             
@@ -396,7 +397,7 @@ class threadedcomponent_Test(unittest.TestCase):
             
             # flush them through to the inbox queue of the destination
             for _ in range(BSIZE*5):
-                s.next()
+                next(s)
             
             # let the thread fill the newly free slots
             t.howManyToSend.put(QSIZE+BSIZE+10)
@@ -409,19 +410,19 @@ class threadedcomponent_Test(unittest.TestCase):
             NUM_COLLECT = 0
             while NUM_COLLECT < BSIZE/2:
                 while not d.dataReady("inbox"):
-                    s.next()
+                    next(s)
                 if d.dataReady("inbox"):
                     d.recv("inbox")
                     NUM_COLLECT += 1
                 
             # let the main thread flush some message through from the thread
             for _ in range(50):
-                s.next()
+                next(s)
                 
             t.howManyToSend.put(QSIZE+BSIZE+10)
             
             while t.feedback.qsize() == 0:
-                s.next()
+                next(s)
             
             result = t.feedback.get()
             self.assert_(result != "ALL SENT")
@@ -478,7 +479,7 @@ class threadedcomponent_Test(unittest.TestCase):
         
         for n in range(0,50):
             time.sleep(0.05)
-            s.next()
+            next(s)
 
         self.assert_(not t._isStopped(), "Thread component should not have finished yet")
         self.assert_(r.dataReady("inbox"), "Should be data waiting at the receiver's inbox")
@@ -490,7 +491,7 @@ class threadedcomponent_Test(unittest.TestCase):
         
         for _ in range(0,50):
             time.sleep(0.05)
-            s.next()
+            next(s)
 
         # should expect to have received all t.count items sent
         while r.dataReady("inbox"):
@@ -549,9 +550,9 @@ class threadedadaptivecommscomponent_Test(unittest.TestCase):
         t=T().activate(Scheduler=sched)
         
         timeout=10
-        t.next()
+        next(t)
         while t.toTestCase.empty():
-            t.next()
+            next(t)
             timeout=timeout-1
             time.sleep(0.05)
             self.assert_(timeout,"timed out")
@@ -561,8 +562,8 @@ class threadedadaptivecommscomponent_Test(unittest.TestCase):
         boxname=msg
         t._deliver("hello",boxname)
         try: 
-            t.next()
-            t.next()
+            next(t)
+            next(t)
         except StopIteration: pass
         t.fromTestCase.put(1)
         
@@ -608,17 +609,17 @@ class threadedadaptivecommscomponent_Test(unittest.TestCase):
         
         t.fromTestCase.put("hello")
         while not t.toTestCase.qsize():
-            t.next()
-        t.next()
+            next(t)
+        next(t)
         (err,msg) = t.toTestCase.get()
         self.assert_(not err, "Error in thread:"+str(msg))
         
         try: 
-            t.next()
+            next(t)
         except StopIteration: pass
         try: 
-            r.next()
-            r.next()
+            next(r)
+            next(r)
         except StopIteration: pass
         self.assert_(r.rec == ["hello"], "Data send through outbox corrupted; r.rec = "+str(r.rec))
     
