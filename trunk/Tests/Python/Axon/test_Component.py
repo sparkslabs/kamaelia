@@ -27,7 +27,9 @@
 import unittest
 import re
 from Axon.Component import *
+from Axon.util import next,vrange
 import Axon.Linkage as Linkage
+
 #from Scheduler 
 class TComponent(component):
     def __init__(self):
@@ -96,10 +98,10 @@ class Component_Test(unittest.TestCase):
       testcomponent = component()
       self.failUnless(isinstance(testcomponent,microprocess), "Component should be a Microprocess")
       self.failUnless(testcomponent.Usescomponents==[],"Basic component should not depend on other components")
-      self.failUnless(testcomponent.Inboxes.keys().count("inbox")==1,"There should be one 'inbox' in the Inboxes structure.")
-      self.failUnless(testcomponent.Inboxes.keys().count("control")==1,"There should be one 'control' in the Inboxes structure.")
-      self.failUnless(testcomponent.Outboxes.keys().count("outbox")==1,"There should be one 'outbox' in the Outboxes structure.")
-      self.failUnless(testcomponent.Outboxes.keys().count("signal")==1,"There should be one 'signal' in the Outboxes structure.")
+      self.failUnless(list(testcomponent.Inboxes.keys()).count("inbox")==1,"There should be one 'inbox' in the Inboxes structure.")
+      self.failUnless(list(testcomponent.Inboxes.keys()).count("control")==1,"There should be one 'control' in the Inboxes structure.")
+      self.failUnless(list(testcomponent.Outboxes.keys()).count("outbox")==1,"There should be one 'outbox' in the Outboxes structure.")
+      self.failUnless(list(testcomponent.Outboxes.keys()).count("signal")==1,"There should be one 'signal' in the Outboxes structure.")
       for x in testcomponent.Inboxes:
         self.failUnless(len(testcomponent.inboxes[x])==0,"Unexpected inbox data structure for "+x+".")
       for x in testcomponent.Outboxes:
@@ -261,7 +263,7 @@ class Component_Test(unittest.TestCase):
       self.failUnless(signalbox.pop(0)=="bing", "Items arrived out of order")
       self.failUnless(signalbox.pop(0)=="boom", "Items arrived out of order")
       
-      for x in xrange(0,1000):
+      for x in vrange(0,1000):
           tcomp.tc1.send(x)
           self.failUnless(tcomp.tc1.outboxes["outbox"].pop(0)==x, "Failed while sending lots without clearing box.")
 
@@ -272,21 +274,21 @@ class Component_Test(unittest.TestCase):
       First value returned is always 1 then the return values are those from the component's main method unitil it returns a False value."""
       t=TestMainLoopComponent()
       m=t.main()
-      self.failUnless(m.next()==1)
-      for x in xrange(1,1000):
-          self.failUnless(m.next()==x, "Failed when x = " + str(x))
-      self.failUnless(m.next()==1,"After the main method returns a false value the result of closeDownComponent is returned.  Stub of 1 assumed.")
-      self.failUnlessRaises(StopIteration, m.next)#, "Checks the generator has finished.")
+      self.failUnless(next(m)==1)
+      for x in vrange(1,1000):
+          self.failUnless(next(m)==x, "Failed when x = " + str(x))
+      self.failUnless(next(m)==1,"After the main method returns a false value the result of closeDownComponent is returned.  Stub of 1 assumed.")
+      self.failUnlessRaises(StopIteration, lambda : next(m))#, "Checks the generator has finished.")
 
    def test_main_closedowntest(self):
       """main - This ensures that the closeDownComponent method is called at the end of the loop.  It also repeats the above test."""
       t=TestMainLoopComponentClosedown()
       m=t.main()
-      self.failUnless(m.next()==1)
-      for x in xrange(1,1000):
-          self.failUnless(m.next()==x, "Failed when x = " + str(x))
-      self.failUnlessRaises(closeDownCompTestException , m.next)#Ensures that the closeDownComponent method has been called.
-      self.failUnlessRaises(StopIteration, m.next)#, "Checks the generator has finished.")
+      self.failUnless(next(m)==1)
+      for x in vrange(1,1000):
+          self.failUnless(next(m)==x, "Failed when x = " + str(x))
+      self.failUnlessRaises(closeDownCompTestException , lambda: next(m))#Ensures that the closeDownComponent method has been called.
+      self.failUnlessRaises(StopIteration, lambda: next(m))#, "Checks the generator has finished.")
             
    def test_initialiseComponent(self):
       "initialiseComponent - Stub method, returns 1, expected to be overridden by clients."
@@ -376,7 +378,7 @@ class MessageDeliveryNotifications_Test(unittest.TestCase):
     
     def runForAWhile(self, cycles=100):
         for _ in range(0,cycles):
-            self.schedthread.next()
+            next(self.schedthread)
     
     def test_NothingHappensIfNothingHappens(self):
         """A paused component stays paused if nothing happens"""
