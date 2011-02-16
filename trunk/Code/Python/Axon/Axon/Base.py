@@ -40,51 +40,32 @@ uses.
 
 """
 
-class AxonType(type):
-   """\
-   Metaclass for Axon objects.
-   """
-    
-   def __init__(cls, name, bases, dict):
-      """\
-      Override creation of class to set a 'super' attribute to what you get
-      when you call super().
-
-      **Note** that this 'super' attribute is deprecated - there are some subtle
-      issues with it and it should therefore be avoided.
-      """
-      super(AxonType, cls).__init__(name, bases, dict)
-      setattr(cls, "_%s__super" % name, super(cls))
-
-class AxonObject(object):
-   """\
-   Base class for axon objects.
-
-   Uses AxonType as its metaclass.
-   """
-   __metaclass__ = AxonType
-   pass
+try:
+   import Queue # If succeeds, then python 2
+   from Axon.Base2 import AxonObject, AxonType
+except: # Python3
+   from Axon.Base3 import AxonObject, AxonType
 
 if __name__ == "__main__":
 
    class foo(AxonObject):
       def __init__(self):
          self.gah =1
-         print "foo", self
+         print ("foo", self)
 
    class bar(foo):
       def __init__(self):
          super(bar, self).__init__()
          self.gee = 1
          self.gah += 1
-         print "bar", self
+         print ("bar", self)
 
    class bla(foo):
       def __init__(self):
          super(bla, self).__init__()
          self.goo = 2
          self.gah += 1
-         print "bla", self
+         print ("bla", self)
 
    class barbla(bar,bla): # Classic hardcase - diagram inheritance.
       def __init__(self):
@@ -92,7 +73,7 @@ if __name__ == "__main__":
          self.gee += 1
          self.goo += 2
          self.gah += 1   # If common base class called once result is 4, 5 otherwise.
-         print "barbla", self
+         print ("barbla", self)
 
    a=foo()
    assert a.gah==1,"Foo's initialisation failed"
