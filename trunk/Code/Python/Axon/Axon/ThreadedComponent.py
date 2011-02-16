@@ -349,7 +349,11 @@ import Axon.Component as Component
 from Axon.AdaptiveCommsComponent import _AdaptiveCommsable as _AC
 from Axon.AxonExceptions import noSpaceInBox
 import threading
-import Queue
+try:
+    import Queue as queue
+except ImportError:
+    import queue
+
 from Axon.idGen import numId
 import sys
 
@@ -400,13 +404,13 @@ class threadedcomponent(Component.component):
       self.queuelengths = queuelengths
       self.inqueues = dict()
       self.outqueues = dict()
-      for box in self.inboxes.iterkeys():
-         self.inqueues[box] = Queue.Queue(self.queuelengths)
-      for box in self.outboxes.iterkeys():
-         self.outqueues[box] = Queue.Queue(self.queuelengths)
+      for box in self.inboxes.keys():
+         self.inqueues[box] = queue.Queue(self.queuelengths)
+      for box in self.outboxes.keys():
+         self.outqueues[box] = queue.Queue(self.queuelengths)
 
-      self.threadtoaxonqueue = Queue.Queue()
-      self.axontothreadqueue = Queue.Queue()
+      self.threadtoaxonqueue = queue.Queue()
+      self.axontothreadqueue = queue.Queue()
 
       self.threadWakeUp = threading.Event()
 
@@ -439,7 +443,8 @@ class threadedcomponent(Component.component):
             exception = sys.exc_info()
             # FIXME: Having an option dump of the traceback after the bare except would be useful here
             def throwexception(exception):
-                raise exception[0], exception[1], exception[2]
+                raise exception[1]
+#                raise exception[0], exception[1], exception[2] # FIXME: This is less than ideal. Could consider python2/3 specific code here
             self._do_threadsafe( throwexception, [exception], {} )
         self._threadrunning = False
         Component.component.unpause(self)
@@ -561,7 +566,9 @@ class threadedcomponent(Component.component):
                       self.threadWakeUp.set() # wake thread, just like we would be if something we've sent is collected
                       try:
                           self._nonthread_send(msg, box)
-                      except noSpaceInBox, e:
+#                      except noSpaceInBox, e:
+                      except noSpaceInBox:
+                          e = sys.exc_info()[1]
                           raise RuntimeError("Box delivery failed despite box (earlier) reporting being not full. Is more than one thread directly accessing boxes?")
                   else:
                       stuffWaiting = True
@@ -648,7 +655,7 @@ class threadedcomponent(Component.component):
            self.outqueues[boxname].put_nowait(message)
            # wake up _localmain() so it can collect the message and send it on
            Component.component.unpause(self)        # FIXME: Fragile
-       except Queue.Full:
+       except queue.Full:
            raise noSpaceInBox(self.outqueues[boxname].qsize(), self.queuelengths)
 
    def link(self, source,sink,passthrough=0):
@@ -807,7 +814,7 @@ class threadedadaptivecommscomponent(threadedcomponent, _AC):
         # Use method from superclass to do it
         name = super(threadedadaptivecommscomponent,self).addInbox(*args)
         # Also set up a corresponding queue to get data to the thread
-        self.inqueues[name] = Queue.Queue(self.queuelengths)
+        self.inqueues[name] = queue.Queue(self.queuelengths)
         return name
     
     def _unsafe_deleteInbox(self,name):
@@ -820,7 +827,7 @@ class threadedadaptivecommscomponent(threadedcomponent, _AC):
         # Use method from superclass to do it
         name = super(threadedadaptivecommscomponent,self).addOutbox(*args)
         # Also set up a corresponding queue to get data from the thread
-        self.outqueues[name] = Queue.Queue(self.queuelengths)
+        self.outqueues[name] = queue.Queue(self.queuelengths)
         return name
     
     def _unsafe_deleteOutbox(self,name):
@@ -877,7 +884,7 @@ if __name__ == "__main__":
             self.send("ADD SRC", newname)
             
         def rem(self,dst):
-            box,linkage = [(box,linkage) for (box,(d,linkage)) in self.destinations.items() if d==dst][0]
+            box,linkage = [(box,linkage) for (box,(d,linkage)) in list(self.destinations.items()) if d==dst][0]
             del self.destinations[box]
             self.send("DEL SRC", box)
             self.unlink(thelinkage=linkage)
@@ -898,7 +905,7 @@ if __name__ == "__main__":
                 for box in self.destinations:
                     self.send("AAThread "+box+": "+str(i)+"\n", box)
                     
-            for dst, _ in self.destinations.values():
+            for dst, _ in list(self.destinations.values()):
                 self.rem(dst)
     
     class OneShot(threadedcomponent):
@@ -955,9 +962,9 @@ if __name__ == "__main__":
                 
     c = Container().run()
     
-    print "-----Synchronous inbox delivered to by a threaded component-----"
-    print "Sender              Middle man          Slow receiver"
-    print "------------------------------------------------------------"
+    print("-----Synchronous inbox delivered to by a threaded component-----")
+    print("Sender              Middle man          Slow receiver")
+    print("------------------------------------------------------------")
 
     class SynchronousSlowReceiver(Component.component):
         def main(self):
@@ -1034,7 +1041,7 @@ if __name__ == "__main__":
                             break
                         except noSpaceInBox:
                             self.pause()
-                            print "Y"
+                            print("Y")
 #                            time.sleep(0.1)
     
     t = ThreadedSender().activate()
