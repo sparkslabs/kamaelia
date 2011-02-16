@@ -102,6 +102,7 @@ class idGen(object):
       idGen.lowestAllocatedId = idGen.lowestAllocatedId +1
       return idGen.lowestAllocatedId
    next = nextId # pseudonym
+   __next__ = nextId # pseudonym
 
    def idToString(self,thing,aNumId):
       """\
