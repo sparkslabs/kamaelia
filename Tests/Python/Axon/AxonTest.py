@@ -40,7 +40,7 @@ import test_util
 
 class VerboseTestResults(unittest.TestResult):
    def startTest(self,test):
-      print test
+      print(test)
       unittest.TestResult.startTest(self, test)
 
 def suite():
