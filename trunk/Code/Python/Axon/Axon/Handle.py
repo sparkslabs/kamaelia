@@ -65,7 +65,7 @@ in the documentation for Axon.background.
     from Kamaelia.Internet.TCPClient import TCPClient
     from Kamaelia.Visualisation.PhysicsGraph import chunks_to_lines
 
-    queue = Queue()
+    queue = queue()
 
     connection = Handle(
         Pipeline(
@@ -77,12 +77,12 @@ in the documentation for Axon.background.
 We can now fetch items of data when they arrive, using the Handle, from the
 "outbox" outbox of the pipeline::
 
-    from Queue import Empty
+    from queue import Empty
 
     while 1:
        try:
            received_line = connection.get("outbox")
-           print "Received line:", received_line
+           print( "Received line:", received_line)
        except Empty:
            # no data yet
            time.sleep(0.1)
@@ -113,7 +113,7 @@ inbox it is destined for. The data is queued and sent at the next opportunity.
 To retrieve data sent out by the wrapped component's "outbox" or "signal"
 outboxes, call the get() method, specifying, as an argument, the name of the
 outbox in question. This method is *non blocking* - if there is data waiting,
-then the oldest item of data is returned, otherwise a Queue.Empty exception is
+then the oldest item of data is returned, otherwise a queue.Empty exception is
 immediately thrown. 
 
 When the wrapped component terminates, Handle will immediately terminate.
@@ -188,14 +188,17 @@ implications:
 
 import Axon.ThreadedComponent as ThreadedComponent
 import time
-import Queue
+try:
+    import Queue as queue
+except ImportError:
+    import queue
 
-print "Polite Notice"
-print "-------------"
+print( "Polite Notice")
+print( "-------------")
 
-print "The code you are using includes using Axon.Handle. This code is"
-print "currently experimental - we'd welcome any issues you may find/experience"
-print "with this code."
+print( "The code you are using includes using Axon.Handle. This code is")
+print( "currently experimental - we'd welcome any issues you may find/experience")
+print( "with this code.")
 
 class Handle(ThreadedComponent.threadedcomponent):
    Inboxes = {
@@ -210,8 +213,8 @@ class Handle(ThreadedComponent.threadedcomponent):
       """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
       super(Handle,self).__init__()
       self.comp = someComponent
-      self.inboundData = Queue.Queue()
-      self.outboundData = Queue.Queue()
+      self.inboundData = queue.Queue()
+      self.outboundData = queue.Queue()
       self.temp = {}
 
    def put(self, *args):
@@ -235,7 +238,7 @@ class Handle(ThreadedComponent.threadedcomponent):
        Return an item of data sent to an outbox of the wrapped component.
        
        This method is non blocking and always returns immediately. If there is
-       no data to return, then the exception Queue.Empty is thrown
+       no data to return, then the exception queue.Empty is thrown
        
        Arguments:
        
@@ -250,15 +253,15 @@ class Handle(ThreadedComponent.threadedcomponent):
                    self.temp[outbox].append(data)
                except KeyError:
                    self.temp[outbox] = [ data ]
-           except Queue.Empty:
+           except queue.Empty:
                break
        try:
            X = self.temp[boxname][0]
            del self.temp[boxname][0]
        except KeyError:
-          raise Queue.Empty
+          raise queue.Empty
        except IndexError:
-          raise Queue.Empty
+          raise queue.Empty
        return X
 
    def main(self):
@@ -308,5 +311,5 @@ class Handle(ThreadedComponent.threadedcomponent):
        return 0==len(self.childComponents())
                   
 if __name__=="__main__":
-    print "This is no longer like ThreadWrap - it is not supposed to be"
-    print "Usable in the usual manner for a component..."
+    print( "This is no longer like ThreadWrap - it is not supposed to be")
+    print( "Usable in the usual manner for a component...")
