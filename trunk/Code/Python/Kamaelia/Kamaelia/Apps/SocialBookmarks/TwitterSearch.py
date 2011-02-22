@@ -19,6 +19,7 @@ from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 import cjson
 import oauth2 as oauth
+from Kamaelia.Apps.SocialBookmarks.Print import Print
 
 class PeopleSearch(component):
     Inboxes = {
@@ -102,15 +103,15 @@ class PeopleSearch(component):
 
                 request_token = dict(urlparse.parse_qsl(content))
 
-                print "Request Token:"
-                print "     - oauth_token        = %s" % request_token['oauth_token']
-                print "     - oauth_token_secret = %s" % request_token['oauth_token_secret']
-                print
+                Print( "Request Token:")
+                Print("     - oauth_token        = " , request_token['oauth_token'])
+                Print("     - oauth_token_secret = " , request_token['oauth_token_secret'])
+                Print("")
 
-                # The user must confirm authorisation so a URL is printed here
-                print "Go to the following link in your browser:"
-                print "%s?oauth_token=%s" % (authorize_url, request_token['oauth_token'])
-                print
+                # The user must confirm authorisation so a URL is Printed here
+                Print("Go to the following link in your browser:")
+                Print("%s?oauth_token=%s" % (authorize_url, request_token['oauth_token']) )
+                Print("")
 
                 accepted = 'n'
                 # Wait until the user has confirmed authorisation
@@ -158,12 +159,12 @@ class PeopleSearch(component):
                     access_token = dict(urlparse.parse_qsl(content))
 
                     # Access tokens retrieved from Twitter
-                    print "Access Token:"
-                    print "     - oauth_token        = %s" % access_token['oauth_token']
-                    print "     - oauth_token_secret = %s" % access_token['oauth_token_secret']
-                    print
-                    print "You may now access protected resources using the access tokens above."
-                    print
+                    Print("Access Token:")
+                    Print("     - oauth_token        = " , access_token['oauth_token'])
+                    Print("     - oauth_token_secret = " , access_token['oauth_token_secret'])
+                    Print("")
+                    Print("You may now access protected resources using the access tokens above.")
+                    Print("")
 
                     save = False
                     # Load config to save OAuth keys
@@ -172,7 +173,7 @@ class PeopleSearch(component):
                         file = open(homedir + "/twitter-login.conf",'r')
                         save = True
                     except IOError, e:
-                        print ("Failed to load config file - not saving oauth keys: " + str(e))
+                        Print ("Failed to load config file - not saving oauth keys: " , e)
 
                     if save:
                         raw_config = file.read()
@@ -193,7 +194,7 @@ class PeopleSearch(component):
                             file.write(raw_config)
                             file.close()
                         except IOError, e:
-                            print ("Failed to save oauth keys: " + str(e))
+                            Print ("Failed to save oauth keys: " , e)
 
                     self.keypair = [access_token['oauth_token'], access_token['oauth_token_secret']]
         
@@ -243,14 +244,14 @@ class PeopleSearch(component):
                         conn1 = False
 
                     if conn1:
-                        # Check rate limiting here and print current limit
+                        # Check rate limiting here and Print current limit
                         headers = conn1.info()
                         headerlist = string.split(str(headers),"\n")
                         for line in headerlist:
                             if line != "":
                                 splitheader = line.split()
                                 if splitheader[0] == "X-FeatureRateLimit-Remaining:" or splitheader[0] == "X-RateLimit-Remaining:":
-                                    print splitheader[0] + " " + str(splitheader[1])
+                                    Print(splitheader[0] , " " , splitheader[1] )
                                     if int(splitheader[1]) < 5:
                                         self.ratelimited = datetime.today()
                         # Grab json format result of people search here
@@ -268,7 +269,7 @@ class PeopleSearch(component):
                     else:
                         self.send(dict(),"outbox")
                 else:
-                   print "Twitter search paused - rate limited"
+                   Print("Twitter search paused - rate limited")
                    self.send(dict(),"outbox")
             self.pause()
             yield 1

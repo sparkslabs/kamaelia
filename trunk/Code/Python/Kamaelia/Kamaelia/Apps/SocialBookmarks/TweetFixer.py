@@ -14,6 +14,7 @@ from Axon.Ipc import shutdownMicroprocess
 import MySQLdb
 from URLGetter import HTTPGetter
 import cjson
+from Kamaelia.Apps.SocialBookmarks.Print import Print
 
 class RetweetFixer(component):
     '''
@@ -292,9 +293,9 @@ class LinkResolver(component):
                         try:
                             linkcache = cjson.decode(raw_cache)
                         except cjson.DecodeError, e:
-                            print ("Failed to decode link cache - will attempt to create a new file: " + str(e))
+                            Print ("Failed to decode link cache - will attempt to create a new file: " , e)
                     except IOError, e:
-                        print ("Failed to load link cache - will attempt to create a new file: " + str(e))
+                        Print ("Failed to load link cache - will attempt to create a new file: " , e)
 
                     linkstring = ""
                     for link in linkstoresolve:
@@ -321,7 +322,7 @@ class LinkResolver(component):
                                             short_url = resolvedlink['short_url'].replace("\\/","/")
                                             linkcache[short_url] = long_url
                             except cjson.DecodeError, e:
-                                print "Decode error in result from bit.ly: " + str(e)
+                                Print ("Decode error in result from bit.ly: " , e)
 
                     # Set the expanded URL fields in the tweet entity
                     for url in tweet['entities']['urls']:
@@ -339,7 +340,7 @@ class LinkResolver(component):
                         file.write(raw_cache)
                         file.close()
                     except IOError, e:
-                        print ("Failed to save name cache - could cause rate limit problems")
+                        Print ("Failed to save name cache - could cause rate limit problems")
                         
                 self.send(tweet,"outbox")
 
@@ -376,7 +377,7 @@ if __name__ == "__main__":
         homedir = os.path.expanduser("~")
         file = open(homedir + "/twitter-login.conf")
     except IOError, e:
-        print ("Failed to load login data - exiting")
+        Print ("Failed to load login data - exiting")
         sys.exit(0)
 
     raw_config = file.read()

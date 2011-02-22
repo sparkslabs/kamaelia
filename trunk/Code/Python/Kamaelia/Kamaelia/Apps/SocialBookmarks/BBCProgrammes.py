@@ -21,6 +21,7 @@ from Axon.Ipc import shutdownMicroprocess
 import cjson
 from dateutil.parser import parse
 import pytz
+from Kamaelia.Apps.SocialBookmarks.Print import Print
 
 class GMT(tzinfo):
     def utcoffset(self,dt):
@@ -112,7 +113,7 @@ class WhatsOn(component):
                         if decodedcontent[0] == "OK":
                             difference = time() - decodedcontent[2]['time']
                     except cjson.DecodeError, e:
-                        print "cjson.DecodeError:", e.message
+                        Print("cjson.DecodeError:", e.message)
 
                 if 'difference' in locals():
                     # Grab actual programme start time from DVB bridge channel page
@@ -132,7 +133,7 @@ class WhatsOn(component):
                             if decodedcontent[0] == "OK":
                                 proginfo = decodedcontent[2]['info']
                         except cjson.DecodeError, e:
-                            print "cjson.DecodeError:", e.message
+                            Print("cjson.DecodeError:", e.message)
 
                 # Grab BBC schedule data for given channel
                 self.send([scheduleurl], "dataout")
@@ -150,7 +151,7 @@ class WhatsOn(component):
                     try:
                         decodedcontent = cjson.decode(content)
                     except cjson.DecodeError, e:
-                        print "cjson.DecodeError:", e.message
+                        Print("cjson.DecodeError:", e.message)
 
                     if 'proginfo' in locals():
                         showdate = proginfo['NOW']['startdate']
@@ -184,7 +185,7 @@ class WhatsOn(component):
                                     # Fix for unicode errors caused by some /programmes titles
                                     if (not isinstance(title,str)) and (not isinstance(title,unicode)):
                                         title = str(title)
-                                    print [pid,title,offset,duration,str(showdatetime) + " GMT",utcoffset]
+                                    Print(pid,title,offset,duration,showdatetime, "GMT",utcoffset)
                                     data = [pid,title,offset,duration,timestamp,utcoffset]
                                     
 
@@ -211,7 +212,7 @@ class WhatsOn(component):
                                     utcoffset = datetime.strptime(str(tz.utcoffset(progdate)),"%H:%M:%S")
                                     utcoffset = utcoffset.hour * 60 * 60
                                     timestamp = sleeper.mktime(progdate.timetuple()) - utcoffset
-                                    print [pid,title,0,programme['duration'],programme['start'],utcoffset]
+                                    Print(pid,title,0,programme['duration'],programme['start'],utcoffset)
                                     data = [pid,title,0,programme['duration'],timestamp,utcoffset]
                                     
 
@@ -268,7 +269,7 @@ class NowPlaying(component):
                     try:
                         decodedcontent = cjson.decode(content)
                     except cjson.DecodeError, e:
-                        print "cjson.DecodeError:", e.message
+                        Print("cjson.DecodeError:", e.message)
 
                 # Analyse now playing info
                 if decodedcontent:

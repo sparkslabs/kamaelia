@@ -17,6 +17,7 @@ import Axon
 
 from Axon.Component import component
 import Axon
+from Kamaelia.Apps.SocialBookmarks.Print import Print
 
 class HTTPClientRequest(component):
     url = "/Components.html"
@@ -432,7 +433,7 @@ class TwitterStream(threadedcomponent):
                 pids = recvdata[1]
 
                 args = urllib.urlencode({"track": ",".join(keywords)})
-                print ("Got keywords:", args)
+                Print ("Got keywords:", args)
 
                 self.connect(args,pids)
             while self.dataReady("tweetsin"):

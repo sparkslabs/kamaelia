@@ -6,7 +6,7 @@ Any looking at natural language engines / subtitles should be done here or in co
 Need to ensure one rogue user can't cause a trend - things must be mentioned by several
 '''
 
-# Having added this as a component, the printed output is a bit confusing, so 'Analysis component: ' has been added to everything.
+# Having added this as a component, the Printed output is a bit confusing, so 'Analysis component: ' has been added to everything.
 
 from datetime import datetime
 from datetime import timedelta
@@ -22,6 +22,7 @@ import MySQLdb
 import cjson
 import nltk
 from nltk import FreqDist
+from Kamaelia.Apps.SocialBookmarks.Print import Print
 
 class LiveAnalysis(threadedcomponent):
     Inboxes = {
@@ -75,7 +76,7 @@ class LiveAnalysis(threadedcomponent):
         while not self.finished():
             # The below does LIVE and FINAL analysis - do NOT run DataAnalyser at the same time
 
-            print "Analysis component: Checking for new data..."
+            Print("Analysis component: Checking for new data...")
 
             # Stage 1: Live analysis - could do with a better way to do the first query (indexed field 'analsed' to speed up for now)
             # Could move this into the main app to take a copy of tweets on arrival, but would rather solve separately if poss
@@ -94,8 +95,11 @@ class LiveAnalysis(threadedcomponent):
                 # Each tweet will be grouped into chunks of one minute to make display better, so set the seconds to zero
                 # This particular time is only used for console display now as a more accurate one calculated from programme position is found later
                 dbtime = dbtime.replace(second=0)
-                print "Analysis component: Analysing new tweet for pid", pid, "(" + str(dbtime) + "):"
-                print "Analysis component: '" + tweettext + "'"
+                Print("Analysis component: Analysing new tweet for pid", pid, "(" , dbtime ,"):")
+                try:
+                    Print("Analysis component: '" , tweettext , "'")
+                except UnicodeEncodeError, e:
+                    Print ("UnicodeEncodeError", e)
                 cursor.execute("""SELECT duration FROM programmes_unique WHERE pid = %s""",(pid))
                 progdata = cursor.fetchone()
                 duration = progdata[0]
@@ -234,11 +238,11 @@ class LiveAnalysis(threadedcomponent):
                     cursor.execute("""UPDATE programmes SET totaltweets = %s, meantweets = %s, mediantweets = %s, modetweets = %s, stdevtweets = %s WHERE pid = %s AND timestamp = %s""",(totaltweets,meantweets,mediantweets,modetweets,stdevtweets,pid,timestamp))
 
                 else:
-                    print "Analysis component: Skipping tweet - falls outside the programme's running time"
+                    Print("Analysis component: Skipping tweet - falls outside the programme's running time")
 
                 # Mark the tweet as analysed
                 cursor.execute("""UPDATE rawdata SET analysed = 1 WHERE tid = %s""",(tid))
-                print "Analysis component: Done!"
+                Print("Analysis component: Done!")
 
             # Stage 2: If all raw tweets analysed and imported = 1 (all data for this programme stored and programme finished), finalise the analysis - could do bookmark identification here too?
             cursor.execute("""SELECT pid,totaltweets,meantweets,mediantweets,modetweets,stdevtweets,timestamp,timediff FROM programmes WHERE imported = 1 AND analysed = 0 LIMIT 5000""")
@@ -261,7 +265,7 @@ class LiveAnalysis(threadedcomponent):
                 cursor.execute("""SELECT tid FROM rawdata WHERE analysed = 0 AND pid = %s""", (pid))
                 if cursor.fetchone() == None:
                     # OK to finalise stats here
-                    print "Analysis component: Finalising stats for pid:", pid, "(" + title + ")"
+                    Print("Analysis component: Finalising stats for pid:", pid, "(" , title , ")")
 
                     meantweets = float(totaltweets) / (duration / 60) # Mean tweets per minute
 
@@ -328,10 +332,10 @@ class LiveAnalysis(threadedcomponent):
                                 nltkdata = self.recv("nltkfinal")
 
                     cursor.execute("""UPDATE programmes SET meantweets = %s, mediantweets = %s, modetweets = %s, stdevtweets = %s, analysed = 1 WHERE pid = %s AND timestamp = %s""",(meantweets,mediantweets,modetweets,stdevtweets,pid,timestamp))
-                    print "Analysis component: Done!"
+                    Print("Analysis component: Done!")
 
             # Sleep here until more data is available to analyse
-            print "Analysis component: Sleeping for 10 seconds..."
+            Print("Analysis component: Sleeping for 10 seconds...")
             time.sleep(10)
 
 
@@ -509,7 +513,7 @@ class FinalAnalysisNLTK(component):
         "control" : ""
     }
     Outboxes = {
-        "outbox" : "urrently sends nothing out, just prints to screen - needs work", #TODO
+        "outbox" : "urrently sends nothing out, just Prints to screen - needs work", #TODO
         "tweetfixer" : "Sends out data to the tweet fixing components (tweet json)",
         "signal" : ""
     }
@@ -650,20 +654,20 @@ class FinalAnalysisNLTK(component):
                 # Look for phrases - very limited
                 bigram_fd = FreqDist(nltk.bigrams(filteredtext))
 
-                print bigram_fd
+                Print(bigram_fd)
 
                 for entry in bigram_fd:
                     if entry[0] not in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and entry[1] not in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""":
                         if entry[0] not in self.exclusions and entry[1] not in self.exclusions:
                             for word in keywords:
-                                print word
+                                Print(word)
                                 if entry[0] in word and entry[1] in word:
-                                    print "Keyword Match! " + str([entry[0],entry[1]])
+                                    Print("Keyword Match! " , entry[0],entry[1] )
                                     break
                             else:
-                                print [entry[0],entry[1]]
+                                Print( entry[0],entry[1])
 
-                print "Retweet data: " + str(retweetcache)
+                Print("Retweet data: " , retweetcache)
 
                 self.send(None,"outbox")
 
