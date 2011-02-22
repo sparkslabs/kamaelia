@@ -17,6 +17,7 @@ import MySQLdb
 import cjson
 import rdflib
 from rdflib.Graph import Graph
+from Kamaelia.Apps.SocialBookmarks.Print import Print
 
 class Requester(threadedcomponent):
     Inboxes = {
@@ -117,7 +118,7 @@ class Requester(threadedcomponent):
             # Perhaps just do a duplicate scan before creating Twitter stream
             if pid == None:
                 self.channels[channel] = None
-                print (channel + ": Off Air")
+                Print (channel, ": Off Air")
             else:
                 self.channels[channel] = pid
                 self.send(["http://www.bbc.co.uk/programmes/" + pid + ".rdf"], "dataout")
@@ -220,11 +221,11 @@ class Requester(threadedcomponent):
                 g = Graph()
                 g.parse("tempRDF.txt")
 
-                # Identify if this is a change of programme, or the first time we've checked what's on for print clarity
+                # Identify if this is a change of programme, or the first time we've checked what's on for Print clarity
                 if self.firstrun:
-                    print (channel + ": " + title)
+                    Print (channel , ": " + title)
                 else:
-                    print (channel + ": Changed to - " + title)
+                    Print (channel , ": Changed to - " , title)
 
                 # Minor alterations
                 title = title.replace("&","and")
@@ -293,7 +294,7 @@ class Requester(threadedcomponent):
                     file = open(homedir + "/namecache.conf",'r')
                     save = True
                 except IOError, e:
-                    print ("Failed to load name cache - will attempt to create a new file: " + str(e))
+                    Print ("Failed to load name cache - will attempt to create a new file: " ,  e)
 
                 if save:
                     raw_config = file.read()
@@ -415,15 +416,15 @@ class Requester(threadedcomponent):
                     file.write(raw_config)
                     file.close()
                 except IOError, e:
-                    print ("Failed to save name cache - could cause rate limit problems")
+                    Print ("Failed to save name cache - could cause rate limit problems")
 
                 return [keywords,data]
             
         else:
             if pid == None:
-                print(channel + ": No change - Off Air")
+                Print(channel , ": No change - Off Air")
             else:
-                print (channel + ": No change - " + title)
+                Print (channel , ": No change - " , title)
 
     def dbConnect(self):
         db = MySQLdb.connect(user=self.dbuser,passwd=self.dbpass,db="twitter_bookmarks")
@@ -434,7 +435,7 @@ class Requester(threadedcomponent):
         cursor = self.dbConnect()
         oldkeywords = None
         while not self.finished():
-            print ("### Checking current programmes ###")
+            Print ("### Checking current programmes ###")
             if self.channel != "all":
                 oldpid = self.channels[self.channel]
                 if oldpid == None:
@@ -478,12 +479,12 @@ class Requester(threadedcomponent):
                         keywords.append(keyword[0])
 
                 if (keywords != oldkeywords) & (keywords != None):
-                    print keywords
+                    Print(keywords)
                     self.send([keywords,[pid]],"outbox")
                     pass
                 
             else:
-                # Still need to fix the 'changed to - off air' problem, but it isn't causing twitter keyword redos thankfully (purely a printing error)
+                # Still need to fix the 'changed to - off air' problem, but it isn't causing twitter keyword redos thankfully (purely a Printing error)
                 # Possible issue will start to occur if programmes change too often - tweet stream will miss too much
                 keywords = list()
                 for channel in self.channels:
@@ -536,7 +537,7 @@ class Requester(threadedcomponent):
                     keywords = list(set(keywords))
 
                 if (keywords != oldkeywords) & (len(keywords) != 0):
-                    print keywords
+                    Print(keywords)
                     self.send([keywords,currentpids],"outbox") #epicfail: now need to send all pids, and search through them further down the line
                     pass
 

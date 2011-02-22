@@ -18,6 +18,7 @@ import MySQLdb
 import _mysql_exceptions
 import cjson
 from dateutil.parser import parse
+from Kamaelia.Apps.SocialBookmarks.Print import Print
 
 class DataCollector(threadedcomponent):
     Inboxes = {
@@ -80,7 +81,11 @@ class DataCollector(threadedcomponent):
                         else:
                             # This is a real tweet
                             tweetid = newdata['id']
-                            print "New tweet! @" + newdata['user']['screen_name'] + ": " + newdata['text']
+                            try:
+                                Print("New tweet! @", newdata['user']['screen_name'] , ": " + newdata['text'])
+                            except UnicodeEncodeError,e:
+                                Print("Unicode error suppressed", e)
+
                             for pid in tweet[1]:
                                 # Cycle through possible pids, grabbing that pid's keywords from the DB
                                 # Then, check this tweet against the keywords and save to DB where appropriate (there may be more than one location)
@@ -99,13 +104,13 @@ class DataCollector(threadedcomponent):
                                                 timestamp = time2.mktime(parse(newdata['created_at']).timetuple())
                                                 cursor.execute("""SELECT * FROM rawdata WHERE (pid = %s AND text = %s AND user = %s) OR (pid = %s AND user = %s AND timestamp >= %s AND timestamp < %s)""",(pid,newdata['text'],newdata['user']['screen_name'],pid,newdata['user']['screen_name'],timestamp-10,timestamp+10))
                                                 if cursor.fetchone() == None:
-                                                    print ("Storing tweet for pid " + pid)
+                                                    Print ("Storing tweet for pid " , pid)
                                                     # Work out where this tweet really occurred in the programme using timestamps and DVB bridge data
                                                     progposition = timestamp - (progdata[0] - progdata[1])
                                                     cursor.execute("""INSERT INTO rawdata (tweet_id,pid,timestamp,text,user,programme_position) VALUES (%s,%s,%s,%s,%s,%s)""", (tweetid,pid,timestamp,newdata['text'],newdata['user']['screen_name'],progposition))
                                                     break # Break out of this loop and back to check the same tweet against the next programme
                                                 else:
-                                                    print ("Duplicate tweet from user - ignoring")
+                                                    Print ("Duplicate tweet from user - ignoring")
                                     if string.lower(row[0]) in string.lower(newdata['text']):
                                         cursor.execute("""SELECT timestamp,timediff FROM programmes WHERE pid = %s ORDER BY timestamp DESC""",(pid))
                                         progdata = cursor.fetchone()
@@ -115,17 +120,17 @@ class DataCollector(threadedcomponent):
                                             timestamp = time2.mktime(parse(newdata['created_at']).timetuple())
                                             cursor.execute("""SELECT * FROM rawdata WHERE (pid = %s AND text = %s AND user = %s) OR (pid = %s AND user = %s AND timestamp >= %s AND timestamp < %s)""",(pid,newdata['text'],newdata['user']['screen_name'],pid,newdata['user']['screen_name'],timestamp-10,timestamp+10))
                                             if cursor.fetchone() == None:
-                                                print ("Storing tweet for pid " + pid)
+                                                Print ("Storing tweet for pid " , pid)
                                                 # Work out where this tweet really occurred in the programme using timestamps and DVB bridge data
                                                 progposition = timestamp - (progdata[0] - progdata[1])
                                                 cursor.execute("""INSERT INTO rawdata (tweet_id,pid,timestamp,text,user,programme_position) VALUES (%s,%s,%s,%s,%s,%s)""", (tweetid,pid,timestamp,newdata['text'],newdata['user']['screen_name'],progposition))
                                                 break # Break out of this loop and back to check the same tweet against the next programme
                                             else:
-                                                print ("Duplicate tweet from user - ignoring")
+                                                Print ("Duplicate tweet from user - ignoring")
                     else:
-                        print "Blank line received from Twitter - no new data"
+                        Print("Blank line received from Twitter - no new data")
                     
-                    print ("Done!") # new line to break up display
+                    Print ("Done!") # new line to break up display
             else:
                 time2.sleep(0.1)
 
@@ -179,7 +184,7 @@ class RawDataCollector(threadedcomponent):
                         newdata = cjson.decode(tweet)
                         if newdata.has_key('delete') or newdata.has_key('scrub_geo') or newdata.has_key('limit'):
                             # It is assumed here that the original data collector has handled the Twitter status message
-                            print "Discarding tweet instruction - captured by other component"
+                            Print( "Discarding tweet instruction - captured by other component")
                         else:
                             tweetid = newdata['id']
                             # Capture exactly when this tweet was stored
@@ -193,9 +198,9 @@ class RawDataCollector(threadedcomponent):
                                     cursor.execute("""INSERT INTO rawtweets (tweet_id,tweet_json,tweet_stored_seconds,tweet_stored_fraction) VALUES (%s,%s,%s,%s)""", (tweetid,tweet,tweetsecs,tweetfrac))
                                 except _mysql_exceptions.IntegrityError, e:
                                     # Handle the possibility for Twitter having sent us a duplicate
-                                    print "Duplicate tweet ID:", str(e)
+                                    Print( "Duplicate tweet ID:", e)
                             else:
-                                print "Discarding tweet - length limit exceeded"
+                                Print("Discarding tweet - length limit exceeded")
                                 tweetcontents = ""
                                 homedir = os.path.expanduser("~")
                                 if os.path.exists(homedir + "/oversizedtweets.conf"):
@@ -204,13 +209,13 @@ class RawDataCollector(threadedcomponent):
                                         tweetcontents = file.read()
                                         file.close()
                                     except IOError, e:
-                                        print ("Failed to load oversized tweet cache - it will be overwritten")
+                                        Print ("Failed to load oversized tweet cache - it will be overwritten")
                                 try:
                                     file = open(homedir + "/oversizedtweets.conf",'w')
                                     tweetcontents = tweetcontents + tweet
                                     file.write(tweetcontents)
                                     file.close()
                                 except IOError, e:
-                                    print ("Failed to save oversized tweet cache")
+                                    Print ("Failed to save oversized tweet cache")
             else:
                 time2.sleep(0.1)
