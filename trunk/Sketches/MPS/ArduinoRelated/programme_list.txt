@@ -1,0 +1,31 @@
+
+Cube 1
+
+Programme List:
+
+21.00 	The Apprentice
+15.30	News
+22.00	Match of the Day
+11.00	Something for the Weekend
+20.00	Being Human
+19.00	Heroes
+
+
+Cube 2
+
+21.00	The Apprentice
+18.00	Dr Who
+20.00	Ashes to Ashes
+22.00	Torchwood
+17.00	Hitchhikers Guide to the Galaxy
+19.00	Heroes
+
+
+Cube 3
+
+20.00	The Culture Show
+22.00	BBC Proms
+17.30	Asian Network
+19.30	A History of 100 objects
+23.00	South Bank Show
+19.00	Heroes
