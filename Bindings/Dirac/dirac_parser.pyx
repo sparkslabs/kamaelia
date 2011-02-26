@@ -27,6 +27,9 @@
 cimport dirac_common 
 from dirac_common cimport *
 
+class DiracException(Exception):
+    pass
+
 cdef extern from "dirac/libdirac_decoder/decoder_types.h":
     ctypedef enum DecoderState:
         STATE_BUFFER
@@ -68,8 +71,8 @@ cdef extern from "Python.h":
     object PyString_FromStringAndSize(char *, int)
     cdef char* PyString_AsString(object)
 
+dirac_version = (1, 0, 2)
 
-dirac_version = (0, 6, 0)
 
 cdef class DiracParser:
 
@@ -116,35 +119,31 @@ cdef class DiracParser:
             state = dirac_parse(self.decoder)
 
             if state == STATE_BUFFER:
-                self.inputbuffer = ""
-                raise "NEEDDATA"
-    
+                self.inputbuffer = "" # HMM
+                raise DiracException("NEEDDATA")
+ 
             elif state == STATE_SEQUENCE:
                 self.__extractSequenceData()
                 self.__extractSourceData()
                 self.__allocBuffers()
-                raise "SEQINFO"
-    
-#            elif state == STATE_PICTURE_START:
-#                parse = True
-#                raise "FRAMEINFO"
-    
+                raise DiracException("SEQINFO")
+
             elif state == STATE_PICTURE_AVAIL:
                 parse = True
-                self.__extractFrameData()
+#                self.__extractFrameData()
                 frame =  self.__buildFrame()
                 self.__allocBuffers()
                 return frame
     
             elif state == STATE_SEQUENCE_END:
                 parse = False
-                raise "END"
+                raise DiracException("END")
     
             elif state == STATE_INVALID:
-                raise "STREAMERROR"
+                raise DiracException("STREAMERROR")
     
             else:
-                raise "INTERNALFAULT"
+                raise DiracException("INTERNALFAULT")
 
 
     def sendBytesForDecode(self, bytes):
@@ -162,54 +161,70 @@ cdef class DiracParser:
             cbytes_end = <unsigned char*>temp
             dirac_buffer(self.decoder, cbytes, cbytes_end)
         else:
-            raise "NOTREADY"
+            raise DiracException("NOTREADY")
 
     def __extractSequenceData(self):
-        cdef dirac_parseparams_t params
+#        cdef dirac_parseparams_t params
+#        params        = self.decoder.parse_params
+        cdef dirac_sourceparams_t params
+        params = self.decoder.src_params
 
-        params = self.decoder.parse_params
 
-        self.seqdata = { "size"          : (int(params.width), int(params.height)),
+        width         = int(params.width)
+        height        = int(params.height)
+        chroma_width  = int(params.chroma_width)
+        chroma_height = int(params.chroma_height)
+
+        self.seqdata = { "size"          : (width, height),
                          "chroma_type"   :  __mapchromatype(params.chroma),
-                         "chroma_size"   : (int(params.chroma_width), int(params.chroma_height)),
-                         "bitdepth"      : int(params.video_depth),
+                         "chroma_size"   : (chroma_width, chroma_height),
+#                         "bitdepth"      : int(params.video_depth),
                        }
                        
     def __extractSourceData(self):
         cdef dirac_sourceparams_t params
         
         params = self.decoder.src_params
-        
         if params.frame_rate.denominator:
-            framerate = float(params.frame_rate.numerator) / float(params.frame_rate.denominator)
+            numerator = params.frame_rate.numerator
+            denominator = params.frame_rate.denominator
+            framerate = float(numerator) / float(denominator)
         else:
             framerate = 0.0
             
         if params.pix_asr.denominator:
-            pixelaspect = float(params.pix_asr.numerator) / float(params.pix_asr.denominator)
+            numerator = params.pix_asr.numerator
+            denominator = params.pix_asr.denominator
+            pixelaspect = float(numerator) / float(denominator)
         else:
             pixelaspect = 1.0
 
-        self.srcdata = { "interlaced"    : int(params.interlace),
-                         "topfieldfirst" : int(params.topfieldfirst),
-                         "fieldsequencing" : int(params.seqfields),
-                         "frame_rate"    : framerate,
-                         "pixel_aspect"  : pixelaspect,
-                        # not bothering with
-                        #    clean_area
-                        #    signal_range
-                        #    colour_spec
+        self.srcdata = { "interlaced"      : int(params.source_sampling), # 0 - progressive; 1 - interlaced
+                         "topfieldfirst"   : int(params.topfieldfirst),
+#                         "fieldsequencing" : int(params.seqfields),
+                         "frame_rate"      : framerate,
+                         "pixel_aspect"    : pixelaspect,
+
+                        # FIXME ADD IN: these fields
+                        # FIXME ADD IN:    clean_area
+                        # FIXME ADD IN:    signal_range
+                        # FIXME ADD IN:    colour_spec
                        }
                        
     def __extractFrameData(self):
-        cdef dirac_parseparams_t params
-        
-        params = self.decoder.parse_params
-        
+        cdef dirac_parseparams_t parse_params
+        cdef dirac_decoder_t decoder_params
+#        print "parse_params", parse_params
+#        print "decoder_params", decoder_params.frame_num
+
+#        params = self.decoder.parse_params
+#        
+#        
         self.framedata = {
-            "frametype" : __mapping_frame_type(params.ftype),
-            "reference_type" : __mapping_rframe_type(params.rtype),
-            "frame number" : int(params.fnum),
+#            "frametype"      : __mapping_frame_type(params.ptype),
+#            "reference_type" : __mapping_rframe_type(params.rtype),
+            "frame number"   : int(decoder_params.frame_num),
+#            "frame number"   : int(params.pnum),
         }
 
     def getSeqData(self):
@@ -241,8 +256,9 @@ cdef class DiracParser:
         frame = {}
         frame.update(self.getSeqData())
         frame.update(self.getSrcData())
-        frame.update(self.getFrameData())
+#        frame.update(self.getFrameData())
         frame['yuv'] = (self.ybuffer, self.ubuffer, self.vbuffer)
+#        print "HERE WE ARE"
         return frame
 
 
@@ -256,7 +272,7 @@ cdef object __mapchromatype(dirac_chroma_t c):
     elif c == formatNK:
         return "NK"
     else:
-        raise "INTERNALFAULT"
+        raise DiracException("INTERNALFAULT")
 
 cdef object __mapping_frame_type(dirac_picture_type_t ftype):
     if ftype == INTRA_PICTURE:
