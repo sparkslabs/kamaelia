@@ -32,6 +32,10 @@ cdef extern from "limits.h":
     ctypedef enum __:
         INT_MAX
 
+class DiracEncodeException(Exception):
+    pass
+
+
 cdef extern from "dirac/libdirac_encoder/dirac_encoder.h":
     ctypedef enum dirac_encoder_state_t:
         ENC_STATE_INVALID = -1
@@ -192,7 +196,7 @@ cdef class DiracEncoder:
 
         self.encoder = dirac_encoder_init( &self.context, cverbose )
         if self.encoder == NULL:
-            raise "FAILURE"
+            raise DiracEncodeException("FAILURE")
 
         self.outbuffersize = bufsize
         self.__allocOutBuffer()
@@ -210,10 +214,10 @@ cdef class DiracEncoder:
         state = dirac_encoder_output(self.encoder)
 
         if state == ENC_STATE_INVALID:
-            raise "ENCODERERROR"
+            raise DiracEncodeException("ENCODERERROR")
 
         elif state == ENC_STATE_BUFFER:
-            raise "NEEDDATA"
+            raise DiracEncodeException("NEEDDATA")
 
         elif state == ENC_STATE_AVAIL:
             data = self.outbuffer[:self.encoder.enc_buf.size]
@@ -221,7 +225,7 @@ cdef class DiracEncoder:
             return data
 
         else:
-            raise "INTERNALFAULT"
+            raise DiracEncodeException("INTERNALFAULT")
 
     def sendFrameForEncode(self, yuvdata):
         cdef unsigned char *bytes
@@ -236,7 +240,7 @@ cdef class DiracEncoder:
         result = dirac_encoder_load(self.encoder, bytes, size)
 
         if result == -1:
-            raise "ENCODERERROR"
+            raise DiracEncodeException("ENCODERERROR")
 
     def getEndSequence(self):
         cdef int result
