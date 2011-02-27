@@ -69,10 +69,10 @@ def encode_source(frame_source, outfile, preset="CIF"):
         # get some frame data in a form that allows this:
         framecount +=1
 
-        print "                          FRAME", framecount
-        print "                              Y", len(frame["yuv"][0])
-        print "                              U", len(frame["yuv"][1])
-        print "                              V", len(frame["yuv"][2])
+        print ("                          FRAME", framecount)
+        print ("                              Y", len(frame["yuv"][0]))
+        print ("                              U", len(frame["yuv"][1]))
+        print ("                              V", len(frame["yuv"][2]))
 
         data = "".join(frame['yuv'])
         encoder.sendFrameForEncode(data)
@@ -80,19 +80,22 @@ def encode_source(frame_source, outfile, preset="CIF"):
         while True:  # Loops until more data is needed from the file - indicated by "needdata"
             try:
                 bytes = encoder.getCompressedData()
-                print "BYTES TO WRITE", len(bytes)
+                print ("BYTES TO WRITE", len(bytes))
                 outfile.write(bytes)
 
-            except DiracEncodeException, e:
-                reason = e.args[0]
-                print "          looping", reason
+#           except DiracEncodeException, de:   # Only works in python 2.X and earlier
+#           except DiracEncodeException as de:   # Only works in python 2.6 and later
+            except DiracEncodeException:             # Works in python 2.3 through python 3.x
+                de = sys.exc_info()[1]         # Works in python 2.3 through python 3.x
+                reason = de.args[0]
+                print ("          looping", reason)
                 if reason =="NEEDDATA":
                    break
                 elif reason =="ENCODERERROR":
-                    print "Encoder Error"
+                    print ("Encoder Error")
                     raise RuntimeError("ENCODERERROR")
                 elif reason =="INTERNALFAULT":
-                    print "Internal Fault"
+                    print ("Internal Fault")
                     raise RuntimeError("INTERNALFAULT")
                 else:
                     sys.stderr.write("FAIL\n\n")
