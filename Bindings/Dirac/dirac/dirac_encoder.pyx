@@ -163,7 +163,7 @@ cdef extern from "Python.h":
     object PyString_FromStringAndSize(char *, int)
     cdef char* PyString_AsString(object)
 
-dirac_version = (0, 6, 0)
+dirac_version = (1, 0, 2)
 
 cdef class DiracEncoder:
 
