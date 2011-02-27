@@ -173,7 +173,7 @@ cdef class DiracEncoder:
     cdef object outbuffer
     cdef object outbuffersize
 
-    def __new__(self, preset=None, bufsize = 1024*1024, verbose=False, allParams = {}, instrumentation=False, localDecoded=False):
+    def __cinit__(self, preset=None, bufsize = 1024*1024, verbose=False, allParams = {}, instrumentation=False, localDecoded=False):
         cdef int cverbose
         cverbose = 0
         if verbose:

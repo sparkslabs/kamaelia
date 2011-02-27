@@ -86,7 +86,7 @@ cdef class DiracParser:
     cdef object ubuffer
     cdef object vbuffer
 
-    def __new__(self, verbose = None):
+    def __cinit__(self, verbose = None):
         cdef int vflag
         vflag = 0
         if verbose:
