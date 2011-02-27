@@ -13,7 +13,7 @@ this will exhibit artefacts due to cascaded transcode.
 import os
 import sys
 import time
-from dirac_encoder import *
+from dirac.dirac_encoder import *
 
 def rawYUVFrameReader(raw_data_source, size):
     """

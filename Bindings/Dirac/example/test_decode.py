@@ -9,7 +9,7 @@ To create a a file that this program can decode...
 
 import os
 import time
-from dirac_parser import *
+from dirac.dirac_parser import *
 
 infile = open("bar.drc", "rb")
 outfile = open("baz.yuv", "wb")
