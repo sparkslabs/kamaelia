@@ -1030,7 +1030,7 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
                                         bookmarks[len(bookmarks)-1][1] = bookmarkend
                                         continue
                                 if (bookmarkend - bookmarkstart) > 60:
-                                    output += "<br />" + str(bookmarkstart) + " " + str(bookmarkend) + " " + str(bookmarkstart-80) + " " + keyword
+                                    #output += "<br />" + str(bookmarkstart) + " " + str(bookmarkend) + " " + str(bookmarkstart-80) + " " + keyword
                                     bookmarks.append([bookmarkstart,bookmarkend,bookmarkstart-80,keyword])
 
                 # The +3 in the widths below gets around an IE CSS issue. All other browsers will ignore it
@@ -1050,7 +1050,7 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
                 for bookmark in bookmarks:
                     if bmcurrent == 0 and bookmark[0] != progstart:
                         bookmarkplot += "<div style=\"float: left; background-color: #FFFFFF; height: 40px; width: " + str(int((bookmark[0] - progstart)*bmsecondwidth)) + "px\"></div>"
-                    elif bmmcurrent > 0 and bmcurrent < bmtotal:
+                    elif bmcurrent > 0 and bmcurrent < bmtotal:
                         if bookmarks[bmcurrent-1][1] < bookmark[0]:
                             bookmarkplot += "<div style=\"float: left; background-color: #FFFFFF; height: 40px; width: " + str(int((bookmark[0]-bookmarks[bmcurrent-1][1])*bmsecondwidth)) + "px\"></div>"
                     bookmarkpos = bookmark[2] - progstart
