@@ -269,7 +269,7 @@ class _PygameEventSource(threadedcomponent):
         return False
 
     def main(self):
-        waitevents = [pygame.VIDEORESIZE, pygame.VIDEOEXPOSE, pygame.MOUSEMOTION, pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN]
+        waitevents = [pygame.VIDEORESIZE, pygame.VIDEOEXPOSE, pygame.MOUSEMOTION, pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN, pygame.KEYDOWN, pygame.KEYUP]
         
         while not self.finished():
             time.sleep(0.01)
