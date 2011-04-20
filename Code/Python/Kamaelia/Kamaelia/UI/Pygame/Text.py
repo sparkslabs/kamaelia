@@ -108,6 +108,11 @@ class TextDisplayer(component): # FIXME - can this be used to replace Ticker ?
     fgcolour=(0,0,0)
     position=(0,0)
     transparent = False
+    font_file = None
+    padding = 0
+    border_size = 0
+    border_colour = (128,128,128)
+
     def __init__(self, **argd):
         """Initialises"""
         # FIXME: Change this to use the same names in self as in the args (note is for thoughout the file)
@@ -118,7 +123,15 @@ class TextDisplayer(component): # FIXME - can this be used to replace Ticker ?
         self.background_color = self.bgcolour
         self.text_color = self.fgcolour
         self.done = False
-        
+        self.padding = self.padding + self.border_size
+
+        pygame.font.init()
+
+    def clear(self):
+        pygame.draw.rect(self.screen, self.border_colour, (0,0,self.screen_width,self.screen_height))
+        bs = self.border_size
+        pygame.draw.rect(self.screen, self.background_color, (bs,bs,self.screen_width-bs-bs,self.screen_height-bs-bs))
+
     def initPygame(self, **argd):
         """requests a display surface from the PygameDisplay service, fills
         the color in, and copies it"""
@@ -130,7 +143,8 @@ class TextDisplayer(component): # FIXME - can this be used to replace Ticker ?
         while not self.dataReady("_surface"):
             yield 1
         self.screen = self.recv("_surface")
-        self.screen.fill(self.background_color)
+        self.clear()
+
         self.scratch = self.screen.copy()
         self.send({"REDRAW" : True,
                    "surface" : self.screen}, "_pygame")
@@ -138,12 +152,28 @@ class TextDisplayer(component): # FIXME - can this be used to replace Ticker ?
 
         h = self.screen_height
         w = self.screen_width
-        th = self.text_height
-        self.font = pygame.font.Font(None, th)
+        th = self.text_height                                     # Text height
+
+        self.font = pygame.font.Font(self.font_file, th)
+        th = self.text_height = self.font.get_linesize() # Adjust the rendering of text inside, such that it renders nicer
+
         self.linelen = w/self.font.size('a')[0]
-        self.keepRect = pygame.Rect((0, th),(w, h - th))
-        self.scrollingRect = pygame.Rect((0, 0), (w, h - th))
-        self.writeRect = pygame.Rect((0, h - th), (w, th))
+
+        # First pass approach at adding basic padding into the model
+        pad = self.padding
+
+        padtop = self.padding
+        padbottom = self.padding
+        padleft = self.padding
+        padright = self.padding
+        
+        self.keepRect      = pygame.Rect((0+padleft, th+padtop),(w - padleft - padright, h - th - padtop - padbottom))
+        self.scrollingRect = pygame.Rect((0+padleft, 0+padtop), (w - padleft - padright, h - th - padtop - padbottom))
+        self.writeRect     = pygame.Rect((0+padleft, h - th - padbottom), (w - pad - pad, th))
+
+#        self.keepRect = pygame.Rect((0, th),(w, h - th))
+#        self.scrollingRect = pygame.Rect((0, 0), (w, h - th))
+#        self.writeRect = pygame.Rect((0, h - th), (w, th))
 
     def main(self):
         """Main loop"""
@@ -182,8 +212,10 @@ class TextDisplayer(component): # FIXME - can this be used to replace Ticker ?
         """Updates one line of text to bottom of screen, scrolling old text upwards."""
         line = line.replace('\r', ' ')
         line = line.replace('\n', ' ')
-        lineSurf = self.font.render(line, True, self.text_color)    
-        self.screen.fill(self.background_color)
+        lineSurf = self.font.render(line, True, self.text_color, self.bgcolour)
+
+        self.clear()
+#        self.screen.fill(self.background_color)
         self.screen.blit(self.scratch, self.scrollingRect, self.keepRect)
         self.screen.blit(lineSurf, self.writeRect)
         self.scratch.fill(self.background_color)
