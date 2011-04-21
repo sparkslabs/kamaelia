@@ -351,7 +351,6 @@ cdef object dirac_col_matrix_to_object(dirac_common.dirac_col_matrix_t col_matri
     }
     return result
 
-
 cdef object dirac_transfer_func_to_object(dirac_common.dirac_transfer_func_t trans_func):
     if trans_func == dirac_common.TF_TV:
         return "TF_TV"
@@ -364,4 +363,3 @@ cdef object dirac_transfer_func_to_object(dirac_common.dirac_transfer_func_t tra
     if trans_func == dirac_common.TF_UNDEF:
         return "TF_UNDEF"
     raise DiracDecodeException("INTERNAL ERROR", "transfer function conversion failure")
-
