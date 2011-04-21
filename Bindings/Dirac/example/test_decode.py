@@ -12,8 +12,13 @@ import sys
 import time
 from dirac.dirac_parser import *
 
-infile = open("bar.drc", "rb")
-outfile = open("baz.yuv", "wb")
+# infile = open("bar.drc", "rb")
+# outfile = open("baz.yuv", "wb")
+# infile = open("10frames.drc", "rb")
+# outfile = open("q10frames.yuv", "wb")
+
+infile = open("p10frames.drc", "rb")
+outfile = open("r10frames.yuv", "wb")
 
 decoder = DiracParser(verbose = None)
 framecount = 0
@@ -61,6 +66,6 @@ infile.close()
 outfile.close()
 
 # print "Playing back using : mplayer /home/kamaelian/baz.yuv -demuxer rawvideo -rawvideo w=352:h=288"
-print ("Playing back using : mplayer baz.yuv -demuxer rawvideo -rawvideo w=352:h=288")
-os.system("mplayer baz.yuv -demuxer rawvideo -rawvideo w=352:h=288")
+print ("Playing back using : mplayer r10frames.yuv -demuxer rawvideo -rawvideo w=352:h=288")
+os.system("mplayer r10frames.yuv -demuxer rawvideo -rawvideo w=352:h=288")
 
