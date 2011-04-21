@@ -64,7 +64,7 @@ def encode_source(frame_source, outfile, preset="CIF"):
     done = False
     msg = None
     framecount = 0
-
+    bytes_out_count = 0
     for frame in frame_source:
         # get some frame data in a form that allows this:
         framecount +=1
@@ -82,11 +82,11 @@ def encode_source(frame_source, outfile, preset="CIF"):
                 bytes = encoder.getCompressedData()
                 print ("BYTES TO WRITE", len(bytes))
                 outfile.write(bytes)
+                bytes_out_count += 1
+                print "bytes_out_count", bytes_out_count
 
-#           except DiracEncodeException, de:   # Only works in python 2.X and earlier
-#           except DiracEncodeException as de:   # Only works in python 2.6 and later
-            except DiracEncodeException:             # Works in python 2.3 through python 3.x
-                de = sys.exc_info()[1]         # Works in python 2.3 through python 3.x
+            except DiracEncodeException:        # Works in python 2.3 through python 3.x
+                de = sys.exc_info()[1]           # Works in python 2.3 through python 3.x
                 reason = de.args[0]
                 print ("          looping", reason)
                 if reason =="NEEDDATA":
@@ -104,8 +104,13 @@ def encode_source(frame_source, outfile, preset="CIF"):
                     sys.stderr.flush()
                     raise
 
-infile = open("baz.yuv", "rb")
-outfile = open("quux.drc", "wb")
+    data = encoder.getEndSequence()
+    outfile.write(data)
+    
+    print "bytes_out_count", bytes_out_count
+
+infile = open("10frames.yuv", "rb")
+outfile = open("p10frames.drc", "wb")
 
 frame_source = rawYUVFrameReader(infile, (352,288)) 
 
