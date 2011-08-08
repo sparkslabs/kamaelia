@@ -60,6 +60,8 @@ def parseArgs(args, extraShortArgs="", extraLongArgs=[]):
     
 if __name__=="__main__":
 
+    from Kamaelia.Util.Console import ConsoleEchoer 
+
     dictArgs, optlist, remargs = parseArgs(sys.argv[1:])
 
     if "help" in dictArgs:
@@ -85,6 +87,7 @@ if __name__=="__main__":
             raise ValueError("Makes no sense to navelgaze and use --port option - they're mutually exclusive")
         app = Pipeline(
                  Introspector(),
+                 ConsoleEchoer(forwarder=True),
                  text_to_token_lists(),
                  AxonVisualiser(caption="Axon / Kamaelia Visualiser", **dictArgs)
               ) 
