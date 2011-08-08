@@ -71,7 +71,8 @@ cdef raise_ioerror():
 cdef class Demux:
     cdef int fd
 
-    def __new__(self, card, blocking=1, *args, **kwargs):
+#    def __new__(self, card, blocking=1, *args, **kwargs):
+    def __cinit__(self, card, blocking=1, *args, **kwargs):
         cdef int flags
 
         filename = "/dev/dvb/adapter" + str(card) + "/demux0"

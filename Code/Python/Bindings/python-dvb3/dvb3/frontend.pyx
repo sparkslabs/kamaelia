@@ -368,7 +368,8 @@ cdef class Frontend:
     cdef int fd
     cdef object t
 
-    def __new__(self, card, rw=1, blocking=1, *args, **kwargs):
+#    def __new__(self, card, rw=1, blocking=1, *args, **kwargs):
+    def __cinit__(self, card, rw=1, blocking=1, *args, **kwargs):
         global cfrontend
         cdef int flags
         cdef cfrontend.dvb_frontend_info info
