@@ -37,34 +37,34 @@ class TimerMixIn(object):
 
 if __name__ == "__main__":
     
-    from Kamaelia.Chassis.Pipeline import Pipeline
-    from Axon.ThreadedComponent import threadedcomponent
+    from Kamaelia.Chassis.Graphline import Graphline
     from Kamaelia.Util.Console import ConsoleEchoer
         
     class TestComponent(TimerMixIn,component):
-        def __init__(self):
+        def __init__(self, label, duration):
             super(TestComponent,self).__init__()
+            self.duration = duration
+            self.label = label
             
         def main(self):
-            count = 0
-            
             while True:
             
-                self.startTimer(0.5)
+                self.startTimer(self.duration)
                 while self.timerRunning():
                     self.pause()
                     yield 1
                     
-                self.send(count, "outbox")
-                count=count+1
+                self.send(self.label+"\n", "outbox")
                 
-    class PassItOn(threadedcomponent):
-        def main(self):
-            while True:
-                while self.dataReady("inbox"):
-                    self.send(self.recv("inbox"), "outbox")
-                self.pause()
-    
-                
-    Pipeline(TestComponent(),PassItOn(),ConsoleEchoer()).run()
+
+    Graphline(
+        A = TestComponent("a  ",0.5),
+        B = TestComponent(" b ",0.2),
+        C = TestComponent("  c",5.0),
+        OUT = ConsoleEchoer(),
+        linkages = {
+            ("A", "outbox") : ("OUT", "inbox"),
+            ("B", "outbox") : ("OUT", "inbox"),
+            ("C", "outbox") : ("OUT", "inbox"),
+        }).run()
     
