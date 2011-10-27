@@ -39,8 +39,8 @@ import re
 import sys
 
 PROXYSERVER_PORT=20110
-POP3SERVER_NAME="localhost"
-POP3SERVER_PORT=10110
+POP3SERVER_NAME="pop3.national.core.bbc.co.uk" # "132.185.129.195"
+POP3SERVER_PORT=110 # 10110
 
 PERSISTENCE_STORE_FILENAME="/tmp/pop3proxy.uidls.cache"
 
