@@ -73,7 +73,7 @@ def removeAll(xs, y):
 #   except ValueError as reason:   # python 3
    except ValueError:              # Both
       reason = sys.exc_info()[1]   # Both
-      if not reason.__str__() == "list.index(x): x not in list":
+      if not ("not in list" in reason.__str__()):
          raise ValueError(reason)
 
 def listSubset(requiredList, suppliedList):
