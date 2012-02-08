@@ -73,7 +73,11 @@ def indexdata(request,channelgroup,wrapper=True):
 
     # Find the largest standard deviation recorded for a current programme to act as a normaliser
     for channel in allchannels:
-        data = programmes.objects.filter(channel=channel).latest('timestamp')
+        try:
+            data = programmes.objects.filter(channel=channel).latest('timestamp')
+        except ObjectDoesNotExist:
+            continue
+
         if isinstance(data,object):
             if data.stdevtweets > largeststdev and data.imported==0:
                 largeststdev = data.stdevtweets
@@ -83,29 +87,43 @@ def indexdata(request,channelgroup,wrapper=True):
     if channelgroup == "tv":
         output += "<h2>TV</h2>"
         for channel in tvchannels:
-            data = programmes.objects.filter(channel=channel).latest('timestamp')
-            if isinstance(data,object):
-                if data.imported==0:
-                    # Generate a colour (opacity) based on this channel's standard deviation and the normaliser
-                    opacity = normaliser * data.stdevtweets
-                    if opacity < 0.5:
-                        fontcolour = "#000000"
-                    else:
-                        fontcolour = "#FFFFFF"
-                    bgval = str(int(255 - (255 * opacity)))
-                    bgcolour = "rgb(" + bgval + "," + bgval + "," + bgval + ")"
-                    output += "<div style=\"float: left; margin-right: 5px;\"><a href=\"/channel-graph/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
-                    output += "<div id=\"" + channel + "\" class=\"box\" style=\"width: 77px; background-color: " + bgcolour + "; color: " + fontcolour + "; text-align: center;\"><a href=\"/programmes/" + data.pid + "/\" style=\"text-decoration: none; color: " + fontcolour + "\">" + str(data.totaltweets) + "</a></div></div>"
-                else:
-                    output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channel-graph/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
-                    output += "Off Air</div>"
-            else:
+            try:
+                data = programmes.objects.filter(channel=channel).latest('timestamp')
+            except ObjectDoesNotExist:
+                data = None
+
+            if data == None:
                 output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channel-graph/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
                 output += "No Data</div>"
+            else:
+                if isinstance(data,object):
+                    if data.imported==0:
+                        # Generate a colour (opacity) based on this channel's standard deviation and the normaliser
+                        opacity = normaliser * data.stdevtweets
+                        if opacity < 0.5:
+                            fontcolour = "#000000"
+                        else:
+                            fontcolour = "#FFFFFF"
+                        bgval = str(int(255 - (255 * opacity)))
+                        bgcolour = "rgb(" + bgval + "," + bgval + "," + bgval + ")"
+                        output += "<div style=\"float: left; margin-right: 5px;\"><a href=\"/channel-graph/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
+                        output += "<div id=\"" + channel + "\" class=\"box\" style=\"width: 77px; background-color: " + bgcolour + "; color: " + fontcolour + "; text-align: center;\"><a href=\"/programmes/" + data.pid + "/\" style=\"text-decoration: none; color: " + fontcolour + "\">" + str(data.totaltweets) + "</a></div></div>"
+                    else:
+                        output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channel-graph/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
+                        output += "Off Air</div>"
+                else:
+                    output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channel-graph/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
+                    output += "No Data</div>"
     elif channelgroup == "radio":
         output += "<h2>Radio</h2>"
         for channel in radiochannels:
-            data = programmes.objects.filter(channel=channel).latest('timestamp')
+            try:
+                data = programmes.objects.filter(channel=channel).latest('timestamp')
+            except ObjectDoesNotExist:
+                output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channel-graph/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
+                output += "No Data</div>"
+                continue
+                
             if isinstance(data,object):
                 if data.imported==0:
                     # Generate a colour (opacity) based on this channel's standard deviation and the normaliser
