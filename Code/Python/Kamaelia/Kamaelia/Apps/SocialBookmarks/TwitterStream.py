@@ -270,8 +270,8 @@ def http_basic_auth_header(username, password):
 def parse_url(fullurl):
     p = fullurl.find(":")
     proto = fullurl[:p]
-    if proto.lower() != "http":
-         raise ValueError("Can only handle http urls. You provided"+fullurl)
+    if proto.lower() != "http" and proto.lower() != "https":
+         raise ValueError("Can only handle http / https urls. You provided"+fullurl)
     if fullurl[p+1:p+3] != "//":
          raise ValueError("Invalid HTTP URL."+fullurl)
     fullurl = fullurl[p+3:]
@@ -287,7 +287,10 @@ def parse_url(fullurl):
     p = server.find(":")
     if p == -1:
         host = server
-        port = 80
+        if proto == "http":
+            port = 80
+        elif proto == "https":
+            port = 443
     else:
         host = server[:p]
         port = int(server[p+1:])
@@ -300,6 +303,8 @@ from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.File.Writing import SimpleFileWriter
 from Kamaelia.Util.PureTransformer import PureTransformer
 from Kamaelia.Internet.TCPClient import TCPClient
+from Kamaelia.Util.OneShot import OneShot
+from Kamaelia.Util.Console import ConsoleEchoer
 
 def HTTPDataStreamingClient(fullurl, method="GET", body=None, headers={}, username=None, password=None, proxy=None):
     # NOTE: username not supported yet
@@ -318,9 +323,28 @@ def HTTPDataStreamingClient(fullurl, method="GET", body=None, headers={}, userna
         request = path
         req_host , req_port = host, port
 
+    if proto == "https":
+        print "Attempting SSL...", req_host, req_port
+        client_connection = Graphline(
+               MAKESSL = OneShot(" make ssl "),
+               CONNECTION = TCPClient(req_host, req_port, wait_for_serverclose=True),
+               linkages = {
+                   ("MAKESSL", "outbox"): ("CONNECTION", "makessl"),
+
+                   ("self", "inbox") : ("CONNECTION", "inbox"),
+                   ("self", "control") : ("CONNECTION", "control"),
+                   ("CONNECTION", "outbox"): ("self", "outbox"),
+                   ("CONNECTION", "signal"): ("self", "signal"),
+               }
+        )
+    else:
+        client_connection = TCPClient(req_host, req_port, wait_for_serverclose=True)
+
     return Pipeline(
                     HTTPClientRequest(url=request, host=host, method=method, postbody=body, headers=headers),
-                    TCPClient(req_host, req_port, wait_for_serverclose=True),
+#                    TCPClient(req_host, req_port, wait_for_serverclose=True),
+                    client_connection,
+#                    ConsoleEchoer(forwarder=True,use_repr=True),
                     HTTPClientResponseHandler(suppress_header = True),
                    )
 
@@ -405,7 +429,7 @@ class TwitterStream(threadedcomponent):
         self.link((self.datacapture, "outbox"), (self, "tweetsin"))
 
     def main(self):
-        self.url = "http://stream.twitter.com/1/statuses/filter.json"
+        self.url = "https://stream.twitter.com/1/statuses/filter.json"
 
         self.headers = {
             "Accept-Encoding": "identity",
