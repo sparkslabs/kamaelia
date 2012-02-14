@@ -20,36 +20,247 @@
 # limitations under the License.
 
 from Kamaelia.Chassis.Graphline import Graphline
+from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Internet.TCPClient import TCPClient
 from Kamaelia.Util.Console import ConsoleEchoer, ConsoleReader
 from Kamaelia.Util.OneShot import OneShot
 
-print """
-This is a simple demonstration program that shows that it is possible to
-build simple clients for manually connecting to SSL based sources - such
-as HTTPS sources.
+import Axon
+from Axon.Component import component
 
-This program connects the the subversion server for Kamaelia on port
-443 on sourceforge - ie on kamaelia.svn.sourceforge.net. When you are
-connected you are connected through an encrypted connection, which means
-you could type the following and get code back from the server:
+class ShutdownNow(Exception):
+    pass
 
-GET /svnroot/kamaelia/trunk/Code/Python/Kamaelia/Examples/SimpleGraphicalApps/Ticker/Ulysses HTTP/1.0
-Host: kamaelia.svn.sourceforge.net
 
-That's pretty much the purpose of this example program.
-"""
 
-Graphline(
-    MAKESSL = OneShot(" make ssl "), # The actual message here is not necessary
-    CONSOLE = ConsoleReader(),
-    ECHO = ConsoleEchoer(),
-    CONNECTION = TCPClient("kamaelia.svn.sourceforge.net", 443),
-    linkages = {
-        ("MAKESSL", "outbox"): ("CONNECTION", "makessl"),
-        ("CONSOLE", "outbox"): ("CONNECTION", "inbox"),
-        ("CONSOLE", "signal"): ("CONNECTION", "control"),
-        ("CONNECTION", "outbox"): ("ECHO", "inbox"),
-        ("CONNECTION", "signal"): ("ECHO", "control"),
+class Tagger(component):
+    Inboxes = { "inbox" : "normal", "control" : "normal", "togglebox" : "extra" }
+    def __init__(self, tag):
+        super(Tagger, self).__init__()
+        self.tag = tag
+        self.control_message = None
+
+    def checkControl(self):
+        for message in self.Inbox("control"): # Cleanly clear the inbox
+            self.control_message = message
+        if self.control_message:
+            raise ShutdownNow
+
+    def main(self):
+        try:
+            while True:
+                for data in self.Inbox("inbox"):
+                    self.send(self.tag + " : " + str(data),  "outbox")
+                for data in self.Inbox("togglebox"):
+                    print "toggling"
+                    self.tag = self.tag[-1::-1] # Reverse it.
+                
+                self.checkControl()
+                
+                if not self.anyReady():
+                    self.pause()
+                yield 1
+        except ShutdownNow:
+            pass
+
+        if self.control_message:
+            self.send(self.control_message, "signal")
+        else:
+            self.send(Axon.Ipc.producerFinished(), "signal")
+
+import sys
+class Sink(component):
+    def __init__(self, name):
+        super(Sink, self).__init__()
+        self.control_message = None
+
+    def checkControl(self):
+        for message in self.Inbox("control"): # Cleanly clear the inbox
+            self.control_message = message
+        if self.control_message:
+            raise ShutdownNow
+
+    def main(self):
+        try:
+            while True:
+                for data in self.Inbox("inbox"):
+                    sys.stdout.write( self.name )
+                    sys.stdout.write( " : ")
+                    sys.stdout.write( str( data) )
+                
+                self.checkControl()
+
+                if not self.anyReady():
+                    self.pause()
+                yield 1
+        except ShutdownNow:
+            pass
+
+        print "Shutting down", self
+        if self.control_message:
+            self.send(self.control_message, "signal")
+        else:
+            self.send(Axon.Ipc.producerFinished(), "signal")
+
+import pprint
+
+# Axon.Box.ShowAllTransits = True
+# Axon.Component.TraceAllSends = True
+from Axon.Ipc import shutdownMicroprocess, producerFinished
+
+class With(component):
+   Inboxes = { "inbox" : "Normal - unused",
+               "control" : "Normal - unimplemented",
+               "_control" : "From subcomponents - first component to shutdown has message passed on to others that are not item",
+             }
+   Outboxes = {
+                "outbox" : "Normal - unused",
+                "signal" : "Normal - unimplemented",
+                "_signal" :  "To subcomponents - used to shutdown any subcomponents"
+              }
+   def __init__(self, item, **argv):
+       super(With, self).__init__()
+       self.item = item 
+       argv = dict(argv) # Shallow copy, in case argspec is reused by client
+       self.sequence = argv["sequence"]
+       self.components = argv
+       self.components["item"] = item
+       del argv["sequence"]
+
+   def wrappersDone(self):
+       for child in self.childComponents():
+           if child._isStopped():
+#               print "One has finished, so shutdown the rest"
+               return True
+       return False
+
+   def main(self):
+       self.addChildren(self.item)
+       self.item.activate()
+
+       for source in self.sequence[0]:
+           links = []
+           sink = self.sequence[0][source]
+
+           if sink[1] == source[1] == "inbox":
+              L = self.link( (self.components[source[0]], source[1]), (self.components[sink[0]] , sink[1]), passthrough=1 )
+           elif sink[1] == source[1] == "outbox":
+              L = self.link( (self.components[source[0]], source[1]), (self.components[sink[0]] , sink[1]), passthrough=2 )
+           else:
+              L = self.link( (self.components[source[0]], source[1]), (self.components[sink[0]] , sink[1]) )
+
+           links.append(L)
+           
+           if self.components[source[0]] not in self.childComponents():
+               self.link((self.components[source[0]], "signal"), (self, "_control"))
+               self.addChildren( self.components[source[0]])
+               self.components[source[0]].activate()
+
+           if self.components[sink[0]] not in self.childComponents():
+               self.link((self.components[sink[0]], "signal"), (self, "_control"))
+               self.addChildren( self.components[sink[0]])
+               self.components[sink[0]].activate()
+           else:
+               print "Not Adding", sink
+
+       while True:
+            for message in self.Inbox("_control"):
+               print "Message", message
+               print self.childComponents()
+               for child in self.childComponents():
+                    if child == self.item:
+                        continue
+
+                    L = self.link( (self, "_signal"), (child, "control"))
+                    self.send(message, "_signal")
+                    self.unlink(thelinkage=L)
+
+            if self.wrappersDone():
+                for child in self.childComponents():
+                    if child == self.item:
+                        continue
+                    print child._isStopped(), child
+                break
+
+            yield 1
+
+           
+
+       print
+       print "the sequence is"
+       pprint.pprint(self.sequence)
+       print
+       print "Components"
+       pprint.pprint(self.components)
+       print
+
+       self.link( (self, "_signal"), (self.item, "control") )
+
+       print "---------------------------------------------------------------"
+
+       self.send( producerFinished(), "_signal")
+
+
+from Kamaelia.Util.DataSource import DataSource
+
+
+if 1:
+    With(item = Tagger("XXXXXXXXXXXXXXXXXXXXXXXx"),
+
+         SourceOne  = DataSource(["hello\n", "world\n"]),
+         SinkOne    = Sink("SinkOne"),
+         MiddleStep = OneShot("MiddleStep"),
+         
+         sequence = [
+             { ("SourceOne", "outbox") : ("item", "inbox"), ("item","outbox") : ("SinkOne","inbox") },
+             { ("MiddleStep", "outbox") : ("item", "togglebox") },
+         ]
+    ).run()
+
+
+else:
+    Pipeline( DataSource(["hello\n", "world\n"]),
+              Tagger("mytag"),
+              Sink("Hello")
+    ).run()
+
+if 0:
+
+    Req = {
+       "method" : "GET",
+       "path" : "",
+       "http_version" : "1.0",
+       "headers" : {
+           "Host" : "kamaelia.svn.sourceforge.net"
+       }
     }
-).run()
+
+    With(item = TCPClient("www-cache", 8080),
+
+         ProxyReq  = ProxyReq("kamaelia.svn.sourceforge.net", 443),
+         ProxyResp = ProxyResp(),
+         SSL_Maker = OneShot(),
+         HTTPReq   = HTTPReq(Request),
+         HTTPResp  = HTTPResp(Request),
+         sequence = [ 
+            { ("ProxyReq", "outbox")   : ("item", "inbox"), ("item", "outbox") : ("ProxyResponse", "inbox") },
+            { ("SSL_Maker", "outbox") : ("item", "makessl") },
+            { ("HTTPReq", "outbox")   : ("item", "inbox"), ("item", "outbox") : ("HTTPResponse", "inbox") },
+         ]
+    )
+
+
+if 0:
+    Graphline(
+        MAKESSL = OneShot(" make ssl "), # The actual message here is not necessary
+        CONSOLE = ConsoleReader(),
+        ECHO = ConsoleEchoer(),
+        CONNECTION = TCPClient("kamaelia.svn.sourceforge.net", 443),
+        linkages = {
+            ("MAKESSL", "outbox"): ("CONNECTION", "makessl"),
+            ("CONSOLE", "outbox"): ("CONNECTION", "inbox"),
+            ("CONSOLE", "signal"): ("CONNECTION", "control"),
+            ("CONNECTION", "outbox"): ("ECHO", "inbox"),
+            ("CONNECTION", "signal"): ("ECHO", "control"),
+        }
+    ).run()
