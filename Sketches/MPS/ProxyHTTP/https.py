@@ -27,13 +27,130 @@ from Kamaelia.Util.OneShot import OneShot
 
 import Axon
 from Axon.Component import component
+from Axon.Ipc import producerFinished, status
+
 
 class ShutdownNow(Exception):
     pass
 
+class FailingComponent(component):
+    def __init__(self, msg=None):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
+        super(FailingComponent, self).__init__()
+        self.msg = msg
+    
+    def main(self):
+        """Main loop"""
+        self.send(self.msg,"outbox")
+        yield 1
+        self.send(status("Fail"),"signal")
+
+class With(Axon.Component.component):
+   Inboxes = { "inbox" : "Normal - unused",
+               "control" : "Normal - unimplemented",
+               "_control" : "From subcomponents - first component to shutdown has message passed on to others that are not item",
+             }
+   Outboxes = {
+                "outbox" : "Normal - unused",
+                "signal" : "Normal - unimplemented",
+                "_signal" :  "To subcomponents - used to shutdown any subcomponents"
+              }
+   def __init__(self, item, **argv):
+       super(With, self).__init__()
+       self.item = item 
+       argv = dict(argv) # Shallow copy, in case argspec is reused by client
+       self.sequence = argv["sequence"]
+       self.components = argv
+       self.components["item"] = item
+       del argv["sequence"]
+
+   def anyStopped(self):
+       for child in self.childComponents():
+           if child._isStopped():
+               # At least one has stopped
+               return True
+       return False
+
+   def main(self):
+       self.addChildren(self.item)
+       self.item.activate()
+
+       for graphstep in self.sequence:
+           links = []
+           stopping = 0
+           dontcontinue = False
+           for source in graphstep:
+               sink = graphstep[source]
+
+               if sink[1] == source[1] == "inbox":
+                  L = self.link( (self.components[source[0]], source[1]), (self.components[sink[0]] , sink[1]), passthrough=1 )
+               elif sink[1] == source[1] == "outbox":
+                  L = self.link( (self.components[source[0]], source[1]), (self.components[sink[0]] , sink[1]), passthrough=2 )
+               else:
+                  L = self.link( (self.components[source[0]], source[1]), (self.components[sink[0]] , sink[1]) )
+
+               links.append(L)
+               
+               if self.components[source[0]] not in self.childComponents():
+                   self.link((self.components[source[0]], "signal"), (self, "_control"))
+                   self.addChildren( self.components[source[0]])
+                   self.components[source[0]].activate()
+
+               if self.components[sink[0]] not in self.childComponents():
+                   self.link((self.components[sink[0]], "signal"), (self, "_control"))
+                   self.addChildren( self.components[sink[0]])
+                   self.components[sink[0]].activate()
+
+           while True:
+               
+               # Let sub graphstep run, and wait for completion. Sleep as much as possible.
+               if not self.anyReady():
+                   self.pause()
+                   yield 1
+
+               for message in self.Inbox("_control"):
+                   if isinstance(message,status):
+                       print "Caught Status Message"
+                       if message.status == "fail":
+                           # Don't abort early, but don't continue after this graphstep
+                           dont_continue = True
+                   for child in self.childComponents():
+                        if child == self.item:
+                            continue
+
+                        L = self.link( (self, "_signal"), (child, "control"))
+                        self.send(message, "_signal")
+                        self.unlink(thelinkage=L)
+
+               if self.anyStopped():
+                   all_stopped = True # Assume
+                   for child in self.childComponents():
+                       # Check assumption
+                       if child == self.item:
+                           continue
+                       
+                       all_stopped = all_stopped and child._isStopped()
+                   if all_stopped:
+                       break
+                   else:
+                       stopping += 1
+                       if (stopping % 1000) == 0:
+                           print "Warning one child exited, but others haven't after", stopping, "loops"
+
+               yield 1
+
+           for link in links: 
+               self.unlink(thelinkage=link)
+
+       self.link( (self, "_signal"), (self.item, "control") )
+       self.send( producerFinished(), "_signal")
 
 
-class Tagger(component):
+import sys
+from Kamaelia.Util.DataSource import DataSource
+
+
+class Tagger(Axon.Component.component):
     Inboxes = { "inbox" : "normal", "control" : "normal", "togglebox" : "extra" }
     def __init__(self, tag):
         super(Tagger, self).__init__()
@@ -51,6 +168,7 @@ class Tagger(component):
             while True:
                 for data in self.Inbox("inbox"):
                     self.send(self.tag + " : " + str(data),  "outbox")
+
                 for data in self.Inbox("togglebox"):
                     print "toggling"
                     self.tag = self.tag[-1::-1] # Reverse it.
@@ -63,13 +181,13 @@ class Tagger(component):
         except ShutdownNow:
             pass
 
+        print "exitting tagger"
         if self.control_message:
             self.send(self.control_message, "signal")
         else:
             self.send(Axon.Ipc.producerFinished(), "signal")
 
-import sys
-class Sink(component):
+class Sink(Axon.Component.component):
     def __init__(self, name):
         super(Sink, self).__init__()
         self.control_message = None
@@ -96,124 +214,30 @@ class Sink(component):
         except ShutdownNow:
             pass
 
-        print "Shutting down", self
+        self.send(status("success"), "signal")
         if self.control_message:
             self.send(self.control_message, "signal")
         else:
             self.send(Axon.Ipc.producerFinished(), "signal")
 
-import pprint
-
-# Axon.Box.ShowAllTransits = True
-# Axon.Component.TraceAllSends = True
-from Axon.Ipc import shutdownMicroprocess, producerFinished
-
-class With(component):
-   Inboxes = { "inbox" : "Normal - unused",
-               "control" : "Normal - unimplemented",
-               "_control" : "From subcomponents - first component to shutdown has message passed on to others that are not item",
-             }
-   Outboxes = {
-                "outbox" : "Normal - unused",
-                "signal" : "Normal - unimplemented",
-                "_signal" :  "To subcomponents - used to shutdown any subcomponents"
-              }
-   def __init__(self, item, **argv):
-       super(With, self).__init__()
-       self.item = item 
-       argv = dict(argv) # Shallow copy, in case argspec is reused by client
-       self.sequence = argv["sequence"]
-       self.components = argv
-       self.components["item"] = item
-       del argv["sequence"]
-
-   def wrappersDone(self):
-       for child in self.childComponents():
-           if child._isStopped():
-#               print "One has finished, so shutdown the rest"
-               return True
-       return False
-
-   def main(self):
-       self.addChildren(self.item)
-       self.item.activate()
-
-       for source in self.sequence[0]:
-           links = []
-           sink = self.sequence[0][source]
-
-           if sink[1] == source[1] == "inbox":
-              L = self.link( (self.components[source[0]], source[1]), (self.components[sink[0]] , sink[1]), passthrough=1 )
-           elif sink[1] == source[1] == "outbox":
-              L = self.link( (self.components[source[0]], source[1]), (self.components[sink[0]] , sink[1]), passthrough=2 )
-           else:
-              L = self.link( (self.components[source[0]], source[1]), (self.components[sink[0]] , sink[1]) )
-
-           links.append(L)
-           
-           if self.components[source[0]] not in self.childComponents():
-               self.link((self.components[source[0]], "signal"), (self, "_control"))
-               self.addChildren( self.components[source[0]])
-               self.components[source[0]].activate()
-
-           if self.components[sink[0]] not in self.childComponents():
-               self.link((self.components[sink[0]], "signal"), (self, "_control"))
-               self.addChildren( self.components[sink[0]])
-               self.components[sink[0]].activate()
-           else:
-               print "Not Adding", sink
-
-       while True:
-            for message in self.Inbox("_control"):
-               print "Message", message
-               print self.childComponents()
-               for child in self.childComponents():
-                    if child == self.item:
-                        continue
-
-                    L = self.link( (self, "_signal"), (child, "control"))
-                    self.send(message, "_signal")
-                    self.unlink(thelinkage=L)
-
-            if self.wrappersDone():
-                for child in self.childComponents():
-                    if child == self.item:
-                        continue
-                    print child._isStopped(), child
-                break
-
-            yield 1
-
-           
-
-       print
-       print "the sequence is"
-       pprint.pprint(self.sequence)
-       print
-       print "Components"
-       pprint.pprint(self.components)
-       print
-
-       self.link( (self, "_signal"), (self.item, "control") )
-
-       print "---------------------------------------------------------------"
-
-       self.send( producerFinished(), "_signal")
-
-
-from Kamaelia.Util.DataSource import DataSource
-
-
 if 1:
-    With(item = Tagger("XXXXXXXXXXXXXXXXXXXXXXXx"),
+
+
+    With(item = Tagger("^^''--..__"),
 
          SourceOne  = DataSource(["hello\n", "world\n"]),
          SinkOne    = Sink("SinkOne"),
          MiddleStep = OneShot("MiddleStep"),
+         FailStep   = FailingComponent("bla"),
+
+         SourceTwo  = DataSource(["game\n", "over\n"]),
+         SinkTwo    = Sink("SinkTwo"),
          
          sequence = [
              { ("SourceOne", "outbox") : ("item", "inbox"), ("item","outbox") : ("SinkOne","inbox") },
              { ("MiddleStep", "outbox") : ("item", "togglebox") },
+             { ("FailStep", "outbox") : ("item", "togglebox") },
+             { ("SourceTwo", "outbox") : ("item", "inbox"), ("item","outbox") : ("SinkTwo","inbox") },
          ]
     ).run()
 
