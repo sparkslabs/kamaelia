@@ -464,7 +464,7 @@ class TwitterStream(threadedcomponent):
                 counter = 0
                 tweetdata = self.recv("tweetsin")
                 if tweetdata[0] == "\r\n":
-                    blanklinkcount += 1
+                    blanklinecount += 1
                 else:
                     blanklinecount = 0
                 self.send(tweetdata,"outbox")
