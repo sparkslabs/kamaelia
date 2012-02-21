@@ -19,19 +19,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import sys
+import Axon
+from Axon.Component import component
+from Axon.Ipc import producerFinished, status
+
 from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Internet.TCPClient import TCPClient
 from Kamaelia.Util.Console import ConsoleEchoer, ConsoleReader
 from Kamaelia.Util.OneShot import OneShot
-
-import Axon
-from Axon.Component import component
-from Axon.Ipc import producerFinished, status
+from Kamaelia.Util.DataSource import DataSource
 
 
 class ShutdownNow(Exception):
     pass
+
+class Pauser(Axon.ThreadedComponent.threadedcomponent):
+    tag = "default"
+    def main(self):
+        print "Pausing", self.tag
+        self.pause(1)
+        print "Pausing", self.tag
+        self.send(producerFinished(), "signal")
 
 class FailingComponent(component):
     def __init__(self, msg=None):
@@ -110,8 +120,8 @@ class With(Axon.Component.component):
 
                for message in self.Inbox("_control"):
                    if isinstance(message,status):
-                       print "Caught Status Message"
-                       if message.status == "fail":
+                       print "Caught Status Message", message, message.status()
+                       if message.status() == "fail":
                            # Don't abort early, but don't continue after this graphstep
                            dont_continue = True
                    for child in self.childComponents():
@@ -144,11 +154,6 @@ class With(Axon.Component.component):
 
        self.link( (self, "_signal"), (self.item, "control") )
        self.send( producerFinished(), "_signal")
-
-
-import sys
-from Kamaelia.Util.DataSource import DataSource
-
 
 class Tagger(Axon.Component.component):
     Inboxes = { "inbox" : "normal", "control" : "normal", "togglebox" : "extra" }
@@ -191,12 +196,14 @@ class Sink(Axon.Component.component):
     def __init__(self, name):
         super(Sink, self).__init__()
         self.control_message = None
+        self.had_response = False
 
     def checkControl(self):
         for message in self.Inbox("control"): # Cleanly clear the inbox
             self.control_message = message
         if self.control_message:
-            raise ShutdownNow
+            if self.had_response:
+                raise ShutdownNow
 
     def main(self):
         try:
@@ -205,6 +212,7 @@ class Sink(Axon.Component.component):
                     sys.stdout.write( self.name )
                     sys.stdout.write( " : ")
                     sys.stdout.write( str( data) )
+                    self.had_response = True
                 
                 self.checkControl()
 
@@ -220,8 +228,51 @@ class Sink(Axon.Component.component):
         else:
             self.send(Axon.Ipc.producerFinished(), "signal")
 
-if 1:
+testing = 7
 
+if testing == 6:
+
+    With(item = TCPClient("127.0.0.1", 8888),
+
+         SourceOne  = DataSource(["CONNECT kamaelia.svn.sourceforge.net:443 HTTP/1.0\r\n", "\r\n"]),
+         SinkOne    = Sink("SinkOne"),
+
+         MiddleStep = OneShot(" make ssl "),
+
+         SourceTwo  = DataSource(["GET /svnroot/kamaelia/trunk/Code/Python/Kamaelia/Examples/SimpleGraphicalApps/Ticker/Ulysses HTTP/1.0\r\n",
+                                  "Host: kamaelia.svn.sourceforge.net\r\n",
+                                  "\r\n"]),
+         SinkTwo    = Sink("SinkTwo"),
+         
+         sequence = [
+             { ("SourceOne", "outbox") : ("item", "inbox"), ("item","outbox") : ("SinkOne","inbox") },
+             { ("MiddleStep", "outbox") : ("item", "makessl") },
+             { ("SourceTwo", "outbox") : ("item", "inbox"), ("item","outbox") : ("SinkTwo","inbox") },
+         ]
+    ).run()
+
+if testing == 5:
+
+    With(item = Tagger("^^''--..__"),
+
+         SourceOne  = DataSource(["CONNECT kamaelia.svn.sourceforge.net:443 HTTP\r\n", "\r\n"]),
+         SinkOne    = Sink("SinkOne"),
+         MiddleStep = OneShot("MiddleStep"),
+
+         SourceTwo  = DataSource(["GET /svnroot/kamaelia/trunk/Code/Python/Kamaelia/Examples/SimpleGraphicalApps/Ticker/Ulysses HTTP/1.0\r\n",
+                                  "Host: kamaelia.svn.sourceforge.net\r\n",
+                                  "\r\n"]),
+         SinkTwo    = Sink("SinkTwo"),
+         
+         sequence = [
+             { ("SourceOne", "outbox") : ("item", "inbox"), ("item","outbox") : ("SinkOne","inbox") },
+             { ("MiddleStep", "outbox") : ("item", "togglebox") },
+             { ("SourceTwo", "outbox") : ("item", "inbox"), ("item","outbox") : ("SinkTwo","inbox") },
+         ]
+    ).run()
+
+    
+if testing == 4:
 
     With(item = Tagger("^^''--..__"),
 
@@ -242,13 +293,13 @@ if 1:
     ).run()
 
 
-else:
+if testing == 3:
     Pipeline( DataSource(["hello\n", "world\n"]),
               Tagger("mytag"),
               Sink("Hello")
     ).run()
 
-if 0:
+if testing == 2:
 
     Req = {
        "method" : "GET",
@@ -274,7 +325,7 @@ if 0:
     )
 
 
-if 0:
+if testing == 1:
     Graphline(
         MAKESSL = OneShot(" make ssl "), # The actual message here is not necessary
         CONSOLE = ConsoleReader(),
@@ -288,3 +339,28 @@ if 0:
             ("CONNECTION", "signal"): ("ECHO", "control"),
         }
     ).run()
+
+if testing == 7:
+    proxy, proxyport = ("127.0.0.1", 8888)
+    webhost, webport = ( "kamaelia.svn.sourceforge.net", 443 )
+    method = "GET"
+    path = "/svnroot/kamaelia/trunk/Code/Python/Kamaelia/Examples/SimpleGraphicalApps/Ticker/Ulysses"
+    With(item = TCPClient(proxy, proxyport),
+
+         SourceOne  = DataSource([("CONNECT %s:%d HTTP/1.0\r\n" % (webhost, webport)), "\r\n"]),
+         SinkOne    = Sink("SinkOne"),
+
+         MiddleStep = OneShot(" make ssl "),
+
+         SourceTwo  = DataSource([("%s %s HTTP/1.0\r\n" % (method,path)),
+                                  ("Host: %s\r\n" % (webhost,) ),
+                                  "\r\n"]),
+         SinkTwo    = Sink("SinkTwo"),
+         
+         sequence = [
+             { ("SourceOne", "outbox") : ("item", "inbox"), ("item","outbox") : ("SinkOne","inbox") },
+             { ("MiddleStep", "outbox") : ("item", "makessl") },
+             { ("SourceTwo", "outbox") : ("item", "inbox"), ("item","outbox") : ("SinkTwo","inbox") },
+         ]
+    ).run()
+
