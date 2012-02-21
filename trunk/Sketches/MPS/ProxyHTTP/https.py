@@ -24,42 +24,11 @@ import Axon
 from Axon.Component import component
 from Axon.Ipc import producerFinished, status, shutdownMicroprocess
 
-from Kamaelia.Chassis.Graphline import Graphline
-from Kamaelia.Chassis.Pipeline import Pipeline
-from Kamaelia.Internet.TCPClient import TCPClient
-from Kamaelia.Util.Console import ConsoleEchoer, ConsoleReader
-from Kamaelia.Util.OneShot import OneShot
-from Kamaelia.Util.DataSource import DataSource
-from Kamaelia.Util.PureTransformer import PureTransformer
-
-testing = 10
-
 class ShutdownNow(Exception):
     pass
 
 class GeneralFail(Exception):
     pass
-
-class Pauser(Axon.ThreadedComponent.threadedcomponent):
-    tag = "default"
-    def main(self):
-        print "Pausing", self.tag
-        self.pause(1)
-        print "Pausing", self.tag
-        self.send(producerFinished(), "signal")
-
-class FailingComponent(component):
-    def __init__(self, msg=None):
-        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
-        super(FailingComponent, self).__init__()
-        self.msg = msg
-    
-    def main(self):
-        """Main loop"""
-        self.send(self.msg,"outbox")
-        yield 1
-        self.send(status("Fail"),"signal")
-
 
 class ConnectRequest(component):
     desthost = "127.0.0.1"
@@ -366,8 +335,36 @@ class Sink(Axon.Component.component):
         else:
             self.send(Axon.Ipc.producerFinished(), "signal")
 
+class Pauser(Axon.ThreadedComponent.threadedcomponent):
+    tag = "default"
+    def main(self):
+        print "Pausing", self.tag
+        self.pause(1)
+        print "Pausing", self.tag
+        self.send(producerFinished(), "signal")
+
+class FailingComponent(component):
+    def __init__(self, msg=None):
+        """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
+        super(FailingComponent, self).__init__()
+        self.msg = msg
+    
+    def main(self):
+        """Main loop"""
+        self.send(self.msg,"outbox")
+        yield 1
+        self.send(status("Fail"),"signal")
+
+
 
 if __name__ == "__main__":
+
+    from Kamaelia.Util.DataSource import DataSource
+    from Kamaelia.Chassis.Graphline import Graphline
+    from Kamaelia.Chassis.Pipeline import Pipeline
+    from Kamaelia.Internet.TCPClient import TCPClient
+    from Kamaelia.Util.Console import ConsoleEchoer, ConsoleReader
+    from Kamaelia.Util.OneShot import OneShot
 
     print 
     if len(sys.argv)>1:
