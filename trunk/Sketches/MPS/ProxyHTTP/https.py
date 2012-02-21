@@ -34,7 +34,6 @@ from Kamaelia.Util.PureTransformer import PureTransformer
 
 testing = 10
 
-
 class ShutdownNow(Exception):
     pass
 
@@ -129,14 +128,12 @@ class HandleConnectRequest(component):
                             raise GeneralFail("HTTP Response Line Parse Failure: "+ repr(rline))
                         http_status = rline[:p]
                         human_status = rline[p+1:]
-                        print (http_version,http_status,human_status)
+
+                        if 0:
+                            print (http_version,http_status,human_status)
 
                         if http_status != "200":
                             raise GeneralFail("HTTP Connect Failure : "+ repr(rline))
-
-                    sys.stdout.write(self.name + " : ")
-                    sys.stdout.write(line)
-                    sys.stdout.flush()
 
                     self.had_response = True
 
@@ -223,6 +220,19 @@ class With(Axon.Component.component):
              self.send(message, "_signal")
              self.unlink(thelinkage=L)
 
+    def handleGraphstepShutdown(self):
+                dontcontinue = False
+                message = None
+                for message in self.Inbox("_control"):
+                    if isinstance(message,status):
+                        if message.status() == "fail":
+                            # Don't abort early, but don't continue after this graphstep
+                            message = shutdownMicroprocess()
+                            dontcontinue = True
+                    
+                    self.shutdownChildComponents(message)
+                return dontcontinue
+
     def main(self):
         self.addChildren(self.item)
         self.item.activate()
@@ -240,14 +250,7 @@ class With(Axon.Component.component):
                     self.pause()
                     yield 1
 
-                for message in self.Inbox("_control"):
-                    if isinstance(message,status):
-                        if message.status() == "fail":
-                            # Don't abort early, but don't continue after this graphstep
-                            message = shutdownMicroprocess()
-                            dontcontinue = True
-                    
-                    self.shutdownChildComponents(message)
+                dontcontinue = self.handleGraphstepShutdown()
 
                 if self.anyStopped():
                     all_stopped = True # Assume
@@ -280,6 +283,12 @@ class With(Axon.Component.component):
         self.link( (self, "_signal"), (self.item, "control") )
         self.send( producerFinished(), "_signal")
 
+# -----------------------------------------------------------------------------------
+# Components after this comment block are for debugging and testing purposes.
+# They've been left available in the module namespace however since with work
+# they may become useful.
+# -----------------------------------------------------------------------------------
+
 class Tagger(Axon.Component.component):
     Inboxes = { "inbox" : "normal", "control" : "normal", "togglebox" : "extra" }
     def __init__(self, tag):
@@ -290,6 +299,8 @@ class Tagger(Axon.Component.component):
     def checkControl(self):
         for message in self.Inbox("control"): # Cleanly clear the inbox
             self.control_message = message
+        if isinstance(self.control_message,shutdownMicroprocess):
+            raise ShutdownNow
         if self.control_message:
             raise ShutdownNow
 
@@ -326,6 +337,8 @@ class Sink(Axon.Component.component):
     def checkControl(self):
         for message in self.Inbox("control"): # Cleanly clear the inbox
             self.control_message = message
+        if isinstance(self.control_message,shutdownMicroprocess):
+            raise ShutdownNow
         if self.control_message:
             if self.had_response:
                 raise ShutdownNow
@@ -354,210 +367,219 @@ class Sink(Axon.Component.component):
             self.send(Axon.Ipc.producerFinished(), "signal")
 
 
-if testing == 6:
+if __name__ == "__main__":
 
-    With(item = TCPClient("127.0.0.1", 8888),
-
-         SourceOne  = DataSource(["CONNECT kamaelia.svn.sourceforge.net:443 HTTP/1.0\r\n", "\r\n"]),
-         SinkOne    = Sink("SinkOne"),
-
-         MiddleStep = OneShot(" make ssl "),
-
-         SourceTwo  = DataSource(["GET /svnroot/kamaelia/trunk/Code/Python/Kamaelia/Examples/SimpleGraphicalApps/Ticker/Ulysses HTTP/1.0\r\n",
-                                  "Host: kamaelia.svn.sourceforge.net\r\n",
-                                  "\r\n"]),
-         SinkTwo    = Sink("SinkTwo"),
-         
-         sequence = [
-             { ("SourceOne", "outbox") : ("item", "inbox"), ("item","outbox") : ("SinkOne","inbox") },
-             { ("MiddleStep", "outbox") : ("item", "makessl") },
-             { ("SourceTwo", "outbox") : ("item", "inbox"), ("item","outbox") : ("SinkTwo","inbox") },
-         ]
-    ).run()
-
-if testing == 5:
-
-    With(item = Tagger("^^''--..__"),
-
-         SourceOne  = DataSource(["CONNECT kamaelia.svn.sourceforge.net:443 HTTP\r\n", "\r\n"]),
-         SinkOne    = Sink("SinkOne"),
-         MiddleStep = OneShot("MiddleStep"),
-
-         SourceTwo  = DataSource(["GET /svnroot/kamaelia/trunk/Code/Python/Kamaelia/Examples/SimpleGraphicalApps/Ticker/Ulysses HTTP/1.0\r\n",
-                                  "Host: kamaelia.svn.sourceforge.net\r\n",
-                                  "\r\n"]),
-         SinkTwo    = Sink("SinkTwo"),
-         
-         sequence = [
-             { ("SourceOne", "outbox") : ("item", "inbox"), ("item","outbox") : ("SinkOne","inbox") },
-             { ("MiddleStep", "outbox") : ("item", "togglebox") },
-             { ("SourceTwo", "outbox") : ("item", "inbox"), ("item","outbox") : ("SinkTwo","inbox") },
-         ]
-    ).run()
-
-    
-if testing == 4:
-
-    With(item = Tagger("^^''--..__"),
-
-         SourceOne  = DataSource(["hello\n", "world\n"]),
-         SinkOne    = Sink("SinkOne"),
-         MiddleStep = OneShot("MiddleStep"),
-         FailStep   = FailingComponent("bla"),
-
-         SourceTwo  = DataSource(["game\n", "over\n"]),
-         SinkTwo    = Sink("SinkTwo"),
-         
-         sequence = [
-             { ("SourceOne", "outbox") : ("item", "inbox"), ("item","outbox") : ("SinkOne","inbox") },
-             { ("MiddleStep", "outbox") : ("item", "togglebox") },
-             { ("FailStep", "outbox") : ("item", "togglebox") },
-             { ("SourceTwo", "outbox") : ("item", "inbox"), ("item","outbox") : ("SinkTwo","inbox") },
-         ]
-    ).run()
+    print 
+    if len(sys.argv)>1:
+        testing = int(sys.argv[1])
+    else:
+        testing = 10
 
 
-if testing == 3:
-    Pipeline( DataSource(["hello\n", "world\n"]),
-              Tagger("mytag"),
-              Sink("Hello")
-    ).run()
-
-if testing == 2:
-
-    Req = {
-       "method" : "GET",
-       "path" : "",
-       "http_version" : "1.0",
-       "headers" : {
-           "Host" : "kamaelia.svn.sourceforge.net"
-       }
-    }
-
-    With(item = TCPClient("www-cache", 8080),
-
-         ProxyReq  = ProxyReq("kamaelia.svn.sourceforge.net", 443),
-         ProxyResp = ProxyResp(),
-         SSL_Maker = OneShot(),
-         HTTPReq   = HTTPReq(Request),
-         HTTPResp  = HTTPResp(Request),
-         sequence = [ 
-            { ("ProxyReq", "outbox")   : ("item", "inbox"), ("item", "outbox") : ("ProxyResponse", "inbox") },
-            { ("SSL_Maker", "outbox") : ("item", "makessl") },
-            { ("HTTPReq", "outbox")   : ("item", "inbox"), ("item", "outbox") : ("HTTPResponse", "inbox") },
-         ]
-    )
 
 
-if testing == 1:
-    Graphline(
-        MAKESSL = OneShot(" make ssl "), # The actual message here is not necessary
-        CONSOLE = ConsoleReader(),
-        ECHO = ConsoleEchoer(),
-        CONNECTION = TCPClient("kamaelia.svn.sourceforge.net", 443),
-        linkages = {
-            ("MAKESSL", "outbox"): ("CONNECTION", "makessl"),
-            ("CONSOLE", "outbox"): ("CONNECTION", "inbox"),
-            ("CONSOLE", "signal"): ("CONNECTION", "control"),
-            ("CONNECTION", "outbox"): ("ECHO", "inbox"),
-            ("CONNECTION", "signal"): ("ECHO", "control"),
+    if testing == 1:
+        Graphline(
+            MAKESSL = OneShot(" make ssl "), # The actual message here is not necessary
+            CONSOLE = ConsoleReader(),
+            ECHO = ConsoleEchoer(),
+            CONNECTION = TCPClient("kamaelia.svn.sourceforge.net", 443),
+            linkages = {
+                ("MAKESSL", "outbox"): ("CONNECTION", "makessl"),
+                ("CONSOLE", "outbox"): ("CONNECTION", "inbox"),
+                ("CONSOLE", "signal"): ("CONNECTION", "control"),
+                ("CONNECTION", "outbox"): ("ECHO", "inbox"),
+                ("CONNECTION", "signal"): ("ECHO", "control"),
+            }
+        ).run()
+
+    if testing == 2:
+        print "Test 2 Disabled, was more of a sketch thinking 'what sort of API might we like?'"
+
+    if 0:
+        Req = {
+           "method" : "GET",
+           "path" : "",
+           "http_version" : "1.0",
+           "headers" : {
+               "Host" : "kamaelia.svn.sourceforge.net"
+           }
         }
-    ).run()
 
-if testing == 7:
-    proxy, proxyport = ("127.0.0.1", 8888)
-    webhost, webport = ( "kamaelia.svn.sourceforge.net", 443 )
-    method = "GET"
-    path = "/svnroot/kamaelia/trunk/Code/Python/Kamaelia/Examples/SimpleGraphicalApps/Ticker/Ulysses"
-    With(item = TCPClient(proxy, proxyport),
+        With(item = TCPClient("www-cache", 8080),
 
-         SourceOne  = DataSource([("CONNECT %s:%d HTTP/1.0\r\n" % (webhost, webport)), "\r\n"]),
-         SinkOne    = Sink("SinkOne"),
+             ProxyReq  = ProxyReq("kamaelia.svn.sourceforge.net", 443),
+             ProxyResp = ProxyResp(),
+             SSL_Maker = OneShot(),
+             HTTPReq   = HTTPReq(Request),
+             HTTPResp  = HTTPResp(Request),
+             sequence = [ 
+                { ("ProxyReq", "outbox")   : ("item", "inbox"), ("item", "outbox") : ("ProxyResponse", "inbox") },
+                { ("SSL_Maker", "outbox") : ("item", "makessl") },
+                { ("HTTPReq", "outbox")   : ("item", "inbox"), ("item", "outbox") : ("HTTPResponse", "inbox") },
+             ]
+        )
 
-         MiddleStep = OneShot(" make ssl "),
+    if testing == 3:
+        Pipeline( DataSource(["hello\n", "world\n"]),
+                  Tagger("mytag"),
+                  Sink("Hello")
+        ).run()
 
-         SourceTwo  = DataSource([("%s %s HTTP/1.0\r\n" % (method,path)),
-                                  ("Host: %s\r\n" % (webhost,) ),
-                                  "\r\n"]),
-         SinkTwo    = Sink("SinkTwo"),
-         
-         sequence = [
-             { ("SourceOne", "outbox") : ("item", "inbox"), ("item","outbox") : ("SinkOne","inbox") },
-             { ("MiddleStep", "outbox") : ("item", "makessl") },
-             { ("SourceTwo", "outbox") : ("item", "inbox"), ("item","outbox") : ("SinkTwo","inbox") },
-         ]
-    ).run()
+    if testing == 4:
+
+        With(item = Tagger("^^''--..__"),
+
+             SourceOne  = DataSource(["hello\n", "world\n"]),
+             SinkOne    = Sink("SinkOne"),
+             MiddleStep = OneShot("MiddleStep"),
+             FailStep   = FailingComponent("bla"),
+
+             SourceTwo  = DataSource(["game\n", "over\n"]),
+             SinkTwo    = Sink("SinkTwo"),
+             
+             sequence = [
+                 { ("SourceOne", "outbox") : ("item", "inbox"), ("item","outbox") : ("SinkOne","inbox") },
+                 { ("MiddleStep", "outbox") : ("item", "togglebox") },
+                 { ("FailStep", "outbox") : ("item", "togglebox") },
+                 { ("SourceTwo", "outbox") : ("item", "inbox"), ("item","outbox") : ("SinkTwo","inbox") },
+             ]
+        ).run()
+
+    if testing == 5:
+
+        With(item = Tagger("^^''--..__"),
+
+             SourceOne  = DataSource(["CONNECT kamaelia.svn.sourceforge.net:443 HTTP\r\n", "\r\n"]),
+             SinkOne    = Sink("SinkOne"),
+             MiddleStep = OneShot("MiddleStep"),
+
+             SourceTwo  = DataSource(["GET /svnroot/kamaelia/trunk/Code/Python/Kamaelia/Examples/SimpleGraphicalApps/Ticker/Ulysses HTTP/1.0\r\n",
+                                      "Host: kamaelia.svn.sourceforge.net\r\n",
+                                      "\r\n"]),
+             SinkTwo    = Sink("SinkTwo"),
+             
+             sequence = [
+                 { ("SourceOne", "outbox") : ("item", "inbox"), ("item","outbox") : ("SinkOne","inbox") },
+                 { ("MiddleStep", "outbox") : ("item", "togglebox") },
+                 { ("SourceTwo", "outbox") : ("item", "inbox"), ("item","outbox") : ("SinkTwo","inbox") },
+             ]
+        ).run()
+
+    if testing == 6:
+
+        With(item = TCPClient("127.0.0.1", 8888),
+
+             SourceOne  = DataSource(["CONNECT kamaelia.svn.sourceforge.net:443 HTTP/1.0\r\n", "\r\n"]),
+             SinkOne    = Sink("SinkOne"),
+
+             MiddleStep = OneShot(" make ssl "),
+
+             SourceTwo  = DataSource(["GET /svnroot/kamaelia/trunk/Code/Python/Kamaelia/Examples/SimpleGraphicalApps/Ticker/Ulysses HTTP/1.0\r\n",
+                                      "Host: kamaelia.svn.sourceforge.net\r\n",
+                                      "\r\n"]),
+             SinkTwo    = Sink("SinkTwo"),
+             
+             sequence = [
+                 { ("SourceOne", "outbox") : ("item", "inbox"), ("item","outbox") : ("SinkOne","inbox") },
+                 { ("MiddleStep", "outbox") : ("item", "makessl") },
+                 { ("SourceTwo", "outbox") : ("item", "inbox"), ("item","outbox") : ("SinkTwo","inbox") },
+             ]
+        ).run()
 
 
+    if testing == 7:
+        proxy, proxyport = ("127.0.0.1", 8888)
+        webhost, webport = ( "kamaelia.svn.sourceforge.net", 443 )
+        method = "GET"
+        path = "/svnroot/kamaelia/trunk/Code/Python/Kamaelia/Examples/SimpleGraphicalApps/Ticker/Ulysses"
+        With(item = TCPClient(proxy, proxyport),
 
-if testing == 8: # Test against known good proxy and known good website
-    proxy, proxyport = ("127.0.0.1", 8888)
-    webhost, webport = ( "kamaelia.svn.sourceforge.net", 443 )
-    method = "GET"
-    path = "/svnroot/kamaelia/trunk/Code/Python/Kamaelia/Examples/SimpleGraphicalApps/Ticker/Ulysses"
-    With(item = TCPClient(proxy, proxyport),
+             SourceOne  = DataSource([("CONNECT %s:%d HTTP/1.0\r\n" % (webhost, webport)), "\r\n"]),
+             SinkOne    = Sink("SinkOne"),
 
-         ProxyConnect = ConnectRequest(desthost=webhost, destport=webport),
-         SinkOne      = HandleConnectRequest(),
+             MiddleStep = OneShot(" make ssl "),
 
-         MiddleStep = OneShot(" make ssl "),
+             SourceTwo  = DataSource([("%s %s HTTP/1.0\r\n" % (method,path)),
+                                      ("Host: %s\r\n" % (webhost,) ),
+                                      "\r\n"]),
+             SinkTwo    = Sink("SinkTwo"),
+             
+             sequence = [
+                 { ("SourceOne", "outbox") : ("item", "inbox"), ("item","outbox") : ("SinkOne","inbox") },
+                 { ("MiddleStep", "outbox") : ("item", "makessl") },
+                 { ("SourceTwo", "outbox") : ("item", "inbox"), ("item","outbox") : ("SinkTwo","inbox") },
+             ]
+        ).run()
 
-         SourceTwo  = DataSource([("%s %s HTTP/1.0\r\n" % (method,path)),
-                                  ("Host: %s\r\n" % (webhost,) ),
-                                  "\r\n"]),
-         SinkTwo    = Sink("SinkTwo"),
-         
-         sequence = [
-             { ("ProxyConnect", "outbox") : ("item", "inbox"), ("item","outbox") : ("SinkOne","inbox") },
-             { ("MiddleStep", "outbox") : ("item", "makessl") },
-             { ("SourceTwo", "outbox") : ("item", "inbox"), ("item","outbox") : ("SinkTwo","inbox") },
-         ]
-    ).run()
+    if testing == 8: # Known good proxy, known bad websites
+        proxy, proxyport = ("127.0.0.1", 8888)
+        webhost, webport = ( "127.0.0.1", 443 )
+        method = "GET"
+        path = "/svnroot/kamaelia/trunk/Code/Python/Kamaelia/Examples/SimpleGraphicalApps/Ticker/Ulysses"
+        With(item = TCPClient(proxy, proxyport),
 
-if testing == 9: # Known good proxy, known bad websites
-    proxy, proxyport = ("127.0.0.1", 8888)
-    webhost, webport = ( "127.0.0.1", 443 )
-    method = "GET"
-    path = "/svnroot/kamaelia/trunk/Code/Python/Kamaelia/Examples/SimpleGraphicalApps/Ticker/Ulysses"
-    With(item = TCPClient(proxy, proxyport),
+             ProxyConnect = ConnectRequest(desthost=webhost, destport=webport),
+             SinkOne      = HandleConnectRequest(),
 
-         ProxyConnect = ConnectRequest(desthost=webhost, destport=webport),
-         SinkOne      = HandleConnectRequest(),
+             MiddleStep = OneShot(" make ssl "),
 
-         MiddleStep = OneShot(" make ssl "),
+             SourceTwo  = DataSource([("%s %s HTTP/1.0\r\n" % (method,path)),
+                                      ("Host: %s\r\n" % (webhost,) ),
+                                      "\r\n"]),
+             SinkTwo    = Sink("SinkTwo"),
+             
+             sequence = [
+                 { ("ProxyConnect", "outbox") : ("item", "inbox"), ("item","outbox") : ("SinkOne","inbox") },
+                 { ("MiddleStep", "outbox") : ("item", "makessl") },
+                 { ("SourceTwo", "outbox") : ("item", "inbox"), ("item","outbox") : ("SinkTwo","inbox") },
+             ]
+        ).run()
 
-         SourceTwo  = DataSource([("%s %s HTTP/1.0\r\n" % (method,path)),
-                                  ("Host: %s\r\n" % (webhost,) ),
-                                  "\r\n"]),
-         SinkTwo    = Sink("SinkTwo"),
-         
-         sequence = [
-             { ("ProxyConnect", "outbox") : ("item", "inbox"), ("item","outbox") : ("SinkOne","inbox") },
-             { ("MiddleStep", "outbox") : ("item", "makessl") },
-             { ("SourceTwo", "outbox") : ("item", "inbox"), ("item","outbox") : ("SinkTwo","inbox") },
-         ]
-    ).run()
+    if testing == 9: # Known bad proxy, known good website
+        proxy, proxyport = ("127.0.0.1", 8080)
+        webhost, webport = ( "kamaelia.svn.sourceforge.net", 443 )
+        method = "GET"
+        path = "/svnroot/kamaelia/trunk/Code/Python/Kamaelia/Examples/SimpleGraphicalApps/Ticker/Ulysses"
+        With(item = TCPClient(proxy, proxyport),
 
-if testing == 10: # Known bad proxy, known good website
-    proxy, proxyport = ("127.0.0.1", 8080)
-    webhost, webport = ( "kamaelia.svn.sourceforge.net", 443 )
-    method = "GET"
-    path = "/svnroot/kamaelia/trunk/Code/Python/Kamaelia/Examples/SimpleGraphicalApps/Ticker/Ulysses"
-    With(item = TCPClient(proxy, proxyport),
+             ProxyConnect = ConnectRequest(desthost=webhost, destport=webport),
+             SinkOne      = HandleConnectRequest(),
 
-         ProxyConnect = ConnectRequest(desthost=webhost, destport=webport),
-         SinkOne      = HandleConnectRequest(),
+             MiddleStep = OneShot(" make ssl "),
 
-         MiddleStep = OneShot(" make ssl "),
+             SourceTwo  = DataSource([("%s %s HTTP/1.0\r\n" % (method,path)),
+                                      ("Host: %s\r\n" % (webhost,) ),
+                                      "\r\n"]),
+             SinkTwo    = Sink("SinkTwo"),
+             
+             sequence = [
+                 { ("ProxyConnect", "outbox") : ("item", "inbox"), ("item","outbox") : ("SinkOne","inbox") },
+                 { ("MiddleStep", "outbox") : ("item", "makessl") },
+                 { ("SourceTwo", "outbox") : ("item", "inbox"), ("item","outbox") : ("SinkTwo","inbox") },
+             ]
+        ).run()
 
-         SourceTwo  = DataSource([("%s %s HTTP/1.0\r\n" % (method,path)),
-                                  ("Host: %s\r\n" % (webhost,) ),
-                                  "\r\n"]),
-         SinkTwo    = Sink("SinkTwo"),
-         
-         sequence = [
-             { ("ProxyConnect", "outbox") : ("item", "inbox"), ("item","outbox") : ("SinkOne","inbox") },
-             { ("MiddleStep", "outbox") : ("item", "makessl") },
-             { ("SourceTwo", "outbox") : ("item", "inbox"), ("item","outbox") : ("SinkTwo","inbox") },
-         ]
-    ).run()
+    if testing == 10: # Test against known good proxy and known good website
+        proxy, proxyport = ("127.0.0.1", 8888)
+        webhost, webport = ( "kamaelia.svn.sourceforge.net", 443 )
+        method = "GET"
+        path = "/svnroot/kamaelia/trunk/Code/Python/Kamaelia/Examples/SimpleGraphicalApps/Ticker/Ulysses"
+        With(item = TCPClient(proxy, proxyport),
+
+             ProxyConnect = ConnectRequest(desthost=webhost, destport=webport),
+             SinkOne      = HandleConnectRequest(),
+
+             MiddleStep = OneShot(" make ssl "),
+
+             SourceTwo  = DataSource([("%s %s HTTP/1.0\r\n" % (method,path)),
+                                      ("Host: %s\r\n" % (webhost,) ),
+                                      "\r\n"]),
+             SinkTwo    = Sink("SinkTwo"),
+             
+             sequence = [
+                 { ("ProxyConnect", "outbox") : ("item", "inbox"), ("item","outbox") : ("SinkOne","inbox") },
+                 { ("MiddleStep", "outbox") : ("item", "makessl") },
+                 { ("SourceTwo", "outbox") : ("item", "inbox"), ("item","outbox") : ("SinkTwo","inbox") },
+             ]
+        ).run()
