@@ -22,7 +22,7 @@
 import sys
 import Axon
 from Axon.Component import component
-from Axon.Ipc import producerFinished, status
+from Axon.Ipc import producerFinished, status, shutdownMicroprocess
 
 from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Chassis.Pipeline import Pipeline
@@ -30,9 +30,15 @@ from Kamaelia.Internet.TCPClient import TCPClient
 from Kamaelia.Util.Console import ConsoleEchoer, ConsoleReader
 from Kamaelia.Util.OneShot import OneShot
 from Kamaelia.Util.DataSource import DataSource
+from Kamaelia.Util.PureTransformer import PureTransformer
+
+testing = 10
 
 
 class ShutdownNow(Exception):
+    pass
+
+class GeneralFail(Exception):
     pass
 
 class Pauser(Axon.ThreadedComponent.threadedcomponent):
@@ -55,105 +61,224 @@ class FailingComponent(component):
         yield 1
         self.send(status("Fail"),"signal")
 
+
+class ConnectRequest(component):
+    desthost = "127.0.0.1"
+    destport = 443
+    def main(self):
+        self.send("CONNECT %s:%d HTTP/1.0\r\n" % (self.desthost,self.destport),"outbox")
+        self.send("\r\n", "outbox")
+        yield 1
+        message = producerFinished() #default
+        for message in self.Inbox("control"): # Change to *last received* message ?
+            pass
+        self.send(message, "signal")
+
+class Linebuffer(object):
+    eol = "\r\n"
+    def __init__(self):
+        self.buffer = ""
+    def feed(self, data):
+        self.buffer += data
+    def chompable(self):
+        return self.buffer.find(self.eol) != -1
+    def chomp(self):
+        pos = self.buffer.find(self.eol)+2
+        line = self.buffer[:pos]
+        self.buffer = self.buffer[pos:]
+        return line
+
+class HandleConnectRequest(component):
+    def checkControl(self):
+        for message in self.Inbox("control"): # Cleanly clear the inbox
+            self.control_message = message
+        if isinstance(self.control_message,shutdownMicroprocess):
+            raise ShutdownNow
+        if self.control_message:
+            if self.had_response:
+                raise ShutdownNow
+
+    def main(self):
+        self.control_message = None
+        self.had_response = False
+        buff = Linebuffer()
+        lines = []
+        fail = False
+        try:
+            while True:
+                for data in self.Inbox("inbox"):
+                    buff.feed(data)
+                while buff.chompable():
+                    line = buff.chomp()
+                    lines.append(line)
+                    if line == "\r\n":
+                        # We've now got the complete header.
+                        # We're now expecting a body, but SHOULD handle it.
+                        # For now, let's just handle the response line since it's all we really care about.
+                        rest = lines[1:]
+                        rline = lines[0]
+
+                        p = rline.find(" ") 
+                        if p == -1:
+                            raise GeneralFail("HTTP Response Line Parse Failure: "+ repr(http_response_line))
+                        http_version = rline[:p]
+                        rline = rline[p+1:]
+
+                        p = rline.find(" ") 
+                        if p == -1:
+                            raise GeneralFail("HTTP Response Line Parse Failure: "+ repr(rline))
+                        http_status = rline[:p]
+                        human_status = rline[p+1:]
+                        print (http_version,http_status,human_status)
+
+                        if http_status != "200":
+                            raise GeneralFail("HTTP Connect Failure : "+ repr(rline))
+
+                    sys.stdout.write(self.name + " : ")
+                    sys.stdout.write(line)
+                    sys.stdout.flush()
+
+                    self.had_response = True
+
+                self.checkControl()
+
+                if not self.anyReady():
+                    self.pause()
+                yield 1
+        except ShutdownNow:
+            pass
+        except GeneralFail, e:
+            # Yes, we're masking an error. This is nasty.
+            fail = True
+        
+        if not fail:
+            self.send(status("success"), "signal")
+        else:
+            self.send(status("fail"), "signal")
+        if self.control_message:
+            self.send(self.control_message, "signal")
+        else:
+            self.send(Axon.Ipc.producerFinished(), "signal")
+
+
 class With(Axon.Component.component):
-   Inboxes = { "inbox" : "Normal - unused",
-               "control" : "Normal - unimplemented",
-               "_control" : "From subcomponents - first component to shutdown has message passed on to others that are not item",
+    Inboxes = { "inbox" : "Normal - unused",
+                "control" : "Normal - unimplemented",
+                "_control" : "From subcomponents - first component to shutdown has message passed on to others that are not item",
              }
-   Outboxes = {
-                "outbox" : "Normal - unused",
-                "signal" : "Normal - unimplemented",
-                "_signal" :  "To subcomponents - used to shutdown any subcomponents"
+    Outboxes = {
+                 "outbox" : "Normal - unused",
+                 "signal" : "Normal - unimplemented",
+                 "_signal" :  "To subcomponents - used to shutdown any subcomponents"
               }
-   def __init__(self, item, **argv):
-       super(With, self).__init__()
-       self.item = item 
-       argv = dict(argv) # Shallow copy, in case argspec is reused by client
-       self.sequence = argv["sequence"]
-       self.components = argv
-       self.components["item"] = item
-       del argv["sequence"]
+    def __init__(self, item, **argv):
+        super(With, self).__init__()
+        self.item = item 
+        argv = dict(argv) # Shallow copy, in case argspec is reused by client
+        self.sequence = argv["sequence"]
+        self.components = argv
+        self.components["item"] = item
+        del argv["sequence"]
 
-   def anyStopped(self):
-       for child in self.childComponents():
-           if child._isStopped():
-               # At least one has stopped
-               return True
-       return False
+    def anyStopped(self):
+        for child in self.childComponents():
+            if child._isStopped():
+                # At least one has stopped
+                return True
+        return False
 
-   def main(self):
-       self.addChildren(self.item)
-       self.item.activate()
+    def link_graphstep(self, graphstep):
+            links = []
+            for source in graphstep:
+                sink = graphstep[source]
 
-       for graphstep in self.sequence:
-           links = []
-           stopping = 0
-           dontcontinue = False
-           for source in graphstep:
-               sink = graphstep[source]
+                if sink[1] == source[1] == "inbox":
+                    L = self.link( (self.components[source[0]], source[1]), (self.components[sink[0]] , sink[1]), passthrough=1 )
+                elif sink[1] == source[1] == "outbox":
+                    L = self.link( (self.components[source[0]], source[1]), (self.components[sink[0]] , sink[1]), passthrough=2 )
+                else:
+                    L = self.link( (self.components[source[0]], source[1]), (self.components[sink[0]] , sink[1]) )
 
-               if sink[1] == source[1] == "inbox":
-                  L = self.link( (self.components[source[0]], source[1]), (self.components[sink[0]] , sink[1]), passthrough=1 )
-               elif sink[1] == source[1] == "outbox":
-                  L = self.link( (self.components[source[0]], source[1]), (self.components[sink[0]] , sink[1]), passthrough=2 )
-               else:
-                  L = self.link( (self.components[source[0]], source[1]), (self.components[sink[0]] , sink[1]) )
-
-               links.append(L)
+                links.append(L)
                
-               if self.components[source[0]] not in self.childComponents():
-                   self.link((self.components[source[0]], "signal"), (self, "_control"))
-                   self.addChildren( self.components[source[0]])
-                   self.components[source[0]].activate()
+                if self.components[source[0]] not in self.childComponents():
+                    self.link((self.components[source[0]], "signal"), (self, "_control"))
+                    self.addChildren( self.components[source[0]])
+                    self.components[source[0]].activate()
 
-               if self.components[sink[0]] not in self.childComponents():
-                   self.link((self.components[sink[0]], "signal"), (self, "_control"))
-                   self.addChildren( self.components[sink[0]])
-                   self.components[sink[0]].activate()
+                if self.components[sink[0]] not in self.childComponents():
+                    self.link((self.components[sink[0]], "signal"), (self, "_control"))
+                    self.addChildren( self.components[sink[0]])
+                    self.components[sink[0]].activate()
 
-           while True:
-               
-               # Let sub graphstep run, and wait for completion. Sleep as much as possible.
-               if not self.anyReady():
-                   self.pause()
-                   yield 1
+            return links
 
-               for message in self.Inbox("_control"):
-                   if isinstance(message,status):
-                       print "Caught Status Message", message, message.status()
-                       if message.status() == "fail":
-                           # Don't abort early, but don't continue after this graphstep
-                           dont_continue = True
-                   for child in self.childComponents():
+    def shutdownChildComponents(self, message):
+        for child in self.childComponents():
+
+             if child == self.item:
+                 continue
+
+             L = self.link( (self, "_signal"), (child, "control"))
+             self.send(message, "_signal")
+             self.unlink(thelinkage=L)
+
+    def main(self):
+        self.addChildren(self.item)
+        self.item.activate()
+
+        dontcontinue = False
+        for graphstep in self.sequence:
+            stopping = 0
+            links = self.link_graphstep(graphstep)
+            if dontcontinue:
+                break
+
+            while True:
+                # Let sub graphstep run, and wait for completion. Sleep as much as possible.
+                if not self.anyReady():
+                    self.pause()
+                    yield 1
+
+                for message in self.Inbox("_control"):
+                    if isinstance(message,status):
+                        if message.status() == "fail":
+                            # Don't abort early, but don't continue after this graphstep
+                            message = shutdownMicroprocess()
+                            dontcontinue = True
+                    
+                    self.shutdownChildComponents(message)
+
+                if self.anyStopped():
+                    all_stopped = True # Assume
+                    if self.item._isStopped():
+                        print "Warning: Child died before completion", self.item
+                        self.shutdownChildComponents(shutdownMicroprocess())
+                        dontcontinue = True
+
+                    for child in self.childComponents():
+                        # Check assumption
                         if child == self.item:
                             continue
-
-                        L = self.link( (self, "_signal"), (child, "control"))
-                        self.send(message, "_signal")
-                        self.unlink(thelinkage=L)
-
-               if self.anyStopped():
-                   all_stopped = True # Assume
-                   for child in self.childComponents():
-                       # Check assumption
-                       if child == self.item:
-                           continue
                        
-                       all_stopped = all_stopped and child._isStopped()
-                   if all_stopped:
-                       break
-                   else:
-                       stopping += 1
-                       if (stopping % 1000) == 0:
-                           print "Warning one child exited, but others haven't after", stopping, "loops"
+                        all_stopped = all_stopped and child._isStopped()
+                    if all_stopped:
+                        break
+                    else:
+                        stopping += 1
+                        if (stopping % 1000) == 0:
+                            print "Warning one child exited, but others haven't after", stopping, "loops"
 
-               yield 1
+                yield 1
 
-           for link in links: 
-               self.unlink(thelinkage=link)
+                if dontcontinue:
+                    break
 
-       self.link( (self, "_signal"), (self.item, "control") )
-       self.send( producerFinished(), "_signal")
+            for link in links: 
+                self.unlink(thelinkage=link)
+
+        self.link( (self, "_signal"), (self.item, "control") )
+        self.send( producerFinished(), "_signal")
 
 class Tagger(Axon.Component.component):
     Inboxes = { "inbox" : "normal", "control" : "normal", "togglebox" : "extra" }
@@ -228,7 +353,6 @@ class Sink(Axon.Component.component):
         else:
             self.send(Axon.Ipc.producerFinished(), "signal")
 
-testing = 7
 
 if testing == 6:
 
@@ -364,3 +488,76 @@ if testing == 7:
          ]
     ).run()
 
+
+
+if testing == 8: # Test against known good proxy and known good website
+    proxy, proxyport = ("127.0.0.1", 8888)
+    webhost, webport = ( "kamaelia.svn.sourceforge.net", 443 )
+    method = "GET"
+    path = "/svnroot/kamaelia/trunk/Code/Python/Kamaelia/Examples/SimpleGraphicalApps/Ticker/Ulysses"
+    With(item = TCPClient(proxy, proxyport),
+
+         ProxyConnect = ConnectRequest(desthost=webhost, destport=webport),
+         SinkOne      = HandleConnectRequest(),
+
+         MiddleStep = OneShot(" make ssl "),
+
+         SourceTwo  = DataSource([("%s %s HTTP/1.0\r\n" % (method,path)),
+                                  ("Host: %s\r\n" % (webhost,) ),
+                                  "\r\n"]),
+         SinkTwo    = Sink("SinkTwo"),
+         
+         sequence = [
+             { ("ProxyConnect", "outbox") : ("item", "inbox"), ("item","outbox") : ("SinkOne","inbox") },
+             { ("MiddleStep", "outbox") : ("item", "makessl") },
+             { ("SourceTwo", "outbox") : ("item", "inbox"), ("item","outbox") : ("SinkTwo","inbox") },
+         ]
+    ).run()
+
+if testing == 9: # Known good proxy, known bad websites
+    proxy, proxyport = ("127.0.0.1", 8888)
+    webhost, webport = ( "127.0.0.1", 443 )
+    method = "GET"
+    path = "/svnroot/kamaelia/trunk/Code/Python/Kamaelia/Examples/SimpleGraphicalApps/Ticker/Ulysses"
+    With(item = TCPClient(proxy, proxyport),
+
+         ProxyConnect = ConnectRequest(desthost=webhost, destport=webport),
+         SinkOne      = HandleConnectRequest(),
+
+         MiddleStep = OneShot(" make ssl "),
+
+         SourceTwo  = DataSource([("%s %s HTTP/1.0\r\n" % (method,path)),
+                                  ("Host: %s\r\n" % (webhost,) ),
+                                  "\r\n"]),
+         SinkTwo    = Sink("SinkTwo"),
+         
+         sequence = [
+             { ("ProxyConnect", "outbox") : ("item", "inbox"), ("item","outbox") : ("SinkOne","inbox") },
+             { ("MiddleStep", "outbox") : ("item", "makessl") },
+             { ("SourceTwo", "outbox") : ("item", "inbox"), ("item","outbox") : ("SinkTwo","inbox") },
+         ]
+    ).run()
+
+if testing == 10: # Known bad proxy, known good website
+    proxy, proxyport = ("127.0.0.1", 8080)
+    webhost, webport = ( "kamaelia.svn.sourceforge.net", 443 )
+    method = "GET"
+    path = "/svnroot/kamaelia/trunk/Code/Python/Kamaelia/Examples/SimpleGraphicalApps/Ticker/Ulysses"
+    With(item = TCPClient(proxy, proxyport),
+
+         ProxyConnect = ConnectRequest(desthost=webhost, destport=webport),
+         SinkOne      = HandleConnectRequest(),
+
+         MiddleStep = OneShot(" make ssl "),
+
+         SourceTwo  = DataSource([("%s %s HTTP/1.0\r\n" % (method,path)),
+                                  ("Host: %s\r\n" % (webhost,) ),
+                                  "\r\n"]),
+         SinkTwo    = Sink("SinkTwo"),
+         
+         sequence = [
+             { ("ProxyConnect", "outbox") : ("item", "inbox"), ("item","outbox") : ("SinkOne","inbox") },
+             { ("MiddleStep", "outbox") : ("item", "makessl") },
+             { ("SourceTwo", "outbox") : ("item", "inbox"), ("item","outbox") : ("SinkTwo","inbox") },
+         ]
+    ).run()
