@@ -473,6 +473,7 @@ class TwitterStream(threadedcomponent):
                 print "blanklinecount", blanklinecount
                 blanklinecount = 0
                 sys.stderr.write("API Connection Failed: Reconnecting")
+                sys.exit(0) # FIXME Brutal, but effective
                 self.scheduler.stop() # FIXME Brutal, but effective
                 self.unlink(self.datacapture)
                 self.datacapture.stop()
