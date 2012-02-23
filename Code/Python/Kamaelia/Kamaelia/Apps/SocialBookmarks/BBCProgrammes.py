@@ -95,16 +95,17 @@ class WhatsOn(component):
                 syncschedurl = "http://10.92.164.147:8082/dvb-bridge?command=channel&args=" + urllib.quote(self.channels[channel][0])
                 synctimeurl = "http://10.92.164.147:8082/dvb-bridge?command=time"
 
-                # Grab SyncTV time data to work out the offset between local (NTP) and BBC time (roughly)
-                self.send([synctimeurl], "dataout")
-                while not self.dataReady("datain"):
-                    self.pause()
-                    yield 1
-                recvdata = self.recv("datain")
-                if recvdata[0] == "OK":
-                    content = recvdata[1]
-                else:
-                    content = None
+                content = None
+#                # Grab SyncTV time data to work out the offset between local (NTP) and BBC time (roughly)
+#                self.send([synctimeurl], "dataout")
+#                while not self.dataReady("datain"):
+#                    self.pause()
+#                    yield 1
+#                recvdata = self.recv("datain")
+#                if recvdata[0] == "OK":
+#                    content = recvdata[1]
+#                else:
+#                    content = None
 
                 # Work out time difference between local time and BBC time
                 if content != None:

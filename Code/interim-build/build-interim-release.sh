@@ -12,4 +12,4 @@ tar zcvf Kamaelia-$VERSION.tar.gz Kamaelia-$VERSION/
 
 echo "Uploading $VERSION"
 
-scp Kamaelia-$VERSION.tar.gz michaels@132.185.142.2:/srv/www/sites/www.kamaelia.org/docs/release/MonthlyReleases
+# scp Kamaelia-$VERSION.tar.gz michaels@132.185.142.2:/srv/www/sites/www.kamaelia.org/docs/release/MonthlyReleases

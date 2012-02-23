@@ -306,7 +306,7 @@ class nullsink(object):
         Append item to the list - though actually it just gets discarded.
         """
         if self.showtransit:
-            print("Discarding Delivery via [", self.tag, "] of ", repr(data))
+            print("Discarding Delivery via [", self.tag, self, "] of ", repr(data))
 
     def setShowTransit(self,showtransit, tag):
         """\
@@ -325,7 +325,7 @@ class nullsink(object):
         """Returns an item from the list (always raises IndexError"""
         raise IndexError("nullsink: You can't pop from an empty piece of storage!")
     def __repr__(self):
-        return "<>"
+        return "<"+str(id(self))+">"
 
 class realsink(list):
     """\
@@ -534,7 +534,7 @@ class postbox(object):
         return (self.sink.size != None) and (len(self) >= self.sink.size)
 
     def __repr__(self):
-        return repr(self.sink)
+        return str(id(self))+repr(self.sink.__class__)+repr(self.sink)
 
 def makeInbox(notify, size = None):
     """\

@@ -71,272 +71,274 @@ class LiveAnalysis(threadedcomponent):
 
     def main(self):
         # Calculate running total and mean etc
+            cursor = self.dbConnect(self.dbuser,self.dbpass)
+            while not self.finished():
+                # The below does LIVE and FINAL analysis - do NOT run DataAnalyser at the same time
 
-        cursor = self.dbConnect(self.dbuser,self.dbpass)
-        while not self.finished():
-            # The below does LIVE and FINAL analysis - do NOT run DataAnalyser at the same time
+                Print("Analysis component: Checking for new data...")
 
-            Print("Analysis component: Checking for new data...")
+                # Stage 1: Live analysis - could do with a better way to do the first query (indexed field 'analsed' to speed up for now)
+                # Could move this into the main app to take a copy of tweets on arrival, but would rather solve separately if poss
+                cursor.execute("""SELECT tid,pid,timestamp,text,tweet_id,programme_position FROM rawdata WHERE analysed = 0 ORDER BY tid LIMIT 5000""")
+                data = cursor.fetchall()
 
-            # Stage 1: Live analysis - could do with a better way to do the first query (indexed field 'analsed' to speed up for now)
-            # Could move this into the main app to take a copy of tweets on arrival, but would rather solve separately if poss
-            cursor.execute("""SELECT tid,pid,timestamp,text,tweet_id,programme_position FROM rawdata WHERE analysed = 0 ORDER BY tid LIMIT 5000""")
-            data = cursor.fetchall()
+                # Cycle through all the as yet unanalysed tweets
+                for result in data:
+                    tid = result[0]
+                    pid = result[1]
+                    tweettime = result[2] # Timestamp based on the tweet's created_at field
+                    tweettext = result[3]
+                    tweetid = result[4] # This is the real tweet ID, tid just makes a unique identifier as each tweet can be stored against several pids
+                    progpos = result[5] # Position through the programme that the tweet was made
+                    dbtime = datetime.utcfromtimestamp(tweettime)
+                    # Each tweet will be grouped into chunks of one minute to make display better, so set the seconds to zero
+                    # This particular time is only used for console display now as a more accurate one calculated from programme position is found later
+                    dbtime = dbtime.replace(second=0)
+                    Print("Analysis component: Analysing new tweet for pid", pid, "(" , dbtime ,"):")
+                    try:
+                        Print("Analysis component: '" , tweettext , "'")
+                    except UnicodeEncodeError, e:
+                        Print ("UnicodeEncodeError", e)
+                    cursor.execute("""SELECT duration FROM programmes_unique WHERE pid = %s""",(pid))
+                    progdata = cursor.fetchone()
+                    duration = progdata[0]
+                    cursor.execute("""SELECT totaltweets,meantweets,mediantweets,modetweets,stdevtweets,timediff,timestamp,utcoffset FROM programmes WHERE pid = %s ORDER BY timestamp DESC""",(pid))
+                    progdata2 = cursor.fetchone()
+                    totaltweets = progdata2[0]
+                    # Increment the total tweets recorded for this programme's broadcast
+                    totaltweets += 1
+                    meantweets = progdata2[1]
+                    mediantweets = progdata2[2]
+                    modetweets = progdata2[3]
+                    stdevtweets = progdata2[4]
+                    timediff = progdata2[5]
+                    timestamp = progdata2[6]
+                    utcoffset = progdata2[7]
 
-            # Cycle through all the as yet unanalysed tweets
-            for result in data:
-                tid = result[0]
-                pid = result[1]
-                tweettime = result[2] # Timestamp based on the tweet's created_at field
-                tweettext = result[3]
-                tweetid = result[4] # This is the real tweet ID, tid just makes a unique identifier as each tweet can be stored against several pids
-                progpos = result[5] # Position through the programme that the tweet was made
-                dbtime = datetime.utcfromtimestamp(tweettime)
-                # Each tweet will be grouped into chunks of one minute to make display better, so set the seconds to zero
-                # This particular time is only used for console display now as a more accurate one calculated from programme position is found later
-                dbtime = dbtime.replace(second=0)
-                Print("Analysis component: Analysing new tweet for pid", pid, "(" , dbtime ,"):")
-                try:
-                    Print("Analysis component: '" , tweettext , "'")
-                except UnicodeEncodeError, e:
-                    Print ("UnicodeEncodeError", e)
-                cursor.execute("""SELECT duration FROM programmes_unique WHERE pid = %s""",(pid))
-                progdata = cursor.fetchone()
-                duration = progdata[0]
-                cursor.execute("""SELECT totaltweets,meantweets,mediantweets,modetweets,stdevtweets,timediff,timestamp,utcoffset FROM programmes WHERE pid = %s ORDER BY timestamp DESC""",(pid))
-                progdata2 = cursor.fetchone()
-                totaltweets = progdata2[0]
-                # Increment the total tweets recorded for this programme's broadcast
-                totaltweets += 1
-                meantweets = progdata2[1]
-                mediantweets = progdata2[2]
-                modetweets = progdata2[3]
-                stdevtweets = progdata2[4]
-                timediff = progdata2[5]
-                timestamp = progdata2[6]
-                utcoffset = progdata2[7]
+                    # Need to work out the timestamp to assign to the entry in analysed data
+                    progstart = timestamp - timediff
+                    progmins = int(progpos / 60)
+                    analysedstamp = int(progstart + (progmins * 60))
+                    # Ensure that this tweet occurs within the length of the programme, otherwise for the purposes of this program it's useless
 
-                # Need to work out the timestamp to assign to the entry in analysed data
-                progstart = timestamp - timediff
-                progmins = int(progpos / 60)
-                analysedstamp = int(progstart + (progmins * 60))
-                # Ensure that this tweet occurs within the length of the programme, otherwise for the purposes of this program it's useless
-                if progpos > 0 and progpos <= duration:
-                    cursor.execute("""SELECT did,totaltweets,wordfreqexpected,wordfrequnexpected FROM analyseddata WHERE pid = %s AND timestamp = %s""",(pid,analysedstamp))
-                    analyseddata = cursor.fetchone()
-                    # Just in case of a missing raw json object (ie. programme terminated before it was stored - allow it to be skipped if not found after 30 secs)
-                    #failcounter = 0
-                    # Pass this tweet to the NLTK analysis component
-                    self.send([pid,tweetid],"nltk")
-                    while not self.dataReady("nltk"):
-                    #    if failcounter >= 3000:
-                    #        nltkdata = list()
-                    #        break
-                        time.sleep(0.01)
-                    #    failcounter += 1
-                    #if failcounter < 3000:
-                    if 1:
-                        # Receive back a list of words and their frequency for this tweet, including whether or not they are common, an entity etc
-                        nltkdata = self.recv("nltk")
-                    if analyseddata == None: # No tweets yet recorded for this minute
-                        minutetweets = 1
-                        cursor.execute("""INSERT INTO analyseddata (pid,totaltweets,timestamp) VALUES (%s,%s,%s)""", (pid,minutetweets,analysedstamp))
-                        for word in nltkdata:
-                            # Check if we're storing a word or phrase here
-                            if nltkdata[word][0] == 1:
-                                cursor.execute("""INSERT INTO wordanalysis (pid,timestamp,phrase,count,is_keyword,is_entity,is_common) VALUES (%s,%s,%s,%s,%s,%s,%s)""", (pid,analysedstamp,word,nltkdata[word][1],nltkdata[word][2],nltkdata[word][3],nltkdata[word][4]))
-                            else:
-                                cursor.execute("""INSERT INTO wordanalysis (pid,timestamp,word,count,is_keyword,is_entity,is_common) VALUES (%s,%s,%s,%s,%s,%s,%s)""", (pid,analysedstamp,word,nltkdata[word][1],nltkdata[word][2],nltkdata[word][3],nltkdata[word][4]))
-                    else:
-                        did = analyseddata[0]
-                        minutetweets = analyseddata[1] # Get current number of tweets for this minute
-                        minutetweets += 1 # Add one to it for this tweet
-
-                        cursor.execute("""UPDATE analyseddata SET totaltweets = %s WHERE did = %s""",(minutetweets,did))
-
-                        for word in nltkdata:
-                            # Check if we're storing a word or phrase
-                            if nltkdata[word][0] == 1:
-                                cursor.execute("""SELECT wid,count FROM wordanalysis WHERE pid = %s AND timestamp = %s AND phrase LIKE %s""",(pid,analysedstamp,word))
-                                # Check if this phrase has already been stored for this minute - if so, increment the count
-                                wordcheck = cursor.fetchone()
-                                if wordcheck == None:
+                    if progpos > 0 and progpos <= duration:
+                        cursor.execute("""SELECT did,totaltweets,wordfreqexpected,wordfrequnexpected FROM analyseddata WHERE pid = %s AND timestamp = %s""",(pid,analysedstamp))
+                        analyseddata = cursor.fetchone()
+                        # Just in case of a missing raw json object (ie. programme terminated before it was stored - allow it to be skipped if not found after 30 secs)
+                        #failcounter = 0
+                        # Pass this tweet to the NLTK analysis component
+                        self.send([pid,tweetid],"nltk")
+#                        print "BUM", 1
+                        while not self.dataReady("nltk"):
+                        #    if failcounter >= 3000:
+                        #        nltkdata = list()
+                        #        break
+                            time.sleep(0.01)
+                        #    failcounter += 1
+                        #if failcounter < 3000:
+#                        print "BUM", 2
+                        if 1:
+                            # Receive back a list of words and their frequency for this tweet, including whether or not they are common, an entity etc
+                            nltkdata = self.recv("nltk")
+                        if analyseddata == None: # No tweets yet recorded for this minute
+                            minutetweets = 1
+                            cursor.execute("""INSERT INTO analyseddata (pid,totaltweets,timestamp) VALUES (%s,%s,%s)""", (pid,minutetweets,analysedstamp))
+                            for word in nltkdata:
+                                # Check if we're storing a word or phrase here
+                                if nltkdata[word][0] == 1:
                                     cursor.execute("""INSERT INTO wordanalysis (pid,timestamp,phrase,count,is_keyword,is_entity,is_common) VALUES (%s,%s,%s,%s,%s,%s,%s)""", (pid,analysedstamp,word,nltkdata[word][1],nltkdata[word][2],nltkdata[word][3],nltkdata[word][4]))
                                 else:
-                                    cursor.execute("""UPDATE wordanalysis SET count = %s WHERE wid = %s""",(nltkdata[word][1] + wordcheck[1],wordcheck[0]))
-                            else:
-                                cursor.execute("""SELECT wid,count FROM wordanalysis WHERE pid = %s AND timestamp = %s AND word LIKE %s""",(pid,analysedstamp,word))
-                                # Check if this word has already been stored for this minute - if so, increment the count
-                                wordcheck = cursor.fetchone()
-                                if wordcheck == None:
                                     cursor.execute("""INSERT INTO wordanalysis (pid,timestamp,word,count,is_keyword,is_entity,is_common) VALUES (%s,%s,%s,%s,%s,%s,%s)""", (pid,analysedstamp,word,nltkdata[word][1],nltkdata[word][2],nltkdata[word][3],nltkdata[word][4]))
+                        else:
+                            did = analyseddata[0]
+                            minutetweets = analyseddata[1] # Get current number of tweets for this minute
+                            minutetweets += 1 # Add one to it for this tweet
+
+                            cursor.execute("""UPDATE analyseddata SET totaltweets = %s WHERE did = %s""",(minutetweets,did))
+
+                            for word in nltkdata:
+                                # Check if we're storing a word or phrase
+                                if nltkdata[word][0] == 1:
+                                    cursor.execute("""SELECT wid,count FROM wordanalysis WHERE pid = %s AND timestamp = %s AND phrase LIKE %s""",(pid,analysedstamp,word))
+                                    # Check if this phrase has already been stored for this minute - if so, increment the count
+                                    wordcheck = cursor.fetchone()
+                                    if wordcheck == None:
+                                        cursor.execute("""INSERT INTO wordanalysis (pid,timestamp,phrase,count,is_keyword,is_entity,is_common) VALUES (%s,%s,%s,%s,%s,%s,%s)""", (pid,analysedstamp,word,nltkdata[word][1],nltkdata[word][2],nltkdata[word][3],nltkdata[word][4]))
+                                    else:
+                                        cursor.execute("""UPDATE wordanalysis SET count = %s WHERE wid = %s""",(nltkdata[word][1] + wordcheck[1],wordcheck[0]))
                                 else:
-                                    cursor.execute("""UPDATE wordanalysis SET count = %s WHERE wid = %s""",(nltkdata[word][1] + wordcheck[1],wordcheck[0]))
-                    # Averages / stdev are calculated roughly based on the programme's running time at this point
-                    progdate = datetime.utcfromtimestamp(timestamp) + timedelta(seconds=utcoffset)
-                    actualstart = progdate - timedelta(seconds=timediff)
-                    actualtweettime = datetime.utcfromtimestamp(tweettime + utcoffset)
+                                    cursor.execute("""SELECT wid,count FROM wordanalysis WHERE pid = %s AND timestamp = %s AND word LIKE %s""",(pid,analysedstamp,word))
+                                    # Check if this word has already been stored for this minute - if so, increment the count
+                                    wordcheck = cursor.fetchone()
+                                    if wordcheck == None:
+                                        cursor.execute("""INSERT INTO wordanalysis (pid,timestamp,word,count,is_keyword,is_entity,is_common) VALUES (%s,%s,%s,%s,%s,%s,%s)""", (pid,analysedstamp,word,nltkdata[word][1],nltkdata[word][2],nltkdata[word][3],nltkdata[word][4]))
+                                    else:
+                                        cursor.execute("""UPDATE wordanalysis SET count = %s WHERE wid = %s""",(nltkdata[word][1] + wordcheck[1],wordcheck[0]))
+                        # Averages / stdev are calculated roughly based on the programme's running time at this point
+                        progdate = datetime.utcfromtimestamp(timestamp) + timedelta(seconds=utcoffset)
+                        actualstart = progdate - timedelta(seconds=timediff)
+                        actualtweettime = datetime.utcfromtimestamp(tweettime + utcoffset)
 
-                    # Calculate how far through the programme this tweet occurred
-                    runningtime = actualtweettime - actualstart
-                    runningtime = runningtime.seconds
+                        # Calculate how far through the programme this tweet occurred
+                        runningtime = actualtweettime - actualstart
+                        runningtime = runningtime.seconds
 
-                    if runningtime < 0:
-                        runningtime = 0
+                        if runningtime < 0:
+                            runningtime = 0
+                        else:
+                            runningtime = float(runningtime) / 60
+
+                        try:
+                            meantweets = totaltweets / runningtime
+                        except ZeroDivisionError, e:
+                            meantweets = 0
+
+                        cursor.execute("""SELECT totaltweets FROM analyseddata WHERE pid = %s AND timestamp >= %s AND timestamp < %s""",(pid,progstart,analysedstamp+duration))
+                        analyseddata = cursor.fetchall()
+
+                        runningtime = int(runningtime)
+
+                        tweetlist = list()
+                        for result in analyseddata:
+                            totaltweetsmin = result[0]
+                            # Create a list of each minute and the total tweets for that minute in the programme
+                            tweetlist.append(int(totaltweetsmin))
+
+                        # Ensure tweetlist has enough entries
+                        # If a minute has no tweets, it won't have a database record, so this has to be added
+                        if len(tweetlist) < runningtime:
+                            additions = runningtime - len(tweetlist)
+                            while additions > 0:
+                                tweetlist.append(0)
+                                additions -= 1
+
+                        # Order by programme position 0,1,2, mins etc
+                        tweetlist.sort()
+
+                        mediantweets = tweetlist[int(len(tweetlist)/2)]
+
+                        modes = dict()
+                        stdevlist = list()
+                        for tweet in tweetlist:
+                            modes[tweet] = tweetlist.count(tweet)
+                            stdevlist.append((tweet - meantweets)*(tweet - meantweets))
+
+                        modeitems = [[v, k] for k, v in modes.items()]
+                        modeitems.sort(reverse=True)
+                        modetweets = int(modeitems[0][1])
+
+                        stdevtweets = 0
+                        for val in stdevlist:
+                            stdevtweets += val
+
+                        try:
+                            stdevtweets = math.sqrt(stdevtweets / runningtime)
+                        except ZeroDivisionError, e:
+                            stdevtweets = 0
+
+                        # Finished analysis - update DB
+                        cursor.execute("""UPDATE programmes SET totaltweets = %s, meantweets = %s, mediantweets = %s, modetweets = %s, stdevtweets = %s WHERE pid = %s AND timestamp = %s""",(totaltweets,meantweets,mediantweets,modetweets,stdevtweets,pid,timestamp))
+
                     else:
-                        runningtime = float(runningtime) / 60
+                        Print("Analysis component: Skipping tweet - falls outside the programme's running time")
 
-                    try:
-                        meantweets = totaltweets / runningtime
-                    except ZeroDivisionError, e:
-                        meantweets = 0
-
-                    cursor.execute("""SELECT totaltweets FROM analyseddata WHERE pid = %s AND timestamp >= %s AND timestamp < %s""",(pid,progstart,analysedstamp+duration))
-                    analyseddata = cursor.fetchall()
-
-                    runningtime = int(runningtime)
-
-                    tweetlist = list()
-                    for result in analyseddata:
-                        totaltweetsmin = result[0]
-                        # Create a list of each minute and the total tweets for that minute in the programme
-                        tweetlist.append(int(totaltweetsmin))
-
-                    # Ensure tweetlist has enough entries
-                    # If a minute has no tweets, it won't have a database record, so this has to be added
-                    if len(tweetlist) < runningtime:
-                        additions = runningtime - len(tweetlist)
-                        while additions > 0:
-                            tweetlist.append(0)
-                            additions -= 1
-
-                    # Order by programme position 0,1,2, mins etc
-                    tweetlist.sort()
-
-                    mediantweets = tweetlist[int(len(tweetlist)/2)]
-
-                    modes = dict()
-                    stdevlist = list()
-                    for tweet in tweetlist:
-                        modes[tweet] = tweetlist.count(tweet)
-                        stdevlist.append((tweet - meantweets)*(tweet - meantweets))
-
-                    modeitems = [[v, k] for k, v in modes.items()]
-                    modeitems.sort(reverse=True)
-                    modetweets = int(modeitems[0][1])
-
-                    stdevtweets = 0
-                    for val in stdevlist:
-                        stdevtweets += val
-
-                    try:
-                        stdevtweets = math.sqrt(stdevtweets / runningtime)
-                    except ZeroDivisionError, e:
-                        stdevtweets = 0
-
-                    # Finished analysis - update DB
-                    cursor.execute("""UPDATE programmes SET totaltweets = %s, meantweets = %s, mediantweets = %s, modetweets = %s, stdevtweets = %s WHERE pid = %s AND timestamp = %s""",(totaltweets,meantweets,mediantweets,modetweets,stdevtweets,pid,timestamp))
-
-                else:
-                    Print("Analysis component: Skipping tweet - falls outside the programme's running time")
-
-                # Mark the tweet as analysed
-                cursor.execute("""UPDATE rawdata SET analysed = 1 WHERE tid = %s""",(tid))
-                Print("Analysis component: Done!")
-
-            # Stage 2: If all raw tweets analysed and imported = 1 (all data for this programme stored and programme finished), finalise the analysis - could do bookmark identification here too?
-            cursor.execute("""SELECT pid,totaltweets,meantweets,mediantweets,modetweets,stdevtweets,timestamp,timediff FROM programmes WHERE imported = 1 AND analysed = 0 LIMIT 5000""")
-            data = cursor.fetchall()
-            # Cycle through each programme that's ready for final analysis
-            for result in data:
-                pid = result[0]
-                cursor.execute("""SELECT duration,title FROM programmes_unique WHERE pid = %s""",(pid))
-                data2 = cursor.fetchone()
-                duration = data2[0]
-                totaltweets = result[1]
-                meantweets = result[2]
-                mediantweets = result[3]
-                modetweets = result[4]
-                stdevtweets = result[5]
-                title = data2[1]
-                timestamp = result[6]
-                timediff = result[7]
-                # Cycle through checking if all tweets for this programme have been analysed - if so finalise the stats
-                cursor.execute("""SELECT tid FROM rawdata WHERE analysed = 0 AND pid = %s""", (pid))
-                if cursor.fetchone() == None:
-                    # OK to finalise stats here
-                    Print("Analysis component: Finalising stats for pid:", pid, "(" , title , ")")
-
-                    meantweets = float(totaltweets) / (duration / 60) # Mean tweets per minute
-
-                    cursor.execute("""SELECT totaltweets FROM analyseddata WHERE pid = %s AND timestamp >= %s AND timestamp < %s""",(pid,timestamp-timediff,timestamp+duration-timediff))
-                    analyseddata = cursor.fetchall()
-
-                    runningtime = duration / 60
-
-                    tweetlist = list()
-                    for result in analyseddata:
-                        totaltweetsmin = result[0]
-                        tweetlist.append(int(totaltweetsmin))
-
-                    # Ensure tweetlist has enough entries - as above, if no tweets are recorded for a minute it won't be present in the DB
-                    if len(tweetlist) < runningtime:
-                        additions = runningtime - len(tweetlist)
-                        while additions > 0:
-                            tweetlist.append(0)
-                            additions -= 1
-
-                    tweetlist.sort()
-
-                    mediantweets = tweetlist[int(len(tweetlist)/2)]
-
-                    modes = dict()
-                    stdevlist = list()
-                    for tweet in tweetlist:
-                        modes[tweet] = tweetlist.count(tweet)
-                        stdevlist.append((tweet - meantweets)*(tweet - meantweets))
-
-                    modeitems = [[v, k] for k, v in modes.items()]
-                    modeitems.sort(reverse=True)
-                    modetweets = int(modeitems[0][1])
-
-                    stdevtweets = 0
-                    for val in stdevlist:
-                        stdevtweets += val
-                    try:
-                        stdevtweets = math.sqrt(stdevtweets / runningtime)
-                    except ZeroDivisionError, e:
-                        stdevtweets = 0
-
-                    if 1: # This data is purely a readout to the terminal at the moment associated with word and phrase frequency, and retweets
-                        sqltimestamp1 = timestamp - timediff
-                        sqltimestamp2 = timestamp + duration - timediff
-                        cursor.execute("""SELECT tweet_id FROM rawdata WHERE pid = %s AND timestamp >= %s AND timestamp < %s""", (pid,sqltimestamp1,sqltimestamp2))
-                        rawtweetids = cursor.fetchall()
-                        tweetids = list()
-                        for tweet in rawtweetids:
-                            tweetids.append(tweet[0])
-
-                        if len(tweetids) > 0:
-                            # Just in case of a missing raw json object (ie. programme terminated before it was stored - allow it to be skipped if not found after 30 secs)
-                            #failcounter = 0
-                            self.send([pid,tweetids],"nltkfinal")
-                            while not self.dataReady("nltkfinal"):
-                            #    if failcounter >= 3000:
-                            #        nltkdata = list()
-                            #        break
-                                time.sleep(0.01)
-                            #    failcounter += 1
-                            #if failcounter < 3000:
-                            if 1:
-                                nltkdata = self.recv("nltkfinal")
-
-                    cursor.execute("""UPDATE programmes SET meantweets = %s, mediantweets = %s, modetweets = %s, stdevtweets = %s, analysed = 1 WHERE pid = %s AND timestamp = %s""",(meantweets,mediantweets,modetweets,stdevtweets,pid,timestamp))
+                    # Mark the tweet as analysed
+                    cursor.execute("""UPDATE rawdata SET analysed = 1 WHERE tid = %s""",(tid))
                     Print("Analysis component: Done!")
 
-            # Sleep here until more data is available to analyse
-            Print("Analysis component: Sleeping for 10 seconds...")
-            time.sleep(10)
+                # Stage 2: If all raw tweets analysed and imported = 1 (all data for this programme stored and programme finished), finalise the analysis - could do bookmark identification here too?
+                cursor.execute("""SELECT pid,totaltweets,meantweets,mediantweets,modetweets,stdevtweets,timestamp,timediff FROM programmes WHERE imported = 1 AND analysed = 0 LIMIT 5000""")
+                data = cursor.fetchall()
+                # Cycle through each programme that's ready for final analysis
+                for result in data:
+                    pid = result[0]
+                    cursor.execute("""SELECT duration,title FROM programmes_unique WHERE pid = %s""",(pid))
+                    data2 = cursor.fetchone()
+                    duration = data2[0]
+                    totaltweets = result[1]
+                    meantweets = result[2]
+                    mediantweets = result[3]
+                    modetweets = result[4]
+                    stdevtweets = result[5]
+                    title = data2[1]
+                    timestamp = result[6]
+                    timediff = result[7]
+                    # Cycle through checking if all tweets for this programme have been analysed - if so finalise the stats
+                    cursor.execute("""SELECT tid FROM rawdata WHERE analysed = 0 AND pid = %s""", (pid))
+                    if cursor.fetchone() == None:
+                        # OK to finalise stats here
+                        Print("Analysis component: Finalising stats for pid:", pid, "(" , title , ")")
+
+                        meantweets = float(totaltweets) / (duration / 60) # Mean tweets per minute
+
+                        cursor.execute("""SELECT totaltweets FROM analyseddata WHERE pid = %s AND timestamp >= %s AND timestamp < %s""",(pid,timestamp-timediff,timestamp+duration-timediff))
+                        analyseddata = cursor.fetchall()
+
+                        runningtime = duration / 60
+
+                        tweetlist = list()
+                        for result in analyseddata:
+                            totaltweetsmin = result[0]
+                            tweetlist.append(int(totaltweetsmin))
+
+                        # Ensure tweetlist has enough entries - as above, if no tweets are recorded for a minute it won't be present in the DB
+                        if len(tweetlist) < runningtime:
+                            additions = runningtime - len(tweetlist)
+                            while additions > 0:
+                                tweetlist.append(0)
+                                additions -= 1
+
+                        tweetlist.sort()
+
+                        mediantweets = tweetlist[int(len(tweetlist)/2)]
+
+                        modes = dict()
+                        stdevlist = list()
+                        for tweet in tweetlist:
+                            modes[tweet] = tweetlist.count(tweet)
+                            stdevlist.append((tweet - meantweets)*(tweet - meantweets))
+
+                        modeitems = [[v, k] for k, v in modes.items()]
+                        modeitems.sort(reverse=True)
+                        modetweets = int(modeitems[0][1])
+
+                        stdevtweets = 0
+                        for val in stdevlist:
+                            stdevtweets += val
+                        try:
+                            stdevtweets = math.sqrt(stdevtweets / runningtime)
+                        except ZeroDivisionError, e:
+                            stdevtweets = 0
+
+                        if 1: # This data is purely a readout to the terminal at the moment associated with word and phrase frequency, and retweets
+                            sqltimestamp1 = timestamp - timediff
+                            sqltimestamp2 = timestamp + duration - timediff
+                            cursor.execute("""SELECT tweet_id FROM rawdata WHERE pid = %s AND timestamp >= %s AND timestamp < %s""", (pid,sqltimestamp1,sqltimestamp2))
+                            rawtweetids = cursor.fetchall()
+                            tweetids = list()
+                            for tweet in rawtweetids:
+                                tweetids.append(tweet[0])
+
+                            if len(tweetids) > 0:
+                                # Just in case of a missing raw json object (ie. programme terminated before it was stored - allow it to be skipped if not found after 30 secs)
+                                #failcounter = 0
+                                self.send([pid,tweetids],"nltkfinal")
+                                while not self.dataReady("nltkfinal"):
+                                #    if failcounter >= 3000:
+                                #        nltkdata = list()
+                                #        break
+                                    time.sleep(0.01)
+                                #    failcounter += 1
+                                #if failcounter < 3000:
+                                if 1:
+                                    nltkdata = self.recv("nltkfinal")
+
+                        cursor.execute("""UPDATE programmes SET meantweets = %s, mediantweets = %s, modetweets = %s, stdevtweets = %s, analysed = 1 WHERE pid = %s AND timestamp = %s""",(meantweets,mediantweets,modetweets,stdevtweets,pid,timestamp))
+                        Print("Analysis component: Done!")
+
+                # Sleep here until more data is available to analyse
+                Print("Analysis component: Sleeping for 10 seconds...")
+                time.sleep(10)
 
 
 class LiveAnalysisNLTK(component):
@@ -400,6 +402,7 @@ class LiveAnalysisNLTK(component):
 
     def main(self):
         cursor = self.dbConnect(self.dbuser,self.dbpass)
+#        print "NLTK", 1
 
         while not self.finished():
 
@@ -407,6 +410,7 @@ class LiveAnalysisNLTK(component):
                 data = self.recv("inbox")
                 pid = data[0]
                 tweetid = data[1]
+
 
                 # There is a possibility at this point that the tweet won't yet be in the DB.
                 # We'll have to stall for now if that happens but eventually it should be ensured tweets will be in the DB first
@@ -416,95 +420,105 @@ class LiveAnalysisNLTK(component):
                 # If so, don't count is as a word, count the whole thing as a phrase and remember not to count it more than once
                 # May actually store phrases AS WELL AS keywords
 
+
                 tweetdata = None
+                twnc = 0
                 while tweetdata == None:
                     # Retrieve the tweet json corresponding to the ID receieved
                     cursor.execute("""SELECT tweet_json FROM rawtweets WHERE tweet_id = %s""",(tweetid))
                     tweetdata = cursor.fetchone()
                     if tweetdata == None:
+                        twnc += 1
+                        # self.pause()
+                        yield 1
+                    if twnc == 100:
+                        break
+
+#                print "NLTK", 2
+                if tweetdata == None:
+                    self.send({},"outbox")
+                else:
+                    tweetjson = cjson.decode(tweetdata[0])
+
+                    keywords = dict()
+                    # Find the keywords relating to the PID received
+                    cursor.execute("""SELECT keyword,type FROM keywords WHERE pid = %s""",(pid))
+                    keyworddata = cursor.fetchall()
+                    for word in keyworddata:
+                        wordname = word[0].lower()
+                        keywords[wordname] = word[1]
+
+                    # Send the tweet off to have retweets fixed, links analysed etc
+                    self.send(tweetjson,"tweetfixer")
+                    while not self.dataReady("tweetfixer"):
                         self.pause()
                         yield 1
+                    tweetjson = self.recv("tweetfixer")
 
-                tweetjson = cjson.decode(tweetdata[0])
-
-                keywords = dict()
-                # Find the keywords relating to the PID received
-                cursor.execute("""SELECT keyword,type FROM keywords WHERE pid = %s""",(pid))
-                keyworddata = cursor.fetchall()
-                for word in keyworddata:
-                    wordname = word[0].lower()
-                    keywords[wordname] = word[1]
-
-                # Send the tweet off to have retweets fixed, links analysed etc
-                self.send(tweetjson,"tweetfixer")
-                while not self.dataReady("tweetfixer"):
-                    self.pause()
-                    yield 1
-                tweetjson = self.recv("tweetfixer")
-
-                # Format: {"word" : [is_phrase,count,is_keyword,is_entity,is_common]}
-                wordfreqdata = dict()
-                for item in tweetjson['entities']['user_mentions']:
-                    if wordfreqdata.has_key("@" + item['screen_name']):
-                        wordfreqdata["@" + item['screen_name']][1] += 1
-                    else:
-                        if item['screen_name'].lower() in keywords or "@" + item['screen_name'].lower() in keywords:
-                            wordfreqdata["@" + item['screen_name']] = [0,1,1,1,0]
+                    # Format: {"word" : [is_phrase,count,is_keyword,is_entity,is_common]}
+                    wordfreqdata = dict()
+                    for item in tweetjson['entities']['user_mentions']:
+                        if wordfreqdata.has_key("@" + item['screen_name']):
+                            wordfreqdata["@" + item['screen_name']][1] += 1
                         else:
-                            wordfreqdata["@" + item['screen_name']] = [0,1,0,1,0]
-                for item in tweetjson['entities']['urls']:
-                    if wordfreqdata.has_key(item['url']):
-                        wordfreqdata[item['url']][1] += 1
-                    else:
-                        wordfreqdata[item['url']] = [0,1,0,1,0]
-                for item in tweetjson['entities']['hashtags']:
-                    if wordfreqdata.has_key("#" + item['text']):
-                        wordfreqdata["#" + item['text']][1] += 1
-                    else:
-                        if item['text'].lower() in keywords or "#" + item['text'].lower() in keywords:
-                            wordfreqdata["#" + item['text']] = [0,1,1,1,0]
+                            if item['screen_name'].lower() in keywords or "@" + item['screen_name'].lower() in keywords:
+                                wordfreqdata["@" + item['screen_name']] = [0,1,1,1,0]
+                            else:
+                                wordfreqdata["@" + item['screen_name']] = [0,1,0,1,0]
+                    for item in tweetjson['entities']['urls']:
+                        if wordfreqdata.has_key(item['url']):
+                            wordfreqdata[item['url']][1] += 1
                         else:
-                            wordfreqdata["#" + item['text']] = [0,1,0,1,0]
+                            wordfreqdata[item['url']] = [0,1,0,1,0]
+                    for item in tweetjson['entities']['hashtags']:
+                        if wordfreqdata.has_key("#" + item['text']):
+                            wordfreqdata["#" + item['text']][1] += 1
+                        else:
+                            if item['text'].lower() in keywords or "#" + item['text'].lower() in keywords:
+                                wordfreqdata["#" + item['text']] = [0,1,1,1,0]
+                            else:
+                                wordfreqdata["#" + item['text']] = [0,1,0,1,0]
 
-                tweettext = self.spellingFixer(tweetjson['filtered_text']).split()
-                for word in tweettext:
-                    if word[0] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and not (len(word) <= 3 and (word[0] == ":" or word[0] == ";")):
-                        word = word[1:]
-                    if word != "":
-                        # Done twice to capture things like 'this is a "quote".'
-                        if len(word) >= 2:
-                            if word[len(word)-1] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and word[len(word)-2:len(word)] != "s'" and not (len(word) <= 3 and (word[0] == ":" or word[0] == ";")):
-                                word = word[:len(word)-1]
+                    tweettext = self.spellingFixer(tweetjson['filtered_text']).split()
+                    for word in tweettext:
+                        if word[0] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and not (len(word) <= 3 and (word[0] == ":" or word[0] == ";")):
+                            word = word[1:]
+                        if word != "":
+                            # Done twice to capture things like 'this is a "quote".'
+                            if len(word) >= 2:
                                 if word[len(word)-1] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and word[len(word)-2:len(word)] != "s'" and not (len(word) <= 3 and (word[0] == ":" or word[0] == ";")):
                                     word = word[:len(word)-1]
-                        elif word[len(word)-1] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and not (len(word) <= 3 and (word[0] == ":" or word[0] == ";")):
-                            word = word[:len(word)-1]
-                            if word != "":
-                                if word[len(word)-1] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and not (len(word) <= 3 and (word[0] == ":" or word[0] == ";")):
-                                    word = word[:len(word)-1]
-                    if word != "":
-                        if word in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""":
-                            word = ""
+                                    if word[len(word)-1] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and word[len(word)-2:len(word)] != "s'" and not (len(word) <= 3 and (word[0] == ":" or word[0] == ";")):
+                                        word = word[:len(word)-1]
+                            elif word[len(word)-1] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and not (len(word) <= 3 and (word[0] == ":" or word[0] == ";")):
+                                word = word[:len(word)-1]
+                                if word != "":
+                                    if word[len(word)-1] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and not (len(word) <= 3 and (word[0] == ":" or word[0] == ";")):
+                                        word = word[:len(word)-1]
+                        if word != "":
+                            if word in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""":
+                                word = ""
 
-                    if word != "":
-                        if wordfreqdata.has_key(word):
-                            wordfreqdata[word][1] += 1
-                        else:
-                            if word.lower() in self.exclusions:
-                                exclude = 1
+                        if word != "":
+                            if wordfreqdata.has_key(word):
+                                wordfreqdata[word][1] += 1
                             else:
-                                exclude = 0
-                            for row in keywords:
-                                if word.lower() in row:
-                                    wordfreqdata[word] = [0,1,1,0,exclude]
-                                    break
-                            else:
-                                wordfreqdata[word] = [0,1,0,0,exclude]
+                                if word.lower() in self.exclusions:
+                                    exclude = 1
+                                else:
+                                    exclude = 0
+                                for row in keywords:
+                                    if word.lower() in row:
+                                        wordfreqdata[word] = [0,1,1,0,exclude]
+                                        break
+                                else:
+                                    wordfreqdata[word] = [0,1,0,0,exclude]
 
-                self.send(wordfreqdata,"outbox")
+                    self.send(wordfreqdata,"outbox")
 
             self.pause()
             yield 1
+
 
 class FinalAnalysisNLTK(component):
     Inboxes = {

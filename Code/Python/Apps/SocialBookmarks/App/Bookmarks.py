@@ -34,7 +34,6 @@ import cjson
 
 
 if __name__ == "__main__":
-
     # Load Config
     try:
         homedir = os.path.expanduser("~")
