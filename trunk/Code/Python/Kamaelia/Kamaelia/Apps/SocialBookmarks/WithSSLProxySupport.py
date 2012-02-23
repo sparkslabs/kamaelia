@@ -67,6 +67,7 @@ class HandleConnectRequest(component):
                 raise ShutdownNow
 
     def main(self):
+#        sys.stdout.write("Handle Connect Request Start\n")
         self.control_message = None
         self.had_response = False
         buff = Linebuffer()
@@ -126,6 +127,8 @@ class HandleConnectRequest(component):
         else:
             self.send(Axon.Ipc.producerFinished(), "signal")
 
+#        sys.stdout.write("Handle Connect Request EXIT\n")
+
 
 class With(Axon.Component.component):
     Inboxes = { "inbox" : "Normal - unused",
@@ -154,6 +157,7 @@ class With(Axon.Component.component):
         return False
 
     def link_graphstep(self, graphstep):
+            self.components["self"] = self
             links = []
             for source in graphstep:
                 sink = graphstep[source]
@@ -168,15 +172,18 @@ class With(Axon.Component.component):
                 links.append(L)
                
                 if self.components[source[0]] not in self.childComponents():
-                    self.link((self.components[source[0]], "signal"), (self, "_control"))
-                    self.addChildren( self.components[source[0]])
-                    self.components[source[0]].activate()
+                    if self.components[source[0]] != self:
+                        self.link((self.components[source[0]], "signal"), (self, "_control"))
+                        self.addChildren( self.components[source[0]])
+                        self.components[source[0]].activate()
 
                 if self.components[sink[0]] not in self.childComponents():
-                    self.link((self.components[sink[0]], "signal"), (self, "_control"))
-                    self.addChildren( self.components[sink[0]])
-                    self.components[sink[0]].activate()
+                    if self.components[sink[0]] != self:
+                        self.link((self.components[sink[0]], "signal"), (self, "_control"))
+                        self.addChildren( self.components[sink[0]])
+                        self.components[sink[0]].activate()
 
+            del self.components["self"]
             return links
 
     def shutdownChildComponents(self, message):
@@ -185,6 +192,7 @@ class With(Axon.Component.component):
              if child == self.item:
                  continue
 
+#             print "********** child, self.item, self", child, self.item, self
              L = self.link( (self, "_signal"), (child, "control"))
              self.send(message, "_signal")
              self.unlink(thelinkage=L)
@@ -222,6 +230,7 @@ class With(Axon.Component.component):
                 dontcontinue = self.handleGraphstepShutdown()
 
                 if self.anyStopped():
+#                    print "Something stopped"
                     all_stopped = True # Assume
                     if self.item._isStopped():
                         print "Warning: Child died before completion", self.item
@@ -233,13 +242,16 @@ class With(Axon.Component.component):
                         if child == self.item:
                             continue
                        
+#                        print "child stopped ?", child._isStopped(), child
                         all_stopped = all_stopped and child._isStopped()
-                    if all_stopped:
+
+                    if all_stopped:                        
                         break
                     else:
                         stopping += 1
                         if (stopping % 1000) == 0:
-                            print "Warning one child exited, but others haven't after", stopping, "loops"
+                            pass
+                            # print "Warning one child exited, but others haven't after", stopping, "loops"
 
                 yield 1
 
@@ -249,6 +261,7 @@ class With(Axon.Component.component):
             for link in links: 
                 self.unlink(thelinkage=link)
 
+#        print "Exiting With Component... , all_stopped, dontcontinue:", all_stopped, dontcontinue
         self.link( (self, "_signal"), (self.item, "control") )
         self.send( producerFinished(), "_signal")
 

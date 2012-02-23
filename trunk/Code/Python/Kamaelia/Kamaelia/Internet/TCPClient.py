@@ -267,11 +267,14 @@ class TCPClient(Axon.Component.component):
       # nothing else specific.
       try:
          sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM); yield 0.3
+         print "GOT SOCK"
          self.sock = sock # We need this for shutdown later
          try:
             sock.setblocking(0); yield 0.6
+            print "GOT A NON BLOCK"
             try:
                tryUntil = time.time() + self.connect_timeout
+               print "GOT A ODD SOCK"
                while not self.safeConnect(sock,(self.host, self.port)):
                   if self.shutdown():
                       return
@@ -279,19 +282,23 @@ class TCPClient(Axon.Component.component):
                       self.howDied = "timeout"
                       raise Finality
                   yield 1
+               print "CONNECTED"
                yield newComponent(*self.setupCSA(sock))
                while self.waitCSAClose():
                   self.pause()
                   yield 2
                raise Finality
             except Exception, x:
+               print "SHUTTING SOCK",x
                result = sock.shutdown(2) ; yield 3
                raise x  # XXXX If X is not finality, an error message needs to get sent _somewhere_ else
                # The logical place to send the error is to the signal outbox
          except Exception, x:
+            print "CLOSING SOCK",x
             sock.close() ;  yield 4,x # XXXX If X is not finality, an error message needs to get sent _somewhere_ else
             raise x
       except Finality:
+         print "LOOKING GOOD SOCK"
          yield 5
       except socket.error, e:
          # We now do the flipside of setupCSA, whether we had an error or not
@@ -301,6 +308,7 @@ class TCPClient(Axon.Component.component):
          #
          # FIXME: Set self.howDied here as well
          #
+         print "SMELLY SOCK", e
          pass
       self.send(producerFinished(self,self.howDied), "signal")
 #          self.send(e, "signal")

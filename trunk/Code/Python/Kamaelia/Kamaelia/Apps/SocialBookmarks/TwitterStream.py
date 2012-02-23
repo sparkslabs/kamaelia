@@ -8,16 +8,70 @@ TODO: Add watching for in-stream rate limiting / error messages
 - Doesn't currently honour tweet deletion messages (TODO)
 '''
 
+import base64
 import time
 import urllib
 import sys
 import socket
-from Axon.Ipc import producerFinished, shutdownMicroprocess
 import Axon
 
+from Axon.Ipc import producerFinished, shutdownMicroprocess
 from Axon.Component import component
-import Axon
+from Axon.ThreadedComponent import threadedcomponent
+
+from Kamaelia.Chassis.Graphline import Graphline
+from Kamaelia.Chassis.Pipeline import Pipeline
+from Kamaelia.File.Writing import SimpleFileWriter
+from Kamaelia.Internet.TCPClient import TCPClient
+from Kamaelia.Util.OneShot import OneShot
+from Kamaelia.Util.Console import ConsoleEchoer
+from Kamaelia.Util.Console import ConsoleEchoer
+from Kamaelia.Util.PureTransformer import PureTransformer
+from Kamaelia.Util.PureTransformer import PureTransformer
+
 from Kamaelia.Apps.SocialBookmarks.Print import Print
+from Kamaelia.Apps.SocialBookmarks.ComponentBoxTracer import ComponentBoxTracer
+from Kamaelia.Apps.SocialBookmarks.PureFilter import PureFilter
+from Kamaelia.Apps.SocialBookmarks.WithSSLProxySupport import With, ConnectRequest, HandleConnectRequest
+
+import Axon
+#Axon.Box.ShowAllTransits = True
+
+def http_basic_auth_header(username, password):
+    userpass = "%s:%s" % (username, password)
+    base64_userpass = base64.b64encode(userpass )
+    auth_value = "Basic %s" % base64_userpass
+    return ("Authorization", auth_value)
+
+def parse_url(fullurl):
+    p = fullurl.find(":")
+    proto = fullurl[:p]
+    if proto.lower() != "http" and proto.lower() != "https":
+         raise ValueError("Can only handle http / https urls. You provided"+fullurl)
+    if fullurl[p+1:p+3] != "//":
+         raise ValueError("Invalid HTTP URL."+fullurl)
+    fullurl = fullurl[p+3:]
+
+    p = fullurl.find("/")
+    if p == -1:
+        server = fullurl
+        path = "/"
+    else:
+        server = fullurl[:p]
+        path = fullurl[p:]
+
+    p = server.find(":")
+    if p == -1:
+        host = server
+        if proto == "http":
+            port = 80
+        elif proto == "https":
+            port = 443
+    else:
+        host = server[:p]
+        port = int(server[p+1:])
+
+    return proto, host, port, path
 
 class HTTPClientRequest(component):
     url = "/Components.html"
@@ -41,7 +95,7 @@ class HTTPClientRequest(component):
         if self.postbody:
             self.send(self.postbody, "outbox")
         yield 1
-        self.send(Axon.Ipc.producerFinished(), "signal")
+        self.send(Axon.Ipc.producerFinished(caller="HTTPClientRequest"), "signal")
 
 class ShutdownNow(Exception):
     pass
@@ -88,10 +142,12 @@ class HTTPClientResponseHandler(component):
 
     def checkControl(self):
         if self.dataReady("control"):
-            self.control_message = self.recv("control")
-            if isinstance(self.control_message, Axon.Ipc.shutdownMicroprocess):
-                raise Exception("ShutdownNow")
-            return self.control_message
+            control_message = self.recv("control")
+            if control_message.caller != "HTTPClientRequest":
+                self.control_message = control_message
+                if isinstance(self.control_message, Axon.Ipc.shutdownMicroprocess):
+                    raise Exception("ShutdownNow")
+                return self.control_message
 
     def main(self):
         self.control_message = None
@@ -259,124 +315,55 @@ class LineFilter(component):
                 raise Exception("ShutdownNow")
             return self.control_message
 
-
-import base64
-def http_basic_auth_header(username, password):
-    userpass = "%s:%s" % (username, password)
-    base64_userpass = base64.b64encode(userpass )
-    auth_value = "Basic %s" % base64_userpass
-    return ("Authorization", auth_value)
-
-def parse_url(fullurl):
-    p = fullurl.find(":")
-    proto = fullurl[:p]
-    if proto.lower() != "http" and proto.lower() != "https":
-         raise ValueError("Can only handle http / https urls. You provided"+fullurl)
-    if fullurl[p+1:p+3] != "//":
-         raise ValueError("Invalid HTTP URL."+fullurl)
-    fullurl = fullurl[p+3:]
-
-    p = fullurl.find("/")
-    if p == -1:
-        server = fullurl
-        path = "/"
-    else:
-        server = fullurl[:p]
-        path = fullurl[p:]
-
-    p = server.find(":")
-    if p == -1:
-        host = server
-        if proto == "http":
-            port = 80
-        elif proto == "https":
-            port = 443
-    else:
-        host = server[:p]
-        port = int(server[p+1:])
-
-    return proto, host, port, path
-
-from Kamaelia.Apps.SocialBookmarks.ComponentBoxTracer import ComponentBoxTracer
-from Kamaelia.Apps.SocialBookmarks.PureFilter import PureFilter
-from Kamaelia.Chassis.Pipeline import Pipeline
-from Kamaelia.File.Writing import SimpleFileWriter
-from Kamaelia.Util.PureTransformer import PureTransformer
-from Kamaelia.Internet.TCPClient import TCPClient
-from Kamaelia.Util.OneShot import OneShot
-from Kamaelia.Util.Console import ConsoleEchoer
+def addTrace(some_component):
+    return Pipeline(some_component, ConsoleEchoer(use_repr=True, forwarder=True))
 
 def HTTPDataStreamingClient(fullurl, method="GET", body=None, headers={}, username=None, password=None, proxy=None):
-    # NOTE: username not supported yet
-    # NOTE: password not supported yet
 
     headers = dict(headers)
-    proto, host, port, path = parse_url(fullurl)
+    proto, url_host, url_port, path = parse_url(fullurl)
+
     if username is not None and password is not None:
         (header_field, header_value) = http_basic_auth_header(username, password)
         headers[header_field] = header_value
 
     if proxy != None:
-        request = fullurl
-        _, req_host , req_port, _ = parse_url(proxy)
+        _, proxy_host , proxy_port, _ = parse_url(proxy)
+
+    args = {}
+    sequence = []
+    request_path = path
+    if proxy:
+        print "Via Proxy..."
+        connhost, connport = proxy_host , proxy_port
     else:
-        request = path
-        req_host , req_port = host, port
+        print "NOT Via Proxy..."
+        connhost, connport = url_host, url_port
 
     if proto == "https":
-        print "Attempting SSL...", req_host, req_port
-        client_connection = Graphline(
-               MAKESSL = OneShot(" make ssl "),
-               CONNECTION = TCPClient(req_host, req_port, wait_for_serverclose=True),
-               linkages = {
-                   ("MAKESSL", "outbox"): ("CONNECTION", "makessl"),
+        print "Attempting SSL..."
+        if proxy:
+            print "desthost=url_host, destport=url_port, connhost, connport", url_host, url_port, connhost, connport 
+            args["ProxyConnect"]  = ConnectRequest(desthost=url_host, destport=url_port)
+            args["ProxyResponse"] = HandleConnectRequest()
+            sequence.append( { ("ProxyConnect", "outbox") : ("item", "inbox"), ("item","outbox") : ("ProxyResponse","inbox") } )
 
-                   ("self", "inbox") : ("CONNECTION", "inbox"),
-                   ("self", "control") : ("CONNECTION", "control"),
-                   ("CONNECTION", "outbox"): ("self", "outbox"),
-                   ("CONNECTION", "signal"): ("self", "signal"),
-               }
-        )
-    else:
-        client_connection = TCPClient(req_host, req_port, wait_for_serverclose=True)
+        args["makessl"] =  OneShot(" make ssl ")
+        sequence.append( { ("makessl", "outbox") : ("item", "makessl") } )
+    
+    if proto == "http":
+        print "Attempting Plain HTTP"
+        if proxy:
+            request_path = fullurl
 
-    return Pipeline(
-                    HTTPClientRequest(url=request, host=host, method=method, postbody=body, headers=headers),
-#                    TCPClient(req_host, req_port, wait_for_serverclose=True),
-                    client_connection,
-#                    ConsoleEchoer(forwarder=True,use_repr=True),
-                    HTTPClientResponseHandler(suppress_header = True),
-                   )
+    args["http_req"] = HTTPClientRequest(url=request_path, host=url_host, method=method, postbody=body, headers=headers)
+    args["http_resp"] = HTTPClientResponseHandler(suppress_header = True)
+    sequence.append( { ("http_req", "outbox")  : ("item", "inbox"),
+                       ("item","outbox")       : ("http_resp","inbox"),
+                       ("http_resp", "outbox") : ("self", "outbox") } )
+    args["sequence"] = sequence
 
-    # Leaving this here for a little while, since it is interesting/useful
-    # Worth bearing in mind this next line will never execute
-
-    return Pipeline(
-                    HTTPClientRequest(url=request, host=host, method=method, postbody=body, headers=headers),
-                    ComponentBoxTracer(
-                        TCPClient(req_host, req_port, wait_for_serverclose=True),
-                        Pipeline(
-                            PureFilter(lambda x: x[0] == "outbox"),           # Only interested in data from the connection
-                            PureTransformer(lambda x: x[1]),                  # Just want the data from the wire
-                            PureTransformer(lambda x: base64.b64encode(x)+"\n"), # To ensure we capture data as chunked on the way in
-                            SimpleFileWriter("tweets.b64.txt"),                # Capture for replay / debug
-                        ),
-                    ),
-                    ComponentBoxTracer(
-                        HTTPClientResponseHandler(suppress_header = True),
-                        Pipeline(
-                            PureFilter(lambda x: x[0] == "outbox"), # Only want the processed data here
-                            PureTransformer(lambda x: x[1]), # Only want the raw data
-                            SimpleFileWriter("tweets.raw.txt"),
-                        ),
-                    )
-                   )
-
-
-from Axon.ThreadedComponent import threadedcomponent
-from Kamaelia.Chassis.Graphline import Graphline
-from Kamaelia.Util.Console import ConsoleEchoer
-from Kamaelia.Util.PureTransformer import PureTransformer
+    return With(item = TCPClient(connhost, connport), **args)
 
 class TwitterStream(threadedcomponent):
     Inboxes = {
@@ -479,8 +466,14 @@ class TwitterStream(threadedcomponent):
                 # This still isn't great at reducing busy wait CPU usage
                 # Blank line count ensures we reconnect if we get 10 successive keepalives with no data - likely an error
             if (counter > self.timeout and self.datacapture != None and self.reconnect) or (blanklinecount >= 10 and self.reconnect):
+                print "counter", counter
+                print "self.timeout", self.timeout
+                print "self.datacapture", self.datacapture
+                print "self.reconnect", self.reconnect
+                print "blanklinecount", blanklinecount
                 blanklinecount = 0
                 sys.stderr.write("API Connection Failed: Reconnecting")
+                self.scheduler.stop() # FIXME Brutal, but effective
                 self.unlink(self.datacapture)
                 self.datacapture.stop()
                 self.datacapture = None
