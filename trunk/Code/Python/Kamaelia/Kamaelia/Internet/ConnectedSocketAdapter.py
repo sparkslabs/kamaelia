@@ -346,7 +346,7 @@ class ConnectedSocketAdapter(component):
        while self.connectionRECVLive and self.connectionSENDLive: # Note, this means half close == close
           yield 1
           if self.dataReady("makessl"):
-             print "****************************************************** Making SSL ******************************************************"
+#             print "****************************************************** Making SSL ******************************************************"
              self.recv('makessl')
 
              self.send(removeReader(self, self.socket), "_selectorSignal")
@@ -362,7 +362,7 @@ class ConnectedSocketAdapter(component):
              self.send(newWriter(self, ((self, "SendReady"), self.socket)), "_selectorSignal")
 
              self.send('', 'sslready')
-             print "****************************************************** SSL IS READY ******************************************************"
+#             print "****************************************************** SSL IS READY ******************************************************"
              yield 1
 
           self.checkSocketStatus() # To be written

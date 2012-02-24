@@ -195,6 +195,10 @@ class HTTPClientResponseHandler(component):
                             header[header_field].append(header_value)
                         except KeyError:
                             header[header_field]= [header_value]
+                    else:
+                        if not self.anyReady():
+                            self.pause()
+                            yield 1
 
                 header["HTTPSTATUSCODE"] = status_code
                 header["HTTPSTATUSMESSAGE"] = status_message
@@ -225,6 +229,9 @@ class HTTPClientResponseHandler(component):
                 self.checkControl()
                 if self.control_message:
                     break
+                if not self.anyReady():
+                    self.pause()
+                    yield 1
 
         except ShutdownNow:
             pass
@@ -289,6 +296,8 @@ class LineFilter(component):
         self.control_message = None
         try:
             while True:
+                if not self.anyReady():
+                    self.pause()
                 yield 1
                 line = True
                 while line:
@@ -399,6 +408,7 @@ class TwitterStream(threadedcomponent):
         return False
 
     def connect(self,args,pids):
+        Print("Connecting", repr(args), repr(pids))
         self.datacapture = Graphline(
                         DATA = HTTPDataStreamingClient(self.url,proxy=self.proxy,
                                                     username=self.username,
@@ -413,7 +423,9 @@ class TwitterStream(threadedcomponent):
                                     ("FILTER", "outbox") : ("TRANSFORMER", "inbox"),
                                     ("TRANSFORMER", "outbox") : ("self", "outbox"),}
                     ).activate()
-        self.link((self.datacapture, "outbox"), (self, "tweetsin"))
+        L = self.link((self.datacapture, "outbox"), (self, "tweetsin"))
+        Print("Connecting", repr(L), self.datacapture)
+        Print("Connecting", self.datacapture.components)
 
     def main(self):
         self.url = "https://stream.twitter.com/1/statuses/filter.json"
@@ -473,12 +485,16 @@ class TwitterStream(threadedcomponent):
                 print "blanklinecount", blanklinecount
                 blanklinecount = 0
                 sys.stderr.write("API Connection Failed: Reconnecting")
-                sys.exit(0) # FIXME Brutal, but effective
-                self.scheduler.stop() # FIXME Brutal, but effective
+                Axon.Box.ShowAllTransits = True
+                
+#                import os
+#                os.system("/home/michaels/Checkouts/kamaelia/trunk/Code/Python/Apps/SocialBookmarks/App/LastDitch.sh")
+#                
+#                sys.exit(0) # FIXME Brutal, but effective
+#                self.scheduler.stop() # FIXME Brutal, but effective
                 self.unlink(self.datacapture)
                 self.datacapture.stop()
                 self.datacapture = None
                 # Twitter connection has failed
                 counter = 0
                 self.connect(args,pids)
-                

@@ -24,6 +24,19 @@ import nltk
 from nltk import FreqDist
 from Kamaelia.Apps.SocialBookmarks.Print import Print
 
+import inspect
+def __LINE__ ():
+    caller = inspect.stack()[1]
+    return int (caller[2])
+     
+def __FUNC__ ():
+    caller = inspect.stack()[1]
+    return caller[3]
+
+def __BOTH__():
+    caller = inspect.stack()[1]
+    return int (caller[2]), caller[3], caller[1]
+
 class LiveAnalysis(threadedcomponent):
     Inboxes = {
         "inbox" : "Unused",
@@ -240,7 +253,8 @@ class LiveAnalysis(threadedcomponent):
                         cursor.execute("""UPDATE programmes SET totaltweets = %s, meantweets = %s, mediantweets = %s, modetweets = %s, stdevtweets = %s WHERE pid = %s AND timestamp = %s""",(totaltweets,meantweets,mediantweets,modetweets,stdevtweets,pid,timestamp))
 
                     else:
-                        Print("Analysis component: Skipping tweet - falls outside the programme's running time")
+                        pass
+                        # Print("Analysis component: Skipping tweet - falls outside the programme's running time")
 
                     # Mark the tweet as analysed
                     cursor.execute("""UPDATE rawdata SET analysed = 1 WHERE tid = %s""",(tid))
@@ -268,9 +282,7 @@ class LiveAnalysis(threadedcomponent):
                     if cursor.fetchone() == None:
                         # OK to finalise stats here
                         Print("Analysis component: Finalising stats for pid:", pid, "(" , title , ")")
-
                         meantweets = float(totaltweets) / (duration / 60) # Mean tweets per minute
-
                         cursor.execute("""SELECT totaltweets FROM analyseddata WHERE pid = %s AND timestamp >= %s AND timestamp < %s""",(pid,timestamp-timediff,timestamp+duration-timediff))
                         analyseddata = cursor.fetchall()
 
@@ -320,18 +332,27 @@ class LiveAnalysis(threadedcomponent):
                                 tweetids.append(tweet[0])
 
                             if len(tweetids) > 0:
-                                # Just in case of a missing raw json object (ie. programme terminated before it was stored - allow it to be skipped if not found after 30 secs)
-                                #failcounter = 0
+                                # Just in case of a missing raw json object (ie. programme terminated before it was stored - allow it to be skipped if not found after 10 secs)
+                                failcounter = 0
                                 self.send([pid,tweetids],"nltkfinal")
+                                print "ENTER LOOP", __BOTH__()
                                 while not self.dataReady("nltkfinal"):
-                                #    if failcounter >= 3000:
-                                #        nltkdata = list()
-                                #        break
+                                    if failcounter >= 1000:
+                                        Print("Timed out waiting for NTLKFINAL")
+                                        nltkdata = list()
+                                        break
                                     time.sleep(0.01)
-                                #    failcounter += 1
-                                #if failcounter < 3000:
-                                if 1:
+
+                                    failcounter += 1
+                                    if failcounter %100 == 0:
+                                        print "Hanging waiting for NLTKFINAL"
+
+                                Print("failcounter (<1000 is success)", failcounter)
+                                if failcounter < 1000:
+#                                if 1:
                                     nltkdata = self.recv("nltkfinal")
+
+                                    print "Here", __BOTH__()
 
                         cursor.execute("""UPDATE programmes SET meantweets = %s, mediantweets = %s, modetweets = %s, stdevtweets = %s, analysed = 1 WHERE pid = %s AND timestamp = %s""",(meantweets,mediantweets,modetweets,stdevtweets,pid,timestamp))
                         Print("Analysis component: Done!")
@@ -622,44 +643,52 @@ class FinalAnalysisNLTK(component):
                             tweetjson = cjson.decode(tweetdata[0])
 
                             self.send(tweetjson,"tweetfixer")
+                            twnc_count = 0
                             while not self.dataReady("tweetfixer"):
+                                if twnc_count > 10:
+                                    # Empirically, twnc_count gets there within 2 or 3 loops
+                                    break
+                                twnc_count += 1
                                 self.pause()
                                 yield 1
-                            tweetjson = self.recv("tweetfixer")
+#                            print "GRRRRR", twnc_count, __BOTH__()
 
-                            # Identify retweets
-                            if tweetjson.has_key('retweeted_status'):
-                                if tweetjson['retweeted_status'].has_key('id'):
-                                    statusid = tweetjson['retweeted_status']['id']
-                                    if retweetcache.has_key(statusid):
-                                        retweetcache[statusid][0] += 1
-                                    else:
-                                        retweetcache[statusid] = [1,tweetjson['retweeted_status']['text']]
+                            if self.dataReady("tweetfixer"):
+                                tweetjson = self.recv("tweetfixer")
+
+                                # Identify retweets
+                                if tweetjson.has_key('retweeted_status'):
+                                    if tweetjson['retweeted_status'].has_key('id'):
+                                        statusid = tweetjson['retweeted_status']['id']
+                                        if retweetcache.has_key(statusid):
+                                            retweetcache[statusid][0] += 1
+                                        else:
+                                            retweetcache[statusid] = [1,tweetjson['retweeted_status']['text']]
 
 
-                            tweettext = self.spellingFixer(tweetjson['filtered_text']).split()
-                            
-                            for word in tweettext:
-                                if word[0] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and not (len(word) <= 3 and (word[0] == ":" or word[0] == ";")):
-                                    word = word[1:]
-                                if word != "":
-                                    # Done twice to capture things like 'this is a "quote".'
-                                    if len(word) >= 2:
-                                        if word[len(word)-1] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and word[len(word)-2:len(word)] != "s'" and not (len(word) <= 3 and (word[0] == ":" or word[0] == ";")):
-                                            word = word[:len(word)-1]
+                                tweettext = self.spellingFixer(tweetjson['filtered_text']).split()
+                                
+                                for word in tweettext:
+                                    if word[0] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and not (len(word) <= 3 and (word[0] == ":" or word[0] == ";")):
+                                        word = word[1:]
+                                    if word != "":
+                                        # Done twice to capture things like 'this is a "quote".'
+                                        if len(word) >= 2:
                                             if word[len(word)-1] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and word[len(word)-2:len(word)] != "s'" and not (len(word) <= 3 and (word[0] == ":" or word[0] == ";")):
                                                 word = word[:len(word)-1]
-                                    elif word[len(word)-1] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and not (len(word) <= 3 and (word[0] == ":" or word[0] == ";")):
-                                        word = word[:len(word)-1]
-                                        if word != "":
-                                            if word[len(word)-1] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and not (len(word) <= 3 and (word[0] == ":" or word[0] == ";")):
-                                                word = word[:len(word)-1]
-                                if word != "":
-                                    if word in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""":
-                                        word = ""
+                                                if word[len(word)-1] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and word[len(word)-2:len(word)] != "s'" and not (len(word) <= 3 and (word[0] == ":" or word[0] == ";")):
+                                                    word = word[:len(word)-1]
+                                        elif word[len(word)-1] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and not (len(word) <= 3 and (word[0] == ":" or word[0] == ";")):
+                                            word = word[:len(word)-1]
+                                            if word != "":
+                                                if word[len(word)-1] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and not (len(word) <= 3 and (word[0] == ":" or word[0] == ";")):
+                                                    word = word[:len(word)-1]
+                                    if word != "":
+                                        if word in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""":
+                                            word = ""
 
-                                if word != "":
-                                    filteredtext.append(word)
+                                    if word != "":
+                                        filteredtext.append(word)
 
                 # Format: {"word" : [is_phrase,count,is_keyword,is_entity,is_common]}
                 # Need to change this for retweets as they should include all the text content if truncated - need some clever merging FIXME TODO
@@ -668,20 +697,21 @@ class FinalAnalysisNLTK(component):
                 # Look for phrases - very limited
                 bigram_fd = FreqDist(nltk.bigrams(filteredtext))
 
-                Print(bigram_fd)
+                # Print(bigram_fd)
 
                 for entry in bigram_fd:
                     if entry[0] not in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and entry[1] not in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""":
                         if entry[0] not in self.exclusions and entry[1] not in self.exclusions:
                             for word in keywords:
-                                Print(word)
+                                # Print(word)
                                 if entry[0] in word and entry[1] in word:
-                                    Print("Keyword Match! " , entry[0],entry[1] )
+                                    # Print("Keyword Match! " , entry[0],entry[1] )
                                     break
                             else:
-                                Print( entry[0],entry[1])
+                                pass
+                                #Print( entry[0],entry[1])
 
-                Print("Retweet data: " , retweetcache)
+                # Print("Retweet data: " , retweetcache)
 
                 self.send(None,"outbox")
 
