@@ -16,6 +16,7 @@ from time import time,strftime,gmtime
 import urllib
 
 from Axon.Component import component
+from Axon.ThreadedComponent import threadedcomponent
 from Axon.Ipc import producerFinished
 from Axon.Ipc import shutdownMicroprocess
 import cjson
@@ -31,7 +32,7 @@ class GMT(tzinfo):
     def dst(self,dt):
         return timedelta(0)
 
-class WhatsOn(component):
+class WhatsOn(threadedcomponent):
     Inboxes = {
         "inbox" : "Receives a channel name to investigate in the 'key' format from self.channels",
         "datain" : "Return path for requests to HTTP getter component",
@@ -116,12 +117,12 @@ class WhatsOn(component):
                     except cjson.DecodeError, e:
                         Print("cjson.DecodeError:", e.message)
 
-                if 'difference' in locals():
+                if 'difference' in locals():  # FIXME *SOB*
                     # Grab actual programme start time from DVB bridge channel page
                     self.send([syncschedurl], "dataout")
                     while not self.dataReady("datain"):
-                        self.pause()
-                        yield 1
+                        self.pause()  # Add timeout ?
+#                        yield 1
                     recvdata = self.recv("datain")
                     if recvdata[0] == "OK":
                         content = recvdata[1]
@@ -139,8 +140,8 @@ class WhatsOn(component):
                 # Grab BBC schedule data for given channel
                 self.send([scheduleurl], "dataout")
                 while not self.dataReady("datain"):
-                    self.pause()
-                    yield 1
+                    self.pause()  # FIXME Add timeout?
+#                    yield 1
                 recvdata = self.recv("datain")
                 if recvdata[0] == "OK":
                     content = recvdata[1]
@@ -218,8 +219,9 @@ class WhatsOn(component):
                                     
 
                 self.send(data,"outbox")
-            self.pause()
-            yield 1
+            if not self.anyReady():
+                self.pause()
+#            yield 1
             
 
 class NowPlaying(component):

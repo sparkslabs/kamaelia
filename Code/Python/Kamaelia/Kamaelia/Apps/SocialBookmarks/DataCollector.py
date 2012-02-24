@@ -82,7 +82,7 @@ class DataCollector(threadedcomponent):
                             # This is a real tweet
                             tweetid = newdata['id']
                             try:
-                                Print("New tweet! @", newdata['user']['screen_name'] , ": " + newdata['text'])
+                                Print("New tweet! @", repr(newdata['user']['screen_name']) , ": " + repr(newdata['text']))
                             except UnicodeEncodeError,e:
                                 Print("Unicode error suppressed", e)
 
