@@ -90,6 +90,8 @@ from Kamaelia.IPC import socketShutdown,newCSA,shutdownCSA
 from Kamaelia.IPC import removeReader, removeWriter
 from Kamaelia.IPC import newReader, newWriter, removeReader, removeWriter
 
+from Kamaelia.Apps.SocialBookmarks.Print import Print # For debug purposes
+
 from Kamaelia.KamaeliaExceptions import *
 import traceback
 import ssl
@@ -185,12 +187,15 @@ class ConnectedSocketAdapter(component):
               self.connectionRECVLive = False
               self.connectionSENDLive = False
               self.howDied = "producer finished"
+              Print( "producerFinished")
           elif isinstance(data, shutdownMicroprocess):
 #              print "Raising shutdown: ConnectedSocketAdapter recieved shutdownMicroprocess Message", self,data
               self.connectionRECVLive = False
               self.connectionSENDLive = False
               self.howDied = "shutdown microprocess"
+              Print( "shutdownMicroprocess")
           else:
+              Print( "Random control message")
               pass # unrecognised message
    
 
@@ -201,20 +206,27 @@ class ConnectedSocketAdapter(component):
    def stop(self):
        # Some of these are going to crash initially when stop is called
 #       print "I AM CALLED"
+       Print( "stopping")
        if self.socket is None:
            # SELF.STOP CALLED TWICE - possible under limited circumstances (crashes primarily)
            # Only want to call once though, so exit here.
+           Print( "Oh, hold on")
            return
        try:
            self.socket.shutdown(2)
+           Print( "socket.shutdown succeeded")
        except Exception, e:
            # Explicitly silencing this because it is possible (but rare) that
            # the socket was already shutdown due to an earlier error.
+           Print( "socket.shutdown failed for some reason", e)
            pass
 
        try:
+           Print( "socket.close ...")
            self.socket.close()
+           Print( "             ... succeeded")
        except Exception, e:
+           Print( "             ... failed")
            # Explicitly silencing this because it is possible (but rare) that
            # the socket was already closed due to an earlier error.
            pass
@@ -228,6 +240,8 @@ class ConnectedSocketAdapter(component):
        sock = None
        super(ConnectedSocketAdapter, self).stop()
        self.stop = lambda : None   # Make it rather hard to call us twice by mistake
+       Print( "Really pretty sure we're stopped")
+
 #       import gc
 #       import pprint
 #       gc.collect()
@@ -247,6 +261,7 @@ class ConnectedSocketAdapter(component):
           if not (errorno == errno.EAGAIN or  errorno == errno.EWOULDBLOCK):
              self.connectionSENDLive = False
              self.howDied = socket.msg
+             Print( "Oh No! Socket Died - sending!", e)
 
        except TypeError, ex:
 
@@ -289,6 +304,7 @@ class ConnectedSocketAdapter(component):
               # "Recieving an error other than EAGAIN or EWOULDBLOCK when reading is a genuine error we don't handle"
               self.connectionRECVLive = False
               self.howDied = socket.msg
+              Print( "Oh No! Socket Died - receiving!", e)
        self.receiving = False
        if self.connectionRECVLive:
            self.send(newReader(self, ((self, "ReadReady"), sock)), "_selectorSignal")
@@ -343,10 +359,13 @@ class ConnectedSocketAdapter(component):
        self.connectionRECVLive = True
        self.connectionRECVLive = True
        self.connectionSENDLive = True
+       Print( "CSA Activated")
+
        while self.connectionRECVLive and self.connectionSENDLive: # Note, this means half close == close
           yield 1
           if self.dataReady("makessl"):
 #             print "****************************************************** Making SSL ******************************************************"
+             Print( "CSA Made SSL")
              self.recv('makessl')
 
              self.send(removeReader(self, self.socket), "_selectorSignal")
@@ -375,6 +394,7 @@ class ConnectedSocketAdapter(component):
               self.pause()
  
 #       self.passOnShutdown()
+       Print( "Stopping...")
        self.stop()
        # NOTE: the creator of this CSA is responsible for removing it from the selector
 

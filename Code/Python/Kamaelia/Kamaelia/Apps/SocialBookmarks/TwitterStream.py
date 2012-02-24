@@ -383,6 +383,7 @@ class TwitterStream(threadedcomponent):
     Outboxes = {
         "outbox" : "Sends out received tweets in the format [tweetjson,[pid,pid]]",
         "signal" : "",
+        "_signal" : "For shutting down the datacapture component",
     }
 
     def __init__(self, username, password, proxy = None, reconnect = False, timeout = 120):
@@ -398,10 +399,12 @@ class TwitterStream(threadedcomponent):
         self.timeout = timeout
         socket.setdefaulttimeout(self.timeout)
         self.backofftime = 1
+        Print("__init__ialised", self)
 
     def finished(self):
         while self.dataReady("control"):
             msg = self.recv("control")
+            Print("Message on control inbox", msg)
             if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
                 self.send(msg, "signal")
                 return True
@@ -424,10 +427,12 @@ class TwitterStream(threadedcomponent):
                                     ("TRANSFORMER", "outbox") : ("self", "outbox"),}
                     ).activate()
         L = self.link((self.datacapture, "outbox"), (self, "tweetsin"))
+
         Print("Connecting", repr(L), self.datacapture)
         Print("Connecting", self.datacapture.components)
 
     def main(self):
+        Print("Entering main of the TwitterStream component", self)
         self.url = "https://stream.twitter.com/1/statuses/filter.json"
 
         self.headers = {
@@ -442,12 +447,20 @@ class TwitterStream(threadedcomponent):
         counter = 0
         blanklinecount = 0
 
+        Print("Entering main loop", self)
         while not self.finished():
             if self.dataReady("inbox"):
+                Print("New data on inbox", self)
                 if self.datacapture != None:
-                    self.unlink(self.datacapture)
-                    self.datacapture.stop()
+                    Print("We have a datacapture component, so need it to shutdown - call it's .stop() method ... (hmm, not correct really and would work with graphline...)", self)
+
+                    L = self.link((self, "_signal"), (self.datacapture, "control"))
+                    self.send(producerFinished(), "_signal")
+
+                    self.unlink(self.datacapture) # Unlinks all linkages relating to this...
+#                    self.datacapture.stop()
                     self.datacapture = None
+                    Print("We now believe the subcomponent is dead. Probably erroneously...", self)
                 recvdata = self.recv("inbox")
                 keywords = recvdata[0]
                 if len(keywords) > 400:
@@ -458,7 +471,10 @@ class TwitterStream(threadedcomponent):
                 args = urllib.urlencode({"track": ",".join(keywords)})
                 Print ("Got keywords:", args)
 
+                Print("Create new datacapture component", self)
                 self.connect(args,pids)
+                Print("Created...", self)
+
             while self.dataReady("tweetsin"):
                 counter = 0
                 tweetdata = self.recv("tweetsin")
