@@ -23,6 +23,7 @@ import sys
 import Axon
 from Axon.Component import component
 from Axon.Ipc import producerFinished, status, shutdownMicroprocess
+from Kamaelia.Apps.SocialBookmarks.Print import Print
 
 class ShutdownNow(Exception):
     pass
@@ -132,7 +133,7 @@ class HandleConnectRequest(component):
 
 class With(Axon.Component.component):
     Inboxes = { "inbox" : "Normal - unused",
-                "control" : "Normal - unimplemented",
+                "control" : "If we receive a message here, we shutdown the With component and all subcomponents. (everyone gets the shutdown message)",
                 "_control" : "From subcomponents - first component to shutdown has message passed on to others that are not item",
              }
     Outboxes = {
@@ -148,13 +149,17 @@ class With(Axon.Component.component):
         self.components = argv
         self.components["item"] = item
         del argv["sequence"]
+        self.control_message = None
 
     def anyStopped(self):
+        anystopped = False
         for child in self.childComponents():
             if child._isStopped():
                 # At least one has stopped
-                return True
-        return False
+                anystopped = True
+                Print("child stopped", child)
+                self.removeChild(child)
+        return anystopped
 
     def link_graphstep(self, graphstep):
             self.components["self"] = self
@@ -187,12 +192,12 @@ class With(Axon.Component.component):
             return links
 
     def shutdownChildComponents(self, message):
+        Print( "Shutting Down Child Components")
         for child in self.childComponents():
 
              if child == self.item:
                  continue
 
-#             print "********** child, self.item, self", child, self.item, self
              L = self.link( (self, "_signal"), (child, "control"))
              self.send(message, "_signal")
              self.unlink(thelinkage=L)
@@ -210,60 +215,81 @@ class With(Axon.Component.component):
                     self.shutdownChildComponents(message)
                 return dontcontinue
 
+    def checkControl(self):
+        Print( "Checking Control" )
+        for message in self.Inbox("control"): # Cleanly clear the inbox
+            self.control_message = message
+        if self.control_message:
+            Print( "Shutdown!" )
+            raise ShutdownNow
+        Print( "Alll Clear!" )
+
     def main(self):
+        Print( "With component starting...")
         self.addChildren(self.item)
         self.item.activate()
 
-        dontcontinue = False
-        for graphstep in self.sequence:
-            stopping = 0
-            links = self.link_graphstep(graphstep)
-            if dontcontinue:
-                break
-
-            while True:
-                # Let sub graphstep run, and wait for completion. Sleep as much as possible.
-                if not self.anyReady():
-                    self.pause()
-                    yield 1
-
-                dontcontinue = self.handleGraphstepShutdown()
-
-                if self.anyStopped():
-#                    print "Something stopped"
-                    all_stopped = True # Assume
-                    if self.item._isStopped():
-                        print "Warning: Child died before completion", self.item
-                        self.shutdownChildComponents(shutdownMicroprocess())
-                        dontcontinue = True
-
-                    for child in self.childComponents():
-                        # Check assumption
-                        if child == self.item:
-                            continue
-                       
-#                        print "child stopped ?", child._isStopped(), child
-                        all_stopped = all_stopped and child._isStopped()
-
-                    if all_stopped:                        
-                        break
-                    else:
-                        stopping += 1
-                        if (stopping % 1000) == 0:
-                            pass
-                            # print "Warning one child exited, but others haven't after", stopping, "loops"
-
-                yield 1
-
+        try:
+            dontcontinue = False
+            for graphstep in self.sequence:
+                Print( "Next/this graphstep :", graphstep)
+                stopping = 0
                 if dontcontinue:
                     break
 
-            for link in links: 
-                self.unlink(thelinkage=link)
+                links = self.link_graphstep(graphstep)
+                while True:
+                    # Let sub graphstep run, and wait for completion. Sleep as much as possible.
+                    if not self.anyReady():
+                        self.pause()
+                        yield 1
 
-#        print "Exiting With Component... , all_stopped, dontcontinue:", all_stopped, dontcontinue
-        self.link( (self, "_signal"), (self.item, "control") )
-        self.send( producerFinished(), "_signal")
+                    self.checkControl()                            # Told by the outside world to shutdown
+                    dontcontinue = self.handleGraphstepShutdown()  # Components inside have shutdown..
+
+                    if self.anyStopped():
+    #                    print "Something stopped"
+                        all_stopped = True # Assume
+                        if self.item._isStopped():
+                            print "Warning: Child died before completion", self.item
+                            self.shutdownChildComponents(shutdownMicroprocess())
+                            dontcontinue = True
+
+                        for child in self.childComponents():
+                            # Check assumption
+                            if child == self.item:
+                                continue
+                        
+    #                        print "child stopped ?", child._isStopped(), child
+                            all_stopped = all_stopped and child._isStopped()
+
+                        if all_stopped:                        
+                            break
+                        else:
+                            stopping += 1
+                            if (stopping % 1000) == 0:
+                                pass
+                                # print "Warning one child exited, but others haven't after", stopping, "loops"
+
+                    yield 1
+
+                    if dontcontinue:
+                        break
+
+                for link in links: 
+                    self.unlink(thelinkage=link)
+
+    #        print "Exiting With Component... , all_stopped, dontcontinue:", all_stopped, dontcontinue
+            self.link( (self, "_signal"), (self.item, "control") )
+            self.send( producerFinished(), "_signal")
+        except ShutdownNow:
+            Print( "Shutting Down Now")
+            self.shutdownChildComponents(self.control_message)
+            Print( "Sending shutdown to The Item")
+            self.link( (self, "_signal"), (self.item, "control") )
+            self.send( self.control_message, "_signal")
+        
+        Print( "With Component exitting")
 
 # -----------------------------------------------------------------------------------
 # Components after this comment block are for debugging and testing purposes.
