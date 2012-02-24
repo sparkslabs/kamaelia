@@ -343,16 +343,16 @@ def HTTPDataStreamingClient(fullurl, method="GET", body=None, headers={}, userna
     sequence = []
     request_path = path
     if proxy:
-        print "Via Proxy..."
+        # print "Via Proxy..."
         connhost, connport = proxy_host , proxy_port
     else:
-        print "NOT Via Proxy..."
+        # print "NOT Via Proxy..."
         connhost, connport = url_host, url_port
 
     if proto == "https":
-        print "Attempting SSL..."
+        # print "Attempting SSL..."
         if proxy:
-            print "desthost=url_host, destport=url_port, connhost, connport", url_host, url_port, connhost, connport 
+            # print "desthost=url_host, destport=url_port, connhost, connport", url_host, url_port, connhost, connport 
             args["ProxyConnect"]  = ConnectRequest(desthost=url_host, destport=url_port)
             args["ProxyResponse"] = HandleConnectRequest()
             sequence.append( { ("ProxyConnect", "outbox") : ("item", "inbox"), ("item","outbox") : ("ProxyResponse","inbox") } )
@@ -361,7 +361,7 @@ def HTTPDataStreamingClient(fullurl, method="GET", body=None, headers={}, userna
         sequence.append( { ("makessl", "outbox") : ("item", "makessl") } )
     
     if proto == "http":
-        print "Attempting Plain HTTP"
+        # print "Attempting Plain HTTP"
         if proxy:
             request_path = fullurl
 
@@ -399,19 +399,19 @@ class TwitterStream(threadedcomponent):
         self.timeout = timeout
         socket.setdefaulttimeout(self.timeout)
         self.backofftime = 1
-        Print("__init__ialised", self)
+        # Print("__init__ialised", self)
 
     def finished(self):
         while self.dataReady("control"):
             msg = self.recv("control")
-            Print("Message on control inbox", msg)
+            # Print("Message on control inbox", msg)
             if isinstance(msg, producerFinished) or isinstance(msg, shutdownMicroprocess):
                 self.send(msg, "signal")
                 return True
         return False
 
     def connect(self,args,pids):
-        Print("Connecting", repr(args), repr(pids))
+        # Print("Connecting", repr(args), repr(pids))
         self.datacapture = Graphline(
                         DATA = HTTPDataStreamingClient(self.url,proxy=self.proxy,
                                                     username=self.username,
@@ -428,11 +428,11 @@ class TwitterStream(threadedcomponent):
                     ).activate()
         L = self.link((self.datacapture, "outbox"), (self, "tweetsin"))
 
-        Print("Connecting", repr(L), self.datacapture)
-        Print("Connecting", self.datacapture.components)
+        # Print("Connecting", repr(L), self.datacapture)
+        # Print("Connecting", self.datacapture.components)
 
     def main(self):
-        Print("Entering main of the TwitterStream component", self)
+        # Print("Entering main of the TwitterStream component", self)
         self.url = "https://stream.twitter.com/1/statuses/filter.json"
 
         self.headers = {
@@ -447,12 +447,12 @@ class TwitterStream(threadedcomponent):
         counter = 0
         blanklinecount = 0
 
-        Print("Entering main loop", self)
+        # Print("Entering main loop", self)
         while not self.finished():
             if self.dataReady("inbox"):
-                Print("New data on inbox", self)
+                # Print("New data on inbox", self)
                 if self.datacapture != None:
-                    Print("We have a datacapture component, so need it to shutdown - call it's .stop() method ... (hmm, not correct really and would work with graphline...)", self)
+                    # Print("We have a datacapture component, so need it to shutdown - call it's .stop() method ... (hmm, not correct really and would work with graphline...)", self)
 
                     L = self.link((self, "_signal"), (self.datacapture, "control"))
                     self.send(producerFinished(), "_signal")
@@ -460,7 +460,7 @@ class TwitterStream(threadedcomponent):
                     self.unlink(self.datacapture) # Unlinks all linkages relating to this...
 #                    self.datacapture.stop()
                     self.datacapture = None
-                    Print("We now believe the subcomponent is dead. Probably erroneously...", self)
+                    # Print("We now believe the subcomponent is dead. Probably erroneously...", self)
                 recvdata = self.recv("inbox")
                 keywords = recvdata[0]
                 if len(keywords) > 400:
@@ -469,11 +469,11 @@ class TwitterStream(threadedcomponent):
                 pids = recvdata[1]
 
                 args = urllib.urlencode({"track": ",".join(keywords)})
-                Print ("Got keywords:", args)
+                # Print ("Got keywords:", args)
 
-                Print("Create new datacapture component", self)
+                # Print("Create new datacapture component", self)
                 self.connect(args,pids)
-                Print("Created...", self)
+                # Print("Created...", self)
 
             while self.dataReady("tweetsin"):
                 counter = 0
@@ -494,22 +494,24 @@ class TwitterStream(threadedcomponent):
                 # This still isn't great at reducing busy wait CPU usage
                 # Blank line count ensures we reconnect if we get 10 successive keepalives with no data - likely an error
             if (counter > self.timeout and self.datacapture != None and self.reconnect) or (blanklinecount >= 10 and self.reconnect):
-                print "counter", counter
-                print "self.timeout", self.timeout
-                print "self.datacapture", self.datacapture
-                print "self.reconnect", self.reconnect
-                print "blanklinecount", blanklinecount
+                Print( "counter", counter )
+                Print( "self.timeout", self.timeout )
+                Print( "self.datacapture", self.datacapture )
+                Print( "self.datacapture", self.datacapture.components )
+                Print( "self.reconnect", self.reconnect )
+                Print( "blanklinecount", blanklinecount )
                 blanklinecount = 0
                 sys.stderr.write("API Connection Failed: Reconnecting")
-                Axon.Box.ShowAllTransits = True
                 
 #                import os
 #                os.system("/home/michaels/Checkouts/kamaelia/trunk/Code/Python/Apps/SocialBookmarks/App/LastDitch.sh")
 #                
 #                sys.exit(0) # FIXME Brutal, but effective
 #                self.scheduler.stop() # FIXME Brutal, but effective
+                L = self.link((self, "_signal"), (self.datacapture, "control"))
+                self.send(producerFinished(), "_signal")
+
                 self.unlink(self.datacapture)
-                self.datacapture.stop()
                 self.datacapture = None
                 # Twitter connection has failed
                 counter = 0
