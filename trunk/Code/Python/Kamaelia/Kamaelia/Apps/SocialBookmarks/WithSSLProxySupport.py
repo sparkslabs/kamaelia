@@ -101,7 +101,7 @@ class HandleConnectRequest(component):
                         human_status = rline[p+1:]
 
                         if 0:
-                            print (http_version,http_status,human_status)
+                            Print ("http_version,http_status,human_status",http_version,http_status,human_status)
 
                         if http_status != "200":
                             raise GeneralFail("HTTP Connect Failure : "+ repr(rline))
@@ -157,7 +157,7 @@ class With(Axon.Component.component):
             if child._isStopped():
                 # At least one has stopped
                 anystopped = True
-                Print("child stopped", child)
+                # Print("child stopped", child)
                 self.removeChild(child)
         return anystopped
 
@@ -192,7 +192,7 @@ class With(Axon.Component.component):
             return links
 
     def shutdownChildComponents(self, message):
-        Print( "Shutting Down Child Components")
+        # Print( "Shutting Down Child Components")
         for child in self.childComponents():
 
              if child == self.item:
@@ -216,23 +216,23 @@ class With(Axon.Component.component):
                 return dontcontinue
 
     def checkControl(self):
-        Print( "Checking Control" )
+        # Print( "Checking Control" )
         for message in self.Inbox("control"): # Cleanly clear the inbox
             self.control_message = message
         if self.control_message:
-            Print( "Shutdown!" )
+            # Print( "Shutdown!" )
             raise ShutdownNow
-        Print( "Alll Clear!" )
+        # Print( "Alll Clear!" )
 
     def main(self):
-        Print( "With component starting...")
+        # Print( "With component starting...")
         self.addChildren(self.item)
         self.item.activate()
 
         try:
             dontcontinue = False
             for graphstep in self.sequence:
-                Print( "Next/this graphstep :", graphstep)
+                # Print( "Next/this graphstep :", graphstep)
                 stopping = 0
                 if dontcontinue:
                     break
@@ -251,7 +251,7 @@ class With(Axon.Component.component):
     #                    print "Something stopped"
                         all_stopped = True # Assume
                         if self.item._isStopped():
-                            print "Warning: Child died before completion", self.item
+                            Print( "Warning: Child died before completion", self.item )
                             self.shutdownChildComponents(shutdownMicroprocess())
                             dontcontinue = True
 
@@ -283,13 +283,13 @@ class With(Axon.Component.component):
             self.link( (self, "_signal"), (self.item, "control") )
             self.send( producerFinished(), "_signal")
         except ShutdownNow:
-            Print( "Shutting Down Now")
+            # Print( "Shutting Down Now")
             self.shutdownChildComponents(self.control_message)
-            Print( "Sending shutdown to The Item")
+            # Print( "Sending shutdown to The Item")
             self.link( (self, "_signal"), (self.item, "control") )
             self.send( self.control_message, "_signal")
         
-        Print( "With Component exitting")
+        # Print( "With Component exitting")
 
 # -----------------------------------------------------------------------------------
 # Components after this comment block are for debugging and testing purposes.
@@ -319,7 +319,7 @@ class Tagger(Axon.Component.component):
                     self.send(self.tag + " : " + str(data),  "outbox")
 
                 for data in self.Inbox("togglebox"):
-                    print "toggling"
+                    Print( "toggling" )
                     self.tag = self.tag[-1::-1] # Reverse it.
                 
                 self.checkControl()
@@ -330,7 +330,7 @@ class Tagger(Axon.Component.component):
         except ShutdownNow:
             pass
 
-        print "exitting tagger"
+        Print( "exitting tagger" )
         if self.control_message:
             self.send(self.control_message, "signal")
         else:
@@ -377,9 +377,9 @@ class Sink(Axon.Component.component):
 class Pauser(Axon.ThreadedComponent.threadedcomponent):
     tag = "default"
     def main(self):
-        print "Pausing", self.tag
+        Print( "Pausing", self.tag )
         self.pause(1)
-        print "Pausing", self.tag
+        Print( "Pausing", self.tag )
         self.send(producerFinished(), "signal")
 
 class FailingComponent(component):

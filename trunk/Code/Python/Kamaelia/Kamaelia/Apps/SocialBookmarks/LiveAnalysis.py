@@ -335,7 +335,6 @@ class LiveAnalysis(threadedcomponent):
                                 # Just in case of a missing raw json object (ie. programme terminated before it was stored - allow it to be skipped if not found after 10 secs)
                                 failcounter = 0
                                 self.send([pid,tweetids],"nltkfinal")
-                                print "ENTER LOOP", __BOTH__()
                                 while not self.dataReady("nltkfinal"):
                                     if failcounter >= 1000:
                                         Print("Timed out waiting for NTLKFINAL")
@@ -345,14 +344,12 @@ class LiveAnalysis(threadedcomponent):
 
                                     failcounter += 1
                                     if failcounter %100 == 0:
-                                        print "Hanging waiting for NLTKFINAL"
+                                        Print( "Hanging waiting for NLTKFINAL" )
 
                                 Print("failcounter (<1000 is success)", failcounter)
                                 if failcounter < 1000:
 #                                if 1:
                                     nltkdata = self.recv("nltkfinal")
-
-                                    print "Here", __BOTH__()
 
                         cursor.execute("""UPDATE programmes SET meantweets = %s, mediantweets = %s, modetweets = %s, stdevtweets = %s, analysed = 1 WHERE pid = %s AND timestamp = %s""",(meantweets,mediantweets,modetweets,stdevtweets,pid,timestamp))
                         Print("Analysis component: Done!")
