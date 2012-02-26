@@ -42,26 +42,27 @@ class Requester(threadedcomponent):
         self.channel = channel
         self.dbuser = dbuser
         self.dbpass = dbpass
+        self.cursor = None # xyz
         # Keep a record of the current PID for each channel here
         self.channels = {
             "bbcone" : "",
-           "bbctwo" : "",
-           "bbcthree" : "",
-           "bbcfour" : "",
-           "cbbc" : "",
-           "cbeebies" : "",
-           "bbcnews" : "",
-           "radio1" : "",
-           "radio2" : "",
-           "radio3" : "",
-           "radio4" : "",
-           "5live" : "",
-           "worldservice" : "",
-           "6music" : "",
-           "radio7" : "",
-           "1xtra" : "",
-           "bbcparliament" : "",
-           "asiannetwork" : "",
+            "bbctwo" : "",
+            "bbcthree" : "",
+            "bbcfour" : "",
+            "cbbc" : "",
+            "cbeebies" : "",
+            "bbcnews" : "",
+            "radio1" : "",
+            "radio2" : "",
+            "radio3" : "",
+            "radio4" : "",
+            "5live" : "",
+            "worldservice" : "",
+            "6music" : "",
+            "radio7" : "",
+            "1xtra" : "",
+            "bbcparliament" : "",
+            "asiannetwork" : "",
             "sportsextra" : ""
         }
 
@@ -428,18 +429,36 @@ class Requester(threadedcomponent):
 
     def dbConnect(self):
         db = MySQLdb.connect(user=self.dbuser,passwd=self.dbpass,db="twitter_bookmarks")
-        cursor = db.cursor()
-        return cursor
+        cursor = db.cursor()  # xyz
+        self.cursor = cursor  # xyz
+        return cursor        # xyz
+
+        
+    # The purpose of pulling these three out is to make it simpler to keep things in sync between multiple DBs
+    def db_select(self,command, args):
+        self.cursor.execute(command,args) #xyz
+
+    def db_update(self,command, args):
+        self.cursor.execute(command,args) #xyz
+
+    def db_insert(self,command, args):
+        self.cursor.execute(command,args) #xyz
+
+    def db_fetchall(self):
+        self.cursor.fetchall() # xyz
+
+    def db_fetchone(self):
+        self.cursor.fetchone() # xyz
 
     def main(self):
-        cursor = self.dbConnect()
+        self.dbConnect()
         oldkeywords = None
         while not self.finished():
             Print ("### Checking current programmes ###")
             if self.channel != "all":
                 oldpid = self.channels[self.channel]
                 if oldpid == None:
-                    cursor.execute("""UPDATE programmes SET imported = 1 WHERE channel = %s""",(self.channel))
+                    self.db_update("""UPDATE programmes SET imported = 1 WHERE channel = %s""",(self.channel))
                 data = self.doStuff(self.channel)
                 if data != None:
                     keywords = data[0]
@@ -449,28 +468,28 @@ class Requester(threadedcomponent):
                     duration = data[1][3]
                     timestamp = data[1][4]
                     utcoffset = data[1][5]
-                    cursor.execute("""UPDATE programmes SET imported = 1 WHERE pid != %s AND channel = %s""",(pid,self.channel))
-                    cursor.execute("""SELECT channel FROM programmes WHERE pid = %s AND timestamp = %s""",(pid,timestamp))
-                    progentrytest = cursor.fetchone()
-                    cursor.execute("""SELECT duration FROM programmes_unique WHERE pid = %s""",(pid))
-                    progtest2 = cursor.fetchone()
+                    self.db_update("""UPDATE programmes SET imported = 1 WHERE pid != %s AND channel = %s""",(pid,self.channel))
+                    self.db_select("""SELECT channel FROM programmes WHERE pid = %s AND timestamp = %s""",(pid,timestamp))
+                    progentrytest = self.db_fetchone()
+                    self.db_select("""SELECT duration FROM programmes_unique WHERE pid = %s""",(pid))
+                    progtest2 = self.db_fetchone()
                     if progentrytest == None:
-                        cursor.execute("""INSERT INTO programmes (pid,timediff,timestamp,utcoffset,channel) VALUES (%s,%s,%s)""", (pid,offset,timestamp,utcoffset,self.channel))
+                        self.db_insert("""INSERT INTO programmes (pid,timediff,timestamp,utcoffset,channel) VALUES (%s,%s,%s)""", (pid,offset,timestamp,utcoffset,self.channel))
                         if progtest2 == None:
-                            cursor.execute("""INSERT INTO programmes_unique (pid,title,duration) VALUES (%s,%s,%s)""", (pid,title,duration))
+                            self.db_insert("""INSERT INTO programmes_unique (pid,title,duration) VALUES (%s,%s,%s)""", (pid,title,duration))
                             for word in keywords:
-                                cursor.execute("""INSERT INTO keywords (pid,keyword,type) VALUES (%s,%s,%s)""", (pid,word,keywords[word]))
+                                self.db_insert("""INSERT INTO keywords (pid,keyword,type) VALUES (%s,%s,%s)""", (pid,word,keywords[word]))
                     else:
                         # Fix for programmes where the duration is changed last minute
                         if progtest2[0] < duration:
-                            #cursor.execute("""UPDATE programmes SET duration = %s WHERE pid = %s AND timestamp = %s""",(duration,pid,timestamp))
-                            cursor.execute("""UPDATE programmes_unique SET duration = %s WHERE pid = %s""",(duration,pid))
+                            #self.db_update("""UPDATE programmes SET duration = %s WHERE pid = %s AND timestamp = %s""",(duration,pid,timestamp))
+                            self.db_update("""UPDATE programmes_unique SET duration = %s WHERE pid = %s""",(duration,pid))
                     keywords = list()
                 else:
                     keywords = None
 
-                cursor.execute("""SELECT keyword FROM keywords WHERE pid = %s""",(pid))
-                keywordquery = cursor.fetchall()
+                self.db_select("""SELECT keyword FROM keywords WHERE pid = %s""",(pid))
+                keywordquery = self.db_fetchall()
                 for keyword in keywordquery:
                     # This ^ is a temporary fix until I work out a better DB structure
                     if "^" in keyword[0]:
@@ -490,7 +509,7 @@ class Requester(threadedcomponent):
                 for channel in self.channels:
                     oldpid = self.channels[channel]
                     if oldpid == None:
-                        cursor.execute("""UPDATE programmes SET imported = 1 WHERE channel = %s""",(channel))
+                        self.db_update("""UPDATE programmes SET imported = 1 WHERE channel = %s""",(channel))
                     data = self.doStuff(channel)
                     if data != None:
                         keywordappender = data[0]
@@ -500,22 +519,22 @@ class Requester(threadedcomponent):
                         duration = data[1][3]
                         timestamp = data[1][4]
                         utcoffset = data[1][5]
-                        cursor.execute("""UPDATE programmes SET imported = 1 WHERE pid != %s AND channel = %s""",(pid,channel))
-                        cursor.execute("""SELECT channel FROM programmes WHERE pid = %s AND timestamp = %s""",(pid,timestamp))
-                        progentrytest = cursor.fetchone()
-                        cursor.execute("""SELECT duration FROM programmes_unique WHERE pid = %s""",(pid))
-                        progtest2 = cursor.fetchone()
+                        self.db_update("""UPDATE programmes SET imported = 1 WHERE pid != %s AND channel = %s""",(pid,channel))
+                        self.db_select("""SELECT channel FROM programmes WHERE pid = %s AND timestamp = %s""",(pid,timestamp))
+                        progentrytest = self.db_fetchone()
+                        self.db_select("""SELECT duration FROM programmes_unique WHERE pid = %s""",(pid))
+                        progtest2 = self.db_fetchone()
                         if progentrytest == None:
-                            cursor.execute("""INSERT INTO programmes (pid,timediff,timestamp,utcoffset,channel) VALUES (%s,%s,%s,%s,%s)""", (pid,offset,timestamp,utcoffset,channel))
+                            self.db_insert("""INSERT INTO programmes (pid,timediff,timestamp,utcoffset,channel) VALUES (%s,%s,%s,%s,%s)""", (pid,offset,timestamp,utcoffset,channel))
                             if progtest2 == None:
-                                cursor.execute("""INSERT INTO programmes_unique (pid,title,duration) VALUES (%s,%s,%s)""", (pid,title,duration))
+                                self.db_insert("""INSERT INTO programmes_unique (pid,title,duration) VALUES (%s,%s,%s)""", (pid,title,duration))
                                 for word in keywordappender:
-                                    cursor.execute("""INSERT INTO keywords (pid,keyword,type) VALUES (%s,%s,%s)""", (pid,word,keywordappender[word]))
+                                    self.db_insert("""INSERT INTO keywords (pid,keyword,type) VALUES (%s,%s,%s)""", (pid,word,keywordappender[word]))
                         else:
                             # Fix for programmes where the duration is changed last minute
                             if progtest2[0] < duration:
-                                #cursor.execute("""UPDATE programmes SET duration = %s WHERE pid = %s AND timestamp = %s""",(duration,pid,timestamp))
-                                cursor.execute("""UPDATE programmes_unique SET duration = %s WHERE pid = %s""",(duration,pid))
+                                #self.db_update("""UPDATE programmes SET duration = %s WHERE pid = %s AND timestamp = %s""",(duration,pid,timestamp))
+                                self.db_update("""UPDATE programmes_unique SET duration = %s WHERE pid = %s""",(duration,pid))
 
                 currentpids = list()
                 for channel in self.channels:
@@ -523,8 +542,8 @@ class Requester(threadedcomponent):
                         currentpids.append(self.channels[channel])
 
                 for pid in currentpids:
-                    cursor.execute("""SELECT keyword FROM keywords WHERE pid = %s""",(pid))
-                    keywordquery = cursor.fetchall()
+                    self.db_select("""SELECT keyword FROM keywords WHERE pid = %s""",(pid))
+                    keywordquery = self.db_fetchall()
                     for keyword in keywordquery:
                         # This ^ is a temporary fix until I work out a better DB structure
                         if "^" in keyword[0]:
