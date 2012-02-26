@@ -445,10 +445,10 @@ class Requester(threadedcomponent):
         self.cursor.execute(command,args) #xyz
 
     def db_fetchall(self):
-        self.cursor.fetchall() # xyz
+        return self.cursor.fetchall() # xyz
 
     def db_fetchone(self):
-        self.cursor.fetchone() # xyz
+        return self.cursor.fetchone() # xyz
 
     def main(self):
         self.dbConnect()

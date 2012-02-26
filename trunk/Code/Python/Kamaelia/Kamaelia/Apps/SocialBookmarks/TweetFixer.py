@@ -118,7 +118,7 @@ class RetweetCorrector(component):
         self.cursor.execute(command,args) #xyz
 
     def db_fetchall(self):
-        self.cursor.fetchall() # xyz
+        return self.cursor.fetchall() # xyz
     
     def finished(self):
         while self.dataReady("control"):
