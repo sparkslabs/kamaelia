@@ -106,12 +106,20 @@ class RetweetCorrector(component):
         super(RetweetCorrector, self).__init__()
         self.dbuser = dbuser
         self.dbpass = dbpass
+        self.cursor = None    # xyz
 
     def dbConnect(self,dbuser,dbpass):
         db = MySQLdb.connect(user=dbuser,passwd=dbpass,db="twitter_bookmarks",use_unicode=True,charset="utf8")
-        cursor = db.cursor()
-        return cursor
+        cursor = db.cursor()   # xyz
+        self.cursor = cursor   # xyz
+        return cursor         # xyz
 
+    def db_select(self,command, args):
+        self.cursor.execute(command,args) #xyz
+
+    def db_fetchall(self):
+        self.cursor.fetchall() # xyz
+    
     def finished(self):
         while self.dataReady("control"):
             msg = self.recv("control")
@@ -122,7 +130,7 @@ class RetweetCorrector(component):
 
     def main(self):
 
-        cursor = self.dbConnect(self.dbuser,self.dbpass)
+        self.dbConnect(self.dbuser,self.dbpass)
 
         while not self.finished():
             while self.dataReady("inbox"):
@@ -130,16 +138,16 @@ class RetweetCorrector(component):
 
                 if tweetjson.has_key('retweeted_status'):
                     # Find this tweet's PIDs
-                    cursor.execute("""SELECT pid FROM rawdata WHERE tweet_id = %s""",(tweetjson['id']))
-                    pids = cursor.fetchall()
+                    self.db_select("""SELECT pid FROM rawdata WHERE tweet_id = %s""",(tweetjson['id']))
+                    pids = self.db_fetchall()
                     breaker = False
                     for pid in pids:
                         tweettext = tweetjson['retweeted_status']['text']
                         if not tweetjson['retweeted_status'].has_key('id'):
                             # This is a fixed retweet - let's try and fix it further by identifying the original
                             # Only worth doing for the same PID
-                            cursor.execute("""SELECT text,tweet_id FROM rawdata WHERE user = %s AND pid = %s""",(tweetjson['retweeted_status']['user']['screen_name'],pid[0]))
-                            dataset = cursor.fetchall()
+                            self.db_select("""SELECT text,tweet_id FROM rawdata WHERE user = %s AND pid = %s""",(tweetjson['retweeted_status']['user']['screen_name'],pid[0]))
+                            dataset = self.db_fetchall()
                             for row in dataset:
                                 if row[0] == tweettext:
                                     # Tweet text is the same - add the ID
