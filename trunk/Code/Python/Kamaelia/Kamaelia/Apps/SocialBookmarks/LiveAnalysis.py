@@ -55,6 +55,7 @@ class LiveAnalysis(threadedcomponent):
         super(LiveAnalysis, self).__init__()
         self.dbuser = dbuser
         self.dbpass = dbpass
+        self.cursor = None     # xyz
         # List of 'common' words so they can be labelled as such when the data is stored
         self.exclusions = ["a","able","about","across","after","all","almost","also","am",\
                     "among","an","and","any","are","as","at","be","because","been","but",\
@@ -71,8 +72,25 @@ class LiveAnalysis(threadedcomponent):
 
     def dbConnect(self,dbuser,dbpass):
         db = MySQLdb.connect(user=dbuser,passwd=dbpass,db="twitter_bookmarks",use_unicode=True,charset="utf8")
-        cursor = db.cursor()
-        return cursor
+        cursor = db.cursor()  # xyz
+        self.cursor = cursor  # xyz
+        return cursor        # xyz
+
+    # The purpose of pulling these three out is to make it simpler to keep things in sync between multiple DBs
+    def db_select(self,command, args):
+        self.cursor.execute(command,args) #xyz
+
+    def db_update(self,command, args):
+        self.cursor.execute(command,args) #xyz
+
+    def db_insert(self,command, args):
+        self.cursor.execute(command,args) #xyz
+
+    def db_fetchall(self):
+        return self.cursor.fetchall() # xyz
+
+    def db_fetchone(self):
+        return self.cursor.fetchone() # xyz
 
     def finished(self):
         while self.dataReady("control"):
@@ -84,7 +102,7 @@ class LiveAnalysis(threadedcomponent):
 
     def main(self):
         # Calculate running total and mean etc
-            cursor = self.dbConnect(self.dbuser,self.dbpass)
+            self.dbConnect(self.dbuser,self.dbpass)
             while not self.finished():
                 # The below does LIVE and FINAL analysis - do NOT run DataAnalyser at the same time
 
@@ -92,8 +110,8 @@ class LiveAnalysis(threadedcomponent):
 
                 # Stage 1: Live analysis - could do with a better way to do the first query (indexed field 'analsed' to speed up for now)
                 # Could move this into the main app to take a copy of tweets on arrival, but would rather solve separately if poss
-                cursor.execute("""SELECT tid,pid,timestamp,text,tweet_id,programme_position FROM rawdata WHERE analysed = 0 ORDER BY tid LIMIT 5000""")
-                data = cursor.fetchall()
+                self.db_select("""SELECT tid,pid,timestamp,text,tweet_id,programme_position FROM rawdata WHERE analysed = 0 ORDER BY tid LIMIT 5000""")
+                data = self.db_fetchall()
 
                 # Cycle through all the as yet unanalysed tweets
                 for result in data:
@@ -112,11 +130,11 @@ class LiveAnalysis(threadedcomponent):
                         Print("Analysis component: '" , tweettext , "'")
                     except UnicodeEncodeError, e:
                         Print ("UnicodeEncodeError", e)
-                    cursor.execute("""SELECT duration FROM programmes_unique WHERE pid = %s""",(pid))
-                    progdata = cursor.fetchone()
+                    self.db_select("""SELECT duration FROM programmes_unique WHERE pid = %s""",(pid))
+                    progdata = self.db_fetchone()
                     duration = progdata[0]
-                    cursor.execute("""SELECT totaltweets,meantweets,mediantweets,modetweets,stdevtweets,timediff,timestamp,utcoffset FROM programmes WHERE pid = %s ORDER BY timestamp DESC""",(pid))
-                    progdata2 = cursor.fetchone()
+                    self.db_select("""SELECT totaltweets,meantweets,mediantweets,modetweets,stdevtweets,timediff,timestamp,utcoffset FROM programmes WHERE pid = %s ORDER BY timestamp DESC""",(pid))
+                    progdata2 = self.db_fetchone()
                     totaltweets = progdata2[0]
                     # Increment the total tweets recorded for this programme's broadcast
                     totaltweets += 1
@@ -135,8 +153,8 @@ class LiveAnalysis(threadedcomponent):
                     # Ensure that this tweet occurs within the length of the programme, otherwise for the purposes of this program it's useless
 
                     if progpos > 0 and progpos <= duration:
-                        cursor.execute("""SELECT did,totaltweets,wordfreqexpected,wordfrequnexpected FROM analyseddata WHERE pid = %s AND timestamp = %s""",(pid,analysedstamp))
-                        analyseddata = cursor.fetchone()
+                        self.db_select("""SELECT did,totaltweets,wordfreqexpected,wordfrequnexpected FROM analyseddata WHERE pid = %s AND timestamp = %s""",(pid,analysedstamp))
+                        analyseddata = self.db_fetchone()
                         # Just in case of a missing raw json object (ie. programme terminated before it was stored - allow it to be skipped if not found after 30 secs)
                         #failcounter = 0
                         # Pass this tweet to the NLTK analysis component
@@ -155,38 +173,38 @@ class LiveAnalysis(threadedcomponent):
                             nltkdata = self.recv("nltk")
                         if analyseddata == None: # No tweets yet recorded for this minute
                             minutetweets = 1
-                            cursor.execute("""INSERT INTO analyseddata (pid,totaltweets,timestamp) VALUES (%s,%s,%s)""", (pid,minutetweets,analysedstamp))
+                            self.db_insert("""INSERT INTO analyseddata (pid,totaltweets,timestamp) VALUES (%s,%s,%s)""", (pid,minutetweets,analysedstamp))
                             for word in nltkdata:
                                 # Check if we're storing a word or phrase here
                                 if nltkdata[word][0] == 1:
-                                    cursor.execute("""INSERT INTO wordanalysis (pid,timestamp,phrase,count,is_keyword,is_entity,is_common) VALUES (%s,%s,%s,%s,%s,%s,%s)""", (pid,analysedstamp,word,nltkdata[word][1],nltkdata[word][2],nltkdata[word][3],nltkdata[word][4]))
+                                    self.db_insert("""INSERT INTO wordanalysis (pid,timestamp,phrase,count,is_keyword,is_entity,is_common) VALUES (%s,%s,%s,%s,%s,%s,%s)""", (pid,analysedstamp,word,nltkdata[word][1],nltkdata[word][2],nltkdata[word][3],nltkdata[word][4]))
                                 else:
-                                    cursor.execute("""INSERT INTO wordanalysis (pid,timestamp,word,count,is_keyword,is_entity,is_common) VALUES (%s,%s,%s,%s,%s,%s,%s)""", (pid,analysedstamp,word,nltkdata[word][1],nltkdata[word][2],nltkdata[word][3],nltkdata[word][4]))
+                                    self.db_insert("""INSERT INTO wordanalysis (pid,timestamp,word,count,is_keyword,is_entity,is_common) VALUES (%s,%s,%s,%s,%s,%s,%s)""", (pid,analysedstamp,word,nltkdata[word][1],nltkdata[word][2],nltkdata[word][3],nltkdata[word][4]))
                         else:
                             did = analyseddata[0]
                             minutetweets = analyseddata[1] # Get current number of tweets for this minute
                             minutetweets += 1 # Add one to it for this tweet
 
-                            cursor.execute("""UPDATE analyseddata SET totaltweets = %s WHERE did = %s""",(minutetweets,did))
+                            self.db_update("""UPDATE analyseddata SET totaltweets = %s WHERE did = %s""",(minutetweets,did))
 
                             for word in nltkdata:
                                 # Check if we're storing a word or phrase
                                 if nltkdata[word][0] == 1:
-                                    cursor.execute("""SELECT wid,count FROM wordanalysis WHERE pid = %s AND timestamp = %s AND phrase LIKE %s""",(pid,analysedstamp,word))
+                                    self.db_select("""SELECT wid,count FROM wordanalysis WHERE pid = %s AND timestamp = %s AND phrase LIKE %s""",(pid,analysedstamp,word))
                                     # Check if this phrase has already been stored for this minute - if so, increment the count
-                                    wordcheck = cursor.fetchone()
+                                    wordcheck = self.db_fetchone()
                                     if wordcheck == None:
-                                        cursor.execute("""INSERT INTO wordanalysis (pid,timestamp,phrase,count,is_keyword,is_entity,is_common) VALUES (%s,%s,%s,%s,%s,%s,%s)""", (pid,analysedstamp,word,nltkdata[word][1],nltkdata[word][2],nltkdata[word][3],nltkdata[word][4]))
+                                        self.db_insert("""INSERT INTO wordanalysis (pid,timestamp,phrase,count,is_keyword,is_entity,is_common) VALUES (%s,%s,%s,%s,%s,%s,%s)""", (pid,analysedstamp,word,nltkdata[word][1],nltkdata[word][2],nltkdata[word][3],nltkdata[word][4]))
                                     else:
-                                        cursor.execute("""UPDATE wordanalysis SET count = %s WHERE wid = %s""",(nltkdata[word][1] + wordcheck[1],wordcheck[0]))
+                                        self.db_update("""UPDATE wordanalysis SET count = %s WHERE wid = %s""",(nltkdata[word][1] + wordcheck[1],wordcheck[0]))
                                 else:
-                                    cursor.execute("""SELECT wid,count FROM wordanalysis WHERE pid = %s AND timestamp = %s AND word LIKE %s""",(pid,analysedstamp,word))
+                                    self.db_select("""SELECT wid,count FROM wordanalysis WHERE pid = %s AND timestamp = %s AND word LIKE %s""",(pid,analysedstamp,word))
                                     # Check if this word has already been stored for this minute - if so, increment the count
-                                    wordcheck = cursor.fetchone()
+                                    wordcheck = self.db_fetchone()
                                     if wordcheck == None:
-                                        cursor.execute("""INSERT INTO wordanalysis (pid,timestamp,word,count,is_keyword,is_entity,is_common) VALUES (%s,%s,%s,%s,%s,%s,%s)""", (pid,analysedstamp,word,nltkdata[word][1],nltkdata[word][2],nltkdata[word][3],nltkdata[word][4]))
+                                        self.db_insert("""INSERT INTO wordanalysis (pid,timestamp,word,count,is_keyword,is_entity,is_common) VALUES (%s,%s,%s,%s,%s,%s,%s)""", (pid,analysedstamp,word,nltkdata[word][1],nltkdata[word][2],nltkdata[word][3],nltkdata[word][4]))
                                     else:
-                                        cursor.execute("""UPDATE wordanalysis SET count = %s WHERE wid = %s""",(nltkdata[word][1] + wordcheck[1],wordcheck[0]))
+                                        self.db_update("""UPDATE wordanalysis SET count = %s WHERE wid = %s""",(nltkdata[word][1] + wordcheck[1],wordcheck[0]))
                         # Averages / stdev are calculated roughly based on the programme's running time at this point
                         progdate = datetime.utcfromtimestamp(timestamp) + timedelta(seconds=utcoffset)
                         actualstart = progdate - timedelta(seconds=timediff)
@@ -206,8 +224,8 @@ class LiveAnalysis(threadedcomponent):
                         except ZeroDivisionError, e:
                             meantweets = 0
 
-                        cursor.execute("""SELECT totaltweets FROM analyseddata WHERE pid = %s AND timestamp >= %s AND timestamp < %s""",(pid,progstart,analysedstamp+duration))
-                        analyseddata = cursor.fetchall()
+                        self.db_select("""SELECT totaltweets FROM analyseddata WHERE pid = %s AND timestamp >= %s AND timestamp < %s""",(pid,progstart,analysedstamp+duration))
+                        analyseddata = self.db_fetchall()
 
                         runningtime = int(runningtime)
 
@@ -250,24 +268,24 @@ class LiveAnalysis(threadedcomponent):
                             stdevtweets = 0
 
                         # Finished analysis - update DB
-                        cursor.execute("""UPDATE programmes SET totaltweets = %s, meantweets = %s, mediantweets = %s, modetweets = %s, stdevtweets = %s WHERE pid = %s AND timestamp = %s""",(totaltweets,meantweets,mediantweets,modetweets,stdevtweets,pid,timestamp))
+                        self.db_update("""UPDATE programmes SET totaltweets = %s, meantweets = %s, mediantweets = %s, modetweets = %s, stdevtweets = %s WHERE pid = %s AND timestamp = %s""",(totaltweets,meantweets,mediantweets,modetweets,stdevtweets,pid,timestamp))
 
                     else:
                         pass
                         # Print("Analysis component: Skipping tweet - falls outside the programme's running time")
 
                     # Mark the tweet as analysed
-                    cursor.execute("""UPDATE rawdata SET analysed = 1 WHERE tid = %s""",(tid))
+                    self.db_update("""UPDATE rawdata SET analysed = 1 WHERE tid = %s""",(tid))
                     Print("Analysis component: Done!")
 
                 # Stage 2: If all raw tweets analysed and imported = 1 (all data for this programme stored and programme finished), finalise the analysis - could do bookmark identification here too?
-                cursor.execute("""SELECT pid,totaltweets,meantweets,mediantweets,modetweets,stdevtweets,timestamp,timediff FROM programmes WHERE imported = 1 AND analysed = 0 LIMIT 5000""")
-                data = cursor.fetchall()
+                self.db_select("""SELECT pid,totaltweets,meantweets,mediantweets,modetweets,stdevtweets,timestamp,timediff FROM programmes WHERE imported = 1 AND analysed = 0 LIMIT 5000""")
+                data = self.db_fetchall()
                 # Cycle through each programme that's ready for final analysis
                 for result in data:
                     pid = result[0]
-                    cursor.execute("""SELECT duration,title FROM programmes_unique WHERE pid = %s""",(pid))
-                    data2 = cursor.fetchone()
+                    self.db_select("""SELECT duration,title FROM programmes_unique WHERE pid = %s""",(pid))
+                    data2 = self.db_fetchone()
                     duration = data2[0]
                     totaltweets = result[1]
                     meantweets = result[2]
@@ -278,13 +296,13 @@ class LiveAnalysis(threadedcomponent):
                     timestamp = result[6]
                     timediff = result[7]
                     # Cycle through checking if all tweets for this programme have been analysed - if so finalise the stats
-                    cursor.execute("""SELECT tid FROM rawdata WHERE analysed = 0 AND pid = %s""", (pid))
-                    if cursor.fetchone() == None:
+                    self.db_select("""SELECT tid FROM rawdata WHERE analysed = 0 AND pid = %s""", (pid))
+                    if self.db_fetchone() == None:
                         # OK to finalise stats here
                         Print("Analysis component: Finalising stats for pid:", pid, "(" , title , ")")
                         meantweets = float(totaltweets) / (duration / 60) # Mean tweets per minute
-                        cursor.execute("""SELECT totaltweets FROM analyseddata WHERE pid = %s AND timestamp >= %s AND timestamp < %s""",(pid,timestamp-timediff,timestamp+duration-timediff))
-                        analyseddata = cursor.fetchall()
+                        self.db_select("""SELECT totaltweets FROM analyseddata WHERE pid = %s AND timestamp >= %s AND timestamp < %s""",(pid,timestamp-timediff,timestamp+duration-timediff))
+                        analyseddata = self.db_fetchall()
 
                         runningtime = duration / 60
 
@@ -325,8 +343,8 @@ class LiveAnalysis(threadedcomponent):
                         if 1: # This data is purely a readout to the terminal at the moment associated with word and phrase frequency, and retweets
                             sqltimestamp1 = timestamp - timediff
                             sqltimestamp2 = timestamp + duration - timediff
-                            cursor.execute("""SELECT tweet_id FROM rawdata WHERE pid = %s AND timestamp >= %s AND timestamp < %s""", (pid,sqltimestamp1,sqltimestamp2))
-                            rawtweetids = cursor.fetchall()
+                            self.db_select("""SELECT tweet_id FROM rawdata WHERE pid = %s AND timestamp >= %s AND timestamp < %s""", (pid,sqltimestamp1,sqltimestamp2))
+                            rawtweetids = self.db_fetchall()
                             tweetids = list()
                             for tweet in rawtweetids:
                                 tweetids.append(tweet[0])
@@ -351,7 +369,7 @@ class LiveAnalysis(threadedcomponent):
 #                                if 1:
                                     nltkdata = self.recv("nltkfinal")
 
-                        cursor.execute("""UPDATE programmes SET meantweets = %s, mediantweets = %s, modetweets = %s, stdevtweets = %s, analysed = 1 WHERE pid = %s AND timestamp = %s""",(meantweets,mediantweets,modetweets,stdevtweets,pid,timestamp))
+                        self.db_update("""UPDATE programmes SET meantweets = %s, mediantweets = %s, modetweets = %s, stdevtweets = %s, analysed = 1 WHERE pid = %s AND timestamp = %s""",(meantweets,mediantweets,modetweets,stdevtweets,pid,timestamp))
                         Print("Analysis component: Done!")
 
                 # Sleep here until more data is available to analyse
@@ -375,6 +393,7 @@ class LiveAnalysisNLTK(component):
         super(LiveAnalysisNLTK, self).__init__()
         self.dbuser = dbuser
         self.dbpass = dbpass
+        self.cursor = None # xyz
         self.exclusions = ["a","able","about","across","after","all","almost","also","am",\
                     "among","an","and","any","are","as","at","be","because","been","but",\
                     "by","can","cannot","could","dear","did","do","does","either","else",\
@@ -390,8 +409,25 @@ class LiveAnalysisNLTK(component):
 
     def dbConnect(self,dbuser,dbpass):
         db = MySQLdb.connect(user=dbuser,passwd=dbpass,db="twitter_bookmarks",use_unicode=True,charset="utf8")
-        cursor = db.cursor()
-        return cursor
+        cursor = db.cursor()  # xyz
+        self.cursor = cursor  # xyz
+        return cursor        # xyz
+
+    # The purpose of pulling these three out is to make it simpler to keep things in sync between multiple DBs
+    def db_select(self,command, args):
+        self.cursor.execute(command,args) #xyz
+
+    def db_update(self,command, args):
+        self.cursor.execute(command,args) #xyz
+
+    def db_insert(self,command, args):
+        self.cursor.execute(command,args) #xyz
+
+    def db_fetchall(self):
+        return self.cursor.fetchall() # xyz
+
+    def db_fetchone(self):
+        return self.cursor.fetchone() # xyz
 
     def finished(self):
         while self.dataReady("control"):
@@ -419,7 +455,7 @@ class LiveAnalysisNLTK(component):
         return text
 
     def main(self):
-        cursor = self.dbConnect(self.dbuser,self.dbpass)
+        self.dbConnect(self.dbuser,self.dbpass)
 #        print "NLTK", 1
 
         while not self.finished():
@@ -443,8 +479,8 @@ class LiveAnalysisNLTK(component):
                 twnc = 0
                 while tweetdata == None:
                     # Retrieve the tweet json corresponding to the ID receieved
-                    cursor.execute("""SELECT tweet_json FROM rawtweets WHERE tweet_id = %s""",(tweetid))
-                    tweetdata = cursor.fetchone()
+                    self.db_select("""SELECT tweet_json FROM rawtweets WHERE tweet_id = %s""",(tweetid))
+                    tweetdata = self.db_fetchone()
                     if tweetdata == None:
                         twnc += 1
                         # self.pause()
@@ -460,8 +496,8 @@ class LiveAnalysisNLTK(component):
 
                     keywords = dict()
                     # Find the keywords relating to the PID received
-                    cursor.execute("""SELECT keyword,type FROM keywords WHERE pid = %s""",(pid))
-                    keyworddata = cursor.fetchall()
+                    self.db_select("""SELECT keyword,type FROM keywords WHERE pid = %s""",(pid))
+                    keyworddata = self.db_fetchall()
                     for word in keyworddata:
                         wordname = word[0].lower()
                         keywords[wordname] = word[1]
@@ -554,6 +590,7 @@ class FinalAnalysisNLTK(component):
         super(FinalAnalysisNLTK, self).__init__()
         self.dbuser = dbuser
         self.dbpass = dbpass
+        self.cursor = None  # xyz
         self.exclusions = ["a","able","about","across","after","all","almost","also","am",\
                     "among","an","and","any","are","as","at","be","because","been","but",\
                     "by","can","cannot","could","dear","did","do","does","either","else",\
@@ -569,8 +606,25 @@ class FinalAnalysisNLTK(component):
 
     def dbConnect(self,dbuser,dbpass):
         db = MySQLdb.connect(user=dbuser,passwd=dbpass,db="twitter_bookmarks",use_unicode=True,charset="utf8")
-        cursor = db.cursor()
-        return cursor
+        cursor = db.cursor()  # xyz
+        self.cursor = cursor  # xyz
+        return cursor        # xyz
+
+    # The purpose of pulling these three out is to make it simpler to keep things in sync between multiple DBs
+    def db_select(self,command, args):
+        self.cursor.execute(command,args) #xyz
+
+    def db_update(self,command, args):
+        self.cursor.execute(command,args) #xyz
+
+    def db_insert(self,command, args):
+        self.cursor.execute(command,args) #xyz
+
+    def db_fetchall(self):
+        return self.cursor.fetchall() # xyz
+
+    def db_fetchone(self):
+        return self.cursor.fetchone() # xyz
 
     def finished(self):
         while self.dataReady("control"):
@@ -598,7 +652,7 @@ class FinalAnalysisNLTK(component):
     def main(self):
         # Calculate running total and mean etc
 
-        cursor = self.dbConnect(self.dbuser,self.dbpass)
+        self.dbConnect(self.dbuser,self.dbpass)
 
         while not self.finished():
 
@@ -616,8 +670,8 @@ class FinalAnalysisNLTK(component):
 
                 keywords = dict()
                 # Find keywords for this PID
-                cursor.execute("""SELECT keyword,type FROM keywords WHERE pid = %s""",(pid))
-                keyworddata = cursor.fetchall()
+                self.db_select("""SELECT keyword,type FROM keywords WHERE pid = %s""",(pid))
+                keyworddata = self.db_fetchall()
                 for word in keyworddata:
                     wordname = word[0].lower()
                     if "^" in wordname:
@@ -633,8 +687,8 @@ class FinalAnalysisNLTK(component):
                     # Cycle through each tweet and find its JSON
                     tweetdata = None
                     while tweetdata == None:
-                        cursor.execute("""SELECT tweet_json FROM rawtweets WHERE tweet_id = %s""",(tweetid))
-                        tweetdata = cursor.fetchone()
+                        self.db_select("""SELECT tweet_json FROM rawtweets WHERE tweet_id = %s""",(tweetid))
+                        tweetdata = self.db_fetchone()
                         if tweetdata != None:
 
                             tweetjson = cjson.decode(tweetdata[0])
