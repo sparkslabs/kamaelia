@@ -66,7 +66,7 @@ if __name__ == "__main__":
     # Unfortunately no such config system exists, so we'll have to work through this way for the moment
     import Kamaelia.Apps.SocialBookmarks.DBWrapper
     Kamaelia.Apps.SocialBookmarks.DBWrapper.DBWrapper.dbuser = dbuser
-    Kamaelia.Apps.SocialBookmarks.DBWrapper.DBWrapper.dbuser = dbpass
+    Kamaelia.Apps.SocialBookmarks.DBWrapper.DBWrapper.dbpass = dbpass
     Kamaelia.Apps.SocialBookmarks.DBWrapper.DBWrapper.maindb = "twitter_bookmarks"
     Kamaelia.Apps.SocialBookmarks.DBWrapper.DBWrapper.nextdb = "twitter_bookmarks_next"
 
