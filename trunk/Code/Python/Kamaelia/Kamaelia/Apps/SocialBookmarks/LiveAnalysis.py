@@ -37,7 +37,7 @@ def __BOTH__():
     caller = inspect.stack()[1]
     return int (caller[2]), caller[3], caller[1]
 
-class LiveAnalysis(threadedcomponent):
+class LiveAnalysis(DBWrapper,threadedcomponent):
     Inboxes = {
         "inbox" : "Unused",
         "nltk" : "Receives data back from the NLTK component",
@@ -52,11 +52,12 @@ class LiveAnalysis(threadedcomponent):
     }
 
     def __init__(self, dbuser, dbpass):
-        super(LiveAnalysis, self).__init__()
-        self.dbuser = dbuser
-        self.dbpass = dbpass
-        self.cursor = None     # xyz #dupe
-        self.cursor_dupe = None     # xyz #dupe
+        super(LiveAnalysis, self).__init__(dbuser=dbuser, dbpass=dbpass)
+        if 0:
+            self.dbuser = dbuser
+            self.dbpass = dbpass
+            self.cursor = None     # xyz #dupe
+            self.cursor_dupe = None     # xyz #dupe
         # List of 'common' words so they can be labelled as such when the data is stored
         self.exclusions = ["a","able","about","across","after","all","almost","also","am",\
                     "among","an","and","any","are","as","at","be","because","been","but",\
@@ -71,7 +72,7 @@ class LiveAnalysis(threadedcomponent):
                     "were","what","when","where","which","while","who","whom","why","will",\
                     "with","would","yet","you","your","via","rt"]
 
-    def dbConnect(self,dbuser,dbpass):
+    def __dbConnect(self,dbuser,dbpass):
         db = MySQLdb.connect(user=dbuser,passwd=dbpass,db="twitter_bookmarks",use_unicode=True,charset="utf8")
         cursor = db.cursor()  # xyz
         self.cursor = cursor  # xyz
@@ -81,26 +82,26 @@ class LiveAnalysis(threadedcomponent):
             self.cursor_dupe = cursor_dupe   # xyz
 
     # The purpose of pulling these three out is to make it simpler to keep things in sync between multiple DBs
-    def db_select(self,command, args=None):
+    def __db_select(self,command, args=None):
         if args:
             self.cursor.execute(command,args) #xyz
         else:
             self.cursor.execute(command) #xyz
 
-    def db_update(self,command, args):
+    def __db_update(self,command, args):
         self.cursor.execute(command,args) #xyz
         if 0:
             self.cursor_dupe.execute(command,args) #xyz
 
-    def db_insert(self,command, args):
+    def __db_insert(self,command, args):
         self.cursor.execute(command,args) #xyz
         if 0:
             self.cursor_dupe.execute(command,args) #xyz
 
-    def db_fetchall(self):
+    def __db_fetchall(self):
         return self.cursor.fetchall() # xyz
 
-    def db_fetchone(self):
+    def __db_fetchone(self):
         return self.cursor.fetchone() # xyz
 
     def finished(self):
@@ -388,7 +389,7 @@ class LiveAnalysis(threadedcomponent):
                 time.sleep(10)
 
 
-class LiveAnalysisNLTK(component):
+class LiveAnalysisNLTK(DBWrapper,component):
     Inboxes = {
         "inbox" : "Receives a tweet ID and its related PID for NLTK analysis [pid,tweetid]",
         "tweetfixer" : "Received data back from the tweet fixing components (tweet json)",
@@ -401,11 +402,12 @@ class LiveAnalysisNLTK(component):
     }
 
     def __init__(self, dbuser, dbpass):
-        super(LiveAnalysisNLTK, self).__init__()
-        self.dbuser = dbuser
-        self.dbpass = dbpass
-        self.cursor = None # xyz #dupe
-        self.cursor_dupe = None     # xyz #dupe
+        super(LiveAnalysisNLTK, self).__init__(dbuser=dbuser, dbpass=dbpass)
+        if 0:
+            self.dbuser = dbuser
+            self.dbpass = dbpass
+            self.cursor = None # xyz #dupe
+            self.cursor_dupe = None     # xyz #dupe
         self.exclusions = ["a","able","about","across","after","all","almost","also","am",\
                     "among","an","and","any","are","as","at","be","because","been","but",\
                     "by","can","cannot","could","dear","did","do","does","either","else",\
@@ -419,7 +421,7 @@ class LiveAnalysisNLTK(component):
                     "were","what","when","where","which","while","who","whom","why","will",\
                     "with","would","yet","you","your","via","rt"]
 
-    def dbConnect(self,dbuser,dbpass):
+    def __dbConnect(self,dbuser,dbpass):
         db = MySQLdb.connect(user=dbuser,passwd=dbpass,db="twitter_bookmarks",use_unicode=True,charset="utf8")
         cursor = db.cursor()  # xyz
         self.cursor = cursor  # xyz
@@ -429,26 +431,26 @@ class LiveAnalysisNLTK(component):
             self.cursor_dupe = cursor_dupe   # xyz
 
     # The purpose of pulling these three out is to make it simpler to keep things in sync between multiple DBs
-    def db_select(self,command, args=None):
+    def __db_select(self,command, args=None):
         if args:
             self.cursor.execute(command,args) #xyz
         else:
             self.cursor.execute(command) #xyz
 
-    def db_update(self,command, args):
+    def __db_update(self,command, args):
         self.cursor.execute(command,args) #xyz
         if 0:
             self.cursor_dupe.execute(command,args) #xyz
 
-    def db_insert(self,command, args):
+    def __db_insert(self,command, args):
         self.cursor.execute(command,args) #xyz
         if 0:
             self.cursor_dupe.execute(command,args) #xyz
 
-    def db_fetchall(self):
+    def __db_fetchall(self):
         return self.cursor.fetchall() # xyz
 
-    def db_fetchone(self):
+    def __db_fetchone(self):
         return self.cursor.fetchone() # xyz
 
     def finished(self):
@@ -596,7 +598,7 @@ class LiveAnalysisNLTK(component):
             yield 1
 
 
-class FinalAnalysisNLTK(component):
+class FinalAnalysisNLTK(DBWrapper,component):
     Inboxes = {
         "inbox" : "Receives a list of tweet IDs and their related PID for NLTK analysis [pid,[tweetid,tweetid]]",
         "tweetfixer" : "Received data back from the tweet fixing components (tweet json)",
@@ -609,11 +611,12 @@ class FinalAnalysisNLTK(component):
     }
 
     def __init__(self, dbuser, dbpass):
-        super(FinalAnalysisNLTK, self).__init__()
-        self.dbuser = dbuser
-        self.dbpass = dbpass
-        self.cursor = None  # xyz # dupe
-        self.cursor_dupe = None     # xyz #dupe
+        super(FinalAnalysisNLTK, self).__init__(dbuser=dbuser, dbpass=dbpass)
+        if 0:
+            self.dbuser = dbuser
+            self.dbpass = dbpass
+            self.cursor = None  # xyz # dupe
+            self.cursor_dupe = None     # xyz #dupe
         self.exclusions = ["a","able","about","across","after","all","almost","also","am",\
                     "among","an","and","any","are","as","at","be","because","been","but",\
                     "by","can","cannot","could","dear","did","do","does","either","else",\
@@ -627,7 +630,7 @@ class FinalAnalysisNLTK(component):
                     "were","what","when","where","which","while","who","whom","why","will",\
                     "with","would","yet","you","your","via","rt"]
 
-    def dbConnect(self,dbuser,dbpass):
+    def __dbConnect(self,dbuser,dbpass):
         db = MySQLdb.connect(user=dbuser,passwd=dbpass,db="twitter_bookmarks",use_unicode=True,charset="utf8")
         cursor = db.cursor()  # xyz
         self.cursor = cursor  # xyz
@@ -637,26 +640,26 @@ class FinalAnalysisNLTK(component):
             self.cursor_dupe = cursor_dupe   # xyz
 
     # The purpose of pulling these three out is to make it simpler to keep things in sync between multiple DBs
-    def db_select(self,command, args=None):
+    def __db_select(self,command, args=None):
         if args:
             self.cursor.execute(command,args) #xyz
         else:
             self.cursor.execute(command) #xyz
 
-    def db_update(self,command, args):
+    def __db_update(self,command, args):
         self.cursor.execute(command,args) #xyz
         if 0:
             self.cursor_dupe.execute(command,args) #xyz
 
-    def db_insert(self,command, args):
+    def __db_insert(self,command, args):
         self.cursor.execute(command,args) #xyz
         if 0:
             self.cursor_dupe.execute(command,args) #xyz
 
-    def db_fetchall(self):
+    def __db_fetchall(self):
         return self.cursor.fetchall() # xyz
 
-    def db_fetchone(self):
+    def __db_fetchone(self):
         return self.cursor.fetchone() # xyz
 
     def finished(self):
