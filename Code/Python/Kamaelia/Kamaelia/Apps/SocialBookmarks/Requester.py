@@ -4,19 +4,19 @@
 # One requester for ALL channels - avoids creating multiple Twitter streams
 # Only sends keywords to Twitter once per programme, then monitors for the next programme
 
-from datetime import date
+import cjson
 import os
 import re
 import string
 import time
+import rdflib
+from rdflib.Graph import Graph
+
+from datetime import date
 
 from Axon.Ipc import producerFinished
 from Axon.Ipc import shutdownMicroprocess
 from Axon.ThreadedComponent import threadedcomponent
-import MySQLdb
-import cjson
-import rdflib
-from rdflib.Graph import Graph
 from Kamaelia.Apps.SocialBookmarks.Print import Print
 from Kamaelia.Apps.SocialBookmarks.DBWrapper import DBWrapper
 
