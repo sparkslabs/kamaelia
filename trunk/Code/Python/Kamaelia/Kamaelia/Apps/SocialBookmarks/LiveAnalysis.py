@@ -54,11 +54,6 @@ class LiveAnalysis(DBWrapper,threadedcomponent):
 
     def __init__(self, dbuser, dbpass):
         super(LiveAnalysis, self).__init__(dbuser=dbuser, dbpass=dbpass)
-        if 0:
-            self.dbuser = dbuser
-            self.dbpass = dbpass
-            self.cursor = None     # xyz #dupe
-            self.cursor_dupe = None     # xyz #dupe
         # List of 'common' words so they can be labelled as such when the data is stored
         self.exclusions = ["a","able","about","across","after","all","almost","also","am",\
                     "among","an","and","any","are","as","at","be","because","been","but",\
@@ -73,38 +68,6 @@ class LiveAnalysis(DBWrapper,threadedcomponent):
                     "were","what","when","where","which","while","who","whom","why","will",\
                     "with","would","yet","you","your","via","rt"]
 
-    def __dbConnect(self,dbuser,dbpass):
-        db = MySQLdb.connect(user=dbuser,passwd=dbpass,db="twitter_bookmarks",use_unicode=True,charset="utf8")
-        cursor = db.cursor()  # xyz
-        self.cursor = cursor  # xyz
-        if 0:
-            db_dupe = MySQLdb.connect(user=dbuser,passwd=dbpass,db="twitter_bookmarks_next",use_unicode=True,charset="utf8")
-            cursor_dupe = db_dupe.cursor()   # xyz
-            self.cursor_dupe = cursor_dupe   # xyz
-
-    # The purpose of pulling these three out is to make it simpler to keep things in sync between multiple DBs
-    def __db_select(self,command, args=None):
-        if args:
-            self.cursor.execute(command,args) #xyz
-        else:
-            self.cursor.execute(command) #xyz
-
-    def __db_update(self,command, args):
-        self.cursor.execute(command,args) #xyz
-        if 0:
-            self.cursor_dupe.execute(command,args) #xyz
-
-    def __db_insert(self,command, args):
-        self.cursor.execute(command,args) #xyz
-        if 0:
-            self.cursor_dupe.execute(command,args) #xyz
-
-    def __db_fetchall(self):
-        return self.cursor.fetchall() # xyz
-
-    def __db_fetchone(self):
-        return self.cursor.fetchone() # xyz
-
     def finished(self):
         while self.dataReady("control"):
             msg = self.recv("control")
@@ -115,7 +78,6 @@ class LiveAnalysis(DBWrapper,threadedcomponent):
 
     def main(self):
         # Calculate running total and mean etc
-#            self.dbConnect(self.dbuser,self.dbpass)
             self.dbConnect()
             while not self.finished():
                 # The below does LIVE and FINAL analysis - do NOT run DataAnalyser at the same time
@@ -405,11 +367,6 @@ class LiveAnalysisNLTK(DBWrapper,component):
 
     def __init__(self, dbuser, dbpass):
         super(LiveAnalysisNLTK, self).__init__(dbuser=dbuser, dbpass=dbpass)
-        if 0:
-            self.dbuser = dbuser
-            self.dbpass = dbpass
-            self.cursor = None # xyz #dupe
-            self.cursor_dupe = None     # xyz #dupe
         self.exclusions = ["a","able","about","across","after","all","almost","also","am",\
                     "among","an","and","any","are","as","at","be","because","been","but",\
                     "by","can","cannot","could","dear","did","do","does","either","else",\
@@ -422,38 +379,6 @@ class LiveAnalysisNLTK(DBWrapper,component):
                     "these","they","this","tis","to","too","twas","up","us","wants","was","we",\
                     "were","what","when","where","which","while","who","whom","why","will",\
                     "with","would","yet","you","your","via","rt"]
-
-    def __dbConnect(self,dbuser,dbpass):
-        db = MySQLdb.connect(user=dbuser,passwd=dbpass,db="twitter_bookmarks",use_unicode=True,charset="utf8")
-        cursor = db.cursor()  # xyz
-        self.cursor = cursor  # xyz
-        if 0:
-            db_dupe = MySQLdb.connect(user=dbuser,passwd=dbpass,db="twitter_bookmarks_next",use_unicode=True,charset="utf8")
-            cursor_dupe = db_dupe.cursor()   # xyz
-            self.cursor_dupe = cursor_dupe   # xyz
-
-    # The purpose of pulling these three out is to make it simpler to keep things in sync between multiple DBs
-    def __db_select(self,command, args=None):
-        if args:
-            self.cursor.execute(command,args) #xyz
-        else:
-            self.cursor.execute(command) #xyz
-
-    def __db_update(self,command, args):
-        self.cursor.execute(command,args) #xyz
-        if 0:
-            self.cursor_dupe.execute(command,args) #xyz
-
-    def __db_insert(self,command, args):
-        self.cursor.execute(command,args) #xyz
-        if 0:
-            self.cursor_dupe.execute(command,args) #xyz
-
-    def __db_fetchall(self):
-        return self.cursor.fetchall() # xyz
-
-    def __db_fetchone(self):
-        return self.cursor.fetchone() # xyz
 
     def finished(self):
         while self.dataReady("control"):
@@ -481,9 +406,7 @@ class LiveAnalysisNLTK(DBWrapper,component):
         return text
 
     def main(self):
-#        self.dbConnect(self.dbuser,self.dbpass)
         self.dbConnect()
-#        print "NLTK", 1
 
         while not self.finished():
 
@@ -615,11 +538,6 @@ class FinalAnalysisNLTK(DBWrapper,component):
 
     def __init__(self, dbuser, dbpass):
         super(FinalAnalysisNLTK, self).__init__(dbuser=dbuser, dbpass=dbpass)
-        if 0:
-            self.dbuser = dbuser
-            self.dbpass = dbpass
-            self.cursor = None  # xyz # dupe
-            self.cursor_dupe = None     # xyz #dupe
         self.exclusions = ["a","able","about","across","after","all","almost","also","am",\
                     "among","an","and","any","are","as","at","be","because","been","but",\
                     "by","can","cannot","could","dear","did","do","does","either","else",\
@@ -632,38 +550,6 @@ class FinalAnalysisNLTK(DBWrapper,component):
                     "these","they","this","tis","to","too","twas","up","us","wants","was","we",\
                     "were","what","when","where","which","while","who","whom","why","will",\
                     "with","would","yet","you","your","via","rt"]
-
-    def __dbConnect(self,dbuser,dbpass):
-        db = MySQLdb.connect(user=dbuser,passwd=dbpass,db="twitter_bookmarks",use_unicode=True,charset="utf8")
-        cursor = db.cursor()  # xyz
-        self.cursor = cursor  # xyz
-        if 0:
-            db_dupe = MySQLdb.connect(user=dbuser,passwd=dbpass,db="twitter_bookmarks_next",use_unicode=True,charset="utf8")
-            cursor_dupe = db_dupe.cursor()   # xyz
-            self.cursor_dupe = cursor_dupe   # xyz
-
-    # The purpose of pulling these three out is to make it simpler to keep things in sync between multiple DBs
-    def __db_select(self,command, args=None):
-        if args:
-            self.cursor.execute(command,args) #xyz
-        else:
-            self.cursor.execute(command) #xyz
-
-    def __db_update(self,command, args):
-        self.cursor.execute(command,args) #xyz
-        if 0:
-            self.cursor_dupe.execute(command,args) #xyz
-
-    def __db_insert(self,command, args):
-        self.cursor.execute(command,args) #xyz
-        if 0:
-            self.cursor_dupe.execute(command,args) #xyz
-
-    def __db_fetchall(self):
-        return self.cursor.fetchall() # xyz
-
-    def __db_fetchone(self):
-        return self.cursor.fetchone() # xyz
 
     def finished(self):
         while self.dataReady("control"):
@@ -691,7 +577,6 @@ class FinalAnalysisNLTK(DBWrapper,component):
     def main(self):
         # Calculate running total and mean etc
 
-#        self.dbConnect(self.dbuser,self.dbpass)
         self.dbConnect()
 
         while not self.finished():
