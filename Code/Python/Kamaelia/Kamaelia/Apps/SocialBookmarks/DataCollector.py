@@ -19,8 +19,9 @@ import _mysql_exceptions
 import cjson
 from dateutil.parser import parse
 from Kamaelia.Apps.SocialBookmarks.Print import Print
+from Kamaelia.Apps.SocialBookmarks.DBWrapper import DBWrapper
 
-class DataCollector(threadedcomponent):
+class DataCollector(DBWrapper,threadedcomponent):
     Inboxes = {
         "inbox" : "Receives data in the format [tweetjson,[pid,pid]]",
         "control" : ""
@@ -31,11 +32,15 @@ class DataCollector(threadedcomponent):
     }
 
     def __init__(self,dbuser,dbpass):
-        super(DataCollector, self).__init__()
-        self.dbuser = dbuser
-        self.dbpass = dbpass
-        self.cursor = None  # xyz # dupe
-        self.cursor_dupe = None  # xyz #dupe
+        super(DataCollector, self).__init__(dbuser=dbuser,dbpass=dbpass)
+        # These should all be set now by the DBWrapper
+        # Ensure we crash if they're not...
+        self.dbuser, self.dbpass, self.cursor, self.cursor_dupe
+        if 0:
+            self.dbuser = dbuser
+            self.dbpass = dbpass
+            self.cursor = None  # xyz # dupe
+            self.cursor_dupe = None  # xyz #dupe
 
     def finished(self):
         while self.dataReady("control"):
