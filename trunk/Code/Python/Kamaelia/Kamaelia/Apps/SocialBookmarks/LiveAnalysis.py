@@ -23,6 +23,7 @@ import cjson
 import nltk
 from nltk import FreqDist
 from Kamaelia.Apps.SocialBookmarks.Print import Print
+from Kamaelia.Apps.SocialBookmarks.DBWrapper import DBWrapper
 
 import inspect
 def __LINE__ ():
@@ -114,7 +115,8 @@ class LiveAnalysis(DBWrapper,threadedcomponent):
 
     def main(self):
         # Calculate running total and mean etc
-            self.dbConnect(self.dbuser,self.dbpass)
+#            self.dbConnect(self.dbuser,self.dbpass)
+            self.dbConnect()
             while not self.finished():
                 # The below does LIVE and FINAL analysis - do NOT run DataAnalyser at the same time
 
@@ -479,7 +481,8 @@ class LiveAnalysisNLTK(DBWrapper,component):
         return text
 
     def main(self):
-        self.dbConnect(self.dbuser,self.dbpass)
+#        self.dbConnect(self.dbuser,self.dbpass)
+        self.dbConnect()
 #        print "NLTK", 1
 
         while not self.finished():
@@ -688,7 +691,8 @@ class FinalAnalysisNLTK(DBWrapper,component):
     def main(self):
         # Calculate running total and mean etc
 
-        self.dbConnect(self.dbuser,self.dbpass)
+#        self.dbConnect(self.dbuser,self.dbpass)
+        self.dbConnect()
 
         while not self.finished():
 
