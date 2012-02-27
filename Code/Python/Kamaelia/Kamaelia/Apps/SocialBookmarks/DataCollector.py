@@ -177,6 +177,7 @@ class RawDataCollector(threadedcomponent):
         super(RawDataCollector, self).__init__()
         self.dbuser = dbuser
         self.dbpass = dbpass
+        self.cursor = None
 
     def finished(self):
         while self.dataReady("control"):
@@ -188,9 +189,28 @@ class RawDataCollector(threadedcomponent):
 
     def dbConnect(self):
         db = MySQLdb.connect(user=self.dbuser,passwd=self.dbpass,db="twitter_bookmarks",use_unicode=True,charset="utf8")
-        cursor = db.cursor()
-        return cursor
+        cursor = db.cursor()  # xyz
+        self.cursor = cursor  # xyz
+        return cursor         # xyz
 
+    # The purpose of pulling these three out is to make it simpler to keep things in sync between multiple DBs
+    def db_select(self,command, args=None):
+        if args:
+            self.cursor.execute(command,args) #xyz
+        else:
+            self.cursor.execute(command) #xyz
+
+    def db_update(self,command, args):
+        self.cursor.execute(command,args) #xyz
+
+    def db_insert(self,command, args):
+        self.cursor.execute(command,args) #xyz
+
+    def db_fetchall(self):
+        return self.cursor.fetchall() # xyz
+
+    def db_fetchone(self):
+        return self.cursor.fetchone() # xyz
     def main(self):
         cursor = self.dbConnect()
         while not self.finished():
