@@ -141,7 +141,7 @@ class RetweetCorrector(DBWrapper,component):
 
     def main(self):
 
-        self.dbConnect(self.dbuser,self.dbpass)
+        self.dbConnect()
 
         while not self.finished():
             while self.dataReady("inbox"):
