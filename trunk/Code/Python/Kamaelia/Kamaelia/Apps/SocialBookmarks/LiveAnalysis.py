@@ -55,7 +55,8 @@ class LiveAnalysis(threadedcomponent):
         super(LiveAnalysis, self).__init__()
         self.dbuser = dbuser
         self.dbpass = dbpass
-        self.cursor = None     # xyz
+        self.cursor = None     # xyz #dupe
+        self.cursor_dupe = None     # xyz #dupe
         # List of 'common' words so they can be labelled as such when the data is stored
         self.exclusions = ["a","able","about","across","after","all","almost","also","am",\
                     "among","an","and","any","are","as","at","be","because","been","but",\
@@ -74,7 +75,10 @@ class LiveAnalysis(threadedcomponent):
         db = MySQLdb.connect(user=dbuser,passwd=dbpass,db="twitter_bookmarks",use_unicode=True,charset="utf8")
         cursor = db.cursor()  # xyz
         self.cursor = cursor  # xyz
-        return cursor        # xyz
+        if 0:
+            db_dupe = MySQLdb.connect(user=dbuser,passwd=dbpass,db="twitter_bookmarks_next",use_unicode=True,charset="utf8")
+            cursor_dupe = db_dupe.cursor()   # xyz
+            self.cursor_dupe = cursor_dupe   # xyz
 
     # The purpose of pulling these three out is to make it simpler to keep things in sync between multiple DBs
     def db_select(self,command, args=None):
@@ -85,9 +89,13 @@ class LiveAnalysis(threadedcomponent):
 
     def db_update(self,command, args):
         self.cursor.execute(command,args) #xyz
+        if 0:
+            self.cursor_dupe.execute(command,args) #xyz
 
     def db_insert(self,command, args):
         self.cursor.execute(command,args) #xyz
+        if 0:
+            self.cursor_dupe.execute(command,args) #xyz
 
     def db_fetchall(self):
         return self.cursor.fetchall() # xyz
@@ -396,7 +404,8 @@ class LiveAnalysisNLTK(component):
         super(LiveAnalysisNLTK, self).__init__()
         self.dbuser = dbuser
         self.dbpass = dbpass
-        self.cursor = None # xyz
+        self.cursor = None # xyz #dupe
+        self.cursor_dupe = None     # xyz #dupe
         self.exclusions = ["a","able","about","across","after","all","almost","also","am",\
                     "among","an","and","any","are","as","at","be","because","been","but",\
                     "by","can","cannot","could","dear","did","do","does","either","else",\
@@ -414,7 +423,10 @@ class LiveAnalysisNLTK(component):
         db = MySQLdb.connect(user=dbuser,passwd=dbpass,db="twitter_bookmarks",use_unicode=True,charset="utf8")
         cursor = db.cursor()  # xyz
         self.cursor = cursor  # xyz
-        return cursor        # xyz
+        if 0:
+            db_dupe = MySQLdb.connect(user=dbuser,passwd=dbpass,db="twitter_bookmarks_next",use_unicode=True,charset="utf8")
+            cursor_dupe = db_dupe.cursor()   # xyz
+            self.cursor_dupe = cursor_dupe   # xyz
 
     # The purpose of pulling these three out is to make it simpler to keep things in sync between multiple DBs
     def db_select(self,command, args=None):
@@ -425,9 +437,13 @@ class LiveAnalysisNLTK(component):
 
     def db_update(self,command, args):
         self.cursor.execute(command,args) #xyz
+        if 0:
+            self.cursor_dupe.execute(command,args) #xyz
 
     def db_insert(self,command, args):
         self.cursor.execute(command,args) #xyz
+        if 0:
+            self.cursor_dupe.execute(command,args) #xyz
 
     def db_fetchall(self):
         return self.cursor.fetchall() # xyz
@@ -596,7 +612,8 @@ class FinalAnalysisNLTK(component):
         super(FinalAnalysisNLTK, self).__init__()
         self.dbuser = dbuser
         self.dbpass = dbpass
-        self.cursor = None  # xyz
+        self.cursor = None  # xyz # dupe
+        self.cursor_dupe = None     # xyz #dupe
         self.exclusions = ["a","able","about","across","after","all","almost","also","am",\
                     "among","an","and","any","are","as","at","be","because","been","but",\
                     "by","can","cannot","could","dear","did","do","does","either","else",\
@@ -614,7 +631,10 @@ class FinalAnalysisNLTK(component):
         db = MySQLdb.connect(user=dbuser,passwd=dbpass,db="twitter_bookmarks",use_unicode=True,charset="utf8")
         cursor = db.cursor()  # xyz
         self.cursor = cursor  # xyz
-        return cursor        # xyz
+        if 0:
+            db_dupe = MySQLdb.connect(user=dbuser,passwd=dbpass,db="twitter_bookmarks_next",use_unicode=True,charset="utf8")
+            cursor_dupe = db_dupe.cursor()   # xyz
+            self.cursor_dupe = cursor_dupe   # xyz
 
     # The purpose of pulling these three out is to make it simpler to keep things in sync between multiple DBs
     def db_select(self,command, args=None):
@@ -625,9 +645,13 @@ class FinalAnalysisNLTK(component):
 
     def db_update(self,command, args):
         self.cursor.execute(command,args) #xyz
+        if 0:
+            self.cursor_dupe.execute(command,args) #xyz
 
     def db_insert(self,command, args):
         self.cursor.execute(command,args) #xyz
+        if 0:
+            self.cursor_dupe.execute(command,args) #xyz
 
     def db_fetchall(self):
         return self.cursor.fetchall() # xyz
