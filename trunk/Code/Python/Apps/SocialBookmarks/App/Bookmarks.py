@@ -18,6 +18,7 @@ Bookmarks.py - Main Executable
 
 import os
 import sys
+import cjson
 
 from Kamaelia.Apps.SocialBookmarks.BBCProgrammes import WhatsOn
 from Kamaelia.Apps.SocialBookmarks.DataCollector import DataCollector, RawDataCollector
@@ -30,7 +31,6 @@ from Kamaelia.Apps.SocialBookmarks.TweetFixer import LinkResolver, RetweetCorrec
 from Kamaelia.Apps.SocialBookmarks.TwitterSearch import PeopleSearch
 from Kamaelia.Apps.SocialBookmarks.TwitterStream import TwitterStream
 from Kamaelia.Apps.SocialBookmarks.URLGetter import HTTPGetter
-import cjson
 
 if 0:
     from Kamaelia.Apps.MH.Profiling import FormattedProfiler
@@ -61,6 +61,14 @@ if __name__ == "__main__":
     dbpass = config['dbpass']
     bitlyusername = config['bitlyusername']
     bitlyapikey = config['bitlyapikey']
+
+    # This is a bit of a nasty hack, and really all this stuff should be picked up from a config system
+    # Unfortunately no such config system exists, so we'll have to work through this way for the moment
+    import Kamaelia.Apps.SocialBookmarks.DBWrapper
+    Kamaelia.Apps.SocialBookmarks.DBWrapper.DBWrapper.dbuser = dbuser
+    Kamaelia.Apps.SocialBookmarks.DBWrapper.DBWrapper.dbuser = dbpass
+    Kamaelia.Apps.SocialBookmarks.DBWrapper.DBWrapper.maindb = "twitter_bookmarks"
+    Kamaelia.Apps.SocialBookmarks.DBWrapper.DBWrapper.nextdb = "twitter_bookmarks_next"
 
     # Set proxy server if available
     if config.has_key('proxy'):
