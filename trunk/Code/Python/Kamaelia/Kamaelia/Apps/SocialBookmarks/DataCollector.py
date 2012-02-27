@@ -42,46 +42,6 @@ class DataCollector(DBWrapper,threadedcomponent):
                 return True
         return False
 
-    def __dbConnect(self):
-        # Abstracted out.
-        db = MySQLdb.connect(user=self.dbuser,passwd=self.dbpass,db="twitter_bookmarks",use_unicode=True,charset="utf8")
-        cursor = db.cursor()  # xyz
-        self.cursor = cursor  # xyz
-        if 0:
-            db_dupe = MySQLdb.connect(user=self.dbuser,passwd=self.dbpass,db="twitter_bookmarks_next",use_unicode=True,charset="utf8")
-            cursor_dupe = db_dupe.cursor()   # xyz
-            self.cursor_dupe = cursor_dupe   # xyz
-
-
-    # The purpose of pulling these three out is to make it simpler to keep things in sync between multiple DBs
-    def __db_select(self,command, args=None):
-        # Abstracted out.
-        if args:
-            self.cursor.execute(command,args) #xyz
-        else:
-            self.cursor.execute(command) #xyz
-
-    def __db_update(self,command, args):
-        # Abstracted out.
-        self.cursor.execute(command,args) #xyz
-        if 0:
-            self.cursor_dupe.execute(command,args) #xyz
-
-    def __db_insert(self,command, args):
-        # Abstracted out.
-        self.cursor.execute(command,args) #xyz
-        if 0:
-            self.cursor_dupe.execute(command,args) #xyz
-
-    def __db_fetchall(self):
-        # Abstracted out.
-        return self.cursor.fetchall() # xyz
-
-    def __db_fetchone(self):
-        # Abstracted out.
-        return self.cursor.fetchone() # xyz
-
-
     def main(self):
         self.dbConnect()
         while not self.finished():
@@ -174,7 +134,7 @@ This is run concurrent to the other data collector, so the two won't necessarily
 This possible lack of sync must be handled later
 '''
 
-class RawDataCollector(threadedcomponent):
+class RawDataCollector(DBWrapper, threadedcomponent):
     Inboxes = {
         "inbox" : "Receives data in the format [tweetjson,[pid,pid]]",
         "control" : ""
@@ -185,11 +145,12 @@ class RawDataCollector(threadedcomponent):
     }
 
     def __init__(self,dbuser,dbpass):
-        super(RawDataCollector, self).__init__()
-        self.dbuser = dbuser
-        self.dbpass = dbpass
-        self.cursor = None  #xyz #dupe
-        self.cursor_dupe = None  # xyz #dupe
+        super(RawDataCollector, self).__init__(dbuser=dbuser,dbpass=dbpass)
+        if 0:
+            self.dbuser = dbuser
+            self.dbpass = dbpass
+            self.cursor = None  #xyz #dupe
+            self.cursor_dupe = None  # xyz #dupe
 
     def finished(self):
         while self.dataReady("control"):
@@ -199,7 +160,7 @@ class RawDataCollector(threadedcomponent):
                 return True
         return False
 
-    def dbConnect(self):
+    def __dbConnect(self):
         db = MySQLdb.connect(user=self.dbuser,passwd=self.dbpass,db="twitter_bookmarks",use_unicode=True,charset="utf8")
         cursor = db.cursor()  # xyz
         self.cursor = cursor  # xyz
@@ -209,26 +170,26 @@ class RawDataCollector(threadedcomponent):
             self.cursor_dupe = cursor_dupe   # xyz
 
     # The purpose of pulling these three out is to make it simpler to keep things in sync between multiple DBs
-    def db_select(self,command, args=None):
+    def __db_select(self,command, args=None):
         if args:
             self.cursor.execute(command,args) #xyz
         else:
             self.cursor.execute(command) #xyz
 
-    def db_update(self,command, args):
+    def __db_update(self,command, args):
         self.cursor.execute(command,args) #xyz
         if 0:
             self.cursor_dupe.execute(command,args) #xyz
 
-    def db_insert(self,command, args):
+    def __db_insert(self,command, args):
         self.cursor.execute(command,args) #xyz
         if 0:
             self.cursor_dupe.execute(command,args) #xyz
 
-    def db_fetchall(self):
+    def __db_fetchall(self):
         return self.cursor.fetchall() # xyz
 
-    def db_fetchone(self):
+    def __db_fetchone(self):
         return self.cursor.fetchone() # xyz
 
     def main(self):
