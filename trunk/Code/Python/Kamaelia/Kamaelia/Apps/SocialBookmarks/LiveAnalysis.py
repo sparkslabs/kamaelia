@@ -8,35 +8,21 @@ Need to ensure one rogue user can't cause a trend - things must be mentioned by 
 
 # Having added this as a component, the Printed output is a bit confusing, so 'Analysis component: ' has been added to everything.
 
-from datetime import datetime
-from datetime import timedelta
+import cjson
 import math
 import re
 import time
+import MySQLdb
+import nltk
+from nltk import FreqDist
+from datetime import datetime, timedelta
 
 from Axon.Component import component
 from Axon.Ipc import producerFinished
 from Axon.Ipc import shutdownMicroprocess
 from Axon.ThreadedComponent import threadedcomponent
-import MySQLdb
-import cjson
-import nltk
-from nltk import FreqDist
 from Kamaelia.Apps.SocialBookmarks.Print import Print
 from Kamaelia.Apps.SocialBookmarks.DBWrapper import DBWrapper
-
-import inspect
-def __LINE__ ():
-    caller = inspect.stack()[1]
-    return int (caller[2])
-     
-def __FUNC__ ():
-    caller = inspect.stack()[1]
-    return caller[3]
-
-def __BOTH__():
-    caller = inspect.stack()[1]
-    return int (caller[2]), caller[3], caller[1]
 
 class LiveAnalysis(DBWrapper,threadedcomponent):
     Inboxes = {
@@ -353,7 +339,7 @@ class LiveAnalysis(DBWrapper,threadedcomponent):
                 time.sleep(10)
 
 
-class LiveAnalysisNLTK(DBWrapper,component):
+class LiveAnalysisNLTK(DBWrapper, component):
     Inboxes = {
         "inbox" : "Receives a tweet ID and its related PID for NLTK analysis [pid,tweetid]",
         "tweetfixer" : "Received data back from the tweet fixing components (tweet json)",
@@ -627,7 +613,6 @@ class FinalAnalysisNLTK(DBWrapper,component):
                                 twnc_count += 1
                                 self.pause()
                                 yield 1
-#                            print "GRRRRR", twnc_count, __BOTH__()
 
                             if self.dataReady("tweetfixer"):
                                 tweetjson = self.recv("tweetfixer")
