@@ -32,8 +32,16 @@ from Kamaelia.Apps.SocialBookmarks.TwitterStream import TwitterStream
 from Kamaelia.Apps.SocialBookmarks.URLGetter import HTTPGetter
 import cjson
 
+if 0:
+    from Kamaelia.Apps.MH.Profiling import FormattedProfiler
+    from Kamaelia.Util.Console import ConsoleEchoer
+    from Kamaelia.Util.Pipeline import Pipeline
+
+    Pipeline( FormattedProfiler(10.0,1.0), ConsoleEchoer(), ).activate()
+
 
 if __name__ == "__main__":
+
     # Load Config
     try:
         homedir = os.path.expanduser("~")
