@@ -106,13 +106,18 @@ class RetweetCorrector(component):
         super(RetweetCorrector, self).__init__()
         self.dbuser = dbuser
         self.dbpass = dbpass
-        self.cursor = None    # xyz
+        self.cursor = None    # xyz #dupe
+        self.cursor_dupe = None     # xyz #dupe
 
     def dbConnect(self,dbuser,dbpass):
         db = MySQLdb.connect(user=dbuser,passwd=dbpass,db="twitter_bookmarks",use_unicode=True,charset="utf8")
         cursor = db.cursor()   # xyz
         self.cursor = cursor   # xyz
-        return cursor         # xyz
+
+        if 0:
+            db_dupe = MySQLdb.connect(user=dbuser,passwd=dbpass,db="twitter_bookmarks_next",use_unicode=True,charset="utf8")
+            cursor_dupe = db_dupe.cursor()   # xyz
+            self.cursor_dupe = cursor_dupe   # xyz
 
     # The purpose of pulling these three out is to make it simpler to keep things in sync between multiple DBs
     def db_select(self,command, args=None):
