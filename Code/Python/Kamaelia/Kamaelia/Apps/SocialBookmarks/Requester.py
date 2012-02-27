@@ -433,10 +433,13 @@ class Requester(threadedcomponent):
         self.cursor = cursor  # xyz
         return cursor        # xyz
 
-        
     # The purpose of pulling these three out is to make it simpler to keep things in sync between multiple DBs
-    def db_select(self,command, args):
-        self.cursor.execute(command,args) #xyz
+    def db_select(self,command, args=None):
+        if args:
+            self.cursor.execute(command,args) #xyz
+        else:
+            self.cursor.execute(command) #xyz
+
 
     def db_update(self,command, args):
         self.cursor.execute(command,args) #xyz
