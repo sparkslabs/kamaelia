@@ -62,6 +62,7 @@ Week N:
 """
 import MySQLdb
 import _mysql_exceptions
+from Kamaelia.Apps.SocialBookmarks.Print import Print
 
 class DBWrapper(object):
     # The following allow for a bunch of defaults, but also allow the defaults to be updateable.
@@ -74,19 +75,19 @@ class DBWrapper(object):
         # This is to ensure that we play nicely inside a general hierarchy
         # Even though we inherit frm object. Otherwise we risk breaking the MRO of the class
         # We're used with.
+        # These should all succeed now...
+        Print("db.user, pass, maindb, nextdb", self.dbuser, self.dbpass, self.maindb, self.nextdb)
         super(DBWrapper, self).__init__(*argv, **argd)
-        self.dbuser = argd["dbuser"] # We actually want to fail if it's not there.
-        self.dbpass = argd["dbpass"] # We actually want to fail if it's not there.
-        del argd["dbuser"]
-        del argd["dbpass"]
+        # Now configured centrally, but can be still overridden in the usual kamaelia way :-)
         self.cursor = None  # xyz # dupe
         self.cursor_dupe = None  # xyz #dupe
+        
 
     def dbConnect(self):
         db = MySQLdb.connect(user=self.dbuser,passwd=self.dbpass,db=self.maindb,use_unicode=True,charset="utf8")
         cursor = db.cursor()  # xyz
         self.cursor = cursor  # xyz
-        if 0:
+        if 1:
             db_dupe = MySQLdb.connect(user=self.dbuser,passwd=self.dbpass,db=self.nextdb,use_unicode=True,charset="utf8")
             cursor_dupe = db_dupe.cursor()   # xyz
             self.cursor_dupe = cursor_dupe   # xyz
@@ -100,12 +101,12 @@ class DBWrapper(object):
 
     def db_update(self,command, args):
         self.cursor.execute(command,args) #xyz
-        if 0:
+        if 1:
             self.cursor_dupe.execute(command,args) #xyz
 
     def db_insert(self,command, args):
         self.cursor.execute(command,args) #xyz
-        if 0:
+        if 1:
             self.cursor_dupe.execute(command,args) #xyz
 
     def db_fetchall(self):
