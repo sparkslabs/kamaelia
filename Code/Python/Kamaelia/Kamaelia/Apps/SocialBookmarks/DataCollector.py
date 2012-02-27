@@ -72,7 +72,7 @@ class DataCollector(threadedcomponent):
 
 
     def main(self):
-        cursor = self.dbConnect()
+        self.dbConnect()
         while not self.finished():
             twitdata = list()
             # Collect all current received tweet JSON and their related PIDs into a twitdata list
@@ -177,7 +177,7 @@ class RawDataCollector(threadedcomponent):
         super(RawDataCollector, self).__init__()
         self.dbuser = dbuser
         self.dbpass = dbpass
-        self.cursor = None
+        self.cursor = None  #xyz
 
     def finished(self):
         while self.dataReady("control"):
@@ -212,7 +212,7 @@ class RawDataCollector(threadedcomponent):
     def db_fetchone(self):
         return self.cursor.fetchone() # xyz
     def main(self):
-        cursor = self.dbConnect()
+        self.dbConnect()
         while not self.finished():
             twitdata = list()
             # As in the data collector, create a list of all tweets currently received
