@@ -15,6 +15,7 @@ import MySQLdb
 from URLGetter import HTTPGetter
 import cjson
 from Kamaelia.Apps.SocialBookmarks.Print import Print
+from Kamaelia.Apps.SocialBookmarks.DBWrapper import DBWrapper
 
 class RetweetFixer(component):
     '''
@@ -88,7 +89,7 @@ class RetweetFixer(component):
             self.pause()
             yield 1
 
-class RetweetCorrector(component):
+class RetweetCorrector(DBWrapper,component):
     '''
     This is a DB specific retweet fixer - the idea being to correct the retweet ID and text properly
     '''
@@ -103,13 +104,14 @@ class RetweetCorrector(component):
     }
 
     def __init__(self,dbuser,dbpass):
-        super(RetweetCorrector, self).__init__()
-        self.dbuser = dbuser
-        self.dbpass = dbpass
-        self.cursor = None    # xyz #dupe
-        self.cursor_dupe = None     # xyz #dupe
+        super(RetweetCorrector, self).__init__(dbuser=dbuser,dbpass=dbpass)
+        if 0:
+            self.dbuser = dbuser
+            self.dbpass = dbpass
+            self.cursor = None    # xyz #dupe
+            self.cursor_dupe = None     # xyz #dupe
 
-    def dbConnect(self,dbuser,dbpass):
+    def __dbConnect(self,dbuser,dbpass):
         db = MySQLdb.connect(user=dbuser,passwd=dbpass,db="twitter_bookmarks",use_unicode=True,charset="utf8")
         cursor = db.cursor()   # xyz
         self.cursor = cursor   # xyz
@@ -120,14 +122,13 @@ class RetweetCorrector(component):
             self.cursor_dupe = cursor_dupe   # xyz
 
     # The purpose of pulling these three out is to make it simpler to keep things in sync between multiple DBs
-    def db_select(self,command, args=None):
+    def __db_select(self,command, args=None):
         if args:
             self.cursor.execute(command,args) #xyz
         else:
             self.cursor.execute(command) #xyz
 
-
-    def db_fetchall(self):
+    def __db_fetchall(self):
         return self.cursor.fetchall() # xyz
     
     def finished(self):
