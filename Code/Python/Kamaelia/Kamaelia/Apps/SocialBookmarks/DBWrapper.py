@@ -64,6 +64,12 @@ import MySQLdb
 import _mysql_exceptions
 
 class DBWrapper(object):
+    # The following allow for a bunch of defaults, but also allow the defaults to be updateable.
+    # This should allow other code in the system to be simplified.
+    dbuser = None
+    dbpass = None
+    maindb = "twitter_bookmarks"
+    nextdb = "twitter_bookmarks_next"
     def __init__(self, *argv, **argd):
         # This is to ensure that we play nicely inside a general hierarchy
         # Even though we inherit frm object. Otherwise we risk breaking the MRO of the class
@@ -77,11 +83,11 @@ class DBWrapper(object):
         self.cursor_dupe = None  # xyz #dupe
 
     def dbConnect(self):
-        db = MySQLdb.connect(user=self.dbuser,passwd=self.dbpass,db="twitter_bookmarks",use_unicode=True,charset="utf8")
+        db = MySQLdb.connect(user=self.dbuser,passwd=self.dbpass,db=self.maindb,use_unicode=True,charset="utf8")
         cursor = db.cursor()  # xyz
         self.cursor = cursor  # xyz
         if 0:
-            db_dupe = MySQLdb.connect(user=self.dbuser,passwd=self.dbpass,db="twitter_bookmarks_next",use_unicode=True,charset="utf8")
+            db_dupe = MySQLdb.connect(user=self.dbuser,passwd=self.dbpass,db=self.nextdb,use_unicode=True,charset="utf8")
             cursor_dupe = db_dupe.cursor()   # xyz
             self.cursor_dupe = cursor_dupe   # xyz
 
