@@ -5,19 +5,17 @@ Saves relevant data fed back from TwitterStream etc next to its PID and timestam
 Needs to do limited analysis to work out which keywords in the tweet stream correspond to which programme
 '''
 
-from datetime import datetime
 import os
 import string
-import time as time2
-from time import time
+import cjson
+import time
+from datetime import datetime
+from dateutil.parser import parse
+import _mysql_exceptions
 
 from Axon.Ipc import producerFinished
 from Axon.Ipc import shutdownMicroprocess
 from Axon.ThreadedComponent import threadedcomponent
-import MySQLdb
-import _mysql_exceptions
-import cjson
-from dateutil.parser import parse
 from Kamaelia.Apps.SocialBookmarks.Print import Print
 from Kamaelia.Apps.SocialBookmarks.DBWrapper import DBWrapper
 
@@ -95,7 +93,7 @@ class DataCollector(DBWrapper,threadedcomponent):
                                             if progdata != None:
                                                 # Ensure the user hasn't already tweeted the same text
                                                 # Also ensure they haven't tweeted in the past 10 seconds
-                                                timestamp = time2.mktime(parse(newdata['created_at']).timetuple())
+                                                timestamp = time.mktime(parse(newdata['created_at']).timetuple())
                                                 self.db_select("""SELECT * FROM rawdata WHERE (pid = %s AND text = %s AND user = %s) OR (pid = %s AND user = %s AND timestamp >= %s AND timestamp < %s)""",(pid,newdata['text'],newdata['user']['screen_name'],pid,newdata['user']['screen_name'],timestamp-10,timestamp+10))
                                                 if self.db_fetchone() == None:
                                                     Print ("Storing tweet for pid " , pid)
@@ -111,7 +109,7 @@ class DataCollector(DBWrapper,threadedcomponent):
                                         if progdata != None:
                                             # Ensure the user hasn't already tweeted the same text for this programme
                                             # Also ensure they haven't tweeted in the past 10 seconds
-                                            timestamp = time2.mktime(parse(newdata['created_at']).timetuple())
+                                            timestamp = time.mktime(parse(newdata['created_at']).timetuple())
                                             self.db_select("""SELECT * FROM rawdata WHERE (pid = %s AND text = %s AND user = %s) OR (pid = %s AND user = %s AND timestamp >= %s AND timestamp < %s)""",(pid,newdata['text'],newdata['user']['screen_name'],pid,newdata['user']['screen_name'],timestamp-10,timestamp+10))
                                             if self.db_fetchone() == None:
                                                 Print ("Storing tweet for pid " , pid)
@@ -126,7 +124,7 @@ class DataCollector(DBWrapper,threadedcomponent):
                     
                     Print ("Done!") # new line to break up display
             else:
-                time2.sleep(0.1)
+                time.sleep(0.1)
 
 '''
 The raw data collector differs from the plain data collector in that it stores the raw JSON containers for tweets next to their unique IDs, but with no relation to PIDs
@@ -175,7 +173,7 @@ class RawDataCollector(DBWrapper, threadedcomponent):
                         else:
                             tweetid = newdata['id']
                             # Capture exactly when this tweet was stored
-                            tweetstamp = time()
+                            tweetstamp = time.time()
                             tweetsecs = int(tweetstamp)
                             # Include the fractions of seconds portion of the timestamp in a separate field
                             tweetfrac = tweetstamp - tweetsecs
@@ -205,4 +203,4 @@ class RawDataCollector(DBWrapper, threadedcomponent):
                                 except IOError, e:
                                     Print ("Failed to save oversized tweet cache")
             else:
-                time2.sleep(0.1)
+                time.sleep(0.1)
