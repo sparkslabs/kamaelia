@@ -6,14 +6,13 @@ Links can also be resolved to their real URL - particularly helpful for finding 
 
 import os
 import re
-import sys
+import cjson
+import MySQLdb
 
 from Axon.Component import component
 from Axon.Ipc import producerFinished
 from Axon.Ipc import shutdownMicroprocess
-import MySQLdb
-from URLGetter import HTTPGetter
-import cjson
+
 from Kamaelia.Apps.SocialBookmarks.Print import Print
 from Kamaelia.Apps.SocialBookmarks.DBWrapper import DBWrapper
 
@@ -369,13 +368,15 @@ class LinkResolver(component):
 
 
 
-from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
-from Kamaelia.Chassis.Pipeline import Pipeline
-from Kamaelia.Chassis.Graphline import Graphline
-from Kamaelia.Util.PureTransformer import PureTransformer
-import cjson
-
 if __name__ == "__main__":
+    import sys
+
+    from Kamaelia.Chassis.Pipeline import Pipeline
+    from Kamaelia.Chassis.Graphline import Graphline
+    from Kamaelia.Util.PureTransformer import PureTransformer
+    from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
+
+    from Kamaelia.Apps.SocialBookmarks.URLGetter import HTTPGetter
 
     # This function won't live here - it's for testing only
     def spellingFixer(text):
