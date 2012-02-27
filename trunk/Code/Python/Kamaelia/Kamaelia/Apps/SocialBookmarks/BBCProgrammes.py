@@ -7,21 +7,19 @@ Interface to BBC /programmes JSON etc
 - Identifies currently playing tracks on radio channels TODO
 '''
 
-from datetime import datetime
-from datetime import timedelta
-from datetime import tzinfo
+import cjson
+import pytz
 import string
-import time as sleeper
-from time import time,strftime,gmtime
+import time
 import urllib
+from dateutil.parser import parse
+from datetime import datetime, timedelta, tzinfo
 
-from Axon.Component import component
-from Axon.ThreadedComponent import threadedcomponent
 from Axon.Ipc import producerFinished
 from Axon.Ipc import shutdownMicroprocess
-import cjson
-from dateutil.parser import parse
-import pytz
+from Axon.Component import component
+from Axon.ThreadedComponent import threadedcomponent
+
 from Kamaelia.Apps.SocialBookmarks.Print import Print
 
 class GMT(tzinfo):
@@ -88,9 +86,9 @@ class WhatsOn(threadedcomponent):
                 # Define URLs for getting schedule data and DVB bridge information
                 # By BBC convention, schedule info runs to 5am the next day
                 if datetime.utcnow().hour < 5:
-                    scheduleurl = "http://www.bbc.co.uk" + self.channels[channel][1] + "/" + strftime("%Y/%m/%d",gmtime(time()-86400)) + ".json"
+                    scheduleurl = "http://www.bbc.co.uk" + self.channels[channel][1] + "/" + time.strftime("%Y/%m/%d",time.gmtime(time.time()-86400)) + ".json"
                 else:
-                    scheduleurl = "http://www.bbc.co.uk" + self.channels[channel][1] + "/" + strftime("%Y/%m/%d",gmtime(time())) + ".json"
+                    scheduleurl = "http://www.bbc.co.uk" + self.channels[channel][1] + "/" + time.strftime("%Y/%m/%d",time.gmtime(time.time())) + ".json"
                 #syncschedurl = "http://beta.kamaelia.org:8082/dvb-bridge?command=channel&args=" + urllib.quote(self.channels[channel][0])
                 #synctimeurl = "http://beta.kamaelia.org:8082/dvb-bridge?command=time"
                 syncschedurl = "http://10.92.164.147:8082/dvb-bridge?command=channel&args=" + urllib.quote(self.channels[channel][0])
@@ -113,7 +111,7 @@ class WhatsOn(threadedcomponent):
                     try:
                         decodedcontent = cjson.decode(content)
                         if decodedcontent[0] == "OK":
-                            difference = time() - decodedcontent[2]['time']
+                            difference = time.time() - decodedcontent[2]['time']
                     except cjson.DecodeError, e:
                         Print("cjson.DecodeError:", e.message)
 
