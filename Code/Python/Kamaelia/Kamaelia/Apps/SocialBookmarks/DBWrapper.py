@@ -73,3 +73,36 @@ class DBWrapper(object):
         del argd["dbpass"]
         self.cursor = None  # xyz # dupe
         self.cursor_dupe = None  # xyz #dupe
+
+    def dbConnect(self):
+        db = MySQLdb.connect(user=self.dbuser,passwd=self.dbpass,db="twitter_bookmarks",use_unicode=True,charset="utf8")
+        cursor = db.cursor()  # xyz
+        self.cursor = cursor  # xyz
+        if 0:
+            db_dupe = MySQLdb.connect(user=self.dbuser,passwd=self.dbpass,db="twitter_bookmarks_next",use_unicode=True,charset="utf8")
+            cursor_dupe = db_dupe.cursor()   # xyz
+            self.cursor_dupe = cursor_dupe   # xyz
+
+
+    # The purpose of pulling these three out is to make it simpler to keep things in sync between multiple DBs
+    def db_select(self,command, args=None):
+        if args:
+            self.cursor.execute(command,args) #xyz
+        else:
+            self.cursor.execute(command) #xyz
+
+    def db_update(self,command, args):
+        self.cursor.execute(command,args) #xyz
+        if 0:
+            self.cursor_dupe.execute(command,args) #xyz
+
+    def db_insert(self,command, args):
+        self.cursor.execute(command,args) #xyz
+        if 0:
+            self.cursor_dupe.execute(command,args) #xyz
+
+    def db_fetchall(self):
+        return self.cursor.fetchall() # xyz
+
+    def db_fetchone(self):
+        return self.cursor.fetchone() # xyz

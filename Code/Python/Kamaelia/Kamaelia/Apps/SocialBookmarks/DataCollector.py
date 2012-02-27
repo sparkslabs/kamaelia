@@ -33,14 +33,6 @@ class DataCollector(DBWrapper,threadedcomponent):
 
     def __init__(self,dbuser,dbpass):
         super(DataCollector, self).__init__(dbuser=dbuser,dbpass=dbpass)
-        # These should all be set now by the DBWrapper
-        # Ensure we crash if they're not...
-        self.dbuser, self.dbpass, self.cursor, self.cursor_dupe
-        if 0:
-            self.dbuser = dbuser
-            self.dbpass = dbpass
-            self.cursor = None  # xyz # dupe
-            self.cursor_dupe = None  # xyz #dupe
 
     def finished(self):
         while self.dataReady("control"):
@@ -50,7 +42,8 @@ class DataCollector(DBWrapper,threadedcomponent):
                 return True
         return False
 
-    def dbConnect(self):
+    def __dbConnect(self):
+        # Abstracted out.
         db = MySQLdb.connect(user=self.dbuser,passwd=self.dbpass,db="twitter_bookmarks",use_unicode=True,charset="utf8")
         cursor = db.cursor()  # xyz
         self.cursor = cursor  # xyz
@@ -61,26 +54,31 @@ class DataCollector(DBWrapper,threadedcomponent):
 
 
     # The purpose of pulling these three out is to make it simpler to keep things in sync between multiple DBs
-    def db_select(self,command, args=None):
+    def __db_select(self,command, args=None):
+        # Abstracted out.
         if args:
             self.cursor.execute(command,args) #xyz
         else:
             self.cursor.execute(command) #xyz
 
-    def db_update(self,command, args):
+    def __db_update(self,command, args):
+        # Abstracted out.
         self.cursor.execute(command,args) #xyz
         if 0:
             self.cursor_dupe.execute(command,args) #xyz
 
-    def db_insert(self,command, args):
+    def __db_insert(self,command, args):
+        # Abstracted out.
         self.cursor.execute(command,args) #xyz
         if 0:
             self.cursor_dupe.execute(command,args) #xyz
 
-    def db_fetchall(self):
+    def __db_fetchall(self):
+        # Abstracted out.
         return self.cursor.fetchall() # xyz
 
-    def db_fetchone(self):
+    def __db_fetchone(self):
+        # Abstracted out.
         return self.cursor.fetchone() # xyz
 
 
