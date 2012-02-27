@@ -34,6 +34,7 @@ class DataCollector(threadedcomponent):
         super(DataCollector, self).__init__()
         self.dbuser = dbuser
         self.dbpass = dbpass
+        self.cursor = None  # xyz
 
     def finished(self):
         while self.dataReady("control"):
@@ -45,8 +46,30 @@ class DataCollector(threadedcomponent):
 
     def dbConnect(self):
         db = MySQLdb.connect(user=self.dbuser,passwd=self.dbpass,db="twitter_bookmarks",use_unicode=True,charset="utf8")
-        cursor = db.cursor()
-        return cursor
+        cursor = db.cursor()  # xyz
+        self.cursor = cursor  # xyz
+        return cursor        # xyz
+
+
+    # The purpose of pulling these three out is to make it simpler to keep things in sync between multiple DBs
+    def db_select(self,command, args=None):
+        if args:
+            self.cursor.execute(command,args) #xyz
+        else:
+            self.cursor.execute(command) #xyz
+
+    def db_update(self,command, args):
+        self.cursor.execute(command,args) #xyz
+
+    def db_insert(self,command, args):
+        self.cursor.execute(command,args) #xyz
+
+    def db_fetchall(self):
+        return self.cursor.fetchall() # xyz
+
+    def db_fetchone(self):
+        return self.cursor.fetchone() # xyz
+
 
     def main(self):
         cursor = self.dbConnect()
@@ -89,41 +112,41 @@ class DataCollector(threadedcomponent):
                             for pid in tweet[1]:
                                 # Cycle through possible pids, grabbing that pid's keywords from the DB
                                 # Then, check this tweet against the keywords and save to DB where appropriate (there may be more than one location)
-                                cursor.execute("""SELECT keyword,type FROM keywords WHERE pid = %s""",(pid))
-                                data = cursor.fetchall()
+                                self.db_select("""SELECT keyword,type FROM keywords WHERE pid = %s""",(pid))
+                                data = self.db_fetchall()
                                 for row in data:
                                     # Some keywords are stored with a ^. These must be split, and the tweet checked to see if it has both keywords, but not necessarily next to each other
                                     keywords = row[0].split("^")
                                     if len(keywords) == 2:
                                         if string.lower(keywords[0]) in string.lower(newdata['text']) and string.lower(keywords[1]) in string.lower(newdata['text']):
-                                            cursor.execute("""SELECT timestamp,timediff FROM programmes WHERE pid = %s ORDER BY timestamp DESC""",(pid))
-                                            progdata = cursor.fetchone()
+                                            self.db_select("""SELECT timestamp,timediff FROM programmes WHERE pid = %s ORDER BY timestamp DESC""",(pid))
+                                            progdata = self.db_fetchone()
                                             if progdata != None:
                                                 # Ensure the user hasn't already tweeted the same text
                                                 # Also ensure they haven't tweeted in the past 10 seconds
                                                 timestamp = time2.mktime(parse(newdata['created_at']).timetuple())
-                                                cursor.execute("""SELECT * FROM rawdata WHERE (pid = %s AND text = %s AND user = %s) OR (pid = %s AND user = %s AND timestamp >= %s AND timestamp < %s)""",(pid,newdata['text'],newdata['user']['screen_name'],pid,newdata['user']['screen_name'],timestamp-10,timestamp+10))
-                                                if cursor.fetchone() == None:
+                                                self.db_select("""SELECT * FROM rawdata WHERE (pid = %s AND text = %s AND user = %s) OR (pid = %s AND user = %s AND timestamp >= %s AND timestamp < %s)""",(pid,newdata['text'],newdata['user']['screen_name'],pid,newdata['user']['screen_name'],timestamp-10,timestamp+10))
+                                                if self.db_fetchone() == None:
                                                     Print ("Storing tweet for pid " , pid)
                                                     # Work out where this tweet really occurred in the programme using timestamps and DVB bridge data
                                                     progposition = timestamp - (progdata[0] - progdata[1])
-                                                    cursor.execute("""INSERT INTO rawdata (tweet_id,pid,timestamp,text,user,programme_position) VALUES (%s,%s,%s,%s,%s,%s)""", (tweetid,pid,timestamp,newdata['text'],newdata['user']['screen_name'],progposition))
+                                                    self.db_insert("""INSERT INTO rawdata (tweet_id,pid,timestamp,text,user,programme_position) VALUES (%s,%s,%s,%s,%s,%s)""", (tweetid,pid,timestamp,newdata['text'],newdata['user']['screen_name'],progposition))
                                                     break # Break out of this loop and back to check the same tweet against the next programme
                                                 else:
                                                     Print ("Duplicate tweet from user - ignoring")
                                     if string.lower(row[0]) in string.lower(newdata['text']):
-                                        cursor.execute("""SELECT timestamp,timediff FROM programmes WHERE pid = %s ORDER BY timestamp DESC""",(pid))
-                                        progdata = cursor.fetchone()
+                                        self.db_select("""SELECT timestamp,timediff FROM programmes WHERE pid = %s ORDER BY timestamp DESC""",(pid))
+                                        progdata = self.db_fetchone()
                                         if progdata != None:
                                             # Ensure the user hasn't already tweeted the same text for this programme
                                             # Also ensure they haven't tweeted in the past 10 seconds
                                             timestamp = time2.mktime(parse(newdata['created_at']).timetuple())
-                                            cursor.execute("""SELECT * FROM rawdata WHERE (pid = %s AND text = %s AND user = %s) OR (pid = %s AND user = %s AND timestamp >= %s AND timestamp < %s)""",(pid,newdata['text'],newdata['user']['screen_name'],pid,newdata['user']['screen_name'],timestamp-10,timestamp+10))
-                                            if cursor.fetchone() == None:
+                                            self.db_select("""SELECT * FROM rawdata WHERE (pid = %s AND text = %s AND user = %s) OR (pid = %s AND user = %s AND timestamp >= %s AND timestamp < %s)""",(pid,newdata['text'],newdata['user']['screen_name'],pid,newdata['user']['screen_name'],timestamp-10,timestamp+10))
+                                            if self.db_fetchone() == None:
                                                 Print ("Storing tweet for pid " , pid)
                                                 # Work out where this tweet really occurred in the programme using timestamps and DVB bridge data
                                                 progposition = timestamp - (progdata[0] - progdata[1])
-                                                cursor.execute("""INSERT INTO rawdata (tweet_id,pid,timestamp,text,user,programme_position) VALUES (%s,%s,%s,%s,%s,%s)""", (tweetid,pid,timestamp,newdata['text'],newdata['user']['screen_name'],progposition))
+                                                self.db_insert("""INSERT INTO rawdata (tweet_id,pid,timestamp,text,user,programme_position) VALUES (%s,%s,%s,%s,%s,%s)""", (tweetid,pid,timestamp,newdata['text'],newdata['user']['screen_name'],progposition))
                                                 break # Break out of this loop and back to check the same tweet against the next programme
                                             else:
                                                 Print ("Duplicate tweet from user - ignoring")
@@ -195,7 +218,7 @@ class RawDataCollector(threadedcomponent):
                             # We only have a 16000 VARCHAR field to use in MySQL (through choice) - this should be enough, but if not, the tweet will be written out to file
                             if len(tweet) < 16000:
                                 try:
-                                    cursor.execute("""INSERT INTO rawtweets (tweet_id,tweet_json,tweet_stored_seconds,tweet_stored_fraction) VALUES (%s,%s,%s,%s)""", (tweetid,tweet,tweetsecs,tweetfrac))
+                                    self.db_insert("""INSERT INTO rawtweets (tweet_id,tweet_json,tweet_stored_seconds,tweet_stored_fraction) VALUES (%s,%s,%s,%s)""", (tweetid,tweet,tweetsecs,tweetfrac))
                                 except _mysql_exceptions.IntegrityError, e:
                                     # Handle the possibility for Twitter having sent us a duplicate
                                     Print( "Duplicate tweet ID:", e)
