@@ -60,6 +60,8 @@ Week N:
       - twitter_bookmarks_default duplicated to twitter_bookmarks_default 
       - Mysql & Social Bookmarks System restarted.
 """
+import MySQLdb
+import _mysql_exceptions
 
 class DBWrapper(object):
     def __init__(self, *argv, **argd):
