@@ -63,6 +63,7 @@ Week N:
 import MySQLdb
 import _mysql_exceptions
 from Kamaelia.Apps.SocialBookmarks.Print import Print
+import inspect
 
 class DBWrapper(object):
     # The following allow for a bunch of defaults, but also allow the defaults to be updateable.
@@ -105,6 +106,9 @@ class DBWrapper(object):
             self.cursor_dupe.execute(command,args) #xyz
 
     def db_insert(self,command, args):
+        if 1: # Debugging inserts - specifically loooking for tweets not inserted *and* inserted
+            caller = inspect.stack()[1]
+            Print("DBWrapper", int (caller[2]), caller[3], caller[1], command, args)
         self.cursor.execute(command,args) #xyz
         if 1:
             self.cursor_dupe.execute(command,args) #xyz
