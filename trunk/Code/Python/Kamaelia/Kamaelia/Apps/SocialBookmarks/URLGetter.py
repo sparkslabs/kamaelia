@@ -16,6 +16,7 @@ import socket
 
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 from Axon.ThreadedComponent import threadedcomponent
+from Kamaelia.Apps.SocialBookmarks.Print import Print
 
 class HTTPGetter(threadedcomponent):
 
@@ -90,6 +91,12 @@ class HTTPGetter(threadedcomponent):
         except socket.timeout, e:
             return ['SocketTimeout',e]
             conn1 = False
+        except UnicodeEncodeError, e:
+            Print("URLGetter.py: User of this component has failed to remember to encode their URL correctly")
+            conn1 = False
+        except UnicodeDecodeError, e:
+            Print("URLGetter.py: User of this component has failed to remember to encode their URL correctly")
+            conn1 = False
         
         # Read and return programme data
         if conn1:
@@ -122,4 +129,5 @@ class HTTPGetter(threadedcomponent):
                     urldata = self.getURLData(request[0])
                 # Data format: [OK/Error,message]
                 self.send(urldata,"outbox")
+
             time.sleep(0.1)
