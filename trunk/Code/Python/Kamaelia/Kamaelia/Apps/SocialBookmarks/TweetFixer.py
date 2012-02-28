@@ -8,6 +8,7 @@ import os
 import re
 import cjson
 import MySQLdb
+import urllib2
 
 from Axon.Component import component
 from Axon.Ipc import producerFinished
@@ -294,11 +295,12 @@ class LinkResolver(component):
                     for link in linkstoresolve:
                         if not linkcache.has_key(link):
                             # Need to look this link up, add it to the list
-                            linkstring += "&shortUrl=" + link
+                            linkstring += "&shortUrl=" + urllib2.quote(link.encode("utf8")) # Otherwise all sorts of things break badly...
 
                     if linkstring != "":
                         url = "http://api.bit.ly/v3/expand?login=" + self.username + "&apiKey=" + self.apikey + "&format=json"
                         url += linkstring
+                        Print("Sending Request", url)
                         self.send([url],"urlrequests")
                         while not self.dataReady("responses"):
                             self.pause()
