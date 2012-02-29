@@ -359,6 +359,10 @@ import sys
 
 DefaultQueueSize = 1000
 
+class UnHandledException(Exception):
+    """Used for passing exceptions unhandled by the thread back to the main thread for capture and either reporting or masking"""
+    pass
+
 class threadedcomponent(Component.component):
    """\
    threadedcomponent([queuelengths]) -> new threadedcomponent
@@ -441,10 +445,9 @@ class threadedcomponent(Component.component):
             self._threadmainmethod()
         except:
             exception = sys.exc_info()
-            # FIXME: Having an option dump of the traceback after the bare except would be useful here
+            # FIXME: This is may be less than ideal. We now inject the object though on the way out, allowing better debugging
             def throwexception(exception):
-                raise exception[1]
-#                raise exception[0], exception[1], exception[2] # FIXME: This is less than ideal. Could consider python2/3 specific code here
+                raise UnHandledException(exception)
             self._do_threadsafe( throwexception, [exception], {} )
         self._threadrunning = False
         Component.component.unpause(self)
@@ -578,7 +581,11 @@ class threadedcomponent(Component.component):
           # change our minds now, for reasons given above
           for i in range(0,msgcount):
               msg = self.threadtoaxonqueue.get()
-              self._handlemessagefromthread(msg)
+              try:
+                    self._handlemessagefromthread(msg)
+              except UnHandledException, e:
+                  e.args[0][1].args = e.args[0][1].args + (str(self),)  # Inject into the exception *which* component threw this exception.
+                  raise e.args[0][1], None, e.args[0][2]
 
           if running:
               Component.component.pause(self)
