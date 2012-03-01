@@ -564,11 +564,13 @@ class FinalAnalysisNLTK(DBWrapper,component):
         # Calculate running total and mean etc
 
         self.dbConnect()
-
+        Print("FinalAnalysisNLTK: Initialised")
         while not self.finished():
-
+            Print("FinalAnalysisNLTK: Waiting for data")
             if self.dataReady("inbox"):
                 data = self.recv("inbox")
+                Print("FinalAnalysisNLTK: got data")
+
                 pid = data[0]
                 tweetids = data[1]
 
@@ -583,6 +585,7 @@ class FinalAnalysisNLTK(DBWrapper,component):
                 # Find keywords for this PID
                 self.db_select("""SELECT keyword,type FROM keywords WHERE pid = %s""",(pid))
                 keyworddata = self.db_fetchall()
+                Print("FinalAnalysisNLTK: len(keyworddata)", len(keyworddata))
                 for word in keyworddata:
                     wordname = word[0].lower()
                     if "^" in wordname:
@@ -594,14 +597,24 @@ class FinalAnalysisNLTK(DBWrapper,component):
                         keywords[wordname] = word[1]
 
                 filteredtext = list()
+                
+                Print("FinalAnalysisNLTK: about to loop through tweet ids - count -", len(tweetids))
+
                 for tweetid in tweetids:
                     # Cycle through each tweet and find its JSON
                     tweetdata = None
+                    Print("FinalAnalysisNLTK: getting tweet data", len(tweetids))
+                    tweetdatafailcount = 0
+                    tweetfixfailcount = 0
                     while tweetdata == None:
+                        Print("FinalAnalysisNLTK: Trying to get tweetdata")
                         self.db_select("""SELECT tweet_json FROM rawtweets WHERE tweet_id = %s""",(tweetid))
                         tweetdata = self.db_fetchone()
-                        if tweetdata != None:
-
+                        if tweetdata == None:
+                            tweetdatafailcount += 1
+                            Print("FinalAnalysisNLTK: failed to tweetdata - count, id:", tweetdatafailcount, tweetid)
+                        else:
+                            Print("FinalAnalysisNLTK: got tweetdata")
                             tweetjson = cjson.decode(tweetdata[0])
 
                             self.send(tweetjson,"tweetfixer")
@@ -614,7 +627,10 @@ class FinalAnalysisNLTK(DBWrapper,component):
                                 self.pause()
                                 yield 1
 
-                            if self.dataReady("tweetfixer"):
+                            if not self.dataReady("tweetfixer"):
+                                tweetfixfailcount += 1
+                                Print("FinalAnalysisNLTK: Tweet Fixer Failed - twnc_count, tweetfixfailcount", twnc_count, tweetfixfailcount, tweetid )
+                            else:
                                 tweetjson = self.recv("tweetfixer")
 
                                 # Identify retweets
@@ -674,7 +690,9 @@ class FinalAnalysisNLTK(DBWrapper,component):
 
                 # Print("Retweet data: " , retweetcache)
 
-                self.send(None,"outbox")
+                self.send(None,"outbox")  ## FIXME: AAAAAAAAAAAAAAAAAAAARRRRRRRRRRRRRRRRRRRRRRGGGGGGGGGGGGGGGGGGGGGGHHHHHHHHHHHHHHHHHHHHHHH
 
-            self.pause()
+            if not self.anyReady():
+                Print("FinalAnalysisNLTK: about to pause")
+                self.pause()
             yield 1
