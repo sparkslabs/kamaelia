@@ -88,13 +88,15 @@ class PeopleSearch(component):
                 req = urllib2.Request(request_token_url,None,requestheaders) # Why won't this work?!? Is it trying to POST?
                 conn1 = urllib2.urlopen(req)
             except httplib.BadStatusLine, e:
-                sys.stderr.write('PeopleSearch BadStatusLine error: ' + str(e) + '\n')
+                Print("PeopleSearch BadStatusLine error:", e )
                 conn1 = False
             except urllib2.HTTPError, e:
-                sys.stderr.write('PeopleSearch HTTP error: ' + str(e.code) + '\n')
+                Print("PeopleSearch HTTP error:", e.code)
+#                sys.stderr.write('PeopleSearch HTTP error: ' + str(e.code) + '\n')
                 conn1 = False
             except urllib2.URLError, e:
-                sys.stderr.write('PeopleSearch URL error: ' + str(e.reason) + '\n')
+                Print("PeopleSearch URL error: ", e.reason)
+#                sys.stderr.write('PeopleSearch URL error: ' + str(e.reason) + '\n')
                 conn1 = False
 
             if conn1:
@@ -144,13 +146,15 @@ class PeopleSearch(component):
                     req = urllib2.Request(access_token_url,"oauth_verifier=%s" % oauth_verifier,requestheaders) # Why won't this work?!? Is it trying to POST?
                     conn1 = urllib2.urlopen(req)
                 except httplib.BadStatusLine, e:
-                    sys.stderr.write('PeopleSearch BadStatusLine error: ' + str(e) + '\n')
+#                    sys.stderr.write('PeopleSearch BadStatusLine error: ' + str(e) + '\n')
+                    Print('PeopleSearch BadStatusLine error: ', e)
                     conn1 = False
                 except urllib2.HTTPError, e:
-                    sys.stderr.write('PeopleSearch HTTP error: ' + str(e.code) + '\n')
+                    Print('PeopleSearch HTTP error: ', e.code)
                     conn1 = False
                 except urllib2.URLError, e:
-                    sys.stderr.write('PeopleSearch URL error: ' + str(e.reason) + '\n')
+#                    sys.stderr.write('PeopleSearch URL error: ' + str(e.reason) + '\n')
+                    Print('PeopleSearch URL error: ', e.reason)
                     conn1 = False
 
                 if conn1:
@@ -234,19 +238,25 @@ class PeopleSearch(component):
                         req = urllib2.Request(requesturl,None,requestheaders) # Why won't this work?!? Is it trying to POST?
                         conn1 = urllib2.urlopen(req)
                     except httplib.BadStatusLine, e:
-                        sys.stderr.write('PeopleSearch BadStatusLine error: ' + str(e) + '\n')
+#                        sys.stderr.write('PeopleSearch BadStatusLine error: ' + str(e) + '\n')
+                        Print('PeopleSearch BadStatusLine error: ', e)
                         conn1 = False
                     except urllib2.HTTPError, e:
-                        sys.stderr.write('PeopleSearch HTTP error: ' + str(e.code) + '\n')
+#                        sys.stderr.write('PeopleSearch HTTP error: ' + str(e.code) + '\n')
+                        Print('PeopleSearch HTTP error: ', e.code)
                         conn1 = False
                     except urllib2.URLError, e:
-                        sys.stderr.write('PeopleSearch URL error: ' + str(e.reason) + '\n')
+#                        sys.stderr.write('PeopleSearch URL error: ' + str(e.reason) + '\n')
+                        Print('PeopleSearch URL error: ', e.reason)
                         conn1 = False
 
                     if conn1:
                         # Check rate limiting here and Print current limit
                         headers = conn1.info()
-                        headerlist = string.split(str(headers),"\n")
+                        try:
+                            headerlist = string.split(str(headers),"\n")
+                        except UnicodeEncodeError: # str may fail...
+                            headerlist = []
                         for line in headerlist:
                             if line != "":
                                 splitheader = line.split()
@@ -263,7 +273,8 @@ class PeopleSearch(component):
                             except cjson.DecodeError, e:
                                 self.send(dict(),"outbox")
                         except IOError, e:
-                            sys.stderr.write('PeopleSearch IO error: ' + str(e) + '\n')
+#                            sys.stderr.write('PeopleSearch IO error: ' + str(e) + '\n')
+                            Print('PeopleSearch IO error: ', e)
                             self.send(dict(),"outbox")
                         conn1.close()
                     else:
