@@ -81,34 +81,32 @@ class HTTPGetter(threadedcomponent):
             conn1 = urllib2.urlopen(req)
         except httplib.BadStatusLine, e:
             return ["StatusError",e]
-            conn1 = False
         except urllib2.HTTPError, e:
             return ["HTTPError",e.code]
-            conn1= False
         except urllib2.URLError, e:
             return ['URLError',e.reason]
-            conn1 = False
         except socket.timeout, e:
             return ['SocketTimeout',e]
-            conn1 = False
         except UnicodeEncodeError, e:
             Print("URLGetter.py: User of this component has failed to remember to encode their URL correctly")
-            conn1 = False
+            return ["UnicodeEncodeError", e]
+
         except UnicodeDecodeError, e:
             Print("URLGetter.py: User of this component has failed to remember to encode their URL correctly")
-            conn1 = False
+            return ["UnicodeDecodeError", e]
         
         # Read and return programme data
         if conn1:
-            ret = True
             try:
                 content = conn1.read()
             except socket.timeout, e:
                 return ['SocketTimeout',e]
-                ret = False
+            except socket.error, e:
+                return ['SocketError',e]
+            except Exception, e: # Catch and send back to users of this component
+                return ['General.Exception',e]
             conn1.close()
-            if ret:
-                return ["OK",content]
+            return ["OK",content]
 
     def main(self):
         while not self.finished():
