@@ -468,7 +468,8 @@ class TwitterStream(threadedcomponent):
 
                 pids = recvdata[1]
 
-                args = urllib.urlencode({"track": ",".join(keywords)})
+                safe_keywords = [ x.encode("utf8") for x in keywords ] # Needed to preclude unicode encoding issues in urllib...
+                args = urllib.urlencode({"track": ",".join(safe_keywords)})
                 # Print ("Got keywords:", args)
 
                 # Print("Create new datacapture component", self)
