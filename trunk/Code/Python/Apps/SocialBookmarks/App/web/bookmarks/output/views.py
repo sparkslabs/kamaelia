@@ -110,7 +110,7 @@ def indexdata(request,channelgroup,wrapper=True):
                         output += "<div id=\"" + channel + "\" class=\"box\" style=\"width: 77px; background-color: " + bgcolour + "; color: " + fontcolour + "; text-align: center;\"><a href=\"/programmes/" + data.pid + "/\" style=\"text-decoration: none; color: " + fontcolour + "\">" + str(data.totaltweets) + "</a></div></div>"
                     else:
                         output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channel-graph/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
-                        output += "Off Air</div>"
+                        output += "Pending</div>"
                 else:
                     output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channel-graph/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
                     output += "No Data</div>"
@@ -121,7 +121,7 @@ def indexdata(request,channelgroup,wrapper=True):
                 data = programmes.objects.filter(channel=channel).latest('timestamp')
             except ObjectDoesNotExist:
                 output += "<div style=\"float: left; margin-right: 5px; text-align: center\"><a href=\"/channel-graph/" + channel + "/" + str(currentdate.strftime("%Y/%m/%d")) + "/\"><img src=\"/media/channels/" + channel + ".gif\" style=\"border: none\"></a><br />"
-                output += "No Data</div>"
+                output += "Pending</div>"
                 continue
                 
             if isinstance(data,object):
