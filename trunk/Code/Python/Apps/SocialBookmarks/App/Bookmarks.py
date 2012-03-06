@@ -16,31 +16,53 @@ Bookmarks.py - Main Executable
 # It will also create files called namecache.conf, linkcache.conf and oversizedtweets.conf in your home directory
 # See the README for more information
 
+# Before we do anything.
+# First check to see if we're suppose to be even running. If we're not, don't start!
+
+
+
 import os
 import sys
-import cjson
+from Kamaelia.Apps.SocialBookmarks.Print import Print
 
-from Kamaelia.Apps.SocialBookmarks.BBCProgrammes import WhatsOn
-from Kamaelia.Apps.SocialBookmarks.DataCollector import DataCollector, RawDataCollector
-from Kamaelia.Chassis.Graphline import Graphline
-from Kamaelia.Chassis.Pipeline import Pipeline
-from Kamaelia.Util.TwoWaySplitter import TwoWaySplitter
-from Kamaelia.Apps.SocialBookmarks.LiveAnalysis import FinalAnalysisNLTK, LiveAnalysis, LiveAnalysisNLTK
-from Kamaelia.Apps.SocialBookmarks.Requester import Requester
-from Kamaelia.Apps.SocialBookmarks.TweetFixer import LinkResolver, RetweetCorrector, RetweetFixer, TweetCleaner
-from Kamaelia.Apps.SocialBookmarks.TwitterSearch import PeopleSearch
-from Kamaelia.Apps.SocialBookmarks.TwitterStream import TwitterStream
-from Kamaelia.Apps.SocialBookmarks.URLGetter import HTTPGetter
+# Before we do anything.
+# First check to see if we're suppose to be even running. If we're not, don't start!
+if os.path.exists(os.path.join(os.path.expanduser("~"), "stop_bookmarks")):
+    Print("Exitting bookmarks because ~/stop_bookmarks exists")
+    start = False
+    sys.exit(0)
+else:
+    start = True
 
-if 0:
-    from Kamaelia.Apps.MH.Profiling import FormattedProfiler
-    from Kamaelia.Util.Console import ConsoleEchoer
-    from Kamaelia.Util.Pipeline import Pipeline
-
-    Pipeline( FormattedProfiler(10.0,1.0), ConsoleEchoer(), ).activate()
+# import Axon
+# Axon.Box.ShowAllTransits = True
 
 
-if __name__ == "__main__":
+if start and (__name__ == "__main__"):
+
+    import cjson
+
+    from Kamaelia.Apps.SocialBookmarks.BBCProgrammes import WhatsOn
+    from Kamaelia.Apps.SocialBookmarks.DataCollector import DataCollector, RawDataCollector
+    from Kamaelia.Chassis.Graphline import Graphline
+    from Kamaelia.Chassis.Pipeline import Pipeline
+    from Kamaelia.Util.TwoWaySplitter import TwoWaySplitter
+    from Kamaelia.Apps.SocialBookmarks.LiveAnalysis import FinalAnalysisNLTK, LiveAnalysis, LiveAnalysisNLTK
+    from Kamaelia.Apps.SocialBookmarks.Requester import Requester
+    from Kamaelia.Apps.SocialBookmarks.TweetFixer import LinkResolver, RetweetCorrector, RetweetFixer, TweetCleaner
+    from Kamaelia.Apps.SocialBookmarks.TwitterSearch import PeopleSearch
+    from Kamaelia.Apps.SocialBookmarks.TwitterStream import TwitterStream
+    from Kamaelia.Apps.SocialBookmarks.URLGetter import HTTPGetter
+    from Kamaelia.Apps.SocialBookmarks.StopOnFile import StopOnFile
+
+    if 0:
+        from Kamaelia.Apps.MH.Profiling import FormattedProfiler
+        from Kamaelia.Util.Console import ConsoleEchoer
+        from Kamaelia.Util.Pipeline import Pipeline
+
+        Pipeline( FormattedProfiler(10.0,1.0), ConsoleEchoer(), ).activate()
+
+    StopOnFile(stopfile=os.path.join(os.path.expanduser("~"), "stop_bookmarks")).activate()
 
     # Load Config
     try:
@@ -136,5 +158,3 @@ if __name__ == "__main__":
                                 ("TWEETCLEANERFINAL", "outbox") : ("NLTKANALYSISFINAL", "tweetfixer"),
                                 }
                             ).run()
-
-    
