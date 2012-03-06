@@ -95,15 +95,23 @@ class DBWrapper(object):
 
     # The purpose of pulling these three out is to make it simpler to keep things in sync between multiple DBs
     def db_select(self,command, args=None):
+        if 1: # Debugging inserts - specifically loooking for tweets not inserted *and* inserted
+            caller = inspect.stack()[1]
+            Print("DBWrapper", int (caller[2]), caller[3], caller[1], command, args)
         if args:
             self.cursor.execute(command,args) #xyz
         else:
             self.cursor.execute(command) #xyz
+        Print("DBWrapper Select Completed")
 
     def db_update(self,command, args):
+        if 1: # Debugging inserts - specifically loooking for tweets not inserted *and* inserted
+            caller = inspect.stack()[1]
+            Print("DBWrapper", int (caller[2]), caller[3], caller[1], command, args)
         self.cursor.execute(command,args) #xyz
         if 1:
             self.cursor_dupe.execute(command,args) #xyz
+        Print("DBWrapper Updated Completed")
 
     def db_insert(self,command, args):
         if 1: # Debugging inserts - specifically loooking for tweets not inserted *and* inserted
@@ -112,6 +120,7 @@ class DBWrapper(object):
         self.cursor.execute(command,args) #xyz
         if 1:
             self.cursor_dupe.execute(command,args) #xyz
+        Print("DBWrapper Insert Completed")
 
     def db_fetchall(self):
         return self.cursor.fetchall() # xyz
