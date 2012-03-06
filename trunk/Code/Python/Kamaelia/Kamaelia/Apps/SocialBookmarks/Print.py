@@ -2,6 +2,7 @@
 import sys
 import os
 import inspect
+import time
 
 def __LINE__ ():
     caller = inspect.stack()[1]
@@ -19,6 +20,7 @@ def Print(*args):
     caller = inspect.stack()[1]
     filename = str(os.path.basename(caller[1]))
     sys.stdout.write(filename+ " : "+ str(int (caller[2])) + " : ")
+    sys.stdout.write(str(time.time()) + " : ")
     for arg in args:
         try:
             x = str(arg)
