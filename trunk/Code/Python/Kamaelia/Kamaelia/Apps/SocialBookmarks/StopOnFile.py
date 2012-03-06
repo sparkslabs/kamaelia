@@ -18,6 +18,7 @@ class StopOnFile(Axon.ThreadedComponent.threadedcomponent):
             if os.path.exists(self.stopfile):
                 Print("Stop File Exists - Exitting")
                 self.die()
+            time.sleep(1)
 
 if __name__ == "__main__":
     class Plinger(Axon.ThreadedComponent.threadedcomponent):
