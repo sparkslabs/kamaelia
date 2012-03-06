@@ -248,6 +248,10 @@ class LiveAnalysis(DBWrapper,threadedcomponent):
                     pid = result[0]
                     self.db_select("""SELECT duration,title FROM programmes_unique WHERE pid = %s""",(pid))
                     data2 = self.db_fetchone()
+                    if not data2:
+                        Print("Getting data for duration,title, etc failed - pid", pid)
+                        Print("Let's try skipping this pid")
+                        continue
                     duration = data2[0]
                     totaltweets = result[1]
                     meantweets = result[2]
