@@ -696,6 +696,10 @@ def programmev2data(request,element,pid,timestamp=False,redux=False,wrapper=True
     try:
         master = programmes_unique.objects.get(pid=pid)
     except ObjectDoesNotExist, e:
+        if wrapper:
+            return HttpResponse("")
+        else:
+            return ""
         pass # This is handled later
     if timestamp:
         data = programmes.objects.filter(pid=pid,timestamp=timestamp).all()
