@@ -78,7 +78,7 @@ class WhatsOn(threadedcomponent):
         while not self.finished():
             if self.dataReady("inbox"):
                 channel = self.recv("inbox")
-                sleeper.sleep(1) # Temporary delay to ensure not hammering /programmes
+                time.sleep(1) # Temporary delay to ensure not hammering /programmes
 
                 # Setup in case of URL errors later
                 data = None
@@ -175,7 +175,7 @@ class WhatsOn(threadedcomponent):
                                     utcoffset = datetime.strptime(str(tz.utcoffset(progdate)),"%H:%M:%S")
                                     utcoffset = utcoffset.hour * 60 * 60
                                     # Something's not right with the code below #TODO #FIXME
-                                    timestamp = sleeper.mktime(showdatetime.timetuple()) + utcoffset
+                                    timestamp = time.mktime(showdatetime.timetuple()) + utcoffset
                                     if 'difference' in locals():
                                         offset = (timestamp - actualstart) - difference
                                     else:
@@ -211,7 +211,7 @@ class WhatsOn(threadedcomponent):
                                     tz = progdate.tzinfo
                                     utcoffset = datetime.strptime(str(tz.utcoffset(progdate)),"%H:%M:%S")
                                     utcoffset = utcoffset.hour * 60 * 60
-                                    timestamp = sleeper.mktime(progdate.timetuple()) - utcoffset
+                                    timestamp = time.mktime(progdate.timetuple()) - utcoffset
                                     Print(pid,title,0,programme['duration'],programme['start'],utcoffset)
                                     data = [pid,title,0,programme['duration'],timestamp,utcoffset]
                                     
@@ -250,7 +250,7 @@ class NowPlaying(component):
             if self.dataReady("inbox"):
                 # TODO This component is unfinished as it was never found to be needed
                 channel = self.recv("inbox")
-                sleeper.sleep(1) # Temporary delay to ensure not hammering /programmes
+                time.sleep(1) # Temporary delay to ensure not hammering /programmes
                 nowplayingurl = "http://www.bbc.co.uk" + self.channels[channel] + ".json"
 
                 npdata = None
