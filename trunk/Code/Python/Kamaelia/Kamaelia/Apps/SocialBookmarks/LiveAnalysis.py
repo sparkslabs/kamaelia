@@ -574,125 +574,143 @@ class FinalAnalysisNLTK(DBWrapper,component):
             if self.dataReady("inbox"):
                 data = self.recv("inbox")
                 Print("FinalAnalysisNLTK: got data")
+                Print("FinalAnalysisNLTK: ... and ignoring it (Since didn't store results of final analysis anyway...")
 
-                pid = data[0]
-                tweetids = data[1]
+                if False:
+                    pid = data[0]
+                    tweetids = data[1]
 
-                retweetcache = dict()
+                    retweetcache = dict()
 
-                # Issue #TODO - Words that appear as part of a keyword but not the whole thing won't get marked as being a keyword (e.g. Blue Peter - two diff words)
-                # Need to check for each word if it forms part of a phrase which is also a keyword
-                # If so, don't count is as a word, count the whole thing as a phrase and remember not to count it more than once
-                # May actually store phrases AS WELL AS keywords
+                    # Issue #TODO - Words that appear as part of a keyword but not the whole thing won't get marked as being a keyword (e.g. Blue Peter - two diff words)
+                    # Need to check for each word if it forms part of a phrase which is also a keyword
+                    # If so, don't count is as a word, count the whole thing as a phrase and remember not to count it more than once
+                    # May actually store phrases AS WELL AS keywords
 
-                keywords = dict()
-                # Find keywords for this PID
-                self.db_select("""SELECT keyword,type FROM keywords WHERE pid = %s""",(pid))
-                keyworddata = self.db_fetchall()
-                Print("FinalAnalysisNLTK: len(keyworddata)", len(keyworddata))
-                for word in keyworddata:
-                    wordname = word[0].lower()
-                    if "^" in wordname:
-                        wordbits = wordname.split("^")
-                        wordname = wordbits[0]
-                    wordbits = wordname.split()
-                    # Only looking at phrases here (more than one word)
-                    if len(wordbits) > 1:
-                        keywords[wordname] = word[1]
+                    keywords = dict()
+                    # Find keywords for this PID
+                    self.db_select("""SELECT keyword,type FROM keywords WHERE pid = %s""",(pid))
+                    keyworddata = self.db_fetchall()
+                    Print("FinalAnalysisNLTK: len(keyworddata)", len(keyworddata))
+                    for word in keyworddata:
+                        wordname = word[0].lower()
+                        if "^" in wordname:
+                            wordbits = wordname.split("^")
+                            wordname = wordbits[0]
+                        wordbits = wordname.split()
+                        # Only looking at phrases here (more than one word)
+                        if len(wordbits) > 1:
+                            keywords[wordname] = word[1]
 
-                filteredtext = list()
-                
-                Print("FinalAnalysisNLTK: about to loop through tweet ids - count -", len(tweetids))
+                    filteredtext = list()
+                    
+                    Print("FinalAnalysisNLTK: about to loop through tweet ids - count -", len(tweetids))
 
-                for tweetid in tweetids:
-                    # Cycle through each tweet and find its JSON
-                    tweetdata = None
-                    Print("FinalAnalysisNLTK: getting tweet data", len(tweetids))
-                    tweetdatafailcount = 0
-                    tweetfixfailcount = 0
-                    while tweetdata == None:
-                        Print("FinalAnalysisNLTK: Trying to get tweetdata")
-                        self.db_select("""SELECT tweet_json FROM rawtweets WHERE tweet_id = %s""",(tweetid))
-                        tweetdata = self.db_fetchone()
-                        if tweetdata == None:
-                            tweetdatafailcount += 1
-                            Print("FinalAnalysisNLTK: failed to tweetdata - count, id:", tweetdatafailcount, tweetid)
-                        else:
-                            Print("FinalAnalysisNLTK: got tweetdata")
-                            tweetjson = cjson.decode(tweetdata[0])
-
-                            self.send(tweetjson,"tweetfixer")
-                            twnc_count = 0
-                            while not self.dataReady("tweetfixer"):
-                                if twnc_count > 10:
-                                    # Empirically, twnc_count gets there within 2 or 3 loops
+                    for tweetid in tweetids:
+                        # Cycle through each tweet and find its JSON
+                        tweetdata = None
+                        Print("FinalAnalysisNLTK: getting tweet data", len(tweetids))
+                        tweetdatafailcount = 0
+                        tweetfixfailcount = 0
+                        failed_tweet = False
+                        while tweetdata == None:
+                            Print("FinalAnalysisNLTK: Trying to get tweetdata")
+                            self.db_select("""SELECT tweet_json FROM rawtweets WHERE tweet_id = %s""",(tweetid))
+                            tweetdata = self.db_fetchone()
+                            if tweetdata == None:
+                                tweetdatafailcount += 1
+                                Print("FinalAnalysisNLTK: failed to tweetdata - count, id:", tweetdatafailcount, tweetid)
+                                if tweetdatafailcount >1000:
+                                    failed_tweet = True
+                                    # FIXME: Without the following break, this goes into a busy wait loop, which locks
+                                    # FIXME: up the scheduler because this component does not yield command back to the caller
+                                    # FIXME: This results in starvation of the system because it does not allow any other
+                                    # FIXME: process/component to progress. Since this has happened remarkably rarely, this
+                                    # FIXME: means the collection & storage has been remarkably reliable.
+                                    # FIXME: Should be able to actually fix this, and the mystery hangs now too.
+                                    # FIXME: This "break" is actually sufficient in the short term, but means there's a hang
+                                    # FIXME: of 1000 cycles -- if this entire block is uncommented.
+                                    # FIXME: Since this problem happens rarely, bt catastrophically, fixing this really matters.
+                                    # FIXME: Means it's especially surprising that *any* data was collected during this period,
+                                    # FIXME: since this would cause the entire system - except other threads - to hang.
+                                    # FIXME: Crucially, this is also something the zombie killer can't kill, but can (and did)
+                                    # FIXME: draw attention to.
                                     break
-                                twnc_count += 1
-                                self.pause()
-                                yield 1
-
-                            if not self.dataReady("tweetfixer"):
-                                tweetfixfailcount += 1
-                                Print("FinalAnalysisNLTK: Tweet Fixer Failed - twnc_count, tweetfixfailcount", twnc_count, tweetfixfailcount, tweetid )
                             else:
-                                tweetjson = self.recv("tweetfixer")
+                                Print("FinalAnalysisNLTK: got tweetdata")
+                                tweetjson = cjson.decode(tweetdata[0])
 
-                                # Identify retweets
-                                if tweetjson.has_key('retweeted_status'):
-                                    if tweetjson['retweeted_status'].has_key('id'):
-                                        statusid = tweetjson['retweeted_status']['id']
-                                        if retweetcache.has_key(statusid):
-                                            retweetcache[statusid][0] += 1
-                                        else:
-                                            retweetcache[statusid] = [1,tweetjson['retweeted_status']['text']]
+                                self.send(tweetjson,"tweetfixer")
+                                twnc_count = 0
+                                while not self.dataReady("tweetfixer"):
+                                    if twnc_count > 10:
+                                        # Empirically, twnc_count gets there within 2 or 3 loops
+                                        break
+                                    twnc_count += 1
+                                    self.pause()
+                                    yield 1
+
+                                if not self.dataReady("tweetfixer"):
+                                    tweetfixfailcount += 1
+                                    Print("FinalAnalysisNLTK: Tweet Fixer Failed - twnc_count, tweetfixfailcount", twnc_count, tweetfixfailcount, tweetid )
+                                else:
+                                    tweetjson = self.recv("tweetfixer")
+
+                                    # Identify retweets
+                                    if tweetjson.has_key('retweeted_status'):
+                                        if tweetjson['retweeted_status'].has_key('id'):
+                                            statusid = tweetjson['retweeted_status']['id']
+                                            if retweetcache.has_key(statusid):
+                                                retweetcache[statusid][0] += 1
+                                            else:
+                                                retweetcache[statusid] = [1,tweetjson['retweeted_status']['text']]
 
 
-                                tweettext = self.spellingFixer(tweetjson['filtered_text']).split()
-                                
-                                for word in tweettext:
-                                    if word[0] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and not (len(word) <= 3 and (word[0] == ":" or word[0] == ";")):
-                                        word = word[1:]
-                                    if word != "":
-                                        # Done twice to capture things like 'this is a "quote".'
-                                        if len(word) >= 2:
-                                            if word[len(word)-1] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and word[len(word)-2:len(word)] != "s'" and not (len(word) <= 3 and (word[0] == ":" or word[0] == ";")):
-                                                word = word[:len(word)-1]
+                                    tweettext = self.spellingFixer(tweetjson['filtered_text']).split()
+                                    
+                                    for word in tweettext:
+                                        if word[0] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and not (len(word) <= 3 and (word[0] == ":" or word[0] == ";")):
+                                            word = word[1:]
+                                        if word != "":
+                                            # Done twice to capture things like 'this is a "quote".'
+                                            if len(word) >= 2:
                                                 if word[len(word)-1] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and word[len(word)-2:len(word)] != "s'" and not (len(word) <= 3 and (word[0] == ":" or word[0] == ";")):
                                                     word = word[:len(word)-1]
-                                        elif word[len(word)-1] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and not (len(word) <= 3 and (word[0] == ":" or word[0] == ";")):
-                                            word = word[:len(word)-1]
-                                            if word != "":
-                                                if word[len(word)-1] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and not (len(word) <= 3 and (word[0] == ":" or word[0] == ";")):
-                                                    word = word[:len(word)-1]
-                                    if word != "":
-                                        if word in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""":
-                                            word = ""
+                                                    if word[len(word)-1] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and word[len(word)-2:len(word)] != "s'" and not (len(word) <= 3 and (word[0] == ":" or word[0] == ";")):
+                                                        word = word[:len(word)-1]
+                                            elif word[len(word)-1] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and not (len(word) <= 3 and (word[0] == ":" or word[0] == ";")):
+                                                word = word[:len(word)-1]
+                                                if word != "":
+                                                    if word[len(word)-1] in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and not (len(word) <= 3 and (word[0] == ":" or word[0] == ";")):
+                                                        word = word[:len(word)-1]
+                                        if word != "":
+                                            if word in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""":
+                                                word = ""
 
-                                    if word != "":
-                                        filteredtext.append(word)
+                                        if word != "":
+                                            filteredtext.append(word)
 
-                # Format: {"word" : [is_phrase,count,is_keyword,is_entity,is_common]}
-                # Need to change this for retweets as they should include all the text content if truncated - need some clever merging FIXME TODO
-                wordfreqdata = dict()
+                    # Format: {"word" : [is_phrase,count,is_keyword,is_entity,is_common]}
+                    # Need to change this for retweets as they should include all the text content if truncated - need some clever merging FIXME TODO
+                    wordfreqdata = dict()
 
-                # Look for phrases - very limited
-                bigram_fd = FreqDist(nltk.bigrams(filteredtext))
+                    # Look for phrases - very limited
+                    bigram_fd = FreqDist(nltk.bigrams(filteredtext))
 
-                # Print(bigram_fd)
+                    # Print(bigram_fd)
+                    for entry in bigram_fd:
+                        if entry[0] not in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and entry[1] not in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""":
+                            if entry[0] not in self.exclusions and entry[1] not in self.exclusions:
+                                for word in keywords:
+                                    # Print(word)
+                                    if entry[0] in word and entry[1] in word:
+                                        # Print("Keyword Match! " , entry[0],entry[1] )
+                                        break
+                                else:
+                                    pass
+                                    #Print( entry[0],entry[1])
 
-                for entry in bigram_fd:
-                    if entry[0] not in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""" and entry[1] not in """!"#$%&()*+,-./:;<=>?@~[\\]?_'`{|}?""":
-                        if entry[0] not in self.exclusions and entry[1] not in self.exclusions:
-                            for word in keywords:
-                                # Print(word)
-                                if entry[0] in word and entry[1] in word:
-                                    # Print("Keyword Match! " , entry[0],entry[1] )
-                                    break
-                            else:
-                                pass
-                                #Print( entry[0],entry[1])
-
-                # Print("Retweet data: " , retweetcache)
+                    # Print("Retweet data: " , retweetcache)
 
                 self.send(None,"outbox")  ## FIXME: AAAAAAAAAAAAAAAAAAAARRRRRRRRRRRRRRRRRRRRRRGGGGGGGGGGGGGGGGGGGGGGHHHHHHHHHHHHHHHHHHHHHHH
 
