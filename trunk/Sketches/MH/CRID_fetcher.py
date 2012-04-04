@@ -36,11 +36,12 @@ MAX_RUNTIME=10*60
 # freeview tuning parameters
 feparams = {
     "inversion" : dvb3.frontend.INVERSION_AUTO,
-    "constellation" : dvb3.frontend.QAM_16,
-    "code_rate_HP" : dvb3.frontend.FEC_3_4,
-    "code_rate_LP" : dvb3.frontend.FEC_3_4,
+    "constellation" : dvb3.frontend.QAM_64,
+    "code_rate_HP" : dvb3.frontend.FEC_2_3,
+    "code_rate_LP" : dvb3.frontend.FEC_2_3,
+    "transmission_mode" : dvb3.frontend.TRANSMISSION_MODE_8K,
 }
-freqHz=505833330.0
+freqHz=490000000.0
 
 
 class WatchdogTimer(threadedcomponent):
