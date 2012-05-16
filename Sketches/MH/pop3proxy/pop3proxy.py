@@ -38,6 +38,8 @@ import time
 import re
 import sys
 
+import email
+
 PROXYSERVER_PORT=20110
 POP3SERVER_NAME="pop3.national.core.bbc.co.uk" # "132.185.129.195"
 POP3SERVER_PORT=110 # 10110
@@ -588,10 +590,10 @@ class Pop3CommandRelay(component):
             
         for msgId in uidls:
             self.msgsOnServer[msgId] = { "uidl": uidls[msgId], "size": sizes[msgId] }
-            top=[]
-            for _ in self.getTOP(msgId, top):
+            topIncSomeBody=[]
+            for _ in self.getTOP(msgId, topIncSomeBody, 1000):
                 yield _
-            isCalendarRequest = self.checkIfCalendarRequest(top)
+            isCalendarRequest = self.checkIfCalendarRequest2(topIncSomeBody)
             if isCalendarRequest and not msgId in self.preventDeletions:
                 self.log("| >>  : Detected calendar request, msgId "+str(msgId))
                 self.preventDeletions.append(msgId)
@@ -686,8 +688,8 @@ class Pop3CommandRelay(component):
         return (msgId, size)
     
     
-    def getTOP(self, msgId, top):
-        self.sendToServer("TOP "+str(msgId)+" 0")
+    def getTOP(self, msgId, top, numBodyLines=0):
+        self.sendToServer("TOP "+str(msgId)+" "+str(numBodyLines))
         while not self.dataReadyFromServer():
             yield 1
         rsp=self.recvFromServer()
@@ -713,6 +715,29 @@ class Pop3CommandRelay(component):
             if line.strip() == "Content-class: urn:content-classes:calendarmessage":
                 return True
         return False
+
+# ----------------------------------------------------------------------
+    def checkIfCalendarRequest2(self, msgtop):
+        p=email.Parser.FeedParser()
+        p.feed("\n".join(msgtop))
+        msg=p.close()
+        
+        if msg.get("Content-class",None) == "urn:content-classes:calendarmessage":
+            return True
+        else:
+            contentTypes=enumerateContentTypes(msg)
+            return ("text/calendar" in contentTypes) or ("application/ics" in contentTypes)
+
+
+def enumerateContentTypes(msg):
+    """Enumerate all content types in a parsed email message, including sub messages in multipart messages."""
+    result=[]
+    result.append(msg.get_content_type())
+    if msg.is_multipart():
+        for part in msg.get_payload():
+            result.extend(enumerateContentTypes(part))
+    return result
+
     
     
 class LineSplit(component):
