@@ -27,6 +27,12 @@ import dvb3.frontend
 import datetime
 import time
 
+import os
+
+f=open("/tmp/CRID_fetcher.pid","wb")
+f.write(str(os.getpid()))
+f.close()
+
 # number of seconds of no new data that will cause auto-stop
 NOMORE_DATA_THRESHOLD=30
 
@@ -41,7 +47,7 @@ feparams = {
     "code_rate_LP" : dvb3.frontend.FEC_2_3,
     "transmission_mode" : dvb3.frontend.TRANSMISSION_MODE_8K,
 }
-freqHz=490000000.0
+freqHz=490000000.0  # 489833330.0
 
 
 class WatchdogTimer(threadedcomponent):
@@ -166,29 +172,29 @@ class Consolidator(component):
             
 
     def outputLines(self):
-    
         lines=[]
         for (event_id,service_id),event in self.events.iteritems():
             if (event_id,service_id) not in self.emitted and service_id in self.services:
                 service=self.services[service_id]
                 if "cridAuthority" in service and "name" in service:
                 
-                    self.emitted[(event_id,service_id)]=True
-                
-                    cridAuth=""
-                    cridFrag=event['episode_crid']
-                    startTime=self.formatDateTime(event['starttime'])
-                    endTime=self.formatDateTime(event['endtime'])
-                    channel=""
-                    title=event['title'].replace('\\','\\').replace('|','\|')
-                    description=event['description']
-                    lcn=""
+                    if None not in ( event['title'], event['episode_crid'], event['starttime'], event['endtime'] ):
 
-                    channel=service['name'].replace('\\','\\').replace('|','\|')
-                    cridAuth=service['cridAuthority']
+                        self.emitted[(event_id,service_id)]=True
+                    
+                        cridAuth=""
+                        cridFrag=event['episode_crid']
+                        startTime=self.formatDateTime(event['starttime'])
+                        endTime=self.formatDateTime(event['endtime'])
+                        channel=""
+                        title=event['title'].replace('\\','\\').replace('|','\|')
+                        lcn=""
 
-                    line="crid://%s%s| |%s|%s||%s|%s|%s|" % (cridAuth, cridFrag, startTime, endTime, channel, title, lcn)
-                    lines.append(line)
+                        channel=service['name'].replace('\\','\\').replace('|','\|')
+                        cridAuth=service['cridAuthority']
+
+                        line="crid://%s%s| |%s|%s||%s|%s|%s|" % (cridAuth, cridFrag, startTime, endTime, channel, title, lcn)
+                        lines.append(line)
 
         if len(lines):
             self.send("\n".join(lines)+"\n", "outbox")
@@ -246,3 +252,4 @@ SYSTEM=Graphline(
     }
 ).run()
 
+os.remove("/tmp/CRID_fetcher.pid")
