@@ -40,6 +40,7 @@ from Kamaelia.Util.Backplane import *
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Util.Console import *
 
+# Test 1
 if 0:
     # This works
     background().start()
@@ -57,6 +58,7 @@ if 0:
 
         reverser.put(line, "inbox")
 
+# Test 2
 if 0:
     # This works
     background().start()
@@ -83,6 +85,7 @@ if 0:
 
         print "FROM SUBSCRIBE", enil
 
+# Test 3
 if 0:
     # This works
     background().start()
@@ -109,6 +112,7 @@ if 0:
 
         print "FROM SUBSCRIBE", enil
 
+# Test 4
 if 0:
     # This works
     background().start()
@@ -135,6 +139,7 @@ if 0:
 
         print "FROM SUBSCRIBE", enil
 
+# Test 5
 if 1:
     # This works
     background().start()
