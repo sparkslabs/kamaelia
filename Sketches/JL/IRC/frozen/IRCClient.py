@@ -74,7 +74,7 @@ class IRC_Client(_Axon.Component.component):
    def __init__(self, nick="kamaeliabot",
                       nickinfo="Kamaelia",
                       defaultChannel="#kamaeliatest"):
-      self.__super.__init__()
+      super(IRC_Client,self).__init__()
       self.nick = nick
       self.nickinfo = nickinfo
       self.defaultChannel = defaultChannel

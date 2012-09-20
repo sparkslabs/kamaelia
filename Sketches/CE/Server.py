@@ -71,7 +71,7 @@ class ServerProtocolHandler(component):
                 number_of_files_to_find=5,
                 number_of_snapshots_to_get=10):
        
-      self.__super.__init__()
+      super(ServerProtocolHandler, self).__init__()
       
       self.directory = contentDirectory
       self.tempFileDirectory = tempFileDirectory
@@ -227,7 +227,7 @@ class random_file_selector(component):
       - Sent X number of files
    """
    def __init__(self, directory, file_type, number_of_files_to_find=1):
-      self.__super.__init__()
+      super(random_file_selector, self).__init__()
         
       self.directory = directory
       self.file_type = file_type.rstrip()
@@ -311,7 +311,7 @@ class grab_image_from_video(component):
                 delay=10,
                 number_of_snapshots_to_get=10):
 
-      self.__super.__init__()
+      super(grab_image_from_video, self).__init__()
       pygame.init()
 
       self.tempDirectory = tempDirectory
@@ -443,7 +443,7 @@ class char_count_and_read(component):
       - message received in control which is an instance of producerFinished
    """
    def __init__(self, clientConnect = True, delay=0):
-      self.__super.__init__()
+      super(char_count_and_read, self).__init__()
 
       self.delay = delay
       self.clientConnect = clientConnect
@@ -501,7 +501,6 @@ class UserInterface(component):
                 port=1616,
                 demo_mode=False):
        
-      #self.__super.__init__()
       super(UserInterface,self).__init__()
 
       self.protocol = protocol

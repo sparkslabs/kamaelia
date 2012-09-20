@@ -53,7 +53,7 @@ class BasicIntegrity(Component.component):
 
     def __init__(self,  algorithm="SHA"):
 
-        self.__super.__init__()
+        super(BasicIntegrity,self).__init__()
         self.algorithm = algorithm
         self.setAlgorithm()
         
@@ -80,7 +80,7 @@ class IntegrityStamper(BasicIntegrity):
 
     def __init__(self,  algorithm="SHA"):
 
-        self.__super.__init__(algorithm)
+        super(IntegrityStamper,self).__init__(algorithm)
             
     def main(self):
 
@@ -98,7 +98,7 @@ class IntegrityChecker(BasicIntegrity):
 
     def __init__(self,  algorithm="SHA"):
 
-        self.__super.__init__(algorithm)
+        super(IntegrityChecker, self).__init__(algorithm)
 
             
     def main(self):
@@ -150,7 +150,7 @@ class MAC_Stamper(BasicIntegrity):
        
     def __init__(self, key,  encryption="AES", mode="ECB", hash="SHA"):
 
-        self.__super.__init__(hash)
+        super(MAC_Stamper,self).__init__(hash)
         self.encryptobj = BasicEncryption(key, encryption, mode)
         
     def main(self):
@@ -169,7 +169,7 @@ class MAC_Checker(BasicIntegrity):
 
     def __init__(self, key, encryption="AES", mode="ECB", hash="SHA"):
 
-        self.__super.__init__(hash)
+        super(MAC_Checker, self).__init__(hash)
         self.decryptobj = BasicEncryption(key, encryption, mode)
         
     def main(self):

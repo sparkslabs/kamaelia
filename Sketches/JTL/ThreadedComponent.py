@@ -41,7 +41,7 @@ class threadedcomponent(Axon.Component.component,threading.Thread):
    """
 
    def __init__(self,queuelengths=10):
-      self.__super.__init__()
+      super(threadedcomponent, self).__init__()
       threading.Thread.__init__(self)
 
       self.queuelengths = queuelengths

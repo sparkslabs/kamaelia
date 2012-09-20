@@ -33,7 +33,7 @@ class ClientProtocolHandler(component):
    Outboxes = ["outbox","signal", "_filteredControlMessages"]
 
    def __init__(self, tempDir, initialsendmessage, delay):
-      self.__super.__init__()
+      super(ClientProtocolHandler, self).__init__()
 
       self.requestmessage = initialsendmessage
       self.tempDir = tempDir
@@ -106,7 +106,7 @@ class combinePackets(component):
    what came before the \n should be the number of characters the file should contain
    """
    def __init__(self):
-      self.__super.__init__()
+      super(combinePackets, self).__init__()
       
       self.list_packets = []
       self.buffer = ""
@@ -171,7 +171,7 @@ class createFile(component):
    Outboxes = ["outbox","signal"]
                       
    def __init__(self, tempDir, file_type):
-      self.__super.__init__()
+      super(createFile, self).__init__()
       self.tempDir = tempDir
       self.file_type = file_type
 
@@ -232,7 +232,7 @@ class show(component):
    Outboxes = ["outbox","signal"]
 
    def __init__(self, file_type, tempDir, delay):
-      self.__super.__init__()
+      super(show, self).__init__()
       
       self.file_type = file_type
       self.tempDir = tempDir ##used to check if using phone or PC
@@ -472,7 +472,7 @@ if __name__ == "__main__":
 
    class Client(component):
       def __init__(self):
-         self.__super.__init__()
+         super(Client, self).__init__()
          
          self.serverport = 1616
          self.requestmessage = ".mpg"

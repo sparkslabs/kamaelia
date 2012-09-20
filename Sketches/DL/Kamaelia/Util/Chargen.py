@@ -68,7 +68,7 @@ class Chargen(Axon.Component.component):
    """
    def __init__(self, string="Hello World"):
 
-      self.__super.__init__()
+      super(Chargen, self).__init__()
       self.string = string
       
    Inboxes  = { "inbox"   : "NOT USED",

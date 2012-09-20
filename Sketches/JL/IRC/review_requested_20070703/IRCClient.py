@@ -162,7 +162,7 @@ class IRC_Client(_Axon.Component.component):
    
     def __init__(self):
         """x.__init__(...) initializes x; see x.__class__.__doc__ for signature"""
-        self.__super.__init__()
+        super(IRC_Client, self).__init__()
         self.done = False #does not do anything so far
 
         debugSections = {"IRCClient.main" : 0,

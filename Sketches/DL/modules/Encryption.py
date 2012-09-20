@@ -29,7 +29,7 @@ class BasicEncryption(Component.component):
     
     def __init__(self, key, algorithm="AES", mode="ECB"):
         
-        self.__super.__init__()
+        super(BasicEncryption, self).__init__()
         self.blocksize = 8  # Most common 
         self.algorithm = algorithm
         self.mode = mode
@@ -84,7 +84,7 @@ class Encryptor(BasicEncryption):
 
     def __init__(self, key, algorithm="AES", mode="ECB"):
 
-        self.__super.__init__(key, algorithm, mode)
+        super(Encryptor, self).__init__(key, algorithm, mode)
 
 
     def main(self):
@@ -103,7 +103,7 @@ class Decryptor(BasicEncryption):
 
     def __init__(self, key, algorithm="AES", mode="ECB"):
 
-        self.__super.__init__(key, algorithm, mode)
+        super(Decryptor, self).__init__(key, algorithm, mode)
 
 
     def main(self):

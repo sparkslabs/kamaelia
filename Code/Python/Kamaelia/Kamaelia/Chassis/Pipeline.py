@@ -165,8 +165,8 @@ if __name__=="__main__":
     
     class fruitSource(component):
         def __init__(self):
+            super(fruitSource,self).__init__()
             self.outlist = ["apples\n","pears\n","grapes\n","bananas\n","oranges\n","cherrys\n","lemons\n","<end of list>\n"]
-            self.__super.__init__()
 
         def main(self):
             for i in self.outlist:
@@ -181,7 +181,7 @@ if __name__=="__main__":
         Outboxes=['_signal']
 
         def __init__(self):
-            self.__super.__init__()
+            super(testComponent,self).__init__()
             
             self.source = fruitSource()
             self.pipe   = Pipeline(PassThrough([]))

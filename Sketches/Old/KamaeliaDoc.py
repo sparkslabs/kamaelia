@@ -204,8 +204,6 @@ class docFormatter(object):
     def formatMethodDocStrings(self,X):
         r = ""
         for method in sorted([x for x in inspect.classify_class_attrs(X) if x[2] == X and x[1] == "method"]):
-            if method[0][-7:] == "__super":
-                continue
             methodHead = method[0]+self.formatArgSpec(inspect.getargspec(method[3]))
             r += self.methodName(methodHead)+ self.docString(method[3].__doc__)
 

@@ -40,11 +40,17 @@ uses.
 
 """
 
-try:
-   import Queue # If succeeds, then python 2
-   from Axon.Base2 import AxonObject, AxonType
-except: # Python3
-   from Axon.Base3 import AxonObject, AxonType
+class AxonType(type):
+   # Functionality removed (not used)
+   pass
+   
+class AxonObject(object):
+   """\
+   Base class for axon objects.
+      
+   """
+   pass
+            
 
 if __name__ == "__main__":
 
