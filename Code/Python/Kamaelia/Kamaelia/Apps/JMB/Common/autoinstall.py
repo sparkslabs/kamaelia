@@ -43,7 +43,7 @@ def autoinstall(zip, dir, app_name):
     prompt_text = 'It does not appear that %s has been installed.  Would you like to do so now? [y/n]' % \
                   (app_name)
     if not prompt_yesno(prompt_text):
-        print '%s must be installed to continue.  Halting.' % (app_name)
+        print ('%s must be installed to continue.  Halting.' % (app_name))
         sys.exit(1)
     
     tar_mem = cStringIO.StringIO( zip.read('data/kpuser.tar') )

@@ -41,9 +41,9 @@ def parseOptions():
             rport = int(rport)
 
         elif o in ("-h","--help"):
-            print "USAGE:\n"
-            print "\t", sys.argv[0], "[--serveport=port] [--connectto=host:port]"
-            print
+            print ("USAGE:\n")
+            print ("\t", sys.argv[0], "[--serveport=port] [--connectto=host:port]")
+            print ("")
             sys.exit(0)
 
     return rhost, rport, serveport

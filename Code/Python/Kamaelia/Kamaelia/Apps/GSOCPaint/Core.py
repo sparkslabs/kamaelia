@@ -145,7 +145,7 @@ class Paint(Axon.Component.component):
            if not self.dataReady("newframe"):
                self.pause()
            self.recv("newframe")
-           print "now"
+           print ("now")
 
    def drawBG(self, bg = False):
       """Fills the currentlayer with a background, if it's the bg layer it also gives a border."""
@@ -156,8 +156,8 @@ class Paint(Axon.Component.component):
 
    def floodFill(self, x, y, newColour, oldColour):
        """Flood fill on a region of non-BORDER_COLOR pixels."""
-       #print "colour here = ",self.activeLayer.get_at((x,y))[0]
-       #print "newColour = ",newColour[0]
+       #print ("colour here = ",self.activeLayer.get_at((x,y))[0])
+       #print ("newColour = ",newColour[0])
        if (self.activeLayer.get_at((x,y))[0] == newColour[0] and self.activeLayer.get_at((x,y))[1] == newColour[1] and self.activeLayer.get_at((x,y))[2] == newColour[2]):
            return
        edge = [(x, y)]
@@ -193,7 +193,7 @@ class Paint(Axon.Component.component):
    def save(self, filename):
        """Merges all the layers (by bliting them all to the background) and
         saves as a jpg, note this requires pygame 1.8 otherwise will save a bmp."""
-       print "here"
+       print ("here")
        self.activeLayIn = 0
        self.activeLayer = self.layers[self.activeLayIn]
        self.send( self.activeLayIn, "laynum" )
@@ -303,7 +303,7 @@ class Paint(Axon.Component.component):
                             self.layers.remove(self.activeLayer)
                             self.activeLayIn = 0
                             self.activeLayer = self.layers[self.activeLayIn]
-                          #  print self.layers
+                          #  print (self.layers)
                         if event[1] == "Next":
                             if self.animator and self.activeLayIn != 0:
                             	self.activeLayer.set_alpha(0)
@@ -338,7 +338,7 @@ class Paint(Axon.Component.component):
                     elif event[0] == "Alpha":
                         self.layers[self.activeLayIn].set_alpha(event[1])
                         self.blitToSurface()
-                      #  print self.activeLayer.get_alpha()
+                      #  print (self.activeLayer.get_alpha())
                     elif event[0] == 'Colour':
                         self.selectedColour = event[1]
                         pygame.draw.circle(image, self.selectedColour, (10, 10), self.toolSize/3, 0)
@@ -382,7 +382,7 @@ class Paint(Axon.Component.component):
                         self.send( self.activeLayIn, "laynum" )
                     elif event.key == pygame.K_s:
                         """Testing a different brushing technique, bliting a brush"""
-                        print self.size, self.toolSize
+                        print (self.size, self.toolSize)
                         yield WaitComplete( self.addBrush() )
                         self.activeBrush = self.brushes[len(self.brushes)-1]
                         self.activeBrush.fill( self.backgroundColour )

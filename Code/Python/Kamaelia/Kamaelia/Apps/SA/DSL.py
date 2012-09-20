@@ -82,7 +82,7 @@ if __name__ == "__main__":
 
     class mylist(list):
         def append(self, item):
-            print "Appending", item
+            print ("Appending", item)
             super(mylist, self).append(item)
 
     R = mylist()
@@ -91,4 +91,5 @@ if __name__ == "__main__":
         DataSink(R)
     ).run()
 
-    print R
+    print (R)
+    

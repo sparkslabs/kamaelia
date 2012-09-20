@@ -292,7 +292,8 @@ class Requester(DBWrapper,threadedcomponent):
                     homedir = os.path.expanduser("~")
                     file = open(homedir + "/namecache.conf",'r')
                     save = True
-                except IOError, e:
+                except IOError:
+                    e = sys.exc_info()[1]
                     Print ("Failed to load name cache - will attempt to create a new file: " ,  e)
 
                 if save:
@@ -300,7 +301,8 @@ class Requester(DBWrapper,threadedcomponent):
                     file.close()
                     try:
                         config = cjson.decode(raw_config)
-                    except cjson.DecodeError, e:
+                    except cjson.DecodeError:
+                        e = sys.exc_info()[1]
                         config = dict()
                 else:
                     config = dict()
@@ -332,7 +334,7 @@ class Requester(DBWrapper,threadedcomponent):
                                         screenname = user['screen_name']
                                         keywords[screenname] = "Twitter"
                                         break
-                        except AttributeError, e:
+                        except AttributeError:
                             pass
                         config[firstname + " " + lastname] = screenname
                     keywords[firstname + " " + lastname] = "Participant"
@@ -379,7 +381,7 @@ class Requester(DBWrapper,threadedcomponent):
                                         screenname = user['screen_name']
                                         keywords[screenname] = "Twitter"
                                         break
-                        except AttributeError, e:
+                        except AttributeError:
                             pass
                         config[firstname + " " + lastname] = screenname
                     keywords[firstname + " " + lastname] = "Actor"
@@ -405,7 +407,7 @@ class Requester(DBWrapper,threadedcomponent):
                                         screenname = user['screen_name']
                                         keywords[screenname] = "Twitter"
                                         break
-                        except AttributeError, e:
+                        except AttributeError:
                             pass
                         config[titlesave] = screenname
 
@@ -414,7 +416,7 @@ class Requester(DBWrapper,threadedcomponent):
                     raw_config = cjson.encode(config)
                     file.write(raw_config)
                     file.close()
-                except IOError, e:
+                except IOError:
                     Print ("Failed to save name cache - could cause rate limit problems")
 
                 return [keywords,data]

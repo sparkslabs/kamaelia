@@ -275,8 +275,8 @@ if __name__=="__main__":
                 pids = self.takesomefrom(self.subscribed)
                 self.send( ("REMOVE",pids,(self,"inbox")), "outbox")
                 self.notsubscribed.extend(pids)
-            print self.spacing,"Now subscribed to pids:"
-            print self.spacing,"  ",self.subscribed
+            print (self.spacing,"Now subscribed to pids:")
+            print (self.spacing,"  ",self.subscribed)
                 
         def main(self):
             cat = CAT.getcat()
@@ -290,10 +290,10 @@ if __name__=="__main__":
                     packet = self.recv("inbox")
                     pid = ((ord(packet[1]) << 8) + ord(packet[2])) & 0x1fff
                     if pid not in self.subscribed:
-                        print self.spacing,"Shouldn't have received pid:",pid
+                        print (self.spacing,"Shouldn't have received pid:",pid)
                     else:
                         if pid in self.notyetreceived:
-                            print self.spacing,"Received 1st of pid:",pid
+                            print (self.spacing,"Received 1st of pid:",pid)
                             self.notyetreceived.remove(pid)
                         
                 if self.scheduler.time >= nextchangetime:
@@ -305,8 +305,8 @@ if __name__=="__main__":
                     self.pause()
                 yield 1
                 
-    print "There's a delay of several seconds before you'll see any activity..."
-    print "---1st subscriber:------|---2nd subscriber:------"
+    print ("There's a delay of several seconds before you'll see any activity...")
+    print ("---1st subscriber:------|---2nd subscriber:------")
     
     Subscriber("MUX1", 0,  1,2,3,4,5).activate()
     Subscriber("MUX1", 25, 1,2,3,4,5).activate()

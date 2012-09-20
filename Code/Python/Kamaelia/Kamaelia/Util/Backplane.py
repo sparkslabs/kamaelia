@@ -165,7 +165,8 @@ class Backplane(Axon.Component.component):
         try:
             cat.registerService("Backplane_I_"+self.name, splitter, "inbox")
             cat.registerService("Backplane_O_"+self.name, splitter, "configuration")
-        except Axon.AxonExceptions.ServiceAlreadyExists, e:
+        except Axon.AxonExceptions.ServiceAlreadyExists:
+            e = sys.exc_info()[1]
             print ("***************************** ERROR *****************************")
             print ("An attempt to make a second backplane with the same name happened.")
             print ("This is incorrect usage.")

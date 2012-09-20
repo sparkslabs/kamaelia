@@ -145,7 +145,7 @@ class EITPacketParser(component):
                     continue
                 
                 if not syntax:
-                    print "wrong syntax"
+                    print ("wrong syntax")
                     continue
                 
                 if not current_next: # subtable not yet applicable
@@ -154,12 +154,12 @@ class EITPacketParser(component):
                 # which subtable (uniquely identified by table_id, service(channel), TS and network)
                 subtable_id = (table_id, service_id, ts_id, net_id)
                 
-#                print "EIT table_id=",hex(table_id)
-#                print subtable_id
-#                print section_num,last_section,seg_last_sect
+#                print ("EIT table_id=",hex(table_id))
+#                print (subtable_id_
+#                print (section_num,last_section,seg_last_sect)
                 
                 if crc32(data):  # fail on non-zero result
-                    print "EIT packet CRC error"
+                    print ("EIT packet CRC error")
                     continue
                 
                 msg['service'] = service_id
@@ -215,7 +215,7 @@ class EITPacketParser(component):
                    
 def crc32(data):
     poly = 0x4c11db7
-    crc = 0xffffffffL
+    crc = 0xffffffff
     for byte in data:
         byte = ord(byte)
         for bit in range(7,-1,-1):  # MSB to LSB
@@ -223,7 +223,7 @@ def crc32(data):
             crc = crc << 1
             if ((byte>>bit)&1) ^ z32:
                 crc = crc ^ poly
-            crc = crc & 0xffffffffL
+            crc = crc & 0xffffffff
     return crc
 
 
@@ -344,7 +344,7 @@ class TimeAndDatePacketParser(component):
                     continue
                 
                 if syntax:
-                    print "wrong syntax"
+                    print ("wrong syntax")
                     continue
                 
                 date     = parseMJD(s[2])                         # Y, M, D

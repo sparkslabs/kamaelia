@@ -131,7 +131,7 @@ if __name__=="__main__":
             while not self.dataReady("control"):
                 if time.time() - t>0.3:
                     self.send("hello", "outbox")
-                    print self
+                    print (self)
                     t = time.time()
                 yield 1
             self.send(self.recv("control"), "signal")
@@ -152,7 +152,7 @@ if __name__=="__main__":
             while not self.dataReady("control"):
                 if time.time() - t>0.3:
                     self.send("hello", "outbox")
-                    print self
+                    print (self)
                     t = time.time()
                 yield 1
             self.send(self.recv("control"), "signal")
@@ -167,7 +167,7 @@ if __name__=="__main__":
             while not self.dataReady("control"):
                 if time.time() - t>0.3:
                     self.send("hello", "outbox")
-                    print self
+                    print (self)
                     t = time.time()
                 yield 1
             self.send(self.recv("control"), "signal")
@@ -185,7 +185,7 @@ if __name__=="__main__":
             while not self.dataReady("control"):
                 if time.time() - t>0.3:
                     self.send("hello", "outbox")
-                    print self
+                    print (self)
                     t = time.time()
                 yield 1
             self.send(self.recv("control"), "signal")
@@ -199,7 +199,7 @@ if __name__=="__main__":
             t = time.time()
             while 1:
                 if time.time() - t>0.3:
-                    print self
+                    print (self)
                     t = time.time()
                 yield 1
     

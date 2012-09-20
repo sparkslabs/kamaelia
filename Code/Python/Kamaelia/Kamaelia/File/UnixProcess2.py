@@ -510,7 +510,21 @@ class _ToFileHandle(component):
                     if byteswritten >= 0:
                         dataPending = dataPending[byteswritten:]
                     # dataPending=""
-                except OSError,IOError:
+                except OSError:
+                    
+                    # data pending
+                    # wait around until stdin is ready
+                    if not self.dataReady("ready"):
+                        self.send(newWriter(self,((self, "ready"), self.fh)), "selector")
+                    while not self.dataReady("ready"):
+                        self.checkShutdown(noNeedToWait=False)
+                        self.pause()
+                        yield 1
+                        
+                    self.recv("ready")
+                
+                except IOError:
+                    
                     # data pending
                     # wait around until stdin is ready
                     if not self.dataReady("ready"):
@@ -611,7 +625,20 @@ class _FromFileHandle(component):
                         dataPending = os.read(self.fh.fileno(), self.maxReadChunkSize)
                         if dataPending=="":
                             raise UserWarning( "STOP" )
-                    except OSError,IOError:
+                    except IOError:
+                        # no data available yet, need to wait
+                        if self.checkShutdown():
+                            raise UserWarning( "STOP" )
+                        if self.dataReady("ready"):
+                            self.recv("ready")
+                        else:
+                            self.send(newReader(self,((self, "ready"), self.fh)), "selector")
+                            while not self.dataReady("ready") and not self.checkShutdown():
+                                self.pause()
+                                yield 1
+                            if self.dataReady("ready"):
+                                self.recv("ready")
+                    except OSError:
                         # no data available yet, need to wait
                         if self.checkShutdown():
                             raise UserWarning( "STOP" )
@@ -625,7 +652,7 @@ class _FromFileHandle(component):
                             if self.dataReady("ready"):
                                 self.recv("ready")
                         
-        except "STOP":
+        except UserWarning:
             pass  # ordered to shutdown!
         
         self.send(removeReader(self,(self.fh)), "selector")
@@ -660,7 +687,7 @@ if __name__=="__main__":
             self.send("byebye!!!!!\n", "outbox")
             b+=len("byebye!!!!!\n")
             self.send(producerFinished(), "signal")
-            print "total sent", b
+            print ("total sent", b)
             
     from Axon.ThreadedComponent import threadedcomponent
     

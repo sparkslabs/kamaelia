@@ -107,23 +107,23 @@ class JsonRpcProtocol(object):
             for arg_name, response_callback  in function._callbacks_.items():
                 name = function.__name__
                 self.callback_table[function][arg_name] = response_callback
-                print 'Added callback for method %s, argument %s' % (name, arg_name)
+                print ('Added callback for method %s, argument %s' % (name, arg_name))
                 try:
                     # args by position - offset needed for instance methods etc
                     offset = 1 if (hasattr(function, 'im_self') and function.im_self) else 0                    
                     arg_num = inspect.getargspec(function)[0].index(arg_name) - offset
                     self.callback_table[function][arg_num] = response_callback
-                    print 'Added callback for method %s, arg_num %s' % (name, arg_num)
+                    print ('Added callback for method %s, arg_num %s' % (name, arg_num))
                 except ValueError:
-                    print 'WARNING: unable to determine argument position for callback on method %s, argument %s.\n' \
-                          'Automatic callback conversion will not occur if called by position.' % (name, arg_name)
+                    print ('WARNING: unable to determine argument position for callback on method %s, argument %s.\n' \
+                          'Automatic callback conversion will not occur if called by position.' % (name, arg_name) )
     def add_function(self, function, name = None):
         if name is None:
             name = function.__name__
         if name in self.dispatch_table:
             raise ValueError('rpc method %s already exists!' % name)
         self.dispatch_table[name] = function
-        print 'Added rpc method %s' % name
+        print ('Added rpc method %s' % name)
         self.add_callbacks(function)
     def add_instance(self, instance, prefix = None):
         '''Add all callable attributes of an instance not starting with '_'.
@@ -143,7 +143,7 @@ class JsonRpcProtocol(object):
         self.requests_on_connect.append( (req_or_notification, wait) )
     def __call__(self, **kwargs):
         if self.debug >= 1:
-            print 'Creating new Protocol Factory: ', str(kwargs)
+            print ('Creating new Protocol Factory: ', str(kwargs))
         connection = Graphline( SPLITTER = JsonSplitter(debug = self.debug, factory = self, **kwargs), 
                           DESERIALIZER = Deserializer(debug = self.debug, factory = self, **kwargs),
                           DISPATCHER = Dispatcher(debug = self.debug, factory = self, **kwargs),
@@ -183,29 +183,29 @@ class JsonSplitter(Axon.Component.component):
     def __init__(self, **kwargs):
         super(JsonSplitter, self).__init__(**kwargs)
         self.partial_data = ''
-        if self.debug >= 3: print 'Created %s' % repr(self)
+        if self.debug >= 3: print ('Created %s' % repr(self))
     def main(self):
         while not self.shutdown():
             if self.dataReady('inbox'):
                 data = self.recv('inbox')
-                if self.debug >= 4: print 'Got data: <<%s>>' % data
+                if self.debug >= 4: print ('Got data: <<%s>>' % data)
                 Json_strings, self.partial_data = json_split(self.partial_data + data)
                 yield 1
                 # send to dispatch
                 for message in Json_strings:
-                    if self.debug >= 3: print 'Sent to deserializer: %s' % message
+                    if self.debug >= 3: print ('Sent to deserializer: %s' % message)
                     self.send(message, 'outbox')
                     yield 1
             if not self.anyReady():
                 self.pause()
             yield 1
         if self.debug >= 3:
-            print 'End of main for %s' % self.__class__.__name__
+            print ('End of main for %s' % self.__class__.__name__)
     def shutdown(self):
         if self.dataReady('control'):
             msg = self.recv('control')
             if isinstance(msg, shutdownMicroprocess) or isinstance(msg, producerFinished):
-                if self.debug >= 3: print '%s got shutdown msg: %r' % (self.__class__.__name__, msg)
+                if self.debug >= 3: print ('%s got shutdown msg: %r' % (self.__class__.__name__, msg))
                 self.send(msg, 'signal')
                 return True
             return False
@@ -221,27 +221,28 @@ class Deserializer(Axon.Component.component):
     def __init__(self, **kwargs):
         super(Deserializer, self).__init__(**kwargs)
         self.serializer = JsonRpc20()  # FIXME: make this a paramater
-        if self.debug >= 3: print 'Created %s' % repr(self)        
+        if self.debug >= 3: print ('Created %s' % repr(self))
     def main(self):
         while not self.shutdown():
             if self.dataReady('inbox'):
                 data = self.recv('inbox')
-                if self.debug >=1: print '--> %s' % data
+                if self.debug >=1: print ('--> %s' % data)
                 try:
                     request = self.serializer.loads_request_response(data)
                     self.send(request, 'outbox')
-                except RPCFault, error:
+                except RPCFault:
+                    error = sys.exc_info()[1]
                     self.send( (error, None), 'error')
             if not self.anyReady():
                 self.pause()                
             yield 1
         if self.debug >= 3:
-            print 'End of main for %s' % self.__class__.__name__
+            print ('End of main for %s' % self.__class__.__name__)
     def shutdown(self):
         if self.dataReady('control'):
             msg = self.recv('control')
             if isinstance(msg, shutdownMicroprocess) or isinstance(msg, producerFinished):
-                if self.debug >= 3: print '%s got shutdown msg: %r' % (self.__class__.__name__, msg)
+                if self.debug >= 3: print ('%s got shutdown msg: %r' % (self.__class__.__name__, msg))
                 self.send(msg, 'signal')
                 return True
             return False
@@ -275,7 +276,7 @@ class Dispatcher(Axon.Component.component):
                }    
     def __init__(self, **kwargs):
         super(Dispatcher, self).__init__(**kwargs)
-        if self.debug >= 3: print 'Created %s' % repr(self)
+        if self.debug >= 3: print ('Created %s' % repr(self))
     def _do_dispatch(self, dispatch_func, args, id, notification, convert_args = True):
         'Assumes args is always a list, tuple or dict'
         kwargs = {}
@@ -295,10 +296,10 @@ class Dispatcher(Axon.Component.component):
         return_box = (self, 'result_in')
         dispatch_info = (dispatch_func, args, kwargs)
         return_info = (id, notification)
-        if self.debug >= 3: print 'Sending: %r\n%r\n%r' % (return_box, dispatch_info, return_info)
+        if self.debug >= 3: print ('Sending: %r\n%r\n%r' % (return_box, dispatch_info, return_info))
         self.send( (return_box, dispatch_info, return_info), 'outbox')                
     def _process_request(self, request):
-        if self.debug >= 3: print 'Got dispatch request: %s' % repr(request)
+        if self.debug >= 3: print ('Got dispatch request: %s' % repr(request))
         notification = False
         if len(request) == 2:
             notification = True
@@ -313,7 +314,7 @@ class Dispatcher(Axon.Component.component):
             dispatch_func = self.factory.dispatch_table[method]
             self._do_dispatch(dispatch_func, args, id, notification)
     def _process_response(self, response):
-        print '=== Response: %s ===' % repr(response)
+        print ('=== Response: %s ===' % repr(response))
         result, id = response
         response_callback = None
         if id == self.factory.requests_on_connect_wait:
@@ -325,14 +326,14 @@ class Dispatcher(Axon.Component.component):
             response_callback = self.factory.requests_sent.pop(id)
             assert isinstance(response_callback, ResponseCallback)
         except KeyError:
-            print 'ERROR: Invalid response id %s' % id
+            print ('ERROR: Invalid response id %s' % id)
         if result is None:
             return
         if response_callback.convert_args and type(result) not in (types.ListType, types.TupleType, types.DictionaryType):
-            print "ERROR: Can't convert response result to procedure argments - must be List, Tuple or Dict"
+            print ("ERROR: Can't convert response result to procedure argments - must be List, Tuple or Dict")
             return
         if not response_callback:
-            print 'ERROR: Got result for a notification or request with no callback defined'
+            print ('ERROR: Got result for a notification or request with no callback defined')
         else:
             self._do_dispatch(response_callback.callback_func, result, id, True, convert_args = response_callback.convert_args)  # not really a notification - but we don't return a response to a response
     def main(self):
@@ -348,30 +349,30 @@ class Dispatcher(Axon.Component.component):
                     self._process_response(response)
                 elif data[0] == ERROR:
                     # FIXME: handle error responses
-                    print '!!! GOT ERROR RESPONSE: %s' % repr(data[1])
+                    print ('!!! GOT ERROR RESPONSE: %s' % repr(data[1]))
                 else:
                     # FIXME
-                    print 'INTERNAL ERROR: Unexpected message type'
+                    print ('INTERNAL ERROR: Unexpected message type')
             if self.dataReady('result_in'):
                 data = self.recv('result_in')
                 result, (id, notification) = data
                 if isinstance(result, RequestOrNotification):
-                    if self.debug >= 3: print 'Got RequestOrNotification: %s' % result
+                    if self.debug >= 3: print ('Got RequestOrNotification: %s' % result)
                     self.send(result, 'request_out')
                 else:
-                    if self.debug >= 2: print 'Got result for id %s:\n  %s' % (id, repr(result))
+                    if self.debug >= 2: print ('Got result for id %s:\n  %s' % (id, repr(result)))
                     if not notification:
                         self.send((result, id), 'result_out')
             if not self.anyReady():
                 self.pause()
             yield 1                
         if self.debug >= 3:
-            print 'End of main for %s' % self.__class__.__name__
+            print ('End of main for %s' % self.__class__.__name__)
     def shutdown(self):
         if self.dataReady('control'):
             msg = self.recv('control')
             if isinstance(msg, shutdownMicroprocess) or isinstance(msg, producerFinished):
-                if self.debug >= 3: print '%s got shutdown msg: %r' % (self.__class__.__name__, msg)
+                if self.debug >= 3: print ('%s got shutdown msg: %r' % (self.__class__.__name__, msg))
                 self.send(msg, 'signal')
                 return True
             return False
@@ -386,40 +387,41 @@ class ResponseSerializer(Axon.Component.component):
     def __init__(self, **kwargs):
         super(ResponseSerializer, self).__init__(**kwargs)
         self.serializer = JsonRpc20()  # FIXME: make this a paramater
-        if self.debug >= 3: print 'Created %s' % repr(self)        
+        if self.debug >= 3: print ('Created %s' % repr(self))
     def main(self):
         while not self.shutdown():
             if self.dataReady('inbox'):
                 result, id = self.recv('inbox')
-                if self.debug >= 3: print 'Got result. Id: %r, Value: %r' % (id, result)
+                if self.debug >= 3: print ('Got result. Id: %r, Value: %r' % (id, result))
                 if isinstance(result, RPCFault):
                     response = self.serializer.dumps_error( result, id)
                 elif isinstance(result, Exception):
                     # procedure exception - FIXME: log to logger!
-                    print format_exc()
+                    print (format_exc())
                     response = self.serializer.dumps_error( RPCFault(INTERNAL_ERROR, ERROR_MESSAGE[INTERNAL_ERROR]), id )
                 else:                    
                     try:
                         response = self.serializer.dumps_response(result, id)                                       
-                    except RPCFault, e:
+                    except RPCFault:
+                        e = sys.exc_info()[1]
                         response = self.serializer.dumps_error( e, id)
                         # serialization error - log to logger!
-                        print format_exc()
+                        print (format_exc())
                         response = self.serializer.dumps_error( RPCFault(INTERNAL_ERROR, ERROR_MESSAGE[INTERNAL_ERROR]), id )
                 response += '\r\n'  # make things easier to read if testing with telnet or netcat
                 if self.debug >= 1:
-                    print '<-- %s' % response
+                    print ('<-- %s' % response)
                 self.send(response, 'outbox')
             if not self.anyReady():
                 self.pause()
             yield 1
         if self.debug >= 3:
-            print 'End of main for %s' % self.__class__.__name__
+            print ('End of main for %s' % self.__class__.__name__)
     def shutdown(self):
         if self.dataReady('control'):
             msg = self.recv('control')
             if isinstance(msg, shutdownMicroprocess) or isinstance(msg, producerFinished):
-                if self.debug >= 3: print '%s got shutdown msg: %r' % (self.__class__.__name__, msg)
+                if self.debug >= 3: print ('%s got shutdown msg: %r' % (self.__class__.__name__, msg))
                 self.send(msg, 'signal')
                 return True
             return False
@@ -435,7 +437,7 @@ class RequestSerializer(Axon.Component.component):
     def __init__(self, **kwargs):
         super(RequestSerializer, self).__init__(**kwargs)
         self.serializer = JsonRpc20()  # FIXME: make this a paramater
-        if self.debug >= 3: print 'Created %s' % repr(self)
+        if self.debug >= 3: print ('Created %s' % repr(self))
     def _send_req_or_notification(self, req, wait = False):
         assert isinstance(req, RequestOrNotification)
         if req.response_callback:
@@ -448,7 +450,7 @@ class RequestSerializer(Axon.Component.component):
             output = self.serializer.dumps_notification(req.method, req.params) if req.params \
                 else self.serializer.dumps_notification(req.method)
         output += '\r\n'  # make things easier to read if testing with telnet or netcat
-        if self.debug >= 1: print '<-- %s' % output
+        if self.debug >= 1: print ('<-- %s' % output)
         self.send(output, 'outbox')        
     def main(self):
         while not self.shutdown():
@@ -462,12 +464,12 @@ class RequestSerializer(Axon.Component.component):
                 self.pause()
             yield 1
         if self.debug >= 3:
-            print 'End of main for %s' % self.__class__.__name__
+            print ('End of main for %s' % self.__class__.__name__)
     def shutdown(self):
         if self.dataReady('control'):
             msg = self.recv('control')
             if isinstance(msg, shutdownMicroprocess) or isinstance(msg, producerFinished):
-                if self.debug >= 3: print '%s got shutdown msg: %r' % (self.__class__.__name__, msg)
+                if self.debug >= 3: print ('%s got shutdown msg: %r' % (self.__class__.__name__, msg))
                 self.send(msg, 'signal')
                 return True
             return False
@@ -481,23 +483,23 @@ class Finalizer(Axon.Component.component):
                }    
     def __init__(self, **kwargs):
         super(Finalizer, self).__init__(**kwargs)
-        if self.debug >= 3: print 'Created %s' % repr(self)
+        if self.debug >= 3: print ('Created %s' % repr(self))
     def main(self):
         while not self.shutdown():
             if not self.anyReady():
                 self.pause()
             yield 1
         if self.debug >= 3:
-            print 'End of main for %s' % self.__class__.__name__
+            print ('End of main for %s' % self.__class__.__name__)
     def shutdown(self):
         if self.dataReady('control'):
             msg = self.recv('control')
             if isinstance(msg, shutdownMicroprocess) or isinstance(msg, producerFinished):
-                if self.debug >= 3: print '%s got shutdown msg: %r' % (self.__class__.__name__, msg)
+                if self.debug >= 3: print ('%s got shutdown msg: %r' % (self.__class__.__name__, msg))
                 # FIXME: Log any outstanding request reponses missing
-                print 'Connection is being closed'
+                print ('Connection is being closed')
                 for req_id in self.factory.requests_sent:
-                    print 'WARNING: No response seen to request %s' % req_id
+                    print ('WARNING: No response seen to request %s' % req_id)
                 self.send(msg, 'signal')
                 return True
             return False
@@ -523,7 +525,7 @@ class ThreadedWorker(Axon.ThreadedComponent.threadedcomponent):
                }
     def __init__(self, **kwargs):
         super(ThreadedWorker, self).__init__(**kwargs)
-        if self.debug >= 3: print 'Created %s' % repr(self)
+        if self.debug >= 3: print ('Created %s' % repr(self))
     def main(self):
         while not self.shutdown():
             if self.dataReady('inbox'):
@@ -534,22 +536,23 @@ class ThreadedWorker(Axon.ThreadedComponent.threadedcomponent):
                 for arg_name in kwargs:
                     if isinstance(kwargs[arg_name], CallbackProxy):
                         kwargs[arg_name].set_outbox(self, 'outbox')
-                if self.debug >= 3: print 'Worker %s got data: %r, %r, %r' % (id(self), func, args, kwargs)
+                if self.debug >= 3: print ('Worker %s got data: %r, %r, %r' % (id(self), func, args, kwargs))
                 try:
                     result = func(*args, **kwargs)
-                except Exception, error:
+                except Exception:
+                    error = sys.exc_info()[1]
                     result = error
-                if self.debug >= 3: print 'Worker %s got result: %r' % (id(self), result)
+                if self.debug >= 3: print ('Worker %s got result: %r' % (id(self), result))
                 self.send(result, 'outbox')
             if not self.anyReady():
                 self.pause()
         if self.debug >= 3:
-            print 'End of main for %s' % self.__class__.__name__
+            print ('End of main for %s' % self.__class__.__name__)
     def shutdown(self):
         if self.dataReady('control'):
             msg = self.recv('control')
             if isinstance(msg, shutdownMicroprocess) or isinstance(msg, producerFinished):
-                if self.debug >= 3: print '%s got shutdown msg: %r' % (self.__class__.__name__, msg)
+                if self.debug >= 3: print ('%s got shutdown msg: %r' % (self.__class__.__name__, msg))
                 self.send(msg, 'signal')
                 return True
             return False
@@ -586,12 +589,12 @@ class TaskManager(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             control_link = self.link((self, signal_name), (self.workers[worker_num], 'control'))
             inlink = self.link((self.workers[worker_num], 'outbox'), (self, inbox_name))
             self.links.append((outlink, control_link, inlink))
-        if self.debug >= 3: print 'Created %s' % repr(self)            
+        if self.debug >= 3: print ('Created %s' % repr(self))
     def main(self):
         while not self.shutdown():
             if self.dataReady('inbox'):
                 data = self.recv('inbox')
-                if self.debug >= 3: print 'Task Manager got data: %s' % repr(data)
+                if self.debug >= 3: print ('Task Manager got data: %s' % repr(data))
                 self.work_queue.append(data)
             if len(self.work_queue) != 0 and None in self.task_data:
                 return_box, dispatch_info, return_info = self.work_queue.pop(0)
@@ -600,19 +603,19 @@ class TaskManager(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 worker_num = self.task_data.index(None) # pick the first free worker
                 self.task_data[worker_num] = (result_box_name, return_box, return_info)
                 if self.debug >= 3:
-                    print 'Sending task data to worker %s (box %s)' % (worker_num, self.worker_box_names[worker_num]['to'])
-                    print 'Dispatch:', dispatch_info
+                    print ('Sending task data to worker %s (box %s)' % (worker_num, self.worker_box_names[worker_num]['to']))
+                    print ('Dispatch:', dispatch_info)
                 self.send(dispatch_info, self.worker_box_names[worker_num]['to'])
             if self.anyReady():
                 for worker_num in range(len(self.workers)):
                     boxname = self.worker_box_names[worker_num]['from']
                     if self.dataReady(boxname):
                         data = self.recv(boxname)
-                        if self.debug >= 3: print 'TaskManager got data %r on boxname %s' % (data, boxname)
+                        if self.debug >= 3: print ('TaskManager got data %r on boxname %s' % (data, boxname))
                         result_box_name, return_box, return_info = self.task_data[worker_num]
                         self.send( (data, return_info), result_box_name)  # post the result
                         if not isinstance(data, RequestOrNotification):
-                            if self.debug >= 3: print '** Doing unlink ** on %s' % result_box_name
+                            if self.debug >= 3: print ('** Doing unlink ** on %s' % result_box_name)
                             self.unlink( (self, result_box_name), return_box) 
                             self.deleteOutbox(result_box_name)
                             self.task_data[worker_num] = None  # mark that worker as done
@@ -621,12 +624,12 @@ class TaskManager(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                 self.pause()
             yield 1
         if self.debug >= 3:
-            print 'End of main for %s' % self.__class__.__name__
+            print ('End of main for %s' % self.__class__.__name__)
     def shutdown(self):
         if self.dataReady('control'):
             msg = self.recv('control')
             if isinstance(msg, shutdownMicroprocess) or isinstance(msg, producerFinished):
-                if self.debug >= 3: print '%s got shutdown msg: %r' % (self.__class__.__name__, msg)
+                if self.debug >= 3: print ('%s got shutdown msg: %r' % (self.__class__.__name__, msg))
                 for boxnames in self.worker_box_names:
                     self.send(msg, boxnames['signal'])
                 self.send(msg, 'signal')
@@ -653,7 +656,7 @@ class JsonRpcTCPServer(JsonRPCBase):
         self.portnumber = portnumber
         self.server = None
     def start(self):
-        if self.debug: print 'Starting JSON-RPC server on port %s' % self.portnumber
+        if self.debug: print ('Starting JSON-RPC server on port %s' % self.portnumber)
         self.server = ServerCore( protocol = self.jsonprotocol, port = self.portnumber )
         self.server.run()
     #FIXME: some way to stop!        
@@ -675,7 +678,7 @@ class JsonRpcTCPClient(JsonRPCBase):
                         } )
         self.handle = Handle(self.client)
     def start(self):
-        if self.debug: print 'Starting TCP Client - connecting to %s on port %s' % (self.host, self.portnumber)
+        if self.debug: print ('Starting TCP Client - connecting to %s on port %s' % (self.host, self.portnumber))
         ##self.client.run()
         try:
             background().start()

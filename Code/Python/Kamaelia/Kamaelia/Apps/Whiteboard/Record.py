@@ -24,16 +24,16 @@ class AlsaRecorder(Axon.ThreadedComponent.threadedcomponent):
             time.sleep(delay) # Causes significantly lower CPU usage
             l,data = inp.read()
             if l:
-	        try:
-		    self.send(data, "outbox")
-		    if exception == True:
-		        print "Recording buffer cleared - continuing"
-		        exception = False
-		except Axon.AxonExceptions.noSpaceInBox, e:
-		    # Recordings aren't being processed quickly enough
-		    if exception == False:
-		        print "Recording buffer full - waiting for data to clear"
-		        exception = True
+               try:
+                    self.send(data, "outbox")
+                    if exception == True:
+                        print ("Recording buffer cleared - continuing")
+                        exception = False
+               except Axon.AxonExceptions.noSpaceInBox:
+                    # Recordings aren't being processed quickly enough
+                    if exception == False:
+                        print ("Recording buffer full - waiting for data to clear")
+                        exception = True
 
 def parseargs(argv, longopts, longflags):
     args = {}
@@ -53,7 +53,7 @@ def parseargs(argv, longopts, longflags):
                 del argv[i]
             except ValueError:
                 if longopts[k,key] == None:
-                    print "missing argument: --"+key, "-"+k
+                    print ("missing argument: --"+key, "-"+k)
                     sys.exit(0)
                 args[key] = longopts[k,key]
 
@@ -89,7 +89,7 @@ if __name__ == "__main__":
                       [("h","help")],
                     )
 
-    print repr(args)
+    print (repr(args))
     Pipeline(
         AlsaRecorder(channels=args["channels"],rate=args["rate"]),
         SimpleFileWriter(args["file"])

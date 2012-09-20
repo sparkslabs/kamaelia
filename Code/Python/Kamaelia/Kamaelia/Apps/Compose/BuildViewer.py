@@ -113,10 +113,11 @@ class ComponentParticle(Particle):
         surface.blit(self.label, (sx - self.label.get_width()/2, sy - self.label.get_height()/2))
 
 
-    def setOffset( self, (left,top) ):
+    def setOffset( self, offset ):
         """Inform of a change to the coords of the top left of the drawing surface,
         so that this entity can render, as if the top left had moved
         """
+        (left,top) = offset
         self.left = left
         self.top  = top
 

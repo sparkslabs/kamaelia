@@ -31,16 +31,16 @@ class Uploader(Axon.ThreadedComponent.threadedcomponent):
         if self.username != "" and self.password != "":
             while 1:
                 for (upload_name, finalname) in self.Inbox("inbox"):
-                    print "UPLOADING", upload_name
+                    print ("UPLOADING", upload_name)
                     os.system( self.command % {
                                             "HOSTNAME":self.hostname,
                                             "USERNAME":self.username,
                                             "PASSWORD":self.password,
                                             "UPLOADFILE":upload_name,
                                          } )
-                    print "MOVING", upload_name, "TO", os.path.join("encoded", finalname)
+                    print ("MOVING", upload_name, "TO", os.path.join("encoded", finalname))
                     os.rename(upload_name, os.path.join("encoded", finalname))
-                    print "-----------------"
+                    print ("-----------------")
 
                 if self.dataReady("control"):
                     break
@@ -50,5 +50,5 @@ class Uploader(Axon.ThreadedComponent.threadedcomponent):
         if self.dataReady("control"):
             self.send(self.recv("control"), "signal")
         else:
-            print "Needed username & password to do upload!"
+            print ("Needed username & password to do upload!")
             self.send(Axon.Ipc.shutdownMicroprocess(), "signal")

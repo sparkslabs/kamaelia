@@ -91,7 +91,7 @@ class TestResult(component):
     def mainBody(self):
         if self.dataReady():
             if not self.recv():
-                raise AssertionError, "false value message received by: %s" % self
+                raise AssertionError("false value message received by: %s" % self)
         if self.dataReady("control"):
             mes = self.recv("control")
             if isinstance(mes, StopSystem):

@@ -75,7 +75,8 @@ class DataCollector(DBWrapper,threadedcomponent):
                             tweetid = newdata['id']
                             try:
                                 Print("New tweet! @", repr(newdata['user']['screen_name']) , ": " + repr(newdata['text']))
-                            except UnicodeEncodeError,e:
+                            except UnicodeEncodeError:
+                                e = sys.exc_info()[1]
                                 Print("Unicode error suppressed", e)
 
                             for pid in tweet[1]:
@@ -181,7 +182,8 @@ class RawDataCollector(DBWrapper, threadedcomponent):
                             if len(tweet) < 16000:
                                 try:
                                     self.db_insert("""INSERT INTO rawtweets (tweet_id,tweet_json,tweet_stored_seconds,tweet_stored_fraction) VALUES (%s,%s,%s,%s)""", (tweetid,tweet,tweetsecs,tweetfrac))
-                                except _mysql_exceptions.IntegrityError, e:
+                                except _mysql_exceptions.IntegrityError:
+                                    e = sys.exc_info()[1]
                                     # Handle the possibility for Twitter having sent us a duplicate
                                     Print( "Duplicate tweet ID:", e)
                             else:
@@ -193,14 +195,14 @@ class RawDataCollector(DBWrapper, threadedcomponent):
                                         file = open(homedir + "/oversizedtweets.conf",'r')
                                         tweetcontents = file.read()
                                         file.close()
-                                    except IOError, e:
+                                    except IOError:
                                         Print ("Failed to load oversized tweet cache - it will be overwritten")
                                 try:
                                     file = open(homedir + "/oversizedtweets.conf",'w')
                                     tweetcontents = tweetcontents + tweet
                                     file.write(tweetcontents)
                                     file.close()
-                                except IOError, e:
+                                except IOError:
                                     Print ("Failed to save oversized tweet cache")
             else:
                 time.sleep(0.1)

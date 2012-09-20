@@ -39,13 +39,13 @@ Detecting key presses and mouse button depressions and releases::
             self.target = target
 
         def keydown(self, key, mod, where):
-            print "Keypress '"+key+"' detected by "+where
+            print ("Keypress '"+key+"' detected by "+where)
 
         def mousebuttondown(self, pos, button, where):
-            print "Mouse button depressed"
+            print ("Mouse button depressed")
 
         def mousebuttonup(self, pos, button, where):
-            print "Mouse button released"
+            print ("Mouse button released")
 
 
 
@@ -107,74 +107,74 @@ class EventHandler(object):
    def quit(self, where):
       """Pygame QUIT event handler stub method. Reimplement to handle this event."""
       if self.trace:
-         print "QUIT: (", ")"
+         print ("QUIT: (", ")")
 
    def active(self, gain, state ,where): 
       """Pygame ACTIVEEVENT event handler stub method. Reimplement to handle this event."""
       if self.trace:
-         print "ACTIVE: (", gain, state, ")"
+         print ("ACTIVE: (", gain, state, ")")
 
    def keydown(self, unicode, key, mod, where):
       """Pygame KEYDOWN event handler stub method. Reimplement to handle this event."""
       if self.trace:
-         print "KEYDOWN: (", repr(unicode), key, mod, ")"
+         print ("KEYDOWN: (", repr(unicode), key, mod, ")")
 
    def keyup(self, key, mod, where):
       """Pygame KEYUP event handler stub method. Reimplement to handle this event."""
       if self.trace:
-         print "KEYUP: (", key, mod, ")"
+         print ("KEYUP: (", key, mod, ")")
 
    def mousemotion(self, pos, rel, buttons, where):
       """Pygame MOUSEMOTION event handler stub method. Reimplement to handle this event."""
       if self.trace:
-         print "MOUSEMOTION: (", pos, rel, buttons, ")"
+         print ("MOUSEMOTION: (", pos, rel, buttons, ")")
 
    def mousebuttonup(self, pos, button, where):
       """Pygame MOUSEBUTTONUP event handler stub method. Reimplement to handle this event."""
       if self.trace:
-         print "MOUSEBUTTONUP: (", pos, button, ")"
+         print ("MOUSEBUTTONUP: (", pos, button, ")")
 
    def mousebuttondown(self, pos, button, where):
       """Pygame MOUSEBUTTONDOWN event handler stub method. Reimplement to handle this event."""
       if self.trace:
-         print "MOUSEBUTTONDOWN: (", pos, button, ")"
+         print ("MOUSEBUTTONDOWN: (", pos, button, ")")
 
    def joyaxismotion(self, joy, axis, value, where):
       """Pygame JOYAXISMOTION event handler stub method. Reimplement to handle this event."""
       if self.trace:
-         print "JOYAXISMOTION: (", joy, axis, value, ")"
+         print ("JOYAXISMOTION: (", joy, axis, value, ")")
 
    def joyballmotion(self, joy, ball, rel, where):
       """Pygame JOYBALLMOTION event handler stub method. Reimplement to handle this event."""
       if self.trace:
-         print "JOYBALLMOTION: (", joy, ball, rel, ")"
+         print ("JOYBALLMOTION: (", joy, ball, rel, ")")
 
    def joyhatmotion(self, joy, hat, value, where):
       """Pygame JOYHATMOTION event handler stub method. Reimplement to handle this event."""
       if self.trace:
-         print "JOYHATMOTION: (", joy, hat, value, ")"
+         print ("JOYHATMOTION: (", joy, hat, value, ")")
 
    def joybuttonup(self, joy, button, where):
       """Pygame JOYBUTTONUP event handler stub method. Reimplement to handle this event."""
       if self.trace:
-         print "JOYBUTTONUP: (", joy, button, ")"
+         print ("JOYBUTTONUP: (", joy, button, ")")
 
    def joybuttondown(self, joy, button, where):
       """Pygame JOYBUTTONDOWN event handler stub method. Reimplement to handle this event."""
       if self.trace:
-         print "JOYBUTTONDOWN: (", joy, button, ")"
+         print ("JOYBUTTONDOWN: (", joy, button, ")")
 
    def videoresize(self, size, where):
       """Pygame VIDEORESIZE event handler stub method. Reimplement to handle this event."""
       if self.trace:
-         print "VIDEORESIZE: (", size, ")"
+         print ("VIDEORESIZE: (", size, ")")
 
    def videoexpose(self, where):
       """Pygame VIDEOEXPOSE event handler stub method. Reimplement to handle this event."""
       if self.trace:
-         print "VIDEOEXPOSE: (", ")"
+         print ("VIDEOEXPOSE: (", ")")
 
    def userevent(self, code, where): 
       """Pygame USEREVENT event handler stub method. Reimplement to handle this event."""
       if self.trace:
-         print "USEREVENT: (", code, ")"
+         print ("USEREVENT: (", code, ")")

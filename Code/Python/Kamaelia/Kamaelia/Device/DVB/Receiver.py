@@ -153,8 +153,8 @@ if __name__=="__main__":
                 pids = self.takesomefrom(self.subscribed)
                 self.send( ("REMOVE",pids,(self,"inbox")), "outbox")
                 self.notsubscribed.extend(pids)
-            print self.spacing,"Now subscribed to pids:"
-            print self.spacing,"  ",self.subscribed
+            print (self.spacing,"Now subscribed to pids:")
+            print (self.spacing,"  ",self.subscribed)
                 
         def main(self):
             cat = CAT.getcat()
@@ -168,10 +168,10 @@ if __name__=="__main__":
                     packet = self.recv("inbox")
                     pid = ((ord(packet[1]) << 8) + ord(packet[2])) & 0x1fff
                     if pid not in self.subscribed:
-                        print self.spacing,"Shouldn't have received pid:",pid
+                        print (self.spacing,"Shouldn't have received pid:",pid)
                     else:
                         if pid in self.notyetreceived:
-                            print self.spacing,"Received 1st of pid:",pid
+                            print (self.spacing,"Received 1st of pid:",pid)
                             self.notyetreceived.remove(pid)
                         
                 if self.scheduler.time >= nextchangetime:
@@ -194,10 +194,10 @@ if __name__=="__main__":
         "code_rate_LP" : dvb3.frontend.FEC_3_4,
     }
 
-    print "Tunes to UK Crystal palace transmitter MUX 1"
-    print "Subscribers subscribe to PIDs that should contain data"
-    print "May take several seconds before you see any activity..."
-    print "---1st subscriber:------|---2nd subscriber:------"
+    print ("Tunes to UK Crystal palace transmitter MUX 1")
+    print ("Subscribers subscribe to PIDs that should contain data")
+    print ("May take several seconds before you see any activity...")
+    print ("---1st subscriber:------|---2nd subscriber:------")
     
     Subscriber("MUX1", 0,  0,0x11,0x12,600,601).activate()
     Subscriber("MUX1", 25, 0,0x11,0x12,600,601).activate()

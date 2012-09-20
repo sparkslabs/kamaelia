@@ -95,7 +95,7 @@ if __name__=="__main__":
                     raise ValueError("\nFAILED (LOWCHAR) : "+str(test))
             if marshalled[-1] != "\n":
                 raise ValueError("\nFAILED (ENDTERM) : "+str(test))
-            print "."
+            print (".")
         else:
             raise ValueError("\nFAILED (MISMATCH) : "+str(test)+"\nIt was : "+str(demarshalled)+"\n")
             

@@ -43,7 +43,7 @@ from Kamaelia.UI.PygameDisplay import PygameDisplay
 try:
     import Image
 except ImportError:
-    print "WARNING: Python Imaging Library Not available, defaulting to bmp only mode"
+    print ("WARNING: Python Imaging Library Not available, defaulting to bmp only mode")
 
 class Canvas(Axon.Component.component):
     """\
@@ -118,7 +118,7 @@ class Canvas(Axon.Component.component):
                                    position = self.position,
                                  )
               )
-	pygame.display.set_caption("Kamaelia Whiteboard")
+        pygame.display.set_caption("Kamaelia Whiteboard")
 
         self.surface.fill( (self.bgcolour) )
         self.send({"REDRAW":True, "surface":self.surface}, "toDisplay")
@@ -137,7 +137,7 @@ class Canvas(Axon.Component.component):
             while self.dataReady("inbox"):
                 msgs = self.recv("inbox")
 #                \
-#                print repr(msgs)
+#                print (repr(msgs))
                 for msg in msgs:
                     cmd = msg[0]
                     args = msg[1:]
@@ -171,8 +171,8 @@ class Canvas(Axon.Component.component):
             self.clean = True
             self.dirty_sent = False
         elif cmd=="NEW":
-	    self.clear(args)
-	    self.remotenew(args)
+            self.clear(args)
+            self.remotenew(args)
             self.clean = True
             self.dirty_sent = False
         elif cmd=="LINE":
@@ -253,7 +253,7 @@ class Canvas(Axon.Component.component):
             imagestring = zlib.compress(imagestring)
             w,h = self.surface.get_size()
             self.send( [["SETIMG",imagestring,str(w),str(h),"RGB"]], "outbox" )
-#            print "GETIMG"
+#            print ("GETIMG")
 
     def setimg(self, args):
             w,h = int(args[1]), int(args[2])

@@ -458,7 +458,7 @@ class ParseEventInformationTable(component):
                     sections_found[index] = [False]*(last_section_number+1)
                 
 #                 if index[0] == 0x50:
-#                     print index, section_number
+#                     print (index, section_number)
 
                 if not sections_found[index][section_number]:
                     if crcpass or dvbcrc(data[:3+section_length]):
@@ -470,7 +470,7 @@ class ParseEventInformationTable(component):
                         # we have received the whole table, so we're just going to parse
                         # each fragment we get and output it (if we've not seen it before)
                         tablesection = self.parseTableSection(index, (data, section_length))
-#                       print table['actual_other'], table['pf_schedule']
+#                       print (table['actual_other'], table['pf_schedule'])
                         tablesection["version"] = latest_versions[index]
                         tablesection["section"] = section_number
                         tablesection["last_section"] = len(sections_found[index])-1
@@ -512,14 +512,14 @@ class SimplifyEIT(component):
                         elif event['running_status'] in [3,4]:
                             when = "NOW"
                         else:
-                            print "pf",event['running_status']
+                            print ("pf",event['running_status'])
                     else: # is schedule data
                         if event['running_status'] in [0,1,2]:
                             when = "SCHEDULED"
                         elif event['running_status'] in [3,4]:
                             when = "NOW"
                         else:
-                            print "sched",event['running_status']
+                            print ("sched",event['running_status'])
                     
                     name        = ""
                     description = ""

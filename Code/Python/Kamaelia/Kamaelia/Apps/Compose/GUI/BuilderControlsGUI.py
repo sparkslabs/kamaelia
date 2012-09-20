@@ -48,11 +48,11 @@ class BuilderControlsGUI(TkWindow):
         def menuCallback(index, text):
             self.click_menuChoice(lookup[text])
 
-#        print self.classes[0]
+#        print (self.classes[0])
         for theclass in self.classes:
-#            print "THECLASS"
+#            print ("THECLASS")
 #            pprint.pprint(theclass)
-#            print "SSALCEHT"
+#            print ("SSALCEHT")
             lookup[ theclass['module']+"."+theclass['class'] ] = theclass
             items.append(theclass['module']+"."+theclass['class'])
 
@@ -187,7 +187,7 @@ if __name__ == "__main__":
                 for entry in getModuleConstructorArgs( modname, modules[modname] ):
                     yield entry
             except ImportError:
-                print "WARNING: Import Error: ", modname
+                print ("WARNING: Import Error: ", modname)
                 continue
     
     def getModuleConstructorArgs( modulename, classnames):
@@ -213,8 +213,9 @@ if __name__ == "__main__":
         initfunc = eval("component.__init__")
         try:
             (args, vargs, vargkw, defaults) = inspect.getargspec(initfunc)
-        except TypeError, e:
-            print "FAILURE", str(component), repr(component), component
+        except TypeError:
+            e = sys.exc_info()[1]
+            print ("FAILURE", str(component), repr(component), component)
             raise e
     
         arglist = [ [arg] for arg in args ]
@@ -241,7 +242,7 @@ if __name__ == "__main__":
             while 1:
                 while self.dataReady("inbox"):
                     data = self.recv("inbox")
-                    print "-------------------------------------------------------------------"
+                    print ("-------------------------------------------------------------------")
                     pprint.pprint(data)
                 yield 1
     

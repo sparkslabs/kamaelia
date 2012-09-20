@@ -52,15 +52,15 @@ class Intersect:
         
         p = b_pos-r_origin
         for i in range(3):
-            print "pos", str(p)
+            print ("pos", str(p))
             a = b_orientation[i]-p
-            print "a", a, a.length()
+            print ("a", a, a.length())
             h = b_halflengths[i]
-            print "h", h
+            print ("h", h)
             e = a.dot(p)
-            print "e", e
+            print ("e", e)
             f = a.dot(r_dir)
-            print "f", f
+            print ("f", f)
             if abs(f)>Intersect.epsilon:
                 t1 = (e+h)/f
                 t2 = (e-h)/f
@@ -68,12 +68,12 @@ class Intersect:
                     x = t1
                     t1 = t2
                     t2 = x
-                print "t1", t1
-                print "t2", t2
+                print ("t1", t1)
+                print ("t2", t2)
                 if t1 > tmin: tmin = t1
                 if t2 < tmax: tmax = t2
-                print "tmin", tmin
-                print "tmax", tmax
+                print ("tmin", tmin)
+                print ("tmax", tmax)
                 if tmin > tmax: return 0
                 if tmax < 0: return 0
             elif -e-h > 0 or -e+h < 0: return 0

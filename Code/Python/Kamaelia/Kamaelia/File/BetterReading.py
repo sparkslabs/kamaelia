@@ -39,7 +39,7 @@ System Requirements
 This module requires a UNIX system to run currently.
 """
 
-import os, time, fcntl
+import os, time, fcntl, sys
 
 from Axon.Component import component
 from Axon.ThreadedComponent import threadedcomponent
@@ -104,7 +104,8 @@ class IntelligentFileReader(component):
                 self.send(data, "outbox")
                 return True
                 
-        except OSError, e:
+        except OSError:
+            e = sys.exc_info()[1]
             return False
         
     def main(self):
@@ -119,8 +120,9 @@ class IntelligentFileReader(component):
         
         try:
             self.fd = self.openFile(self.filename)
-        except Exception, e:
-            print e
+        except Exception:
+            e = sys.exc_info()[1]
+            print (e)
             return
 
         self.makeNonBlocking(self.fd)
@@ -131,7 +133,7 @@ class IntelligentFileReader(component):
         waiting = True
         
         while not self.done:
-            #print "main"
+            #print ("main")
             yield 1
             
             # we use inbox just to wake us up
@@ -140,7 +142,7 @@ class IntelligentFileReader(component):
             
             # if we should send some more if we can
             if self.dataReady("_selectorready"):
-                #print "selector is ready"
+                #print ("selector is ready")
                 waiting = False
                 msg = self.recv("_selectorready")
 

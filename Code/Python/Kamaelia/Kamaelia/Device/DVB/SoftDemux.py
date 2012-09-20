@@ -108,7 +108,7 @@ if __name__ == "__main__":
     
     results = {}
     for demuxer in [NullDemuxer, DVB_Demuxer,DVB_SoftDemuxer]:
-        print "Timing "+demuxer.__name__+" ..."
+        print ("Timing "+demuxer.__name__+" ...")
         start = time.time()
         for _ in range(3):
             Graphline(
@@ -123,4 +123,4 @@ if __name__ == "__main__":
         
     lowerbound = min(*results.values())
     for name in results:
-        print name, results[name]-lowerbound, "out of",results[name]
+        print (name, results[name]-lowerbound, "out of",results[name])

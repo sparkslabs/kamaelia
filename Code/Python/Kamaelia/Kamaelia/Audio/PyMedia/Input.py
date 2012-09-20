@@ -137,12 +137,12 @@ class Input(threadedcomponent):
                     self.pause(0.01)
                         
             self.snd.stop()
-        except sound.SoundError, e:
-            print "**************************************************************"
-            print "WARNING: Due to a bug in PYMEDIA, Audio input is shutting down"
-            print "ERROR: ",e
-            print "Sorry :-("
-            print "**************************************************************"
+        except sound.SoundError:
+            print ("**************************************************************")
+            print ("WARNING: Due to a bug in PYMEDIA, Audio input is shutting down")
+            print ("ERROR: ")
+            print ("Sorry :-(")
+            print ("**************************************************************")
             shutdown = True
 
 

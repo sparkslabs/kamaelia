@@ -33,7 +33,7 @@ from Axon.Ipc import producerFinished, shutdownMicroprocess # Experimental compo
 try:
     import usb.core
     import usb.util
-except Exception, e:
+except Exception:
     print("SMART Board controls require PyUSB")
     # Tested with version 1.0.0-a0
 
@@ -79,14 +79,14 @@ class SmartBoard(Axon.Component.component):
 
         for cfg in dev:
             print("Config")
-            print cfg.bConfigurationValue
+            print (cfg.bConfigurationValue)
             for i in cfg:
                 print("Interface")
-                print i.bInterfaceNumber
+                print (i.bInterfaceNumber)
                 for e in i:
                     print ("Endpoint")
-                    print e.bEndpointAddress
-                    print usb.util.endpoint_direction(e.bEndpointAddress)
+                    print (e.bEndpointAddress)
+                    print (usb.util.endpoint_direction(e.bEndpointAddress))
 
         # get an endpoint instance
         epin = usb.util.find_descriptor(

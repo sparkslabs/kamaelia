@@ -450,13 +450,13 @@ if __name__ == "__main__":
     class ReassemblePSITables(component):
         """Fake packet reconstructor."""
         def main(self):
-            print "Reassembler",self.id,"starts"
+            print ("Reassembler",self.id,"starts")
             while not self.dataReady("control"):
                 while self.dataReady("inbox"):
                     self.send(self.recv("inbox"),"outbox")
                 self.pause()
                 yield 1
-            print "Reassembler",self.id,"terminates"
+            print ("Reassembler",self.id,"terminates")
     
     import random
     
@@ -496,8 +496,8 @@ if __name__ == "__main__":
                 pids = self.takesomefrom(self.subscribed)
                 self.send( ("REMOVE",pids,(self,"inbox")), "outbox")
                 self.notsubscribed.extend(pids)
-            print self.spacing,"Now subscribed to pids:"
-            print self.spacing,"  ",self.subscribed
+            print (self.spacing,"Now subscribed to pids:")
+            print (self.spacing,"  ",self.subscribed)
                 
         def main(self):
             self.link((self,"outbox"),(svc,"request"))
@@ -508,10 +508,10 @@ if __name__ == "__main__":
                     packet = self.recv("inbox")
                     pid = ((ord(packet[1]) << 8) + ord(packet[2])) & 0x1fff
                     if pid not in self.subscribed:
-                        print self.spacing,"Shouldn't have received pid:",pid
+                        print (self.spacing,"Shouldn't have received pid:",pid)
                     else:
                         if pid in self.notyetreceived:
-                            print self.spacing,"Received 1st of pid:",pid
+                            print (self.spacing,"Received 1st of pid:",pid)
                             self.notyetreceived.remove(pid)
                         
                 if self.scheduler.time >= nextchangetime:
@@ -534,7 +534,7 @@ if __name__ == "__main__":
 #    
 #    Pipeline(Introspector(),TCPClient("r44116",1500)).activate()
     
-    print "May take several seconds before you see any activity..."
-    print "---PSI Reassemblers------|---1st subscriber:------|---2nd subscriber:------"
+    print ("May take several seconds before you see any activity...")
+    print ("---PSI Reassemblers------|---1st subscriber:------|---2nd subscriber:------")
     src.run()
     

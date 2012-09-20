@@ -35,15 +35,15 @@ def Print(*args):
             except:
                 pass
             try:
-                print x,
+                sys.stdout.write( x )
             except: 
                 try:
-                    print unicode(x, errors="ignore"),
+                    sys.stdout.write( unicode(x, errors="ignore") )
                 except: 
                     try:
                         sys.stdout.write(arg.encode("ascii","ignore"))
                     except:
-                            print "FAILED PRINT"
+                            print ("FAILED PRINT")
         print
         sys.stdout.flush()
 

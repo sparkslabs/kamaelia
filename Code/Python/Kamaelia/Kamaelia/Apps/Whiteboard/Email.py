@@ -106,6 +106,7 @@ class Email(threadedcomponent):
                     self.send("Server does not support STARTTLS","outbox")
                 except RuntimeError:
                     self.send("SSL/TLS support not found","outbox")
-                except socket.error, e:
+                except socket.error:
+                    e = sys.exc_info()[1]
                     self.send("Socket error: " + str(e), "outbox")
             time.sleep(0.5)

@@ -79,19 +79,25 @@ class HTTPGetter(threadedcomponent):
         try:
             req = urllib2.Request(url,postdata,headers)
             conn1 = urllib2.urlopen(req)
-        except httplib.BadStatusLine, e:
+        except httplib.BadStatusLine:
+            e = sys.exc_info()[1]
             return ["StatusError",e]
-        except urllib2.HTTPError, e:
+        except urllib2.HTTPError:
+            e = sys.exc_info()[1]
             return ["HTTPError",e.code]
-        except urllib2.URLError, e:
+        except urllib2.URLError:
+            e = sys.exc_info()[1]
             return ['URLError',e.reason]
-        except socket.timeout, e:
+        except socket.timeout:
+            e = sys.exc_info()[1]
             return ['SocketTimeout',e]
-        except UnicodeEncodeError, e:
+        except UnicodeEncodeError:
+            e = sys.exc_info()[1]
             Print("URLGetter.py: User of this component has failed to remember to encode their URL correctly")
             return ["UnicodeEncodeError", e]
 
-        except UnicodeDecodeError, e:
+        except UnicodeDecodeError:
+            e = sys.exc_info()[1]
             Print("URLGetter.py: User of this component has failed to remember to encode their URL correctly")
             return ["UnicodeDecodeError", e]
         
@@ -99,11 +105,14 @@ class HTTPGetter(threadedcomponent):
         if conn1:
             try:
                 content = conn1.read()
-            except socket.timeout, e:
+            except socket.timeout:
+                e = sys.exc_info()[1]
                 return ['SocketTimeout',e]
-            except socket.error, e:
+            except socket.error:
+                e = sys.exc_info()[1]
                 return ['SocketError',e]
-            except Exception, e: # Catch and send back to users of this component
+            except Exception: # Catch and send back to users of this component
+                e = sys.exc_info()[1]
                 return ['General.Exception',e]
             conn1.close()
             return ["OK",content]

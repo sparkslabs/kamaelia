@@ -96,7 +96,7 @@ if __name__=="__main__":
                     raise RuntimeError("\nFAILED (LOWCHAR) : "+str(test))
             if marshalled[-1] != "\n":
                 raise RuntimeError("\nFAILED (ENDTERM) : "+str(test))
-            print "."
+            print (".")
         else:
             raise RuntimeError("\nFAILED (MISMATCH) : "+str(test)+"\nIt was : "+str(demarshalled)+"\n")
             

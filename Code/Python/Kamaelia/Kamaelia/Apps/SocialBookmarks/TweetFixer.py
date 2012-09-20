@@ -286,9 +286,11 @@ class LinkResolver(component):
                         raw_cache = file.read()
                         try:
                             linkcache = cjson.decode(raw_cache)
-                        except cjson.DecodeError, e:
+                        except cjson.DecodeError:
+                            e =sys.exc_info()[1]
                             Print ("Failed to decode link cache - will attempt to create a new file: " , e)
-                    except IOError, e:
+                    except IOError:
+                        e = sys.exc_info()[1]
                         Print ("Failed to load link cache - will attempt to create a new file: " , e)
 
                     linkstring = ""
@@ -316,7 +318,8 @@ class LinkResolver(component):
                                             long_url = resolvedlink['long_url'].replace("\\/","/")
                                             short_url = resolvedlink['short_url'].replace("\\/","/")
                                             linkcache[short_url] = long_url
-                            except cjson.DecodeError, e:
+                            except cjson.DecodeError:
+                                e = sys.exc_info()[1]
                                 Print ("Decode error in result from bit.ly: " , e)
 
                     # Set the expanded URL fields in the tweet entity
@@ -334,7 +337,8 @@ class LinkResolver(component):
                         raw_cache = cjson.encode(linkcache)
                         file.write(raw_cache)
                         file.close()
-                    except IOError, e:
+                    except IOError:
+                        e = sys.exc_info()[1]
                         Print ("Failed to save name cache - could cause rate limit problems")
                         
                 self.send(tweet,"outbox")
@@ -373,7 +377,8 @@ if __name__ == "__main__":
     try:
         homedir = os.path.expanduser("~")
         file = open(homedir + "/twitter-login.conf")
-    except IOError, e:
+    except IOError:
+        e = sys.exc_info()[1]
         Print ("Failed to load login data - exiting")
         sys.exit(0)
 

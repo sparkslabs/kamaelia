@@ -140,7 +140,7 @@ class BuilderControlsGUI(TkWindow):
         def menuCallback(index, text):
             self.click_menuChoice(lookup[text])
 
-        print self.classes[0]
+        print (self.classes[0])
         for theclass in self.classes:
             lookup[ theclass['module']+"."+theclass['class'] ] = theclass
             items.append(theclass['module']+"."+theclass['class'])

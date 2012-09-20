@@ -123,7 +123,7 @@ class RDFParser(Axon.Component.component):
                         self.rdf_uri = data_list[0]
                     else:
                         self.rdf_uri = "http://www.w3.org/2007/08/pyRdfa/extract?uri=" + data_list[0]
-                    #print self.rdf_uri
+                    #print (self.rdf_uri)
                     
                     if len(data_list) == 2:
                         self.max_layer = int(data_list[1])
@@ -136,7 +136,7 @@ class RDFParser(Axon.Component.component):
                         self.max_nodePerLayer = 0
                     self.parentNode_id = ""
                     self.fetch_data(self.rdf_uri)
-                    print "num_parentNodes:", self.num_parentNodes, "num_allNodes:", self.num_allNodes
+                    print ("num_parentNodes:", self.num_parentNodes, "num_allNodes:", self.num_allNodes)
                 
             yield 1
             
@@ -212,7 +212,7 @@ class RDFParser(Axon.Component.component):
                     uri = result['seeAlso']
                     if uri and str(uri).endswith('.rdf]'):
                         uri = uri._get_uri()
-                        #print result['seeAlso'], uri
+                        #print (result['seeAlso'], uri)
                         nodes.append((node_id, uri))
             
             # Recursively fetch the person's friends' friends' info        

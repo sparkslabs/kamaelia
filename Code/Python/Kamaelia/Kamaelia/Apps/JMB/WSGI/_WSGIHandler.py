@@ -217,8 +217,8 @@ class _WsgiHandler(threadedcomponent):
         batch_str = self.environ.get('batch', '')
         if batch_str:
             batch_str = 'batch ' + batch_str
-            print 'request received for [%s] %s' % \
-               (self.environ['REQUEST_URI'], batch_str)
+            print ('request received for [%s] %s' % \
+               (self.environ['REQUEST_URI'], batch_str) )
 
         self.app = app
         self.response_dict = {}
@@ -285,7 +285,8 @@ class _WsgiHandler(threadedcomponent):
         """
         if exc_info:
             try:
-                raise exc_info[0], exc_info[1], exc_info[2]
+                raise Exception(exc_info)
+#                raise exc_info[0], exc_info[1], exc_info[2]
             finally:
                 exc_info = None
         elif self.response_dict:

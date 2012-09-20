@@ -44,7 +44,7 @@ Example Usage
             return 1
 
         def mousedown(self, event):
-            print "Mouse down!"
+            print ("Mouse down!")
     
     app = SimpleApp1( (800,600) ).run()
 
@@ -160,7 +160,7 @@ class PyGameApp(_Axon.Component.component):
            displayrequest["position"] = self.position
         self.send(displayrequest, "displaysignal")
         for _ in self.waitBox("displaycontrol"): 
-#             print "Waiting for display"
+#             print ("Waiting for display")
             yield 1
         display = self.recv("displaycontrol")
 
@@ -186,7 +186,7 @@ class PyGameApp(_Axon.Component.component):
                 yield 1
             else:
                 yield 0
-        print "QUIT"
+        print ("QUIT")
 
     def initialiseComponent(self):
         pass

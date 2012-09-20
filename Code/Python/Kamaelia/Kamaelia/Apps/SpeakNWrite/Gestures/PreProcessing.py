@@ -80,12 +80,13 @@ class QuantiseStroke(component):
         yield 1
 
 
-def nearest45DegreeStep( (dx,dy) ):
+def nearest45DegreeStep( step ):
     """Returns (in degrees) the nearest 45 degree angle match to the supplied vector.
     
        Returned values are one of 0, 45, 90, 135, 180, 225, 270, 315.       
        If the supplied vector is (0,0), the returned angle is 0.
     """
+    dx,dy = step
     if dx == 0 and dy == 0:
         return 0
     

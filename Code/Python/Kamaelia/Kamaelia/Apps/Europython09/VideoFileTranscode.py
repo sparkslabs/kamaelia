@@ -32,22 +32,22 @@ class Transcoder(Axon.ThreadedComponent.threadedcomponent):
                 encoding_name = shortname.replace(".mp4", ".avi")
                 finalname = sourcefile.replace(".mp4", ".avi")
                 # Do the actual transcode
-                print "TRANSCODING", sourcefile, encoding_name
+                print ("TRANSCODING", sourcefile, encoding_name)
                 os.system( self.command % {"SOURCEFILE": sourcefile, "ENCODINGNAME":encoding_name})
 
                 # file is transcoded, move to done
-                print "MOVING DONE FILE", sourcefile, os.path.join("done", sourcefile)
+                print ("MOVING DONE FILE", sourcefile, os.path.join("done", sourcefile))
                 os.rename(sourcefile, os.path.join("done", sourcefile))
 
                 # Move encoded version to upload queue
                 upload_name = os.path.join( "to_upload", encoding_name)
-                print "MOVING TO UPLOAD QUEUE", encoding_name, upload_name
+                print ("MOVING TO UPLOAD QUEUE", encoding_name, upload_name)
                 os.rename(encoding_name, upload_name )
 
                 # And tell the encoder to upload it please
-                print "SETTING OFF UPLOAD",upload_name, finalname
+                print ("SETTING OFF UPLOAD",upload_name, finalname)
                 self.send( (upload_name, finalname), "outbox")
-                print "-----------------"
+                print ("-----------------")
             if self.dataReady("control"):
                 break
         self.send(self.recv("control"), "signal")

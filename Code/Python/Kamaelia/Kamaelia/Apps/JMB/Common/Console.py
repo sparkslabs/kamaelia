@@ -44,15 +44,15 @@ def prompt_yesno(text):
     elif user_input[0] == 'n' or user_input[0] == 'N':
         return False
     else:
-        print 'Unrecognizable input.  Please try again'
+        print ('Unrecognizable input.  Please try again')
         return prompt_yesno(text)
     
 def prompt_corrupt(corrupt):
     """This is really just a convenience method for prompt_yesno."""
-    print 'The following files appear to be corrupted: \n', corrupt, \
-        '\n There may be more corrupted files.'
+    print ('The following files appear to be corrupted: \n', corrupt, \
+        '\n There may be more corrupted files.')
     if not prompt_yesno('Would you like to continue anyway? [y/n]'):
-        print "Halting!"
+        print ("Halting!")
         sys.exit(1)
         
 def debug(msg, suffix='', *args, **argd):

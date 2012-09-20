@@ -115,7 +115,7 @@ class HandleConnectRequest(component):
                 yield 1
         except ShutdownNow:
             pass
-        except GeneralFail, e:
+        except GeneralFail:
             # Yes, we're masking an error. This is nasty.
             fail = True
         
@@ -248,7 +248,7 @@ class With(Axon.Component.component):
                     dontcontinue = self.handleGraphstepShutdown()  # Components inside have shutdown..
 
                     if self.anyStopped():
-    #                    print "Something stopped"
+    #                    print ("Something stopped")
                         all_stopped = True # Assume
                         if self.item._isStopped():
                             Print( "Warning: Child died before completion", self.item )
@@ -260,7 +260,7 @@ class With(Axon.Component.component):
                             if child == self.item:
                                 continue
                         
-    #                        print "child stopped ?", child._isStopped(), child
+    #                        print ("child stopped ?", child._isStopped(), child)
                             all_stopped = all_stopped and child._isStopped()
 
                         if all_stopped:                        
@@ -269,7 +269,7 @@ class With(Axon.Component.component):
                             stopping += 1
                             if (stopping % 1000) == 0:
                                 pass
-                                # print "Warning one child exited, but others haven't after", stopping, "loops"
+                                # print ("Warning one child exited, but others haven't after", stopping, "loops")
 
                     yield 1
 
@@ -279,7 +279,7 @@ class With(Axon.Component.component):
                 for link in links: 
                     self.unlink(thelinkage=link)
 
-    #        print "Exiting With Component... , all_stopped, dontcontinue:", all_stopped, dontcontinue
+    #        print ("Exiting With Component... , all_stopped, dontcontinue:", all_stopped, dontcontinue)
             self.link( (self, "_signal"), (self.item, "control") )
             self.send( producerFinished(), "_signal")
         except ShutdownNow:
@@ -405,7 +405,7 @@ if __name__ == "__main__":
     from Kamaelia.Util.Console import ConsoleEchoer, ConsoleReader
     from Kamaelia.Util.OneShot import OneShot
 
-    print 
+    print ("") 
     if len(sys.argv)>1:
         testing = int(sys.argv[1])
     else:
@@ -430,7 +430,7 @@ if __name__ == "__main__":
         ).run()
 
     if testing == 2:
-        print "Test 2 Disabled, was more of a sketch thinking 'what sort of API might we like?'"
+        print ("Test 2 Disabled, was more of a sketch thinking 'what sort of API might we like?'")
 
     if 0:
         Req = {

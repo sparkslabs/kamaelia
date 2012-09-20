@@ -54,7 +54,7 @@ def parseargs(argv, longopts, longflags, required,usesrest):
             except ValueError:
                 if longopts[k,key][0] == None:
                     if not args.get("help", args.get("h", False)):
-                        print "missing argument: --"+key, "-"+k
+                        print ("missing argument: --"+key, "-"+k)
                         sys.exit(0)
                 args[key] = longopts[k,key][0]
 
@@ -124,35 +124,35 @@ def showHelp(argspec):
     #
     # Display usage header
     #
-    print 
-    print "Usage:"
-    print "\t", sys.argv[0], "[options] [flags]",
+    print ("") 
+    print ("Usage:")
+    print ("\t", sys.argv[0], "[options] [flags]")
     
     #
     # Display how the rest of the line is used - eg "files", if at all
     #
     # Some programs may use the unnamed options on the command line
     if usesrest:
-      print usesrest
+      print (usesrest)
     else:
-      print
+      print ("")
     
     #
     # Display options, then flags. Required options first.
     #
-    print
-    print "Flags/options marked '**' below are required."
-    print 
-    print "Options:"
+    print ("")
+    print ("Flags/options marked '**' below are required.")
+    print ("")
+    print ("Options:")
     for l,r,d in lines:
-        print l + (w-len(l))*" " + "  " + r
+        print (l + (w-len(l))*" " + "  " + r)
         if d and d != '':
-            print w*" "+ "  Default:",d
-            print
+            print (w*" "+ "  Default:",d)
+            print ("") 
 
-    print "Flags:"
+    print ("Flags:")
     for l,r in flaglines:
-        print l + (w-len(l))*" " + "  " + r
+        print (l + (w-len(l))*" " + "  " + r)
 
 
 if __name__ == "__main__":
@@ -196,13 +196,13 @@ if __name__ == "__main__":
     #
     if args["help"] or args["username"]=="" or args["password"]=="":
         if not args["help"]:
-            print "USAGE ERROR:"
+            print ("USAGE ERROR:")
             if args["username"] == "":
-                print "\tusername must be given"
+                print ("\tusername must be given")
 
             if args["password"] == "":
-                print "\tpassword must be given"
-            print 
+                print ("\tpassword must be given")
+            print ("") 
 
         showHelp(argspec)
         sys.exit(0)
@@ -246,9 +246,9 @@ def needToShowUsage(args, argspec):
 def showUsageBasedOnHowUsed(args, argspec):
     argsOK, missing = checkArgs(args, argspec)
     if not args["help"]:
-        print "USAGE ERROR:"
+        print ("USAGE ERROR:")
         for required in missing:
-            print "\t","--"+required, "must be given"
+            print ("\t","--"+required, "must be given")
     showHelp(argspec)
 
 

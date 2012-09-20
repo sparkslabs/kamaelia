@@ -56,7 +56,7 @@ class TriggeredFileReader(component):
 		
     def readFile(self, filename):
         """Read data out of a file"""
-        print "readFile(" + filename + ")"
+        print ("readFile(" + filename + ")")
         file = open(filename, "rb", 0)
         data = file.read()
         file.close()

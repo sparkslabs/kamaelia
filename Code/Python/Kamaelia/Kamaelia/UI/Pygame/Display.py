@@ -235,6 +235,7 @@ import cjson #MODIFICATION FOR CALIBRATION
 import Axon
 import time
 import os # MODIFICATION FOR CALIBRATION
+import sys
 
 _cat = Axon.CoordinatingAssistantTracker
 
@@ -379,42 +380,42 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
          
          while self.dataReady("notify"):
             message = self.recv("notify")
-#            print message
+#            print (message)
             if isinstance(message, Axon.Ipc.producerFinished): ### VOMIT : mixed data types
 
-#               print "OK, got a producerFinished Message", message.message
+#               print ("OK, got a producerFinished Message", message.message)
 
                self.needsRedrawing = True
-#               print "SURFACE", message
+#               print ("SURFACE", message)
                surface = message.message
-#               print "SURFACE", surface
+#               print ("SURFACE", surface)
                message.message = None
                message = None
-#               print "BEFORE", [id(x[0]) for x in self.surfaces]
+#               print ("BEFORE", [id(x[0]) for x in self.surfaces])
                self.surfaces = [ x for x in self.surfaces if x[0] is not surface ] ##H ERE
 
-#               print "AFTER", self.surfaces
-#               print "Hmm...", self.surface_to_eventcomms.keys()
+#               print ("AFTER", self.surfaces)
+#               print ("Hmm...", self.surface_to_eventcomms.keys())
                try:
                    eventcomms = self.surface_to_eventcomms[str(id(surface))]
                except KeyError:
                    # This simply means the component wasn't listening for events!
                    pass
                else:
-#                   print "EVENT OUTBOX:", eventcomms
+#                   print ("EVENT OUTBOX:", eventcomms)
                    self.visibility = None
                    try:
                        self.removeOutbox(eventcomms)
                    except:
                        "This sucks"
                        pass
-#                   print "REMOVED OUTBOX"
+#                   print ("REMOVED OUTBOX")
                if (len(self.surfaces) == 0) and (len(self.overlays)==0):
-#                   print "ALL CLIENTS DISAPPEARED, OUGHT TO CONSIDER DISAPPEARING TOO"
+#                   print ("ALL CLIENTS DISAPPEARED, OUGHT TO CONSIDER DISAPPEARING TOO")
                    self.startShutdown = True
 
             elif message.get("DISPLAYREQUEST", False):
-#               print "GOT A DISPLAY REQUEST"
+#               print ("GOT A DISPLAY REQUEST")
                self.needsRedrawing = True
                callbackservice = message["callback"]
                eventservice = message.get("events", None)
@@ -438,9 +439,9 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                onlymouseinside = message.get("onlymouseinside", False)
                self.surfaces.append( (surface, position, callbackcomms, eventcomms, onlymouseinside) )
 #               if message.get("onlymouseinside", False):
-#                   print "ONLYMOUSEINSIDE: TRUE"
+#                   print ("ONLYMOUSEINSIDE: TRUE")
 #               else:
-#                   print "ONLYMOUSEINSIDE: FALSE"
+#                   print ("ONLYMOUSEINSIDE: FALSE")
                if message.get("fullscreen", False):
                    if not self.fullscreen:
                        self.fullscreen = 1
@@ -470,8 +471,9 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                             (surface, position, callbackcomms, eventcomms, onlymouseinside) = self.surfaces[c]  ## HERE
                             new_position = message.get("position", position)
                             self.surfaces[c] = (surface, new_position, callbackcomms, eventcomms, onlymouseinside) ## HERE
-                except Exception, e:
-                    print "It all went horribly wrong", e   
+                except Exception:
+                    e = sys.exc_info()[1]
+                    print ("It all went horribly wrong", e)
             
             elif message.get("OVERLAYREQUEST", False):
                 self.needsRedrawing = True
@@ -641,7 +643,7 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                                       
                                       correctx = ((((float(event.pos[0]) * topxratio) - topleft[0]) * (1 - (float(event.pos[1]) / self.height))) + (((float(event.pos[0]) * bottomxratio) - bottomleft[0]) * (float(event.pos[1]) / self.height)))
                                       correcty = ((((float(event.pos[1]) * leftyratio) - topleft[1]) * (1 - (float(event.pos[0]) / self.width))) + (((float(event.pos[1]) * rightyratio) - topright[1]) * (float(event.pos[0]) / self.width)))
-                                      #print (event.pos[0],event.pos[1])
+                                      #print ((event.pos[0],event.pos[1]))
                                       # BASIC CALIB BELOW
                                       """offsetx = (1005-21)/(self.offsets[6]-self.offsets[0])
                                       offsety = (750-62)/(self.offsets[3]-self.offsets[5])
@@ -694,14 +696,14 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                   raw_config = file.read()
                   file.close()
                   break
-      except IOError, e:
+      except IOError:
           print ("Failed to load calibration data - read error")                    
 
       if raw_config:
          try:
              self.offsets = cjson.decode(raw_config)
              self.calibrated = True
-         except cjson.DecodeError, e:
+         except cjson.DecodeError:
              print ("Failed to load calibration data - corrupt config file : pygame-calibration.conf")
       else:
           print("Pygame calibration file could not be found - defaults loaded")
@@ -735,7 +737,7 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
       l2 = self.link( (self,"_signal"), (eventsource,"control") )
 
-#      print "Initialised"
+#      print ("Initialised")
       self.startShutdown = False # Something stopped the shutdonw
       while 1:
          self.needsRedrawing = False
@@ -749,7 +751,7 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
          if self.startShutdown:
             if len(self.surfaces) == 0 and len(self.overlays) == 0:
-#                print self, "UM"
+#                print (self, "UM")
                 break
             self.startShutdown = False # Something stopped the shutdonw
          self.pause()
@@ -759,7 +761,7 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
       self.send(Axon.Ipc.producerFinished(), "signal")
       self.unlink(l1)
       self.unlink(l2)
-#      print "Exitting"
+#      print ("Exitting")
 
 __kamaelia_components__  = ( PygameDisplay, )
 

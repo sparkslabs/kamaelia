@@ -87,14 +87,17 @@ class PeopleSearch(component):
             try:
                 req = urllib2.Request(request_token_url,None,requestheaders) # Why won't this work?!? Is it trying to POST?
                 conn1 = urllib2.urlopen(req)
-            except httplib.BadStatusLine, e:
+            except httplib.BadStatusLine:
+                e = sys.exc_info()[1]
                 Print("PeopleSearch BadStatusLine error:", e )
                 conn1 = False
-            except urllib2.HTTPError, e:
+            except urllib2.HTTPError:
+                e = sys.exc_info()[1]
                 Print("PeopleSearch HTTP error:", e.code)
 #                sys.stderr.write('PeopleSearch HTTP error: ' + str(e.code) + '\n')
                 conn1 = False
-            except urllib2.URLError, e:
+            except urllib2.URLError:
+                e = sys.exc_info()[1]
                 Print("PeopleSearch URL error: ", e.reason)
 #                sys.stderr.write('PeopleSearch URL error: ' + str(e.reason) + '\n')
                 conn1 = False
@@ -145,14 +148,17 @@ class PeopleSearch(component):
                 try:
                     req = urllib2.Request(access_token_url,"oauth_verifier=%s" % oauth_verifier,requestheaders) # Why won't this work?!? Is it trying to POST?
                     conn1 = urllib2.urlopen(req)
-                except httplib.BadStatusLine, e:
+                except httplib.BadStatusLine:
+                    e = sys.exc_info()[1]
 #                    sys.stderr.write('PeopleSearch BadStatusLine error: ' + str(e) + '\n')
                     Print('PeopleSearch BadStatusLine error: ', e)
                     conn1 = False
-                except urllib2.HTTPError, e:
+                except urllib2.HTTPError:
+                    e = sys.exc_info()[1]
                     Print('PeopleSearch HTTP error: ', e.code)
                     conn1 = False
-                except urllib2.URLError, e:
+                except urllib2.URLError:
+                    e = sys.exc_info()[1]
 #                    sys.stderr.write('PeopleSearch URL error: ' + str(e.reason) + '\n')
                     Print('PeopleSearch URL error: ', e.reason)
                     conn1 = False
@@ -176,7 +182,8 @@ class PeopleSearch(component):
                         homedir = os.path.expanduser("~")
                         file = open(homedir + "/twitter-login.conf",'r')
                         save = True
-                    except IOError, e:
+                    except IOError:
+                        e = sys.exc_info()[1]
                         Print ("Failed to load config file - not saving oauth keys: " , e)
 
                     if save:
@@ -197,7 +204,8 @@ class PeopleSearch(component):
                             file = open(homedir + "/twitter-login.conf",'w')
                             file.write(raw_config)
                             file.close()
-                        except IOError, e:
+                        except IOError:
+                            e = sys.exc_info()[1]
                             Print ("Failed to save oauth keys: " , e)
 
                     self.keypair = [access_token['oauth_token'], access_token['oauth_token_secret']]
@@ -237,15 +245,18 @@ class PeopleSearch(component):
                     try:
                         req = urllib2.Request(requesturl,None,requestheaders) # Why won't this work?!? Is it trying to POST?
                         conn1 = urllib2.urlopen(req)
-                    except httplib.BadStatusLine, e:
+                    except httplib.BadStatusLine:
+                        e = sys.exc_info()[1]
 #                        sys.stderr.write('PeopleSearch BadStatusLine error: ' + str(e) + '\n')
                         Print('PeopleSearch BadStatusLine error: ', e)
                         conn1 = False
-                    except urllib2.HTTPError, e:
+                    except urllib2.HTTPError:
+                        e = sys.exc_info()[1]
 #                        sys.stderr.write('PeopleSearch HTTP error: ' + str(e.code) + '\n')
                         Print('PeopleSearch HTTP error: ', e.code)
                         conn1 = False
-                    except urllib2.URLError, e:
+                    except urllib2.URLError:
+                        e = sys.exc_info()[1]
 #                        sys.stderr.write('PeopleSearch URL error: ' + str(e.reason) + '\n')
                         Print('PeopleSearch URL error: ', e.reason)
                         conn1 = False
@@ -270,9 +281,10 @@ class PeopleSearch(component):
                             try:
                                 content = cjson.decode(data)
                                 self.send(content,"outbox")
-                            except cjson.DecodeError, e:
+                            except cjson.DecodeError:
                                 self.send(dict(),"outbox")
-                        except IOError, e:
+                        except IOError:
+                            e = sys.exc_info()[1]
 #                            sys.stderr.write('PeopleSearch IO error: ' + str(e) + '\n')
                             Print('PeopleSearch IO error: ', e)
                             self.send(dict(),"outbox")

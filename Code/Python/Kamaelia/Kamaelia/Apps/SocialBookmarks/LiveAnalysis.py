@@ -90,7 +90,8 @@ class LiveAnalysis(DBWrapper,threadedcomponent):
                     Print("Analysis component: Analysing new tweet for pid", pid, "(" , dbtime ,"):")
                     try:
                         Print("Analysis component: '" , tweettext , "'")
-                    except UnicodeEncodeError, e:
+                    except UnicodeEncodeError:
+                        e = sys.exc_info()[1]
                         Print ("UnicodeEncodeError", e)
                     self.db_select("""SELECT duration FROM programmes_unique WHERE pid = %s""",(pid))
                     progdata = self.db_fetchone()
@@ -183,7 +184,7 @@ class LiveAnalysis(DBWrapper,threadedcomponent):
 
                         try:
                             meantweets = totaltweets / runningtime
-                        except ZeroDivisionError, e:
+                        except ZeroDivisionError:
                             meantweets = 0
 
                         self.db_select("""SELECT totaltweets FROM analyseddata WHERE pid = %s AND timestamp >= %s AND timestamp < %s""",(pid,progstart,analysedstamp+duration))
@@ -226,7 +227,7 @@ class LiveAnalysis(DBWrapper,threadedcomponent):
 
                         try:
                             stdevtweets = math.sqrt(stdevtweets / runningtime)
-                        except ZeroDivisionError, e:
+                        except ZeroDivisionError:
                             stdevtweets = 0
 
                         # Finished analysis - update DB
@@ -303,7 +304,7 @@ class LiveAnalysis(DBWrapper,threadedcomponent):
                             stdevtweets += val
                         try:
                             stdevtweets = math.sqrt(stdevtweets / runningtime)
-                        except ZeroDivisionError, e:
+                        except ZeroDivisionError:
                             stdevtweets = 0
 
                         if 1: # This data is purely a readout to the terminal at the moment associated with word and phrase frequency, and retweets

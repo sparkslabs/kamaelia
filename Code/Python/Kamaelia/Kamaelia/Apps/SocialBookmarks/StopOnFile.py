@@ -25,7 +25,7 @@ if __name__ == "__main__":
         def main(self):
             while True:
                 time.sleep(1)
-                print "!", self.name
+                Print ("!", self.name)
 
     StopOnFile(stopfile=os.path.join(os.path.expanduser("~"), "stop_bookmarks")).activate()
     Plinger().run()

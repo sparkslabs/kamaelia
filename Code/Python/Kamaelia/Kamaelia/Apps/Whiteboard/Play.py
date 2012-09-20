@@ -17,7 +17,7 @@ class SimpleReader(Axon.Component.component):
             yield 1
             data = f.read(self.chunksize)
         self.send(Axon.Ipc.producerFinished(), "signal")
-        print "finished reading"
+        print ("finished reading")
 
 class AlsaPlayer(Axon.ThreadedComponent.threadedcomponent):
     channels = 1
@@ -48,7 +48,7 @@ class AlsaPlayer(Axon.ThreadedComponent.threadedcomponent):
                     self.send(data, "signal")
                     shutdown = True
             time.sleep(self.delay)
-        print "Shutdown :-)"
+        print ("Shutdown :-)")
 
 
 def parseargs(argv, longopts, longflags):
@@ -69,7 +69,7 @@ def parseargs(argv, longopts, longflags):
                 del argv[i]
             except ValueError:
                 if longopts[k,key] == None:
-                    print "missing argument: --"+key, "-"+k
+                    print ("missing argument: --"+key, "-"+k)
                     sys.exit(0)
                 args[key] = longopts[k,key]
 

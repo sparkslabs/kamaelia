@@ -112,7 +112,8 @@ class WhatsOn(threadedcomponent):
                         decodedcontent = cjson.decode(content)
                         if decodedcontent[0] == "OK":
                             difference = time.time() - decodedcontent[2]['time']
-                    except cjson.DecodeError, e:
+                    except cjson.DecodeError:
+                        e = sys.exc_info()[1]
                         Print("cjson.DecodeError:", e.message)
 
                 if 'difference' in locals():  # FIXME *SOB*
@@ -132,7 +133,8 @@ class WhatsOn(threadedcomponent):
                             decodedcontent = cjson.decode(content)
                             if decodedcontent[0] == "OK":
                                 proginfo = decodedcontent[2]['info']
-                        except cjson.DecodeError, e:
+                        except cjson.DecodeError:
+                            e = sys.exc_info()[1]
                             Print("cjson.DecodeError:", e.message)
 
                 # Grab BBC schedule data for given channel
@@ -150,7 +152,8 @@ class WhatsOn(threadedcomponent):
                 if content != None:
                     try:
                         decodedcontent = cjson.decode(content)
-                    except cjson.DecodeError, e:
+                    except cjson.DecodeError:
+                        e = sys.exc_info()[1]
                         Print("cjson.DecodeError:", e.message)
 
                     if 'proginfo' in locals():
@@ -269,7 +272,8 @@ class NowPlaying(component):
                 if content != None:
                     try:
                         decodedcontent = cjson.decode(content)
-                    except cjson.DecodeError, e:
+                    except cjson.DecodeError:
+                        e = sys.exc_info()[1]
                         Print("cjson.DecodeError:", e.message)
 
                 # Analyse now playing info

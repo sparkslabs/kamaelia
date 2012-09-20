@@ -86,7 +86,7 @@ class Decks(threadedcomponent):
 #                yield 1
 #            self.pause()
 #            yield 1
-	    time.sleep(0.1)
+            time.sleep(0.1)
                 
     def fixNumbering(self):
         exists = 1
@@ -100,7 +100,8 @@ class Decks(threadedcomponent):
                 # This slide doesn't exist, find the next one up and copy it down
                 try:
                     shutil.move(self.scribblesdir + "/" + x,self.scribblesdir + "/slide." + str(exists) + ".png")
-                except Exception, e:
+                except Exception:
+                    e = sys.exc_info()[1]
                     sys.stderr.write("Failed to renumber slides. There may be an error in the sequence")
                     sys.stderr.write(str(e))
             exists += 1
@@ -141,7 +142,8 @@ class Decks(threadedcomponent):
                     self.send(["first",num_pages], "toSequencer")
                     self.send(chr(0) + "CLRTKR", "toTicker")
                     self.send("Deck loaded successfully","toTicker")
-                except Exception, e:
+                except Exception:
+                    e = sys.exc_info()[1]
                     self.send(chr(0) + "CLRTKR", "toTicker")
                     self.send("Failed to open the deck specified. You may have entered the password incorrectly","toTicker")
 
@@ -172,7 +174,8 @@ class Decks(threadedcomponent):
                         self.send(chr(0) + "CLRTKR", "toTicker")
                         self.send("Zip file '" + filename + "' created successfully with password","toTicker")
                         success = True
-                    except Exception, e:
+                    except Exception:
+                        e = sys.exc_info()[1]
                         self.send(chr(0) + "CLRTKR", "toTicker")
                         self.send("Failed to write to zip file '" + filename + "'","toTicker")
             else:
@@ -181,7 +184,8 @@ class Decks(threadedcomponent):
                     self.send(chr(0) + "CLRTKR", "toTicker")
                     self.send("Zip file '" + filename + "' created successfully without password","toTicker")
                     success = True
-                except Exception, e:
+                except Exception:
+                    e = sys.exc_info()[1]
                     self.send(chr(0) + "CLRTKR", "toTicker")
                     self.send("Failed to write to zip file '" + filename + "'","toTicker")
 
@@ -216,22 +220,24 @@ class Decks(threadedcomponent):
                     os.remove(self.scribblesdir + "/" + x)
             self.send([["clear"]], "toCanvas")
             self.send("reset", "toSequencer")
-        except Exception, e:
+        except Exception:
+            e = sys.exc_info()[1]
             sys.stderr.write("Failed to clear scribbles - couldn't remove " + str(self.scribblesdir + "/" + x))
         
     def deleteslide(self,current):
         try:
             os.remove(self.scribblesdir + "/slide." + str(current) + ".png")
-        except Exception, e:
+        except Exception:
+            e = sys.exc_info()[1]
             sys.stderr.write("Error deleting slide " + str(current))
         self.fixNumbering()
         self.send("loadsafe","toSequencer")
     
     def quit(self):
-    	root = Tk()
-       	root.withdraw()
-       	kill = False
-       	if askyesno("Confirm","Unsaved changes will be lost. Are you sure you want to quit?",parent=root):
+        root = Tk()
+        root.withdraw()
+        kill = False
+        if askyesno("Confirm","Unsaved changes will be lost. Are you sure you want to quit?",parent=root):
             # perform quit
             kill = True
             #pygame.quit() # This isn't the right way to do it!

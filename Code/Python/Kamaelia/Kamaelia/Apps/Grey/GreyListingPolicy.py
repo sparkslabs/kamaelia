@@ -204,7 +204,7 @@ class GreyListingPolicy(ConcreteMailHandler):
                         return True
                     if not self.isGreylisted(recipient):
                         return False
-            except Exception, e:
+            except Exception:
                 # print "Whoops", e
                 pass
             return True # Anyone can always send to hosts we own

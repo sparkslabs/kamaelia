@@ -94,13 +94,13 @@ class CheckpointSequencer(Axon.Component.component):
                         loadsafe = True
                         self.send(["delete",current],"toDecks")
                     elif current == 1:
-		        self.send("clearscribbles", "toDecks")
+                        self.send("clearscribbles", "toDecks")
                 # The below command is ONLY used when slide 1 has been deleted and the 'new' slide 1 replacing is has to be loaded
                 # Whilst not ideal, this avoids a possible race condition following the sending to two messages to two different components
                 if command == "loadsafe":
-		    if loadsafe == True:
-		        self.send( self.loadMessage(current), "outbox")
-		        loadsafe = False
+                   if loadsafe == True:
+                        self.send( self.loadMessage(current), "outbox")
+                        loadsafe = False
                 if command == "prev":
                     if current >1:
                         if dirty:

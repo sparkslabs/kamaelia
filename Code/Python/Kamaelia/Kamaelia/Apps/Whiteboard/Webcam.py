@@ -26,17 +26,17 @@ import sys
 try:
     import pygame.camera
 except ImportError:
-    print "*****************************************************************************************"
-    print
-    print "Sorry, Video camera support requires using a version of pygame with pygame.camera support"
-    print """You could try adding something like this at the start of your file using this componen:
+    print ("*****************************************************************************************")
+    print ("")
+    print ("Sorry, Video camera support requires using a version of pygame with pygame.camera support")
+    print ("""You could try adding something like this at the start of your file using this componen:
 
 # To use pygame alpha
 import sys ;
 sys.path.insert(0, "<path to release candidate>/pygame-1.9.0rc1/build/lib.linux-i686-2.5")
 
-"""
-    print "*****************************************************************************************"
+""")
+    print ("*****************************************************************************************")
     raise
   
 from Axon.ThreadedComponent import threadedcomponent
@@ -72,7 +72,7 @@ class VideoCaptureSource(threadedcomponent):
         self.snapshot = None
         try:
             self.snapshot = self.camera.get_image()
-        except Exception, e:
+        except Exception:
             sys.stderr.write("Faled to grab image. Is your camera UVC compatible?")
 
     def main(self):
@@ -87,7 +87,7 @@ class VideoCaptureSource(threadedcomponent):
                 self.snapshot=self.snapshot.convert()
                 self.send(self.snapshot, "outbox")
                 time.sleep(self.delay)
-        except Exception, e:
+        except Exception:
             sys.stderr.write("Faled to connect to camera. Is it connected?")
 
 

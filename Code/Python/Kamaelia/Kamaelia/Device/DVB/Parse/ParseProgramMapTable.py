@@ -234,7 +234,7 @@ class ParseProgramMapTable(component):
             prog_info_end = i+prog_info_length
             service['descriptors'] = []
             while i < prog_info_end:
-                print i,prog_info_end, len(data)
+                print (i,prog_info_end, len(data))
                 descriptor,i = parseDescriptor(i,data)
                 service['descriptors'].append(descriptor)
                 
