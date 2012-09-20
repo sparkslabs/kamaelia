@@ -583,10 +583,17 @@ class threadedcomponent(Component.component):
               msg = self.threadtoaxonqueue.get()
               try:
                     self._handlemessagefromthread(msg)
-              except UnHandledException, e:
+              except UnHandledException:
+                  e = sys.exc_info()[1]
                   e.args[0][1].args = e.args[0][1].args + (str(self),)  # Inject into the exception *which* component threw this exception.
-                  raise e.args[0][1], None, e.args[0][2]
-
+                  try:
+                      code = "raise e.args[0][1], None, e.args[0][2]"
+                      exec (code)
+                  except SyntaxError:
+                      E = (e.args[0][1])(None)
+                      E.__traceback__ = e.args[0][2]
+                      raise E
+                      
           if running:
               Component.component.pause(self)
           
