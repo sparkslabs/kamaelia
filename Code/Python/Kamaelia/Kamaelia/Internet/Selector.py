@@ -306,13 +306,16 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
                                 replyService, outbox, linkage = None, None, None
                                 # Note we remove the selectable until we know the reason for it being here has cleared.
                                 self.removeLinks(selectable, meta[i], selections[i]) 
-#                            except KeyError, k:
+#                            except KeyError:
+#                                k = sys.exc_info()[1]
 #                                pass
                             
-                except ValueError, e:
+                except ValueError:
+                    e = sys.exc_info()[1]
                     if FAILHARD: 
                         raise e
-                except socket.error, e:
+                except socket.error:
+                    e = sys.exc_info()[1]
                     if e[0] == 9:
                         numberOfFailedSelectsDueToBadFileDescriptor +=1
                         if numberOfFailedSelectsDueToBadFileDescriptor > 1000:
@@ -323,7 +326,8 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
 #                            print "readers, writers, exceptionals", readers, writers, exceptionals
                             raise e
 
-                except select.error, e:
+                except select.error:
+                    e = sys.exc_info()[1]
                     if e[0] == 9:
                         numberOfFailedSelectsDueToBadFileDescriptor +=1
                         if numberOfFailedSelectsDueToBadFileDescriptor > 1000:

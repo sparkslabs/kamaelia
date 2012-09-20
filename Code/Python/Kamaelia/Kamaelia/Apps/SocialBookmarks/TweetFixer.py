@@ -48,7 +48,7 @@ class RetweetFixer(component):
         while not self.finished():
             while self.dataReady("inbox"):
                 tweet = self.recv("inbox")
-                if not tweet.has_key('retweeted_status'):
+                if not ("retweeted_status" in tweet):
                     # Need to find the last match for an accurate retweet
                     rtresults = ""
                     usermention = ""
@@ -122,14 +122,14 @@ class RetweetCorrector(DBWrapper,component):
             while self.dataReady("inbox"):
                 tweetjson = self.recv("inbox")
 
-                if tweetjson.has_key('retweeted_status'):
+                if ("retweeted_status" in tweetjson):
                     # Find this tweet's PIDs
                     self.db_select("""SELECT pid FROM rawdata WHERE tweet_id = %s""",(tweetjson['id']))
                     pids = self.db_fetchall()
                     breaker = False
                     for pid in pids:
                         tweettext = tweetjson['retweeted_status']['text']
-                        if not tweetjson['retweeted_status'].has_key('id'):
+                        if not ( "id" in tweetjson['retweeted_status'] ):
                             # This is a fixed retweet - let's try and fix it further by identifying the original
                             # Only worth doing for the same PID
                             self.db_select("""SELECT text,tweet_id FROM rawdata WHERE user = %s AND pid = %s""",(tweetjson['retweeted_status']['user']['screen_name'],pid[0]))
@@ -222,7 +222,7 @@ class TweetCleaner(component):
 
                 tweet['filtered_text'] = self.filterEntity(tweet)
 
-                if tweet.has_key('retweeted_status'):
+                if ( "retweeted_status" in tweet ):
                     tweet['retweeted_status']['filtered_text'] = self.filterEntity(tweet['retweeted_status'])
 
                 self.send(tweet,"outbox")
@@ -272,7 +272,7 @@ class LinkResolver(component):
                 for url in tweet['entities']['urls']:
                     if url['expanded_url'] == None and "bbc.in" in url['url']:
                         linkstoresolve.append(url['url'])
-                if tweet.has_key('retweeted_status'):
+                if ( "retweeted_status" in tweet ):
                     for url in tweet['retweeted_status']['entities']['urls']:
                         if url['expanded_url'] == None and "bbc.in" in url['url']:
                             linkstoresolve.append(url['url'])
@@ -295,7 +295,7 @@ class LinkResolver(component):
 
                     linkstring = ""
                     for link in linkstoresolve:
-                        if not linkcache.has_key(link):
+                        if not ( link in linkcache) :
                             # Need to look this link up, add it to the list
                             linkstring += "&shortUrl=" + urllib2.quote(link.encode("utf8")) # Otherwise all sorts of things break badly...
 
@@ -313,7 +313,7 @@ class LinkResolver(component):
                                 decodedresponse = cjson.decode(response[1])
                                 if decodedresponse['status_txt'] == "OK":
                                     for resolvedlink in decodedresponse['data']['expand']:
-                                        if resolvedlink.has_key("long_url") and resolvedlink.has_key("short_url"):
+                                        if ( "long_url" in resolvedlink) and ("short_url" in resolvedlink):
                                             # Resolution was successful for this link
                                             long_url = resolvedlink['long_url'].replace("\\/","/")
                                             short_url = resolvedlink['short_url'].replace("\\/","/")
@@ -324,12 +324,12 @@ class LinkResolver(component):
 
                     # Set the expanded URL fields in the tweet entity
                     for url in tweet['entities']['urls']:
-                        if url['expanded_url'] == None and linkcache.has_key(url['url']):
+                        if url['expanded_url'] == None and ( url['url'] in linkcache ):
                             url['expanded_url'] = linkcache[url['url']]
 
-                    if tweet.has_key('retweeted_status'):
+                    if ("retweeted_status" in tweet):
                         for url in tweet['retweeted_status']['entities']['urls']:
-                            if url['expanded_url'] == None and linkcache.has_key(url['url']):
+                            if url['expanded_url'] == None and ( url['url'] in linkcache):
                                 url['expanded_url'] = linkcache[url['url']]
 
                     try:

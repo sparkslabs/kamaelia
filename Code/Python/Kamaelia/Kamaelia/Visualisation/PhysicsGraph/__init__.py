@@ -43,7 +43,7 @@ component = _Axon.Component.component
 # from TopologyViewer import TopologyViewer
 # from lines_to_tokenlists import lines_to_tokenlists
 # from chunks_to_lines import chunks_to_lines
-from TopologyViewerServer import TopologyViewerServer
+from .TopologyViewerServer import TopologyViewerServer
 
 def parseArgs(argv, extraShortArgs="", extraLongArgs=[]):
     import getopt
@@ -83,13 +83,13 @@ def parseArgs(argv, extraShortArgs="", extraLongArgs=[]):
                     
 if __name__=="__main__":
     import sys
-    print "X1", sys.argv
-    print "X2", sys.argv[1:]
-    print "X3", parseArgs(sys.argv[1:])
+    print ("X1", sys.argv)
+    print ("X2", sys.argv[1:])
+    print ("X3", parseArgs(sys.argv[1:]))
     dictArgs, remargs, junk = parseArgs(sys.argv[1:])
     
     if "help" in dictArgs:
-        print dictArgs["help"]
+        print (dictArgs["help"])
         
     else:
         app = TopologyViewerServer(**dictArgs)

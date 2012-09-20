@@ -231,7 +231,7 @@ and display creation is not done in the main thread of the program.
 """
 
 import pygame
-import cjson #MODIFICATION FOR CALIBRATION
+import json #MODIFICATION FOR CALIBRATION
 import Axon
 import time
 import os # MODIFICATION FOR CALIBRATION
@@ -701,9 +701,10 @@ class PygameDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
 
       if raw_config:
          try:
-             self.offsets = cjson.decode(raw_config)
+#             self.offsets = cjson.decode(raw_config)
+             self.offsets = json.loads(raw_config)
              self.calibrated = True
-         except cjson.DecodeError:
+         except ValueError:
              print ("Failed to load calibration data - corrupt config file : pygame-calibration.conf")
       else:
           print("Pygame calibration file could not be found - defaults loaded")

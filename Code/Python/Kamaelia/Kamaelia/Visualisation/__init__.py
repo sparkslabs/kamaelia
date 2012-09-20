@@ -20,4 +20,4 @@
 # limitations under the License.
 # -------------------------------------------------------------------------
 
-import PhysicsGraph
+# import Kamaelia.Visualisation.PhysicsGraph as PhysicsGraph

@@ -51,5 +51,5 @@ class mimeObject(object):
 
 
 if __name__ =="__main__":
-   print "No test harness as yet"
-   print "This file was spun out from the Mime request parsing component"
+   print ("No test harness as yet")
+   print ("This file was spun out from the Mime request parsing component")

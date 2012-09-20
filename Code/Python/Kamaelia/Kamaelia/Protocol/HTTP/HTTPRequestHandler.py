@@ -247,7 +247,7 @@ class HTTPRequestHandler(component):
 
             for header in resource.get("headers",[]):
                 if header[0] == "Content-Type":
-                    if resource.has_key("charset"): # Maintain charset support for now
+                    if ( "charset" in resource): # Maintain charset support for now
                         header = header[0], header[1] + "; " + resource["charset"]
                 hl.append(header)
 
@@ -264,7 +264,7 @@ class HTTPRequestHandler(component):
         if request["protocol"] != "HTTP":
             request["bad"] = "400"
 
-        elif request["version"] > "1.0" and not request["headers"].has_key("host"):
+        elif request["version"] > "1.0" and not ("host" in request["headers"]):
             request["bad"] = "400"
             request["error-msg"] = "Host header required."
 
@@ -354,7 +354,7 @@ class HTTPRequestHandler(component):
         if msg.get("complete"):
             lengthMethod = "explicit"
             msg["length"] = len(msg["data"]) # XXXX Is this used anywhere?
-        elif msg.has_key("length"):
+        elif ( "length" in msg ):
             lengthMethod = "explicit"
         else:
             lengthMethod = ""

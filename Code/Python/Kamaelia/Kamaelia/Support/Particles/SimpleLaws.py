@@ -108,11 +108,15 @@ the bondLength you specify, such that behaviour will appear unchanged, just
 at a different scaling.
 """
 
-from SpatialIndexer import SpatialIndexer
+from .SpatialIndexer import SpatialIndexer
 
 from operator import sub as _sub
 from operator import add as _add
 from operator import mul as _mul
+try:
+    reduce
+except NameError:
+    from functools import reduce
 
 class SimpleLaws(object):
     """\
@@ -222,5 +226,5 @@ class SimpleLaws(object):
             if damp * vmag > self.maxVelocity:
                 damp = self.maxVelocity / vmag
                 
-            return map(_mul, velocity, [damp] * len(velocity) )
+            return list(map(_mul, velocity, [damp] * len(velocity) ))
 

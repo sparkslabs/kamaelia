@@ -26,7 +26,7 @@ from Axon.Ipc import producerFinished, shutdownMicroprocess
 
 def contains(items,container):
     for item in items:
-        if not container.has_key(item):
+        if not ( item in container):
             return False
     return True
 

@@ -404,7 +404,7 @@ class HTTPParser(component):
         self.readbuffer = self.readbuffer[bodylengthremaining:] #for the next request
 
     def setServer(self, requestobject):
-        if requestobject["headers"].has_key("host"):
+        if ( "host" in requestobject["headers"] ):
             requestobject["uri-server"] = requestobject["headers"]["host"]
 
     def setConnectionMode(self, requestobject):
@@ -421,7 +421,7 @@ class HTTPParser(component):
 
             yield WaitComplete(self.getBody_ChunkTransferEncoding(requestobject))
 
-        elif requestobject["headers"].has_key("content-length"):
+        elif ( "content-length" in requestobject["headers"] ):
 
             yield WaitComplete(self.getBody_KnownContentLength(requestobject))
 

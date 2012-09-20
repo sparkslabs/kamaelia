@@ -25,9 +25,11 @@
 # unbonded force acts between all non bonded particles
 # bonded force acts between bonded particles
 
-from SpatialIndexer import SpatialIndexer
 
-from ParticleSystem import ParticleSystem
-from Particle import Particle
-from SimpleLaws import SimpleLaws
-from MultipleLaws import MultipleLaws
+
+from .SpatialIndexer import SpatialIndexer
+
+from .ParticleSystem import ParticleSystem
+from .Particle import Particle
+from .SimpleLaws import SimpleLaws
+from .MultipleLaws import MultipleLaws

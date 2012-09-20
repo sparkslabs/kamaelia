@@ -221,7 +221,7 @@ class PyGameApp(_Axon.Component.component):
         until one returns True.
         """
         for event in self.events():
-            if self.eventHandlers.has_key(event.type):
+            if event.type in self.eventHandlers:
                 for handler in self.eventHandlers[event.type]:
                     if handler(event):
                         break
@@ -232,7 +232,7 @@ class PyGameApp(_Axon.Component.component):
         
         The handler is passed the pygame event object as its argument when called.
         """
-        if not self.eventHandlers.has_key(eventtype):
+        if not ( eventtype in self.eventHandlers ):
             self.eventHandlers[eventtype] = []
             self.send({ "ADDLISTENEVENT" : eventtype,
                         "surface" : self.screen,
@@ -242,7 +242,7 @@ class PyGameApp(_Axon.Component.component):
             
     def removeHandler(self, eventtype, handler):
         """Remove the specified pygame event handler from the specified event."""
-        if self.eventHandlers.has_key(eventtype): 
+        if ( eventtype in self.eventHandlers ): 
             self.eventHandlers[eventtype].remove(handler) # Latent bug, handler not in list
 
 

@@ -135,7 +135,7 @@ class PComponent(BaseParticle):
         oldhue = []
         for i in xrange(len(acro)):
             factor = acro[:i+1]
-            print factor
+            print (factor)
             hue = list(colours [ factor.__hash__() % len(colours)])
             if oldhue == []:
                oldhue = hue
@@ -144,7 +144,7 @@ class PComponent(BaseParticle):
                hue[1] = (hue[1] + oldhue[1])/2
                hue[2] = (hue[2] + oldhue[2])/2
 
-#        print "HUE", hue
+#        print ("HUE", hue)
 #        self.colour = colours [ acronym(newname).__hash__() % len(colours)]
         self.colour = hue
         self.bordercolour = [x*.75 for x in hue]
@@ -202,12 +202,13 @@ class PComponent(BaseParticle):
             yield 10
             surface.blit(self.desclabel, (72,16) )
                      
-    def setOffset( self, (x,y) ):
+    def setOffset( self, offset ):
         """\
         Set the offset of the top left corner of the rendering area.
         
         If this particle is at (px,py) it will be rendered at (px-x,py-y).
         """
+        x,y = offset
         self.left = x
         self.top  = y
 

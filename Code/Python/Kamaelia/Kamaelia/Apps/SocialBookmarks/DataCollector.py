@@ -58,7 +58,7 @@ class DataCollector(DBWrapper,threadedcomponent):
                     if tweet[0] != "\r\n": # If \r\n is received, this is just a keep alive signal from Twitter every 30 secs
                         # At this point, each 'tweet' contains tweetdata, and a list of possible pids
                         newdata = cjson.decode(tweet[0])
-                        if newdata.has_key('delete') or newdata.has_key('scrub_geo') or newdata.has_key('limit'):
+                        if ( "delete" in newdata) or ("scrub_geo" in newdata) or ("limit" in newdata):
                             # Keep a record of all requests from Twitter for deletions, location removal etc
                             # As yet none of these have been received, but this code will store them if they are received to enable debugging
                             filepath = "contentDebug.txt"
@@ -168,7 +168,7 @@ class RawDataCollector(DBWrapper, threadedcomponent):
                     tweet = tweet.replace("\\/","/") # This may need moving further down the line - ideally it would be handled by cjson
                     if tweet != "\r\n":
                         newdata = cjson.decode(tweet)
-                        if newdata.has_key('delete') or newdata.has_key('scrub_geo') or newdata.has_key('limit'):
+                        if ("delete" in newdata) or ("scrub_geo" in newdata) or ("limit" in newdata):
                             # It is assumed here that the original data collector has handled the Twitter status message
                             Print( "Discarding tweet instruction - captured by other component")
                         else:

@@ -31,6 +31,6 @@ handling.
 """
 
 
-from PyGameApp import PyGameApp
-from DragHandler import DragHandler
+from .PyGameApp import PyGameApp
+from .DragHandler import DragHandler
         

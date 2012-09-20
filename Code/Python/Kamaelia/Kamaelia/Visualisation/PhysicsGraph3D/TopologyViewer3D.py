@@ -472,7 +472,7 @@ class TopologyViewer3D(Axon.Component.component):
             
     def quit(self,msg=Axon.Ipc.shutdownMicroprocess()):
         """Cause termination."""
-        print 'Shut down...'
+        print ('Shut down...')
         self.send(msg, "signal")
         self.scheduler.stop()
     
@@ -726,9 +726,9 @@ class TopologyViewer3D(Axon.Component.component):
         """Switch to another display level."""
         isValid = False
         if self.currentLevel + dlevel > self.maxLevel:
-            print "Warning: max hierarchy level has reached!"
+            print ("Warning: max hierarchy level has reached!")
         elif self.currentLevel + dlevel < 0:
-            print "Warning: The first hierarchy level has reached!"
+            print ("Warning: The first hierarchy level has reached!")
         else:
             if dlevel < 0: # Go to the last dlevel level
                 self.previousParentParticleID = self.currentParentParticleID
@@ -749,9 +749,9 @@ class TopologyViewer3D(Axon.Component.component):
                         self.currentParentParticleID = self.selectedParticles[0].ID
                         isValid = True
                     else:
-                        print 'Warning: The particle you double-clicked has no children!'
+                        print ('Warning: The particle you double-clicked has no children!')
                 else:
-                    print "Tips: To extend a node, please double-click the node you want to extend"
+                    print ("Tips: To extend a node, please double-click the node you want to extend")
         # Show the specified display level if valid
         if isValid:                    
             # Save current level's viewer position
@@ -807,9 +807,9 @@ class TopologyViewer3D(Axon.Component.component):
 
             if cmd == ("ADD", "NODE") and len(msg) == 6:
                 if msg[2] in [p.ID for p in self.physics.particles]:
-                    print "Node exists, please use a new node ID!"
+                    print ("Node exists, please use a new node ID!")
                 else:
-                    if self.particleTypes.has_key(msg[5]):
+                    if ( msg[5] in self.particleTypes ):
                         ptype = self.particleTypes[msg[5]]
                         ident    = msg[2]
                         name  = msg[3]
@@ -857,9 +857,9 @@ class TopologyViewer3D(Axon.Component.component):
                 name = self.getParticleLabel(node_id)
                 self.send( ("GET_NAME", "NODE", node_id, name), "outbox" )        
             else:
-                print "Command Error: please check your command format!"
+                print ("Command Error: please check your command format!")
         else:
-            print "Command Error: not enough parameters!"
+            print ("Command Error: not enough parameters!")
   
     
     def _generatePos(self, posSpec):
@@ -1045,7 +1045,7 @@ if __name__ == "__main__":
     from Kamaelia.Chassis.Graphline import Graphline
     
     # Data can be from both DataSource and console inputs
-    print "Please type the command you want to draw"
+    print ("Please type the command you want to draw")
     Graphline(
         CONSOLEREADER = ConsoleReader(">>> "),
 #        DATASOURCE = DataSource(['ADD NODE 1Node 1Node randompos -', 'ADD NODE 2Node 2Node randompos -',

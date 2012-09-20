@@ -103,7 +103,8 @@ class Multicast_receiver(Axon.Component.component):
         while 1:
            try:
               data, addr = sock.recvfrom(1024)
-           except socket.error, e:
+           except socket.error:
+              e = sys.exc_info()[1]
               pass
            else:
               message = (addr, data)

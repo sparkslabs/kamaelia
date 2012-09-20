@@ -88,7 +88,7 @@ class chunks_to_lines(component):
             try:
                 chunk = chunk.replace("\r", "")
             except:
-                print "BAD CHUNK, Arrrgggh", repr(chunk)
+                print ("BAD CHUNK, Arrrgggh", repr(chunk))
                 import time
                 time.sleep(3)
                 raise

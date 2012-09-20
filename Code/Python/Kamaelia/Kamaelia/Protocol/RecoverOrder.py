@@ -128,7 +128,7 @@ class RecoverOrder(component):
    - bufsize  -- Size of the buffer for data items (default=30)
    - modulo   -- Sequence numbers run from 0 to modulo-1 then wrap back to 0 (default=2**32)
    """
-   def __init__(self, bufsize=30, modulo=2L**32L):
+   def __init__(self, bufsize=30, modulo=2**32):
       super(RecoverOrder,self).__init__()
       self.bufsize=bufsize
       self.modulo=modulo
@@ -167,7 +167,7 @@ class RecoverOrder(component):
    def insertitem(self,buffer,item):
         # print seqnum every 1024 items, so we can see progress is happening
         if 0== (item[0] & 0x3ff):
-            print item[0]
+            print (item[0])
    
         if len(buffer)==0:
             buffer.insert(0,item)

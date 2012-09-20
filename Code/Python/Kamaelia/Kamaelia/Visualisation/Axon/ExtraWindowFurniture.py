@@ -99,6 +99,6 @@ class ExtraWindowFurniture(object):
         if self.logo:
             surface.blit(self.logo, (8,8))
         
-    def setOffset( self, (x,y) ):
+    def setOffset( self, offset ):
         """Dummy method."""
         pass

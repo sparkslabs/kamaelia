@@ -40,7 +40,7 @@ def UploadTorrentsWrapper(request):
     """Returns an UploadTorrents component, manages that components lifetime and access."""
 
     sessionid = request["uri-suffix"]
-    if Sessions.has_key(sessionid):
+    if (sessionid in Sessions):
         session = Sessions[sessionid]
         if session["busy"]:
             return ErrorPages.websiteErrorPage(500, "Session handler busy")

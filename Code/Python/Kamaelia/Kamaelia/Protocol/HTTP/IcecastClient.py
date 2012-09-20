@@ -132,7 +132,7 @@ class IcecastDemux(component):
                     bytesUntilMetadata = metadatainterval
                     self.send(IceIPCHeader(contenttype=msg.header["headers"].get("content-type")), "outbox")
 
-                    print "Metadata interval is " + str(metadatainterval)
+                    print ("Metadata interval is " + str(metadatainterval))
 
                 elif isinstance(msg, ParsedHTTPBodyChunk):
                     readbuffer += msg.bodychunk # NOTE: this is inefficient, consider using a character queue instead
@@ -189,7 +189,7 @@ class IcecastClient(SingleShotHTTPClient):
         splituri = splitUri(url)
 
         host = splituri["uri-server"]
-        if splituri.has_key("uri-port"):
+        if ( "uri-port" in splituri ):
             host += ":" + splituri["uri-port"]
 
         splituri["request"] =  "GET " + splituri["raw-uri"] + " HTTP/1.1\r\n"

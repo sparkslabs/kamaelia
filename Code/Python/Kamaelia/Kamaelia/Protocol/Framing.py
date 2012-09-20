@@ -161,7 +161,8 @@ class SimpleFrame(object):
         """
         try:
             tag, data = self.t
-        except ValueError, e:
+        except ValueError:
+            e = sys.exc_info()[1]
             raise e
         length = len(data)
         frame = "%s %s\n%s" % (tag, length, data)

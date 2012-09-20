@@ -169,12 +169,13 @@ class PEntity(BaseParticle):
             yield 10
             surface.blit(self.desclabel, (72,16) )
 
-    def setOffset( self, (x,y) ):
+    def setOffset( self, offset ):
         """\
         Set the offset of the top left corner of the rendering area.
 
         If this particle is at (px,py) it will be rendered at (px-x,py-y).
         """
+        x,y = offset
         self.left = x
         self.top  = y
 

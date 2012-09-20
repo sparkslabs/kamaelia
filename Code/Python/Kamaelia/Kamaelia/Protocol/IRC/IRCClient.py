@@ -328,10 +328,10 @@ if __name__ == '__main__':
     from Kamaelia.Chassis.Pipeline import Pipeline
     from Kamaelia.Support.Protocol.IRC import informat, outformat, channelOutformat, channelInformat
 
-    print "This is some test code/demo harness. There are better demo harnesses in /Examples"
-    print "/nick testingkbot"
-    print "/user testingkbot irc.freenode.net 127.0.0.1 username"
-    print "/join #kamtest"
+    print ("This is some test code/demo harness. There are better demo harnesses in /Examples")
+    print ("/nick testingkbot")
+    print ("/user testingkbot irc.freenode.net 127.0.0.1 username")
+    print ("/join #kamtest")
     print 
 
     Pipeline(

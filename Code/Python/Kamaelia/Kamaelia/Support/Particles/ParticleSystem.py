@@ -103,7 +103,7 @@ doInteractions(...) method is called first. Particles should not apply their
 velocities to update their position until their update(...) method is called.
 """
 
-from SpatialIndexer import SpatialIndexer
+from .SpatialIndexer import SpatialIndexer
 
 
 class ParticleSystem(object):

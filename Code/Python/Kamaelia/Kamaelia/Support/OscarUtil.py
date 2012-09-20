@@ -60,11 +60,11 @@ def printWireshark(text):
     data = unpackSingles(text)
     data = ("00 "*12 + "%02x " * len(data)) % data
     while len(data) > (3*16):
-        print data[:3*8], ' ', data[3*8:3*16]
+        print (" ".join([data[:3*8], ' ', data[3*8:3*16]]))
         data = data[3*16:]
-    print data[:3*8],
+    print (data[:3*8],)
     if len(data) > 3*8:
-        print ' ',data[3*8:]
+        print (' ' +str(data[3*8:]))
     
 class selfClass(object):
     """

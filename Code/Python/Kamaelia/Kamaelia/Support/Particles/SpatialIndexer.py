@@ -182,7 +182,7 @@ class SpatialIndexer(object):
    def remove(self, *entities):
       """Notify that entit(ies) no longer exist (remove them)"""
       for entity in entities:
-         if self.entities.has_key(entity):
+         if (entity in self.entities):
             self.cells[ self.entities[entity] ].remove(entity)
             del self.entities[entity]
       
@@ -218,8 +218,8 @@ class SpatialIndexer(object):
                     # measure the distance from the coord
                     entcoord = entity.getLoc()
                     
-                    sep = map(__sub, centre, entcoord)
-                    distsquared = sum(map(__mul, sep,sep))
+                    sep = list(map(__sub, centre, entcoord))
+                    distsquared = sum(list(map(__mul, sep,sep)))
                     
                     # if within range, then add to the list of nodes to return
                     if distsquared <= rsquared:
@@ -243,7 +243,7 @@ class SpatialIndexer(object):
       
 if __name__ == "__main__":
     x = SpatialIndexer()
-    print x.withinRadius( (0,0), 1.0)
+    print (x.withinRadius( (0,0), 1.0))
     
     class Entity(object):
       def __init__(self, coords):
@@ -254,12 +254,12 @@ if __name__ == "__main__":
     a = Entity((0.1, 0.2))
     b = Entity((1.2, 3.4))
     x.add(a,b)
-    print x.withinRadius( (0,0), 1.0)
-    print 
-    print x.withinRadius( (0,0), 0.1)
-    print
-    print x.withinRadius( (0,0), 5)
-    print
+    print (x.withinRadius( (0,0), 1.0))
+    print ("") 
+    print (x.withinRadius( (0,0), 0.1))
+    print ("")
+    print (x.withinRadius( (0,0), 5))
+    print ("")
     x.remove(a)
-    print x.withinRadius( (0,0), 5)
+    print (x.withinRadius( (0,0), 5))
     

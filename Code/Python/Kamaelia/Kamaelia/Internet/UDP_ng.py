@@ -232,8 +232,9 @@ class BasicPeer(Axon.Component.component):
         try:
             bytesSent = self.sock.sendto(data, target)
             return bytesSent
-        except socket.error, socket.msg:
-            (errorno, errmsg) = socket.msg.args
+        except socket.error:
+            msg = sys.exc_info()[1]
+            (errorno, errmsg) = msg.args
             if errorno == errno.AGAIN or errorno == errno.EWOULDBLOCK:
                 self.send(newWriter(self, ((self, "writeReady"), self.sock)),
                           "_selectorSignal")
@@ -264,8 +265,9 @@ class BasicPeer(Axon.Component.component):
             data = self.sock.recvfrom(size)
             if data:
                 return data
-        except socket.error, socket.msg:
-            (errorno, errmsg) = socket.msg.args
+        except socket.error:
+            msg = sys.exc_info()[1]
+            (errorno, errmsg) = msg.args
             if errorno == errno.EAGAIN or errorno == errno.EWOULDBLOCK:
                 self.send(newReader(self, ((self, "readReady"), self.sock)),
                          "_selectorSignal")
@@ -791,8 +793,8 @@ if __name__=="__main__":
             PostboxPeer(localaddr="127.0.0.1"),
         ).run()
 
-    print "At present, UDP.py only has manually verified test suites."
-    print "This does need recifying, but at present, this is what we have!"
+    print ("At present, UDP.py only has manually verified test suites.")
+    print ("This does need recifying, but at present, this is what we have!")
 
     SimplePeer_tests()
 #    TargettedPeer_tests()

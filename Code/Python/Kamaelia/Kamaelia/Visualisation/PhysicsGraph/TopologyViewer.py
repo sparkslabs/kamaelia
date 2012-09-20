@@ -292,6 +292,11 @@ import Axon
 import Kamaelia.Support.Particles
 import Kamaelia.UI
 
+try:
+    reduce
+except NameError:
+    from functools import reduce
+
 from Kamaelia.Visualisation.PhysicsGraph.GridRenderer import GridRenderer
 from Kamaelia.Visualisation.PhysicsGraph.ParticleDragger import ParticleDragger
 from Kamaelia.Visualisation.PhysicsGraph.RenderingParticle import RenderingParticle
@@ -468,7 +473,10 @@ class TopologyViewer(Kamaelia.UI.MH.PyGameApp,Axon.Component.component):
             r = p.render(self.screen)
             if r != None:
                 try:
-                    n = r.next()
+                    try:
+                        n = r.next()
+                    except AttributeError:
+                        n = next(r)
                     try:
                         renderPasses[n].append(r)
                     except KeyError:
@@ -482,7 +490,11 @@ class TopologyViewer(Kamaelia.UI.MH.PyGameApp,Axon.Component.component):
             nextPass = reduce( min, renderPasses.keys() )
             for r in renderPasses.pop(nextPass):
                 try:
-                    n = r.next()
+                    try:
+                        n = r.next()
+                    except AttributeError:
+                        n = next(r)
+
                     try:
                         renderPasses[n].append(r)
                     except KeyError:
@@ -540,7 +552,7 @@ class TopologyViewer(Kamaelia.UI.MH.PyGameApp,Axon.Component.component):
                 cmd = msg[0].upper(), msg[1].upper()
     
                 if cmd == ("ADD", "NODE") and len(msg) == 6:
-                    if self.particleTypes.has_key(msg[5]):
+                    if ( msg[5] in self.particleTypes ):
                         ptype = self.particleTypes[msg[5]]
                         id    = msg[2]
                         name  = msg[3]
@@ -704,8 +716,9 @@ class TopologyViewer(Kamaelia.UI.MH.PyGameApp,Axon.Component.component):
         super(TopologyViewer,self).quit(event)
         self.scheduler.stop()
         
-    def scroll( self, (dx, dy) ):
+    def scroll( self, delta ):
         """Scroll the contents being displayed on the surface by (dx,dy) left and up."""
+        dx, dy = delta
         self.left += dx
         self.top += dy
         for e in self.graphicalFurniture + self.physics.particles:

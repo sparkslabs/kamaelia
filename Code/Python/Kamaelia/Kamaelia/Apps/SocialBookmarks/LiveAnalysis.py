@@ -453,7 +453,7 @@ class LiveAnalysisNLTK(DBWrapper, component):
                     # Format: {"word" : [is_phrase,count,is_keyword,is_entity,is_common]}
                     wordfreqdata = dict()
                     for item in tweetjson['entities']['user_mentions']:
-                        if wordfreqdata.has_key("@" + item['screen_name']):
+                        if ( ("@" + item['screen_name']) in wordfreqdata):
                             wordfreqdata["@" + item['screen_name']][1] += 1
                         else:
                             if item['screen_name'].lower() in keywords or "@" + item['screen_name'].lower() in keywords:
@@ -461,12 +461,12 @@ class LiveAnalysisNLTK(DBWrapper, component):
                             else:
                                 wordfreqdata["@" + item['screen_name']] = [0,1,0,1,0]
                     for item in tweetjson['entities']['urls']:
-                        if wordfreqdata.has_key(item['url']):
+                        if ( item['url'] in wordfreqdata):
                             wordfreqdata[item['url']][1] += 1
                         else:
                             wordfreqdata[item['url']] = [0,1,0,1,0]
                     for item in tweetjson['entities']['hashtags']:
-                        if wordfreqdata.has_key("#" + item['text']):
+                        if ( ("#" + item['text']) in wordfreqdata):
                             wordfreqdata["#" + item['text']][1] += 1
                         else:
                             if item['text'].lower() in keywords or "#" + item['text'].lower() in keywords:
@@ -495,7 +495,7 @@ class LiveAnalysisNLTK(DBWrapper, component):
                                 word = ""
 
                         if word != "":
-                            if wordfreqdata.has_key(word):
+                            if ( word in wordfreqdata):
                                 wordfreqdata[word][1] += 1
                             else:
                                 if word.lower() in self.exclusions:
@@ -658,10 +658,10 @@ class FinalAnalysisNLTK(DBWrapper,component):
                                     tweetjson = self.recv("tweetfixer")
 
                                     # Identify retweets
-                                    if tweetjson.has_key('retweeted_status'):
-                                        if tweetjson['retweeted_status'].has_key('id'):
+                                    if ("retweeted_status" in tweetjson):
+                                        if "id" in tweetjson['retweeted_status']:
                                             statusid = tweetjson['retweeted_status']['id']
-                                            if retweetcache.has_key(statusid):
+                                            if statusid in retweetcache:
                                                 retweetcache[statusid][0] += 1
                                             else:
                                                 retweetcache[statusid] = [1,tweetjson['retweeted_status']['text']]

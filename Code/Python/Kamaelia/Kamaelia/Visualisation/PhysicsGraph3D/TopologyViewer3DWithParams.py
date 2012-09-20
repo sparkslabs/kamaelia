@@ -105,7 +105,7 @@ def paramStr2paramDict(string):
         value = result[1].strip()
         mColour = colourRegex.match(value)
         if mColour: # If colour triple tuple
-            value = map(int, mColour.groups())
+            value = list(map(int, mColour.groups()))
         else:
             mDecimal = decimalRegex.match(value)
             if mDecimal: # If Decimal
@@ -171,7 +171,7 @@ class TopologyViewer3DWithParams(TopologyViewer3D):
             [ "DEL", "ALL" ]
             [ "GET", "ALL" ]
         """
-        #print 'doCommand'        
+        #print ('doCommand')
 
         if len(msg) >= 2:
             cmd = msg[0].upper(), msg[1].upper()
@@ -189,10 +189,10 @@ class TopologyViewer3DWithParams(TopologyViewer3D):
                 else:
                     params = {}
                 if msg[2] in [p.ID for p in self.physics.particles]:
-                    print "Node exists, please use a new node ID!"
+                    print ("Node exists, please use a new node ID!")
                 else:
-                    if self.particleTypes.has_key(msg[5]):
-                        #print 'ADD NODE begin'
+                    if ( msg[5] in self.particleTypes ):
+                        #print ('ADD NODE begin')
                         ptype = self.particleTypes[msg[5]]
                         ident    = msg[2]
                         name  = msg[3]
@@ -204,12 +204,12 @@ class TopologyViewer3DWithParams(TopologyViewer3D):
                         
                         particle.originaltype = msg[5]
                         #self.particles.append(particle)
-                        #print self.particles[0]
+                        #print (self.particles[0])
                         self.addParticle(particle)
                         self.isNewNode = True
-                        #print id(particle)
+                        #print (id(particle))
                         
-                        #print 'ADD NODE end'
+                        #print ('ADD NODE end')
                 
             elif cmd == ("DEL", "NODE") and len(msg) == 3:
                     ident = msg[2]
@@ -251,9 +251,9 @@ class TopologyViewer3DWithParams(TopologyViewer3D):
                 self.updateParticle(node_id, **params)
                 self.send( ("UPDATE", "NODE", node_id, msg[3]), "outbox" )        
             else:
-                print "Command Error: please check your command format!"
+                print ("Command Error: please check your command format!")
         else:
-            print "Command Error: not enough parameters!"
+            print ("Command Error: not enough parameters!")
 
 __kamaelia_components__  = ( TopologyViewer3DWithParams, )
 
@@ -266,7 +266,7 @@ if __name__ == "__main__":
     from Kamaelia.Chassis.Graphline import Graphline
     
     # Data can be from both DataSource and console inputs
-    print "Please type the command you want to draw"
+    print ("Please type the command you want to draw")
     Graphline(
         CONSOLEREADER = ConsoleReader(">>> "),
 #        DATASOURCE = DataSource(['ADD NODE 1Node 1Node randompos -', 'ADD NODE 2Node 2Node randompos -',

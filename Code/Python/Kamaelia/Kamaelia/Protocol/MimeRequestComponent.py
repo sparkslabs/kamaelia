@@ -106,7 +106,7 @@ class MimeRequestComponent(component):
    def readHeader(self):
          [ origkey,value ] = self.currentLine.split(": ",1)
          key = origkey.lower()
-         if not self.header.has_key(key):
+         if not ( key in self.header ):
             self.header[key] = [origkey, value]
          else:
             self.header[key][1] = self.header[key][1]+ ", " + value
@@ -170,7 +170,8 @@ class MimeRequestComponent(component):
       self.gotRequest = 1
       try:
          self.request = Kamaelia.Support.Data.requestLine.requestLine(self.requestLine)
-      except Kamaelia.Support.Data.requestLine.BadRequest, br:
+      except Kamaelia.Support.Data.requestLine.BadRequest:
+         br = sys.exc_info()[1]
          errinf = errorInformation(self, br)
          self.send(errinf, "signal")
          return 0
@@ -202,7 +203,7 @@ if __name__ =="__main__":
          while 1:
             if self.dataReady("inbox"):
                message = self.recv("inbox")
-               print "MIME decoded:", repr(message)
+               print ("MIME decoded:", repr(message))
                return
             yield 1
 

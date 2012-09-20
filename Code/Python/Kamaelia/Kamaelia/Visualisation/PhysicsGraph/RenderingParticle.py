@@ -137,12 +137,13 @@ class RenderingParticle(BaseParticle):
         surface.blit(self.label, (x - self.label.get_width()/2, y - self.label.get_height()/2))
         
         
-    def setOffset( self, (left,top) ):
+    def setOffset( self, offset ):
         """\
         Set the offset of the top left corner of the rendering area.
 
         If this particle is at (px,py) it will be rendered at (px-x,py-y).
         """
+        left, top = offset
         self.left = left
         self.top  = top
 

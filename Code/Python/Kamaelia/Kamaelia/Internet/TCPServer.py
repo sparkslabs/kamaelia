@@ -186,8 +186,8 @@ class TCPServer(Axon.Component.component):
       theComponent,(sock,howdied) = shutdownMessage.caller, shutdownMessage.message
       shutdownMessage.caller, shutdownMessage.message = None, None
       shutdownMessage = None
-#      print "SOCKET HANDLERS BEFORE", self.socket_handlers
-#      print "TCPServer.closeSocket", theComponent,(sock,howdied)
+#      print ("SOCKET HANDLERS BEFORE", self.socket_handlers)
+#      print ("TCPServer.closeSocket", theComponent,(sock,howdied))
       ### FIXME: Pass on how died as well in TCPServer!
       found = False
       for s in self.socket_handlers:
@@ -210,26 +210,26 @@ class TCPServer(Axon.Component.component):
           # tell protocol handlers
           self.send(_ki.shutdownCSA(self, theComponent), "protocolHandlerSignal")# "signal")
           # Delete the child component
-#          print; print "DELETING", theComponent
+#          print; print ("DELETING", theComponent)
           self.removeChild(theComponent)
           if sock:
               del self.socket_handlers[sock]
           sock = None
 
-#      print "***************************************************************************************************************************************"
-#      print "*                                                                                                                                     *"
-#      print "*                                                                                                                                     *"
-#      print "SOCKET HANDLERS AFTER", self.socket_handlers
-#      print "protocolHandlerSignal", self.outboxes["protocolHandlerSignal"]
-#      print type(self.outboxes["protocolHandlerSignal"])
-#      print type(self.outboxes["protocolHandlerSignal"].storage)
-#      print type(self.outboxes["protocolHandlerSignal"].target)
-#      print type(self.outboxes["protocolHandlerSignal"].target.storage)
-#      print "*                                                                                                                                     *"
-#      print "*                                                                                                                                     *"
-#      print "***************************************************************************************************************************************"
-#      print "CHILDREN", self.children
-#      print "LINKAGES"
+#      print ("***************************************************************************************************************************************")
+#      print ("*                                                                                                                                     *")
+#      print "*                                                                                                                                     *")
+#      print ("SOCKET HANDLERS AFTER", self.socket_handlers)
+#      print ("protocolHandlerSignal", self.outboxes["protocolHandlerSignal"])
+#      print (type(self.outboxes["protocolHandlerSignal"]))
+#      print (type(self.outboxes["protocolHandlerSignal"].storage))
+#      print (type(self.outboxes["protocolHandlerSignal"].target))
+#      print (type(self.outboxes["protocolHandlerSignal"].target.storage))
+#      print ("*                                                                                                                                     *")
+#      print ("*                                                                                                                                     *")
+#      print ("***************************************************************************************************************************************")
+#      print ("CHILDREN", self.children)
+#      print ("LINKAGES")
 #      import pprint
 #      pprint.pprint([str(x) for x in self.postoffice.linkages])
 
@@ -238,7 +238,7 @@ class TCPServer(Axon.Component.component):
       closedSomeSockets=False
       while self.dataReady("_feedbackFromCSA"):
          data = self.recv("_feedbackFromCSA")
-#         print "DATA", data
+#         print ("DATA", data)
          if isinstance( data, _ki.socketShutdown):
             self.closeSocket(data)
          closedSomeSockets=True
@@ -258,7 +258,8 @@ class TCPServer(Axon.Component.component):
          # to handle
          try:
             newsock, CSA = self.createConnectedSocket(self.listener)
-         except socket.error, e:
+         except socket.error:
+            e = sys.exc_info()[1]
             (errorno,errmsg) = e
             if errorno != errno.EAGAIN:
                if errorno != errno.EWOULDBLOCK:
@@ -321,4 +322,4 @@ class TCPServer(Axon.Component.component):
 __kamaelia_components__  = ( TCPServer, )
 
 if __name__ == '__main__':
-   print "Simple integration test moved out to InternetHandlingTests.py"
+   print ("Simple integration test moved out to InternetHandlingTests.py")

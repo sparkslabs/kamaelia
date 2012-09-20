@@ -165,7 +165,7 @@ class TorrentClient(threadedcomponent):
         rawserver.listen_forever(self.rawserver_doneflag) # runs until the component terminates
 
         self.send(producerFinished(self), "signal")
-#        print "TorrentClient has shutdown"
+#        print ("TorrentClient has shutdown")
                         
     def startTorrent(self, metainfo, save_incomplete_as, save_as, torrentid):
         """startTorrent causes MultiTorrent to begin downloading a torrent eventually.
@@ -177,8 +177,9 @@ class TorrentClient(threadedcomponent):
     def _create_torrent(self, metainfo, save_incomplete_as, save_as):
         if not self.multitorrent.torrent_known(metainfo.infohash):
             df = self.multitorrent.create_torrent(metainfo, save_incomplete_as, save_as)                
-        #except Exception, e:
-        #    print e
+        #except Exception:
+        #    e = sys.exc_info()[1]
+        #    print (e)
         #    return False
                 
     def _start_torrent(self, metainfo, torrentid):
@@ -200,8 +201,8 @@ class TorrentClient(threadedcomponent):
             #yield df
             #df.getResult()  # raises exception if one occurred in yield.
         
-        #    print e
-        #    print "Failed to start torrent"
+        #    print (e)
+        #    print ("Failed to start torrent")
 
     def decodeTorrent(self, data):
         """\
@@ -214,7 +215,8 @@ class TorrentClient(threadedcomponent):
         try:
             b = bdecode(data)
             metainfo = ConvertedMetainfo(b)
-        except Exception, e:
+        except Exception:
+            e = sys.exc_info()[1]
             pass
         return metainfo
     
@@ -250,7 +252,7 @@ class TorrentClient(threadedcomponent):
         while self.dataReady("control"):
             temp = self.recv("control")
             if isinstance(temp, shutdown):
-#                print "TorrentClient trying to shutdown"
+#                print ("TorrentClient trying to shutdown")
                 #cause us to shutdown
                 self.rawserver_doneflag.set()
                 self.core_doneflag.set()
@@ -269,7 +271,7 @@ class TorrentClient(threadedcomponent):
         """
 
         self.multitorrent.rawserver.add_task(self.tickInterval, self.tick)
-        #print "Tick"
+        #print ("Tick")
         self.handleMessages()
         self.sendStatusUpdates()
 

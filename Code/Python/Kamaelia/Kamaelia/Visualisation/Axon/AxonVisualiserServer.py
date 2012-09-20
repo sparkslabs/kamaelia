@@ -25,10 +25,10 @@ from Kamaelia.Visualisation.PhysicsGraph.TopologyViewer import TopologyViewer as
 
 _TopologyViewerServer = Kamaelia.Visualisation.PhysicsGraph.TopologyViewerServer
 
-from PComponent import PComponent
-from PPostbox import PPostbox
-from AxonLaws import AxonLaws
-from ExtraWindowFurniture import ExtraWindowFurniture
+from .PComponent import PComponent
+from .PPostbox import PPostbox
+from .AxonLaws import AxonLaws
+from .ExtraWindowFurniture import ExtraWindowFurniture
 
 """\
 ----------------------------------

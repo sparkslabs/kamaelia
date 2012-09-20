@@ -105,7 +105,7 @@ And look at properties of that component::
     {'control': 'NOT USED', 'inbox': 'NOT USED'}
     >>> c.outboxes
     {'outbox': 'Lines that were typed at the console', 'signal': 'NOT USED'}
-    >>> print c.doc
+    >>> print (c.doc)
     ConsoleReader([prompt][,eol]) -> new ConsoleReader component.
     
     Component that provides a console for typing in stuff. Each line is output
@@ -296,10 +296,10 @@ class Scope(object):
             return
         
         # parse the AST
-	try:
-		ASTChildren=ASTChildren.getChildNodes()   # python 2.3 complains if you try to iterate over the node itself
-	except:
-		pass
+        try:
+            ASTChildren=ASTChildren.getChildNodes()   # python 2.3 complains if you try to iterate over the node itself
+        except:
+            pass
 
         for node in ASTChildren:
             if isinstance(node, ast.From): 
@@ -889,7 +889,7 @@ class ModuleDoc(ModuleScope):
         
         # now we've already done children and have built up localModule name mappings
         # we can initialise ourselves properly (parsing the AST)
-        print "Parsing:",moduleName
+        print ("Parsing:",moduleName)
         
         super(ModuleDoc,self).__init__(AST,localModules)
         self.localModules = localModules    # just to be safe
@@ -1190,37 +1190,37 @@ if __name__ == "__main__":
     #file="/home/matteh/kamaelia/trunk/Code/Python/Kamaelia/Kamaelia/Protocol/RTP/NullPayloadRTP.py"
     modDocs = ModuleDoc("Kamaelia.File.Reading",file,{})
 
-    print "MODULE:"
-    print modDocs.doc
+    print ("MODULE:")
+    print (modDocs.doc)
     
-    print 
-    print "PREFABS:"
+    print ("") 
+    print ("PREFABS:")
     for (name,item) in modDocs.listAllPrefabs():
-        print name,item.argString
+        print (name,item.argString)
         
-    print
-    print "COMPONENTS:"
+    print ("")
+    print ("COMPONENTS:")
     for (name,item) in modDocs.listAllComponents():
-        print name
-        print "Inboxes:  ",item.inboxes
-        print "Outboxes: ",item.outboxes
+        print (name)
+        print ("Inboxes:  ",item.inboxes)
+        print ("Outboxes: ",item.outboxes)
         for (name,meth) in item.listAllFunctions():
-            print name + "(" + meth.argString + ")"
-        print
+            print (name + "(" + meth.argString + ")")
+        print ("")
 
     import pprint
     pprint.pprint(GetAllKamaeliaComponents(),None,4)
-    print
-    print "*******************************************************************"
-    print
+    print ("")
+    print ("*******************************************************************")
+    print ("")
     pprint.pprint(GetAllKamaeliaComponentsNested(),None,4)
-    print
-    print "*******************************************************************"
-    print
+    print ("")
+    print ("*******************************************************************")
+    print ("")
     pprint.pprint(GetAllKamaeliaPrefabs(),None,4)
-    print
-    print "*******************************************************************"
-    print
+    print ("")
+    print ("*******************************************************************")
+    print ("")
     pprint.pprint(GetAllKamaeliaPrefabsNested(),None,4)
-    print
-    print "*******************************************************************"
+    print ("")
+    print ("*******************************************************************")

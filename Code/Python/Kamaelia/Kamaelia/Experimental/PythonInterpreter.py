@@ -90,16 +90,16 @@ class StandaloneInterpreter(Axon.ThreadedComponent.threadedcomponent):
                 except:
                     f = StringIO.StringIO()
                     traceback.print_exc(file=f)
-                    print "EPIC FAIL"
-                    print f.getvalue()
+                    print ("EPIC FAIL")
+                    print (f.getvalue())
                     f.close()
-                    print __script__
-                    print repr(__script__)
+                    print (__script__)
+                    print (repr(__script__))
                     __script__ = ""
 
                 if __line__[:1] != " ":
                     if __co__:
-                        print "\nok"
+                        print ("\nok")
                         try:
                             __co__ = code.compile_command("_="+__script__, "<stdin>", "exec")
                         except:
@@ -112,13 +112,13 @@ class StandaloneInterpreter(Axon.ThreadedComponent.threadedcomponent):
                             env["_"] = pre
                             exec __co__ in env
                             if env["_"]:
-                                print env["_"]
+                                print (env["_"])
                                 env["_"] = None
                         except:
                             f = StringIO.StringIO()
                             traceback.print_exc(file=f)
-                            print "EPIC FAIL"
-                            print f.getvalue()
+                            print ("EPIC FAIL")
+                            print (f.getvalue())
                             f.close()
                         __script__ = ""
                     else:

@@ -308,7 +308,7 @@ if __name__ == "__main__":
             while 1:
                 
                 if self.dataReady("inbox"):
-                    print self.recv("inbox")
+                    print (self.recv("inbox"))
 
                     t=time.time()+0.2
                     while t>time.time():

@@ -39,12 +39,13 @@ def abbreviate(string):
 _COMPONENT_RADIUS = 32    
 
 
-def nearest45DegreeStep( (dx,dy) ):
+def nearest45DegreeStep( delta ):
     """Returns (in degrees) the nearest 45 degree angle match to the supplied vector.
 
        Returned values are one of 0, 45, 90, 135, 180, 225, 270, 315.       
        If the supplied vector is (0,0), the returned angle is 0.
     """
+    dx,dy = delta
     if dx == 0 and dy == 0:
         return 0
 
@@ -236,12 +237,13 @@ class PISA(BaseParticle):
             surface.blit(self.desclabel, (72,16) )
 
 
-    def setOffset( self, (x,y) ):
+    def setOffset( self, offset ):
         """\
         Set the offset of the top left corner of the rendering area.
 
         If this particle is at (px,py) it will be rendered at (px-x,py-y).
         """
+        x, y = offset
         self.left = x
         self.top  = y
 

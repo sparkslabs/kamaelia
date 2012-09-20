@@ -202,7 +202,7 @@ class SingleShotHTTPClient(component):
         splituri = splitUri(url)
 
         host = splituri["uri-server"]
-        if splituri.has_key("uri-port"):
+        if ("uri-port" in splituri):
             host += ":" + splituri["uri-port"]
 
         splituri["request"] = []

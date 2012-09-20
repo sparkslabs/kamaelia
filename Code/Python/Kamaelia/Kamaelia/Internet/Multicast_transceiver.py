@@ -135,7 +135,8 @@ class Multicast_transceiver(Axon.Component.component):
         while 1:
            try:
               data, addr = sock.recvfrom(16384)
-           except socket.error, e:
+           except socket.error:
+              e = sys.exc_info()[1]
               pass
            else:
               message = (addr, data)
@@ -147,19 +148,20 @@ class Multicast_transceiver(Axon.Component.component):
               tosend.append(data)
 
            if self.debug:
-              print self.inboxes["inbox"]
+              print (self.inboxes["inbox"])
 
            while len(tosend)>0:
               try:
                   l = sock.sendto(tosend[0], (self.remote_addr,self.remote_port) );
                   del tosend[0]
-              except socket.error, e:
+              except socket.error:
                   # break out the loop, since we can't send right now
+                  e = sys.exc_info()[1]
                   break
 
 def tests():
-   print "This module is acceptance tested as part of a system."
-   print "Please see the test/test_MulticastTransceiverSystem.py script instead"
+   print ("This module is acceptance tested as part of a system.")
+   print ("Please see the test/test_MulticastTransceiverSystem.py script instead")
 
 __kamaelia_components__  = ( Multicast_transceiver, )
 

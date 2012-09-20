@@ -158,7 +158,7 @@ if __name__ == "__main__":
       aList = [ value ]
       def _bin(seq): return [ seq[0]/2, seq[0]%2]+ seq[1:]
       while aList[0]>1: aList = _bin(aList)
-      r = reduce(lambda x, y: x+y, map(lambda x : str(x), aList) )
+      r = reduce(lambda x, y: x+y, list(map(lambda x : str(x), aList)) )
       r = "0"*(width-len(r))+r
       return r
 
@@ -180,6 +180,6 @@ if __name__ == "__main__":
    a.Whatever=[10,10,10,10,10,10,10,10,10]
    a.SoWhat=10
    a.Bibble=7
-   print a.pack()
+   print (a.pack())
 
-   print map(lambda x:bin(x),a.pack())
+   print (map(lambda x:bin(x),a.pack()))

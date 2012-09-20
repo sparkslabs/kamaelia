@@ -331,7 +331,7 @@ class DVB_Demuxer(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             # This allows for the PIDs to be split or remultiplexed
             # together.
             for outbox in pidmap[pid]:
-                if not self.outboxes.has_key(outbox):
+                if not ( outbox in self.outboxes ):
                     self.addOutbox(outbox)
         if "default" in pidmap:
             self.forwardothers = True

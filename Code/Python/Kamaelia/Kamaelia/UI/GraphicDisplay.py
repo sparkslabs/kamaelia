@@ -27,7 +27,8 @@ try:
     have_pygame = True
 #    __kamaelia_components__ = __kamaelia_components__ + ( PygameDisplay, )
 except ImportError:
-    have_pygame = False
+    from .Pygame.Display import PygameDisplay as PygameDisplay
+#    have_pygame = False
 
 #
 # This will fail for the moment

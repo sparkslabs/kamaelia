@@ -143,7 +143,7 @@ if __name__ == "__main__":
 
     def TracedCallback(tag):
         def theCallback(*args):
-            print "Callback", tag, "args", args
+            print ("Callback", tag, "args", args)
         return theCallback
 
     root = Tk()

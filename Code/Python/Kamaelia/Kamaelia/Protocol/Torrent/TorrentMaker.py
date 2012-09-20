@@ -97,8 +97,9 @@ class TorrentMaker(threadedcomponent):
             tmp, tmpfile = None, None
             
             self.send(metadata, "outbox")
-        except BTFailure, e:
-            print str(e)
+        except BTFailure:
+            e = sys.exc_info()[1]
+            print (str(e))
             
     def main(self):
         unfinished = True
@@ -121,7 +122,7 @@ class TorrentMaker(threadedcomponent):
                 if isinstance(request, TIPCMakeTorrent):
                     self.maketorrent(request)
                 else:
-                    print "TorrentMaker - what on earth is a " + str(type(request)) + "!?"
+                    print ("TorrentMaker - what on earth is a " + str(type(request)) + "!?")
                     
             elif self.dataReady("control"):
                 msg = self.recv("control")

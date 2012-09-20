@@ -79,7 +79,7 @@ involved - such as the one feeding notifications to the "ReadReady" inbox (eg.
 the Selector component).
 """
 
-
+import sys
 import socket, time
 import errno
 
@@ -124,7 +124,8 @@ class SSLSocket(object):
    def recv(self, size=1024):
       try:
          return self.sslobj.read(size)
-      except socket.sslerror, e:
+      except socket.sslerror:
+         e = sys.exc_info()[1]
          # We allow those errors to go through
          if e.args[0] not in [socket.SSL_ERROR_WANT_READ, 
                               socket.SSL_ERROR_WANT_WRITE]:
@@ -134,7 +135,8 @@ class SSLSocket(object):
    def send(self, data):
       try:
          return self.sslobj.write(data)
-      except socket.sslerror, e:
+      except socket.sslerror:
+         e = sys.exc_info()[1]
          # We allow those errors to go through
          if e.args[0] not in [socket.SSL_ERROR_WANT_READ, 
                               socket.SSL_ERROR_WANT_WRITE]:
@@ -183,13 +185,13 @@ class ConnectedSocketAdapter(component):
       if self.dataReady("control"):
           data = self.recv("control")
           if isinstance(data, producerFinished):
-#              print "Raising shutdown: ConnectedSocketAdapter recieved producerFinished Message", self,data
+#              print ("Raising shutdown: ConnectedSocketAdapter recieved producerFinished Message", self,data)
               self.connectionRECVLive = False
               self.connectionSENDLive = False
               self.howDied = "producer finished"
               # Print( "producerFinished")
           elif isinstance(data, shutdownMicroprocess):
-#              print "Raising shutdown: ConnectedSocketAdapter recieved shutdownMicroprocess Message", self,data
+#              print ("Raising shutdown: ConnectedSocketAdapter recieved shutdownMicroprocess Message", self,data)
               self.connectionRECVLive = False
               self.connectionSENDLive = False
               self.howDied = "shutdown microprocess"
@@ -205,7 +207,7 @@ class ConnectedSocketAdapter(component):
 
    def stop(self):
        # Some of these are going to crash initially when stop is called
-#       print "I AM CALLED"
+#       print ("I AM CALLED")
        # Print( "stopping")
        if self.socket is None:
            # SELF.STOP CALLED TWICE - possible under limited circumstances (crashes primarily)
@@ -215,7 +217,8 @@ class ConnectedSocketAdapter(component):
        try:
            self.socket.shutdown(2)
            # Print( "socket.shutdown succeeded")
-       except Exception, e:
+       except Exception:
+           e = sys.exc_info()[1]
            # Explicitly silencing this because it is possible (but rare) that
            # the socket was already shutdown due to an earlier error.
            # Print( "socket.shutdown failed for some reason", e)
@@ -225,7 +228,8 @@ class ConnectedSocketAdapter(component):
            # Print( "socket.close ...")
            self.socket.close()
            # Print( "             ... succeeded")
-       except Exception, e:
+       except Exception:
+           e = sys.exc_info()[1]
            # Print( "             ... failed")
            # Explicitly silencing this because it is possible (but rare) that
            # the socket was already closed due to an earlier error.
@@ -245,7 +249,7 @@ class ConnectedSocketAdapter(component):
 #       import gc
 #       import pprint
 #       gc.collect()
-#       print "REFERRERS", len(gc.get_referrers(self))
+#       print ("REFERRERS", len(gc.get_referrers(self)))
 #       pprint.pprint([(type(x),x) for x in gc.get_referrers(self)])
 
    def _safesend(self, sock, data):
@@ -256,17 +260,19 @@ class ConnectedSocketAdapter(component):
           bytes_sent = sock.send(data)
           return bytes_sent
 
-       except socket.error, socket.msg:
-          (errorno, errmsg) = socket.msg.args
+       except socket.error:
+          msg = sys.exc_info()[1]
+          (errorno, errmsg) = msg.args
           if not (errorno == errno.EAGAIN or  errorno == errno.EWOULDBLOCK):
              self.connectionSENDLive = False
-             self.howDied = socket.msg
+             self.howDied = sg
              # Print( "Oh No! Socket Died - sending!", e)
 
-       except TypeError, ex:
+       except TypeError:
+          ex = sys.exc_info()[1]
 
           if self.noisyErrors:
-             print "CSA: Exception sending on socket: ", ex, "(no automatic conversion to string occurs)."
+             print ("CSA: Exception sending on socket: ", ex, "(no automatic conversion to string occurs).")
           if self.crashOnBadDataToSend:
               raise ex
        self.sending = False
@@ -298,12 +304,13 @@ class ConnectedSocketAdapter(component):
           elif not self.isSSL: # This implies the connection has closed for some reason
                  self.connectionRECVLive = False
 
-       except socket.error, socket.msg:
-          (errorno, errmsg) = socket.msg.args
+       except socket.error:
+          msg = sys.exc_info()[1]
+          (errorno, errmsg) = msg.args
           if not (errorno == errno.EAGAIN or errorno == errno.EWOULDBLOCK):
               # "Recieving an error other than EAGAIN or EWOULDBLOCK when reading is a genuine error we don't handle"
               self.connectionRECVLive = False
-              self.howDied = socket.msg
+              self.howDied = msg
               # Print( "Oh No! Socket Died - receiving!", e)
        self.receiving = False
        if self.connectionRECVLive:
@@ -351,7 +358,7 @@ class ConnectedSocketAdapter(component):
        return False
 
    def main(self):
-#       print "self.selectorService", self, self.selectorService
+#       print ("self.selectorService", self, self.selectorService)
        self.link((self, "_selectorSignal"), self.selectorService)
        # self.selectorService ...
        self.sending = True
@@ -364,7 +371,7 @@ class ConnectedSocketAdapter(component):
        while self.connectionRECVLive and self.connectionSENDLive: # Note, this means half close == close
           yield 1
           if self.dataReady("makessl"):
-#             print "****************************************************** Making SSL ******************************************************"
+#             print ("****************************************************** Making SSL ******************************************************")
              # Print( "CSA Made SSL")
              self.recv('makessl')
 
@@ -381,7 +388,7 @@ class ConnectedSocketAdapter(component):
              self.send(newWriter(self, ((self, "SendReady"), self.socket)), "_selectorSignal")
 
              self.send('', 'sslready')
-#             print "****************************************************** SSL IS READY ******************************************************"
+#             print ("****************************************************** SSL IS READY ******************************************************")
              yield 1
 
           self.checkSocketStatus() # To be written
@@ -398,15 +405,15 @@ class ConnectedSocketAdapter(component):
        self.stop()
        # NOTE: the creator of this CSA is responsible for removing it from the selector
 
-#       print 
-#       print "------------------------------------------------------------------------------------"
-#       print "DROPPED OFF THE END OF THE GENERATOR",self.socket
+#       print ("") 
+#       print ("------------------------------------------------------------------------------------")
+#       print ("DROPPED OFF THE END OF THE GENERATOR",self.socket)
        self.socket=None
-#       print self.__dict__
-#       print self.postoffice
-#       print [str(x) for x in self.postoffice.linkages]
+#       print (self.__dict__)
+#       print (self.postoffice)
+#       print ([str(x) for x in self.postoffice.linkages])
        for linkage in self.postoffice.linkages:
            self.unlink(thelinkage=linkage)
-#       print "------------------------------------------------------------------------------------"
+#       print ("------------------------------------------------------------------------------------")
 
 __kamaelia_components__  = ( ConnectedSocketAdapter, )

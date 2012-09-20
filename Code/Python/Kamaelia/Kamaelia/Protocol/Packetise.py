@@ -84,8 +84,8 @@ if __name__ == "__main__":
                     data = self.recv("inbox")
                     received += len(data)
                     if len(data) > self.expectedSize:
-                        print "WARNING, incorrect packet size!"
-                print "GOT:", received
+                        print ("WARNING, incorrect packet size!")
+                print ("GOT:", received)
                 if not self.anyReady():
                     self.pause()
                 yield 1
@@ -96,7 +96,7 @@ if __name__ == "__main__":
             while 1:
                 self.send("hello"*1000, "outbox")
                 data += len("hello")*1000
-                print "SENT", data
+                print ("SENT", data)
                 yield 1
 
     Pipeline(

@@ -35,7 +35,7 @@ Example
 ::
 
     >>> r = requestLine("GET http://foo.bar.com/fwibble PROTO/3.3")
-    >>> print parser.debug__str__()
+    >>> print (parser.debug__str__())
     METHOD          :GET
     PROTOCOL        :PROTO
     VERSION         :3.3
@@ -44,7 +44,7 @@ Example
     PASSWORD        :
     DOMAIN          :foo.bar.com
     URL             :/fwibble
-    >>> print r.domain
+    >>> print (r.domain)
     foo.bar.com
 """
 from Kamaelia.KamaeliaExceptions import BadRequest
@@ -81,7 +81,8 @@ class requestLine(object):
                 [self.user,self.passwd] = [userpass, ""]
             [self.url, protocolandver] = rest.split(" ", 1) # !!!! May well need changing due to Microsoft
             [self.protocol, self.version] = protocolandver.split("/",1)
-        except Exception, e:
+        except Exception:
+            e = sys.exc_info()[1]
             raise BadRequest(request, e)
 
     def debug__str__(self):
@@ -124,10 +125,11 @@ if __name__ =="__main__":
         "foo://server.bigcompany.com/ PROTO/3.3"
         ]
     for REQ in requests:
-        print "Parsing request:", REQ
+        print ("Parsing request:", REQ)
         try:
             foo=requestLine(REQ)
-        except BadRequest, e:
+        except BadRequest:
+            e = sys.exc_info()[1]
             foo= "Line is not parseable - does not match:\nMETHOD proto://(user(:passwd)?@)?domain/url proto/ver"
-        print foo
-        print
+        print (foo)
+        print ("")

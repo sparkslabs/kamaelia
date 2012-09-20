@@ -97,6 +97,7 @@ TCPClient will then wait for the CSA to terminate. It then sends its own
 shutdownMicroprocess message out of the "signal" outbox.
 """
 
+import sys
 import socket
 import errno
 
@@ -226,8 +227,9 @@ class TCPClient(Axon.Component.component):
             #   attempt has not yet been completed.
          self.connecting=0
          return True
-      except socket.error, socket.msg:
-         (errorno, errmsg) = socket.msg.args
+      except socket.error:
+         msg = sys.exc_info()[1]
+         (errorno, errmsg) = msg.args
          if errorno==errno.EALREADY:
             # The socket is non-blocking and a previous connection attempt has not yet been completed
             # We handle this by allowing  the code to come back and repeatedly retry
@@ -289,19 +291,22 @@ class TCPClient(Axon.Component.component):
                   self.pause()
                   yield 2
                raise Finality
-            except Exception, x:
+            except Exception:
+               x = sys.exc_info()[1]
                # Print(  "SHUTTING SOCK",x )
                result = sock.shutdown(2) ; yield 3
                raise x  # XXXX If X is not finality, an error message needs to get sent _somewhere_ else
                # The logical place to send the error is to the signal outbox
-         except Exception, x:
+         except Exception:
+            x = sys.exc_info()[1]
             # Print(  "CLOSING SOCK",x )
             sock.close() ;  yield 4,x # XXXX If X is not finality, an error message needs to get sent _somewhere_ else
             raise x
       except Finality:
          # Print( "LOOKING GOOD SOCK" )
          yield 5
-      except socket.error, e:
+      except socket.error:
+         e = sys.exc_info()[1]
          # We now do the flipside of setupCSA, whether we had an error or not
          # A safe error relates to a disconnected server, and unsafe error is generally
          # bad. However either way, it's gone, let's let the person using this

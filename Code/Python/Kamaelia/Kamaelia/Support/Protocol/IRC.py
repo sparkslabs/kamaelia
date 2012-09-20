@@ -194,5 +194,5 @@ def channelInformat(channel): # FIXME: Probably ought to be a nested "def" inste
     return (lambda text: informat(text, defaultChannel=channel))
 
 if __name__ == '__main__':
-    print "This file currently has no example/integral test code"
+    print ("This file currently has no example/integral test code")
 

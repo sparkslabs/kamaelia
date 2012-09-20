@@ -162,7 +162,7 @@ class Requester(DBWrapper,threadedcomponent):
                     # bid is Brand ID
                     bidmod = bid.replace("#programme","")
                     bidmod = str(bidmod.replace("file:///programmes/",""))
-                    if self.officialbrandtags.has_key(bidmod):
+                    if (bidmod in self.officialbrandtags):
                         twittags = self.officialbrandtags[bidmod]
                         break
 
@@ -173,7 +173,7 @@ class Requester(DBWrapper,threadedcomponent):
                         # sid is Series ID
                         sidmod = sid.replace("#programme","")
                         sidmod = str(sidmod.replace("file:///programmes/",""))
-                        if self.officialseriestags.has_key(sidmod):
+                        if (sidmod in self.officialseriestags):
                             twittags = self.officialseriestags[sidmod]
                             break
 
@@ -315,7 +315,7 @@ class Requester(DBWrapper,threadedcomponent):
                     firstname = str(g.value(subject=rdflib.BNode(pid),predicate=rdflib.URIRef('http://xmlns.com/foaf/0.1/givenName')))
                     lastname = str(g.value(subject=rdflib.BNode(pid),predicate=rdflib.URIRef('http://xmlns.com/foaf/0.1/familyName')))
 
-                    if config.has_key(firstname + " " + lastname):
+                    if ((firstname + " " + lastname) in config):
                         # Found a cached value
                         if config[firstname + " " + lastname] != "":
                             keywords[config[firstname + " " + lastname]] = "Twitter"
@@ -329,7 +329,7 @@ class Requester(DBWrapper,threadedcomponent):
                         try:
                             for user in twitdata:
                                 # Only use this Twitter screen name if there's a good chance they're the person we're after
-                                if user.has_key('verified'):
+                                if ("verified" in user):
                                     if (user['verified'] == True or user['followers_count'] > 10000) and string.lower(user['name']) == string.lower(firstname + " " + lastname):
                                         screenname = user['screen_name']
                                         keywords[screenname] = "Twitter"
@@ -363,7 +363,7 @@ class Requester(DBWrapper,threadedcomponent):
                             # This ^ is a temporary fix until I work out a better DB structure
                             keywords[charwords[1] + "^" + channel] = "Character"
                             keywords[charwords[1] + "^" + title] = "Character"
-                    if config.has_key(firstname + " " + lastname):
+                    if ((firstname + " " + lastname) in config):
                         # Found a cached value
                         if config[firstname + " " + lastname] != "":
                             keywords[config[firstname + " " + lastname]] = "Actor"
@@ -376,7 +376,7 @@ class Requester(DBWrapper,threadedcomponent):
                         screenname = ""
                         try:
                             for user in twitdata:
-                                if user.has_key('verified'):
+                                if ("verified" in user):
                                     if (user['verified'] == True or user['followers_count'] > 10000) and string.lower(user['name']) == string.lower(firstname + " " + lastname):
                                         screenname = user['screen_name']
                                         keywords[screenname] = "Twitter"
@@ -390,7 +390,7 @@ class Requester(DBWrapper,threadedcomponent):
                 # So, let's do some extra queries and see if the show title is a person's name on Twitter
                 if "radio" in channel or "6music" in channel or "asiannetwork" in channel or "sportsextra" in channel or "worldservice" in channel:
                     # However, radio shows are often named using the DJ - The cases where this isn't true will cause problems however as they'll be saved in json - DOH! TODO
-                    if config.has_key(titlesave):
+                    if (titlesave in config):
                         # Found a cached value
                         if config[titlesave] != "":
                             keywords[config[titlesave]] = "Twitter"
@@ -402,7 +402,7 @@ class Requester(DBWrapper,threadedcomponent):
                         screenname = ""
                         try:
                             for user in twitdata:
-                                if user.has_key('verified'):
+                                if ("verified" in user):
                                     if (user['verified'] == True or user['followers_count'] > 10000) and  string.lower(user['name']) == titlesave.lower():
                                         screenname = user['screen_name']
                                         keywords[screenname] = "Twitter"

@@ -141,7 +141,7 @@ class Minimal(component):
         else:
             filepath = self.homedirectory + filename         # FIXME: Should use os.path.join
 
-        # print filepath
+        # print (filepath)
 
         # FIXME: Logic here looks a little bust actually, and can probably
         # FIXME: be reworked further and simplified.
@@ -159,13 +159,14 @@ class Minimal(component):
                 }
                 self.send(resource, "outbox")                    
             else:
-                print "Error 404, " + filename + " is not a file"
-                print "self.homedirectory(%s) , filename(%s)" % (self.homedirectory , filename)
-                print "os.path.exists(self.homedirectory + filename)", os.path.exists(self.homedirectory + filename)
-                print "not os.path.isdir(self.homedirectory + filename)", (not os.path.isdir(self.homedirectory + filename))
+                print ("Error 404, " + filename + " is not a file")
+                print ("self.homedirectory(%s) , filename(%s)" % (self.homedirectory , filename))
+                print ("os.path.exists(self.homedirectory + filename)", os.path.exists(self.homedirectory + filename))
+                print ("not os.path.isdir(self.homedirectory + filename)", (not os.path.isdir(self.homedirectory + filename)))
                 error = 404
 
-        except OSError, e:
+        except OSError:
+            e = sys.exc_info()[1]
             error = 404
 
         if error == 404:

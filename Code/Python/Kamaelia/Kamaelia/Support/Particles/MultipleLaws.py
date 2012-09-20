@@ -85,7 +85,7 @@ in.
 
 
 
-from SpatialIndexer import SpatialIndexer
+from .SpatialIndexer import SpatialIndexer
 
 from operator import sub as _sub
 from operator import add as _add
@@ -124,7 +124,7 @@ class MultipleLaws(object):
         # go through the built links and check all combinations exist
         for type1 in types:
             for type2 in types:
-                if not self.laws.has_key((type1, type2)):
+                if not ( (type1, type2) in self.laws ):
                     self.laws[(type1,type2)] = defaultLaw
         
         # determine the maxInteractRadius        

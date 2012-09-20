@@ -38,7 +38,7 @@ Sessions = {}
 
 def SessionExampleWrapper(request):
     sessionid = request["uri-suffix"]
-    if Sessions.has_key(sessionid):
+    if (sessionid in Sessions):
         session = Sessions[sessionid]
         if session["busy"]:
             return ErrorPages.websiteErrorPage(500, "Session handler busy")

@@ -65,7 +65,7 @@ if __name__=="__main__":
     dictArgs, optlist, remargs = parseArgs(sys.argv[1:])
 
     if "help" in dictArgs:
-        print dictArgs["help"]
+        print (dictArgs["help"])
         sys.exit(0)
    
     resolution = dictArgs.get("screensize",(800,600))

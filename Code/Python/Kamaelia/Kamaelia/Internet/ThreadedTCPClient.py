@@ -120,7 +120,8 @@ class ThreadedTCPClient(Axon.ThreadedComponent.threadedcomponent):
       self.send("Thread running","signal")
       try:
          sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)#; yield 0.3
-      except socket.error, e:
+      except socket.error:
+         e = sys.exc_info()[1]
          #handle initial failure to create socket.
          # If we can't create a socket we might as well give up now.
          # This matches the behaviour of the main TCP client but it might be better passing as
@@ -133,7 +134,8 @@ class ThreadedTCPClient(Axon.ThreadedComponent.threadedcomponent):
       self.send("socket object created","signal")
       try:
          sock.connect((self.host, self.port))
-      except socket.error, e:
+      except socket.error:
+         e = sys.exc_info()[1]
          self.send(e,"signal")
          try:
             result = sock.close()
@@ -147,7 +149,8 @@ class ThreadedTCPClient(Axon.ThreadedComponent.threadedcomponent):
       if self.sendmessage != None:
         try:
             sock.send(self.sendmessage)
-        except socket.error, e:
+        except socket.error:
+            e = sys.exc_info()[1]
             self.send(e,"signal")
             try:
                 result = sock.close()
@@ -168,7 +171,8 @@ class ThreadedTCPClient(Axon.ThreadedComponent.threadedcomponent):
                self.send(data)
 #             except socket.timeout, to:
 #               pass # common case Try again next loop.
-            except socket.error, err:
+            except socket.error:
+               err = sys.exc_info()[1]
                self.send(err,"signal")
                break # The task is finished now.
          
@@ -179,7 +183,8 @@ class ThreadedTCPClient(Axon.ThreadedComponent.threadedcomponent):
                         break
                         # Want to give opportunity for inbox messages to get into the
                         # inbox queue before shutting down the sending system.
-            except Empty, e:
+            except Empty:
+               e = sys.exc_info()[1]
                pass # Normal case.
       
       #end while 1
@@ -187,15 +192,18 @@ class ThreadedTCPClient(Axon.ThreadedComponent.threadedcomponent):
       # After breaking out of while loop clean up socket before ending the thread.
       try:
          sock.shutdown(2)
-      except socket.error, e:
+      except socket.error:
+         e = sys.exc_info()[1]
          pass
       try:
          sock.close()
-      except socket.error, e:
+      except socket.error:
+         e = sys.exc_info()[1]
          self.send(e,"signal")
       self.send(socketShutdown(),"signal")
       #Normal exit
-     except Exception, e:
+     except Exception:
+      e = sys.exc_info()[1]
       self.send("Unexpected exception","signal")
       self.send(e,"signal")
       self.send(socketShutdown(),"signal")
@@ -229,7 +237,7 @@ if __name__ =="__main__":
          self.link((self.client,"outbox"), (self.display,"inbox") )
          self.link((self.client,"signal"), (self.displayerr,"inbox") )
          self.link((self, "outbox"),(self.client, "inbox"))
-         print self.children
+         print (self.children)
          return Axon.Ipc.newComponent(*(self.children))
 
       def mainBody(self):

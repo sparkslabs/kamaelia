@@ -111,11 +111,12 @@ class GridRenderer(object):
                              (i, 0                   ), 
                              (i, surface.get_height()) )
 
-    def setOffset( self, (left,top) ):
+    def setOffset( self, offset ):
         """\
         Set the offset of the top left corner of the rendering area.
 
         What would be rendered at (px,py) it will be rendered at (px-x,py-y).
         """
+        left,top = offset
         self.left = left
         self.top  = top

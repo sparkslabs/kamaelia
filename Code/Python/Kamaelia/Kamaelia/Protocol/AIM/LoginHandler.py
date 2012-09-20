@@ -211,7 +211,7 @@ class LoginHandler(SNACExchanger):
                     if (time.time() - t) > 2:
                         raise RuntimeError("Connection time out!"+ str( time.time() - t))
                     else:
-                        print "odd"
+                        print ("odd")
 
         assert self.debugger.note("LoginHandler.connectAuth", 5, "received new connection ack")
 
@@ -252,9 +252,9 @@ class LoginHandler(SNACExchanger):
     def extractBOSandCookie(self, reply):
         """Extracts BOS server, port, and auth cookie from server reply."""
         parsed = readTLVs(reply)
-        if parsed.has_key(0x08):
+        if (0x08 in parsed):
             return readTLV08(parsed[0x08])
-        assert parsed.has_key(0x05)
+        assert (0x05 in parsed)
         BOS_server = parsed[0x05]
         BOS_server, port = BOS_server.split(':')
         port = int(port)

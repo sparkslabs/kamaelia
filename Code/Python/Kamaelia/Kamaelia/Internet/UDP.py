@@ -158,7 +158,8 @@ class BasicPeer(Axon.Component.component):
         """
         try:
             message = sock.recvfrom(1024)
-        except socket.error, e:
+        except socket.error:
+            e = sys.exc_info()[1]
             pass
         else:
             self.send(message,"outbox") # format ( data, addr )
@@ -449,8 +450,8 @@ if __name__=="__main__":
             PostboxPeer(localaddr="127.0.0.1"),
         ).run()
 
-    print "At present, UDP.py only has manually verified test suites."
-    print "This does need recifying, but at present, this is what we have!"
+    print ("At present, UDP.py only has manually verified test suites.")
+    print ("This does need recifying, but at present, this is what we have!")
 
     SimplePeer_tests()
 #    TargettedPeer_tests()

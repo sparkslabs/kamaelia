@@ -38,19 +38,19 @@ A simple application to record a DVB Channel by a given name. ::
     from Kamaelia.Support.DVB.ChannelsConf import read_channel_configs
 
     if len(sys.argv)<2:
-        print "You didn't ask for a particular channel..."
+        print ("You didn't ask for a particular channel...")
         sys.exit(0)
     channel = sys.argv[1]
 
     chan_by_name, chan_by_service, chans_by_frequency = read_channel_configs("channels.conf")
 
-    print "Tuning info for", channel, "\n", pprint.pformat(chan_by_name[channel])
+    print ("Tuning info for", channel, "\n", pprint.pformat(chan_by_name[channel]))
 
     chan_info = chan_by_name[channel]
 
     if chan_info["apid"] + chan_info["vpid"] == 0:
-        print "Sorry, I can't determine the audio & video pids for that channel"
-        print "If this code was more intelligent it could parse the service description table, but it isn't"
+        print ("Sorry, I can't determine the audio & video pids for that channel")
+        print ("If this code was more intelligent it could parse the service description table, but it isn't")
         sys.exit(0)
 
     Pipeline(
@@ -170,9 +170,10 @@ def open_config(config_file, extra_search = []):
         try:
             f = open(os.path.join(path,config_file))
             if debug:
-                print "Opened", config_file, "from", path
+                print ("Opened", config_file, "from", path)
             break # Successfully opened a config file
-        except IOError, e:
+        except IOError:
+            e = sys.exc_info()[1]
             if e.errno !=2:
                 raise
 
@@ -191,10 +192,10 @@ def getdvb(symbol, default=None):
     if default:
         try:
             R = getattr(dvb3.frontend, symbol)
-            # print "    symbol", symbol, R
+            # print ("    symbol", symbol, R)
             return R
         except AttributeError:
-            # print "----default", symbol, default
+            # print ("----default", symbol, default)
             return default
     else:
         return getattr(dvb3.frontend, symbol)
@@ -278,39 +279,39 @@ if __name__ == "__main__":
 
     chan_by_name, chan_by_service, chans_by_frequency = read_channel_configs("channels.conf")
 
-    print 
-    print
-    print "This demo/test harness records a given channel by name, as listed in your"
-    print "channels.conf file"
-    print 
+    print ("") 
+    print ("")
+    print ("This demo/test harness records a given channel by name, as listed in your")
+    print ("channels.conf file")
+    print ("")
     
     if len(sys.argv)<2:
-        print "You didn't ask for a particular channel..."
-        print "I know about the following channels:"
-        print "   "
+        print ("You didn't ask for a particular channel...")
+        print ("I know about the following channels:")
+        print ("   ")
         for chan in chan_by_name.keys():
-            print "'"+chan+"'",
+            print ("'"+chan+"'")
             
         sys.exit(0)
     channel = sys.argv[1]
 
-    print "You want channel", channel
-    print "Using the following tuning info"
-    print
+    print ("You want channel", channel)
+    print ("Using the following tuning info")
+    print ("")
     pprint.pprint(chan_by_name[channel])
-    print
+    print ("")
 
     chan_info = chan_by_name[channel]
 
     if chan_info["apid"] + chan_info["vpid"] == 0:
-        print "Sorry, I can't determine the audio & video pids for that channel"
+        print ("Sorry, I can't determine the audio & video pids for that channel")
         sys.exit(0)
 
     X=time.localtime()
     str_stamp = "%d%02d%02d%02d%02d" % (X.tm_year,X.tm_mon,X.tm_mday,X.tm_hour,X.tm_min)
     filename = channel+ "." + str_stamp +".ts"
 
-    print "Recording", channel, "to", filename
+    print ("Recording", channel, "to", filename)
     
     Pipeline(
        DVB_Multiplex(0, [chan_info["apid"], chan_info["vpid"]], chan_info["feparams"]), # BBC NEWS CHANNEL

@@ -125,7 +125,7 @@ def encryptPasswordICQ(password):
     encrypts passwords the old way, relatively insecure way. Not used very often.
     """
     key=[0xF3,0x26,0x81,0xC4,0x39,0x86,0xDB,0x92,0x71,0xA3,0xB9,0xE6,0x53,0x7A,0x95,0x7C]
-    bytes=map(ord,password)
+    bytes=list(map(ord,password))
     r=""
     for i in range(len(bytes)):
         r=r+chr(bytes[i]^key[i%len(key)])

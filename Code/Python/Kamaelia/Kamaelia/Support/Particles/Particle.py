@@ -191,7 +191,7 @@ class Particle(object):
         
     def distSquared(self, altpos):
         """Returns the distance squared of this particle from the specified position"""
-        return sum(map(lambda x1,x2 : (x1-x2)*(x1-x2), self.pos, altpos))
+        return sum(  list(map(lambda x1,x2 : (x1-x2)*(x1-x2), self.pos, altpos))  )
 
     def doInteractions(self, particleIndex, laws, tick):
         """\
@@ -224,12 +224,12 @@ class Particle(object):
                 if ds > 0.0:
                     dist = ds ** 0.5
                     dvelocity = _bonded(self.ptype, particle.ptype, dist, ds)
-                    deltas = map(__sub, particle.pos, self.pos)
+                    deltas = list(map(__sub, particle.pos, self.pos))
                     dv_d = dvelocity / dist
-                    scaleddeltas = map(__mul, deltas, [dv_d]*len(deltas))
+                    scaleddeltas = list(map(__mul, deltas, [dv_d]*len(deltas)))
                     # adjust velocity for us and the other particle (equal and opposite reaction)
-                    self.velocity     = map(__add, self.velocity,     scaleddeltas)
-                    particle.velocity = map(__sub, particle.velocity, scaleddeltas)
+                    self.velocity     = list(map(__add, self.velocity,     scaleddeltas))
+                    particle.velocity = list(map(__sub, particle.velocity, scaleddeltas))
                 else:
                     pass # dunno, ought to have an error i guess
 
@@ -242,12 +242,12 @@ class Particle(object):
             if ds > 0.0:
                 dist = ds ** 0.5
                 dvelocity   = _unbonded(self.ptype, particle.ptype, dist, ds)
-                deltas = map(__sub, particle.pos, self.pos)
+                deltas = list(map(__sub, particle.pos, self.pos))
                 dv_d = dvelocity / dist
-                scaleddeltas = map(__mul, deltas, [dv_d]*len(deltas))
+                scaleddeltas = list(map(__mul, deltas, [dv_d]*len(deltas)))
                 # adjust velocity for us and the other particle (equal and opposite reaction)
-                self.velocity     = map(__add, self.velocity,     scaleddeltas)
-                particle.velocity = map(__sub, particle.velocity, scaleddeltas)
+                self.velocity     = list(map(__add, self.velocity,     scaleddeltas))
+                particle.velocity = list(map(__sub, particle.velocity, scaleddeltas))
             else:
                 pass # dunno, ought to have an error i guess
 
@@ -261,4 +261,4 @@ class Particle(object):
             self.velocity = [0 for x in self.velocity]
         else:
             self.velocity = laws.dampening(self.ptype, self.velocity)
-            self.pos      = map(_add, self.pos, self.velocity)
+            self.pos      = list(map(_add, self.pos, self.velocity))

@@ -65,7 +65,7 @@ extensionToMimeType = {
 def workoutMimeType(filename):
     "Determine the MIME type of a file from its file extension"
     fileextension = string.rsplit(filename, ".", 1)[-1]
-    if extensionToMimeType.has_key(fileextension):
+    if (fileextension in extensionToMimeType):
         return extensionToMimeType[fileextension]
     else:
         return "application/octet-stream"

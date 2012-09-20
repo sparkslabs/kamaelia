@@ -99,8 +99,8 @@ class Multicast_sender(Axon.Component.component):
           yield 1
 
 def tests():
-   print "This module is acceptance tested as part of a system."
-   print "Please see the test/test_BasicMulticastSystem.py script instead"
+   print ("This module is acceptance tested as part of a system.")
+   print ("Please see the test/test_BasicMulticastSystem.py script instead")
 
 __kamaelia_components__  = ( Multicast_sender, )
 

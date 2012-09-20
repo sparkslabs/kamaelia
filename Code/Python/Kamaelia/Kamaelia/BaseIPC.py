@@ -67,7 +67,7 @@ class IPC(object):
                 param = param[1:]
                 optional = True
                 
-            if not kwds.has_key(param):
+            if not ( param in kwds ) :
                 if not optional:
                     raise ValueError(param + " not given as a parameter to " + str(self.__class__.__name__))
                 else:

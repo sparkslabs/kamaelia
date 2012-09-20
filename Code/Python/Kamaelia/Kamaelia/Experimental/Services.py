@@ -126,13 +126,14 @@ def RegisterService(component, services):
         
         try:
             cat.registerService(name, component, boxname)
-        except ServiceAlreadyExists, e:
-            print "***************************** ERROR *****************************"
-            print "An attempt to reuse service names happened."
-            print "This is incorrect usage."
-            print 
+        except ServiceAlreadyExists:
+            e = sys.exc_info()[1]
+            print ("***************************** ERROR *****************************")
+            print ("An attempt to reuse service names happened.")
+            print ("This is incorrect usage.")
+            print ("")
             traceback.print_exc(3)
-            print "***************************** ERROR *****************************"
+            print ("***************************** ERROR *****************************")
 
             raise e
 
