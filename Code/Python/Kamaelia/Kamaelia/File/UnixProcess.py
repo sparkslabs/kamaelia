@@ -98,7 +98,7 @@ def run_command(command, datasource):
         x.stdin.write(d)
 
     x.stdin.close()
-    print x.stdout.read()
+    print (x.stdout.read())
 
 class ChargenComponent(Axon.Component.component):
     def main(self):
@@ -112,7 +112,7 @@ class ChargenComponent(Axon.Component.component):
            if time.time() - ts >3:
                break
         self.send(Axon.Ipc.producerFinished(), "signal")
-        print "total sent", b
+        print ("total sent", b)
 
 def makeNonBlocking(fd):
     fl = fcntl.fcntl(fd, fcntl.F_GETFL)
@@ -180,7 +180,7 @@ class UnixProcess(Axon.Component.component):
 
             if (not self.anyReady()) and not (stdin_ready + stdout_ready + stderr_ready):
 #                \
-#print self.name,"Mighty Foo", stdin_ready, stdout_ready, stderr_ready, len(self.inboxes["inbox"]), len(writeBuffer)
+#print (self.name,"Mighty Foo", stdin_ready, stdout_ready, stderr_ready, len(self.inboxes["inbox"]), len(writeBuffer))
                 self.pause()
                 yield 1
                 continue
@@ -211,22 +211,23 @@ class UnixProcess(Axon.Component.component):
                         count = os.write(x.stdin.fileno(), d)
                         writeBuffer.pop(0)
                         success +=1
-                    except OSError, e:
+                    except OSError:
+                        e =sys.exc_info()[1]
                         success -=1
 #                        \
-#print self.name,"Mighty FooBar", len(self.inboxes["inbox"]), len(writeBuffer)
+#print (self.name,"Mighty FooBar", len(self.inboxes["inbox"]), len(writeBuffer))
                         # Stdin wasn't ready. Let's send through a newWriter request
                         # Want to wait
                         stdin_ready = 0
                         writeBuffer=writeBuffer[len(writeBuffer)/2:]
                         self.send(newWriter(self,((self, "stdinready"), x.stdin)), "selector")
 #                        \
-#print self.name,"OK, we're waiting....", len(self.inboxes["inbox"]), len(writeBuffer)
+#print (self.name,"OK, we're waiting....", len(self.inboxes["inbox"]), len(writeBuffer))
                         break # Break out of this loop
                     except:
 #                        \
-#print self.name,"Unexpected error whilst trying to write to stdin:"
-                        print sys.exc_info()[0]
+#print (self.name,"Unexpected error whilst trying to write to stdin:")
+                        print (sys.exc_info()[0] )
                         break
 #                    if count != len(d):
 #                        raise RuntimeError("Yay, we broke it")
@@ -236,15 +237,16 @@ class UnixProcess(Axon.Component.component):
                     Y = os.read(x.stdout.fileno(),2048)
                     if len(Y)>0:
                         self.send(Y, "outbox")
-                except OSError, e:
-#                    print "Mighty Bingle", len(self.inboxes["inbox"]), len(writeBuffer)
+                except OSError:
+                    e = sys.exc_info()[1]
+#                    print ("Mighty Bingle", len(self.inboxes["inbox"]), len(writeBuffer))
                     # stdout wasn't ready. Let's send through a newReader request
                     stdout_ready = 0
                     self.send(newReader(self,((self, "stdoutready"), x.stdout)), "selector")
                 except:
 #                    \
-#print self.name,"Unexpected error whilst trying to read stdout:"
-                    print sys.exc_info()[0]
+#print (self.name,"Unexpected error whilst trying to read stdout:")
+                    print (sys.exc_info()[0])
                     pass
 
             if stderr_ready: # FIXME: This needs fixing before release
@@ -254,16 +256,17 @@ class UnixProcess(Axon.Component.component):
 #                    \
 #if len(Y)>0: self.send(Y,"outbox")
 ## No particular plans for stderr
-                except OSError, e:
+                except OSError:
+                    e = sys.exc_info()[1]
 #                    \
-#print self.name,"Mighty Jibble", len(self.inboxes["inbox"]), len(writeBuffer)
+#print (self.name,"Mighty Jibble", len(self.inboxes["inbox"]), len(writeBuffer))
                     # stdout wasn't ready. Let's send through a newReader request
                     stderr_ready = 0
                     self.send(newReader(self,((self, "stderrready"), x.stderr)), "selector")
                 except:
 #                    \
-#print self.name,"Unexpected error whilst trying to read stderr:"
-                    print sys.exc_info()[0]
+#print (self.name,"Unexpected error whilst trying to read stderr:")
+                    print (sys.exc_info()[0])
                     pass
 
 
@@ -276,10 +279,10 @@ class UnixProcess(Axon.Component.component):
             yield 1
 
 #        \
-#print self.name,"UnixPipe finishing up"
+#print (self.name,"UnixPipe finishing up")
         while  self.dataReady("stdoutready"):
 #            \
-#print self.name,"flushing"
+#print (self.name,"flushing")
             self.recv("stdoutready")
             try:
                 Y = os.read(x.stdout.fileno(),10)
@@ -287,8 +290,9 @@ class UnixProcess(Axon.Component.component):
                     self.send(Y, "outbox")
                     Y = os.read(x.stdout.fileno(),10)
 #                \
-#print self.name,"Mighty Floogly"
-            except OSError, e:
+#print (self.name,"Mighty Floogly")
+            except OSError:
+                e = sys.exc_info()[1]
                 continue
             except:
                 break
@@ -300,25 +304,25 @@ class UnixProcess(Axon.Component.component):
         self.send(removeReader(self,(x.stdout)), "selector")
         self.send(removeWriter(self,(x.stdin)), "selector")
 #        \
-#print self.name,"sending shutdown"
+#print (self.name,"sending shutdown")
         if not shutdownMessage:
 #            \
-#print self.name,"new signal"
+#print (self.name,"new signal")
             self.send(Axon.Ipc.producerFinished(), "signal")
 #            \
-#print self.name,"...sent"
+#print (self.name,"...sent")
         else:
 #            \
-#print self.name,"old signal"
+#print (self.name,"old signal")
             self.send(shutdownMessage, "signal")
 #            \
-#print "...sent"
+#print ("...sent")
 #        self.send(shutdown(), "selectorsignal")
 
 __kamaelia_components__ = ( UnixProcess, )
 
 def Pipethrough(*args):
-    print "DEPRECATION WARNING: Pipethrough is deprecated, please use Kamaelia.File.UnixProcess.UnixProcess instead"
+    print ("DEPRECATION WARNING: Pipethrough is deprecated, please use Kamaelia.File.UnixProcess.UnixProcess instead")
     return UnixProcess(*args)
 
 if __name__=="__main__":

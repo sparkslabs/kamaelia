@@ -170,6 +170,6 @@ class ConsoleEchoer(component):
 __kamaelia_components__  = ( ConsoleReader, ConsoleEchoer, )
 
 if __name__ =="__main__":
-   print "This module has no system test"
+   print ("This module has no system test")
 
 # RELEASE: MH, MPS

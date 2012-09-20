@@ -82,7 +82,7 @@ if __name__ == "__main__":
                 while self.dataReady("inbox"):
                     data = self.recv("inbox")
                     if data != "hello":
-                        print "WARNING: expected", "hello", "received", data
+                        print ("WARNING: expected", "hello", "received", data)
                 yield 1
 
     Pipeline(

@@ -219,11 +219,11 @@ class DiracDecoder(component):
                 self.send(producerFinished(self), "signal")
         
             except "STREAMERROR":
-                print "Stream error"
+                print ("Stream error")
                 raise IOError("STREAMERROR")
         
             except "INTERNALFAULT":
-                print "Internal fault"
+                print ("Internal fault")
                 raise RuntimeError("INTERNALFAULT")
 
             if dataShortage and not done:
@@ -288,11 +288,11 @@ class DiracEncoder(component):
                         break
 
                     except "ENCODERERROR":
-                        print "Encoder Error"
+                        print ("Encoder Error")
                         raise RuntimeError("ENCODERERROR")
 
                     except "INTERNALFAULT":
-                        print "Internal Fault"
+                        print ("Internal Fault")
                         raise RuntimeError("INTERNALFAULT")
 
 

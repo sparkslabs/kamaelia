@@ -37,16 +37,16 @@ class CallbackStyleComponent(component):
          self.activate()
 
    def initialiseComponent(self):
-      print "DEBUG:", self.label, "initialiseComponent"
+      print ("DEBUG:", self.label, "initialiseComponent")
       return 1
 
    def mainBody(self):
-      print "DEBUG: ",self.label, "Now in the main loop"
+      print ("DEBUG: ",self.label, "Now in the main loop")
       self.looptimes = self.looptimes -1
       return self.looptimes
 
    def closeDownComponent(self):
-      print "DEBUG: ",self.label,"closeDownComponent"
+      print ("DEBUG: ",self.label,"closeDownComponent")
 
 
 class StandardStyleComponent(component):
@@ -59,14 +59,14 @@ class StandardStyleComponent(component):
       self.label = label
 
    def main(self):
-      print "DEBUG:", self.label, "initialiseComponent"
+      print ("DEBUG:", self.label, "initialiseComponent")
       yield 1
       while 1:
-          print "DEBUG: ",self.label, "Now in the main loop"
+          print ("DEBUG: ",self.label, "Now in the main loop")
           self.looptimes = self.looptimes -1
           yield self.looptimes
 
-      print "DEBUG: ",self.label,"closeDownComponent"
+      print ("DEBUG: ",self.label,"closeDownComponent")
 
 __kamaelia_components__  = ( CallbackStyleComponent, StandardStyleComponent )
 

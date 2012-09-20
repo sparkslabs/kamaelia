@@ -128,8 +128,8 @@ if __name__ == '__main__':
    e.activate()
    i.link((i,"outbox"), (e, "inbox"))
    
-   print "You should see the Introspector find that it and a ConsoleEchoer component exist."
-   print "We both have inbox, control, signal and outbox postboxes"
-   print "The Introspector's outbox is linked to the ConsoleEchoer's inbox"
-   print
+   print ("You should see the Introspector find that it and a ConsoleEchoer component exist.")
+   print ("We both have inbox, control, signal and outbox postboxes")
+   print ("The Introspector's outbox is linked to the ConsoleEchoer's inbox")
+   print ("")
    Axon.Scheduler.scheduler.run.runThreads(slowmo=0)

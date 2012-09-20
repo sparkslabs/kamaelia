@@ -216,7 +216,7 @@ if __name__=="__main__":
     for c in cs:
         c.activate()
         
-    print "Should output 7 fruit, followed by '<end of list>'.\n"
+    print ("Should output 7 fruit, followed by '<end of list>'.\n")
     
     scheduler.run.runThreads(slowmo=0)
     

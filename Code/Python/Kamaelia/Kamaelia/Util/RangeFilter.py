@@ -199,7 +199,7 @@ if __name__=="__main__":
     from Kamaelia.Util.Console import ConsoleEchoer
     from Kamaelia.Chassis.Pipeline import Pipeline
     
-    print "Only items in ranges 1-5 and 8-12 should be output...\n\n"
+    print ("Only items in ranges 1-5 and 8-12 should be output...\n\n")
     
     data = [
         (0, "shouldn't pass through"),

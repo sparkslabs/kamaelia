@@ -290,7 +290,7 @@ class ServerCore(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.connectedSockets = []
         self.server = None
         if not self.protocol:
-            print self.__class__, self.__class__.protocol, self.protocol
+            print (self.__class__, self.__class__.protocol, self.protocol)
             raise TypeError("Need a protocol to handle!")
 
     def initialiseServerSocket(self):
@@ -314,7 +314,7 @@ class ServerCore(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
             # notifications of new and closed sockets
             while self.dataReady("_socketactivity"):
                 data = self.recv("_socketactivity")
-#                print "DATA RECEIVED", data, repr(data)
+#                print ("DATA RECEIVED", data, repr(data))
                 if isinstance(data, newCSA):
                     self.handleNewConnection(data)
                 if isinstance(data, shutdownCSA):
@@ -358,7 +358,8 @@ class ServerCore(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         try:
             peer, peerport = sock.getpeername()
             localip, localport = sock.getsockname()
-        except socket.error, e:
+        except socket.error:
+            e = sys.exc_info()[1]
             peer, peerport = "0.0.0.0", 0
             localip, localport = "127.0.0.1", self.port
         protocolHandler = self.mkProtocolHandler(peer=peer, peerport=peerport,localip=localip,localport=localport)
@@ -395,8 +396,8 @@ class ServerCore(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                                       ( protocolHandler, controllink ) )
 
         self.addChildren(connectedSocket,protocolHandler)
-#        print "CSA", connectedSocket
-#        print "PH", protocolHandler
+#        print ("CSA", connectedSocket)
+#        print ("PH", protocolHandler)
         connectedSocket.activate()
         protocolHandler.activate()
 
@@ -411,25 +412,25 @@ class ServerCore(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         Keyword arguments:
         shutdownCSAMessage -- shutdownCSAMessage.object is the ConnectedSocketAdapter for socket that is closing.
         """
-#        print shutdownCSAMessage
-#        print shutdownCSAMessage.object
+#        print (shutdownCSAMessage)
+#        print (shutdownCSAMessage.object)
         connectedSocket = shutdownCSAMessage.object
-#        print "CLOSING", connectedSocket
+#        print ("CLOSING", connectedSocket)
         try:
             bundle=self.retrieveTrackedResourceInformation(connectedSocket)
-#            print "BUNDLE", bundle
+#            print ("BUNDLE", bundle)
         except KeyError:
             # This means we've actually already done this...
             return
         resourceInboxes,resourceOutboxes,(protocolHandler,controllink) = bundle
-#        print bundle
+#        print (bundle)
 
         self.connectedSockets = [ x for x in self.connectedSockets if x != connectedSocket ]
 
         if controllink:
             self.unlink(thelinkage=controllink)
 #        else:
-#            print "Control Link is null, not unlinking"
+#            print ("Control Link is null, not unlinking")
 
         self.send(socketShutdown(),resourceOutboxes[0]) # This is now instantly delivered
         self.send(shutdownMicroprocess(),resourceOutboxes[1]) # This is now instantly delivered
@@ -440,9 +441,9 @@ class ServerCore(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
                                                # This did not used to be the case.
         self.deleteOutbox(resourceOutboxes[1]) # So this is now safe
                                                # This did not used to be the case.
-#        print "CEASING TRACKING", self._resourceStore
+#        print ("CEASING TRACKING", self._resourceStore)
         self.ceaseTrackingResource(connectedSocket)
-#        print "CEASED TRACKING", self._resourceStore
+#        print ("CEASED TRACKING", self._resourceStore)
 
 class SimpleServer(ServerCore):
     """
@@ -481,7 +482,7 @@ if __name__ == '__main__':
         def mainBody(self):
             if self.dataReady("inbox"):
                 data = self.recv("inbox")
-                print "Got data", data
+                print ("Got data", data)
                 assert self.debugger.note("SimpleServerTestProtocol.mainBody",1, "NetServ : We were sent data - ")
                 assert self.debugger.note("SimpleServerTestProtocol.mainBody",1, "We should probably do something with it now? :-)")
                 assert self.debugger.note("SimpleServerTestProtocol.mainBody",1, "I know, let's sling it straight back at them :-)")

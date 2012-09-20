@@ -39,7 +39,7 @@ Compares contents of two files and prints "MISMATCH!" whenever one is found::
                 yield 1
                 if self.dataReady("inbox"):
                     if not self.recv("inbox"):
-                        print "MISMATCH!"
+                        print ("MISMATCH!")
 
     Graphline( file1   = RateControlledFileReader(filename="file 1", ...),
                file2   = RateControlledFileReader(filename="file 2", ...),

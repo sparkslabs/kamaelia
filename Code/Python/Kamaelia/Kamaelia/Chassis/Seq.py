@@ -111,7 +111,7 @@ class Seq(component):
         for item in self.sequence:
             
             if isinstance(item,str):
-                print item
+                print (item)
                 continue
             
             comp = item

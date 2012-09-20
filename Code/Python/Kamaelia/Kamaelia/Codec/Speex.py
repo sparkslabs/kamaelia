@@ -54,7 +54,7 @@ class SpeexEncode(Axon.ThreadedComponent.threadedcomponent):
         shutdown=False
         while self.dataReady("inbox") or not shutdown:
             if not self.dataReady("inbox"):
-                print ".",
+                print (".",)
             while self.dataReady("inbox"):
 
                  data = self.recv("inbox")

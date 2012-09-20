@@ -102,10 +102,10 @@ __kamaelia_prefabs__ = ( BasicMarshallComponent, )
 #         yield 1
 #
 if __name__ == '__main__':
-   print "no test harness (NASTY)"
-   print "Sample Test Harness could probably make us of MimeDict as an example"
+   print ("no test harness (NASTY)")
+   print ("Sample Test Harness could probably make us of MimeDict as an example")
 
-   print """
+   print ("""
 Probable usage:
 
 from Kamaelia.Support.Data.MimeDict import MimeDict
@@ -129,5 +129,5 @@ MimeDictMarshaller=MarshallerFactory(MimeDict)
 
 mds = MimeDictMarshaller()
 
-"""
+""")
 

@@ -289,7 +289,7 @@ class Graphline(component):
          if toComponent == self: passthrough = 2
          if (fromComponent == self) and (toComponent == self):
             passthrough = 0
-            print "WARNING, assuming linking outbox to inbox on the graph. This is a poor assumption"
+            print ("WARNING, assuming linking outbox to inbox on the graph. This is a poor assumption")
          
          self.link((fromComponent,sourceBox), (toComponent,toBox), passthrough=passthrough)
 

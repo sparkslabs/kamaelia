@@ -542,7 +542,7 @@ if __name__ == "__main__":
     from Kamaelia.File.Reading import RateControlledFileReader
     from Kamaelia.File.Writing import SimpleFileWriter
 
-    print "Reading in WAV file, parsing it, then writing it out as test.wav ..."
+    print ("Reading in WAV file, parsing it, then writing it out as test.wav ...")
     Graphline(
         READ  = RateControlledFileReader("/usr/share/sounds/alsa/Front_Center.wav",readmode="bytes",rate=1000000),
         PARSE = WAVParser(),
@@ -560,7 +560,7 @@ if __name__ == "__main__":
         },
     ).run()
 
-    print "Reading in test.wav and playing it back ..."
+    print ("Reading in test.wav and playing it back ...")
     Graphline(
         SRC = RateControlledFileReader("test.wav",readmode="bytes",rate=44100*4),
         WAV = WAVParser(),
