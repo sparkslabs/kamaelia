@@ -54,7 +54,7 @@ def parseargs(argv, longopts, longflags, required,usesrest):
             except ValueError:
                 if longopts[k,key][0] == None:
                     if not args.get("help", args.get("h", False)):
-                        print ("missing argument: --"+key, "-"+k)
+                        print ("missing argument: --"+key + " -"+k)
                         sys.exit(0)
                 args[key] = longopts[k,key][0]
 
@@ -126,7 +126,7 @@ def showHelp(argspec):
     #
     print ("") 
     print ("Usage:")
-    print ("\t", sys.argv[0], "[options] [flags]")
+    print ("\t" + sys.argv[0]+ " [options] [flags]")
     
     #
     # Display how the rest of the line is used - eg "files", if at all
@@ -147,7 +147,7 @@ def showHelp(argspec):
     for l,r,d in lines:
         print (l + (w-len(l))*" " + "  " + r)
         if d and d != '':
-            print (w*" "+ "  Default:",d)
+            print (w*" "+ "  Default: " + str(d))
             print ("") 
 
     print ("Flags:")
@@ -248,7 +248,7 @@ def showUsageBasedOnHowUsed(args, argspec):
     if not args["help"]:
         print ("USAGE ERROR:")
         for required in missing:
-            print ("\t","--"+required, "must be given")
+            print ("\t"+ "--"+required+ " must be given")
     showHelp(argspec)
 
 
