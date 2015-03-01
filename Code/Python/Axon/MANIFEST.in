@@ -7,3 +7,4 @@ include Docs/*
 include Examples/*
 include Examples/*/*
 exclude *CVS*
+include stdeb.cfg

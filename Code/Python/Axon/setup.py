@@ -42,15 +42,15 @@ if len(sys.argv) >= 2:
                     except:
                         # If that fails for any reason, we either don't have permission, or Axon wasn't installed.
                         pass
-                
+
         except:
             # Axon wasn't installed beforehand, so there won't be a problem
             pass
 
-setup(name = "Axon",
-      version = "1.7.0",
+setup(name = "axon",
+      version = "1.7.1",
       description = "Axon - Asynchronous Isolated Generator Component System",
-      author = "Kamaelia Contributors.",
+      author = "Michael Sparks (sparkslabs)",
       author_email = "sparks.m@gmail.com",
       url = "http://www.kamaelia.org/",
       license ="Apache Software License",

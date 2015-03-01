@@ -21,11 +21,11 @@
 
 from distutils.core import setup
 
-setup(name = "Kamaelia",
-      version = "1.1.2.0", # Year.Year.Month.ReleaseCountThisMonth
+setup(name = "kamaelia",
+      version = "1.12.0", # Collapsed version number
       description = "Kamaelia - Multimedia & Server Development Kit",
 
-      author = "Kamaelia Contributors.",
+      author = "Michael Sparks (sparkslabs)",
       author_email = "sparks.m@gmail.com",
       url = "http://www.kamaelia.org/",
       license ="Apache Software License",

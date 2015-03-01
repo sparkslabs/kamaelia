@@ -19,3 +19,4 @@ include Examples/*
 include Tools/*/*/*
 include Tools/*/*
 include Tools/*
+include stdeb.cfg
