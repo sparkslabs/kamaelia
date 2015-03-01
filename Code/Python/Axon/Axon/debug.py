@@ -253,13 +253,9 @@ class debug(object):
       try:
          if self.debugSections[section] >= level:
             return True
-#      except KeyError, key: # Python 2
-#      except KeyError as key: # Python 3
-      except KeyError: # Both
+      except KeyError as error:
          pass
-#      except AttributeError, error:    # Python 2
-#      except AttributeError as error:  # Python 3
-      except AttributeError:            # Both
+      except AttributeError as error:
          pass
       return False
 
@@ -304,10 +300,7 @@ class debug(object):
             for arg in message:
                sys.stdout.write( str(arg) + " ")
             sys.stdout.write("\n") # Force new line
-#      except KeyError, key:       # Python 2
-#      except KeyError as key:     # Python 3
-      except KeyError:             # Both
-         key = sys.exc_info()[1]   # Both
+      except KeyError as key:
          if not debug.noConfig:
             print("OI! YOU TRIED TO USE A NON-DEFINED DEBUG SECTION", key)
             print("This may be due to the following:")
@@ -321,10 +314,7 @@ class debug(object):
                  sys.stdout.write( " " )
                  m=m+str(arg)
                raise AxonException("BadDebug Undefined section: "+section+", Message: "+m)
-#      except AttributeError, error: # Python 2
-#      except AttributeError, error: # Python 3
-      except AttributeError:         # Both
-          error = sys.exc_info()[1]  # Both
+      except AttributeError as error:
           try:
              self.debugSections # we expect this to be the reason we go
                                 # here, so this should fail. If it doesn't

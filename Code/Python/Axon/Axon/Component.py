@@ -488,8 +488,7 @@ class component(microprocess):
       try:
           child._callOnCloseDown.append(self.unpause)
           self.children.append(child)
-      except Exception:
-          e = sys.exc_info()[1]   # We do it this way because it works with both python 2 and 3
+      except Exception as e:
           print("WARNING, I really REALLY should not be showing you this error for", str(child))
           print("         What you have probably done is used a CLASS where you ")
           print("         should have used an instance")

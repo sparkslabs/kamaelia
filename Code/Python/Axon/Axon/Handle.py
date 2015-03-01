@@ -236,12 +236,12 @@ class Handle(ThreadedComponent.threadedcomponent):
    def get(self, boxname="outbox"):
        """\
        Return an item of data sent to an outbox of the wrapped component.
-       
+
        This method is non blocking and always returns immediately. If there is
        no data to return, then the exception queue.Empty is thrown
-       
+
        Arguments:
-       
+
        - boxname  -- (optional) the name of the outbox of the wrapped component
          from which the data should be collected (default="outbox", should be
          either "outbox" or "signal")

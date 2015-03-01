@@ -299,10 +299,7 @@ class componentWrapperInput(threadedadaptivecommscomponent):
                 msg = queue.get_nowait() # won't fail, we're the only one reading from the queue.
                 try:
                     self.send(msg, parentSource)
-#                except noSpaceInBox, e:     # python 2.6 & earlier
-#                except noSpaceInBox as e:   # python 2.6 and later
-                except noSpaceInBox:         # python 2 & 3
-                    e = sys.exc_info()[1]    # python 2 & 3
+                except noSpaceInBox as e:
                     raise RuntimeError("Box delivery failed despite box (earlier) reporting being not full. Is more than one thread directly accessing boxes?")
                 if isinstance(msg, (Ipc.shutdownMicroprocess, Ipc.producerFinished)):
 #                    print ("Quietly dieing?")
@@ -403,18 +400,12 @@ class likefile(object):
 
         try:
             inputComponent = componentWrapperInput(child, inboxes)
-#        except KeyError, e:       # python 2.6 & earlier
-#        except KeyError as e:     # python 2.6 and later
-        except KeyError:           # python 2 & 3
-            e = sys.exc_info()[1]  # python 2 & 3
+        except KeyError as e:
             raise KeyError ('component to wrap has no such inbox: %s' % e)
 
         try:
             outputComponent = componentWrapperOutput(child, inputComponent, outboxes)
-#        except KeyError, e:       # python 2.6 & earlier 
-#        except KeyError as e:     # python 2.6 and later
-        except KeyError:           # python 2 & 3
-            e = sys.exc_info()[1]  # python 2 & 3
+        except KeyError as e:
             del inputComponent
             raise KeyError('component to wrap has no such outbox: %s' % e)
         self.inQueues = copy.copy(inputComponent.inQueues)

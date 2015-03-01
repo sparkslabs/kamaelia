@@ -31,10 +31,7 @@ class Producer(Axon.Component.component):
                 self.send(message, "outbox")
                 print ("     P: sent:", message)
                 success = True
-#             except Axon.AxonExceptions.noSpaceInBox, e:  # python2.6 and earlier
-#             except Axon.AxonExceptions.noSpaceInBox as e: # python2.6, later and python 3
-             except Axon.AxonExceptions.noSpaceInBox: # cross versions of python
-                e = sys.exc_info()[1]                 # cross versions of python
+             except Axon.AxonExceptions.noSpaceInBox as e: # python2.6, later and python 3
                 print ("                                ","P: fail:", message, "PAUSING UNTIL READY TO SEND")
                 self.pause()
       print ("     Producer has finished production !!!")

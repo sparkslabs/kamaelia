@@ -569,9 +569,7 @@ class threadedcomponent(Component.component):
                       self.threadWakeUp.set() # wake thread, just like we would be if something we've sent is collected
                       try:
                           self._nonthread_send(msg, box)
-#                      except noSpaceInBox, e:
-                      except noSpaceInBox:
-                          e = sys.exc_info()[1]
+                      except noSpaceInBox as e:
                           raise RuntimeError("Box delivery failed despite box (earlier) reporting being not full. Is more than one thread directly accessing boxes?")
                   else:
                       stuffWaiting = True
@@ -583,8 +581,7 @@ class threadedcomponent(Component.component):
               msg = self.threadtoaxonqueue.get()
               try:
                     self._handlemessagefromthread(msg)
-              except UnHandledException:
-                  e = sys.exc_info()[1]
+              except UnHandledException as e:
                   e.args[0][1].args = e.args[0][1].args + (str(self),)  # Inject into the exception *which* component threw this exception.
                   try:
                       code = "raise e.args[0][1], None, e.args[0][2]"
@@ -593,10 +590,10 @@ class threadedcomponent(Component.component):
                       E = (e.args[0][1])(None)
                       E.__traceback__ = e.args[0][2]
                       raise E
-                      
+
           if running:
               Component.component.pause(self)
-          
+
           yield 1
        self._threadrunning = False
 
@@ -1037,7 +1034,7 @@ if __name__ == "__main__":
     class ThreadedSender(threadedcomponent):
         def __init__(self):
             super(ThreadedSender,self).__init__(queuelengths=2)
-        
+
         def main(self):
             for i in range(20,-1,-1):
                 try:
@@ -1057,7 +1054,7 @@ if __name__ == "__main__":
                             self.pause()
                             print("Y")
 #                            time.sleep(0.1)
-    
+
     t = ThreadedSender().activate()
     m = ThreadedMiddleMan().activate()
     r = SynchronousSlowReceiver()

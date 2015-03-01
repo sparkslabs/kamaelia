@@ -39,5 +39,5 @@ while True:
             break
         except queue.Empty:
             time.sleep(0.1)
-            
+
     print (enil) # This is doesn't necessarily put the right whitespace back

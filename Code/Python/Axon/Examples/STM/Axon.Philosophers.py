@@ -10,7 +10,7 @@ def all(aList, value):
         if value != i:
             return False
     return True
-    
+
 class Philosopher(Axon.ThreadedComponent.threadedcomponent):
     forks = ["fork.1", "fork.2"] # default for testing :-)
     def getforks(self):

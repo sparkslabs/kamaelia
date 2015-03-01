@@ -10,7 +10,7 @@ class Consumer(component):
         super(Consumer, self).__init__()
         #this variable is not used for anything important
         self.i = 30
-    
+
     def dosomething(self):
         if self.dataReady("source"):
             op = self.recv("source")

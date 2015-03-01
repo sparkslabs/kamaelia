@@ -10,7 +10,7 @@ def all(aList, value):
         if value != i:
             return False
     return True
-    
+
 class testit(Thread):
    def __init__ (self,data):
       super(testit,self).__init__()
