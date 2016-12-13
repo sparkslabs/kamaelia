@@ -44,7 +44,7 @@ cdef class MpegTsDemux:
 
     cdef char pidfilter[8192]
     
-    def __new__(self, pidfilter=None):
+    def __cinit__(self, pidfilter=None):
         cdef int pid
         
         self.frag_buffer = []
