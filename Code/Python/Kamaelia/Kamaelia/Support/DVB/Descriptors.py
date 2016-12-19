@@ -1526,6 +1526,25 @@ def parser_announcement_support_Descriptor(data,i,length,end):
     """
     return { "type" : "announcement_support", "contents" : data[i+2:end] }
 
+def parser_extension_Descriptor(data,i,length,end):
+    """
+    parser_extension_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    This descriptor is parsed by a handler for the appropriate extended descriptor type.
+    The returned value is a dict returned by the sub-parser for the extension descriptor
+    with the additional key-value pair:
+        "ext_tag" : N
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    ext_tag = ord(data[i+2])
+    parser = __core_ext_descriptor_parsers.get(ext_tag, parser_Null_Descriptor)
+
+    output = parser(data,i,length,end)
+    output["ext_tag"] = ext_tag
+    return output
+    
+
 # ------------------------------------------------------------------------------
 # "Digital Terrestrial Television: Requirements for Interoperability V4.0"
 # UK Digital Television Group (www.dtg.org.uk) document descriptors
@@ -1713,6 +1732,33 @@ def parse_related_content_Descriptor(data,i,length,end):
     
     return { "type" : "related_content" }
 
+def parse_tva_id_Descriptor(data,i,length,end):
+    """\
+    parse_tva_id_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
+    
+    Parses a descriptor that carries one or more TVA IDs along with associated state for each.
+    The returned dict is:
+        { "type" : "tva_ids",
+          "ids" : [
+            { "id" : number, "running_status", number },
+            { "id" : number, "running_status", number },
+            ...
+          ]
+        }
+
+    (Defined in ETSI TS 102 323 specification)
+    """
+    ids = []
+    n=0
+    while n < length:
+        id = (ord(data[i+2+n]) << 8) + ord(data[i+3+n])
+        rs = ord(data[i+4+n]) & 0x7
+        ids.append({"id":id, "running_status":rs})
+        n=n+3
+    return { "type":"tva_ids", "ids" : ids }
+
+
+
 def parse_content_identifier_Descriptor(data,i,length,end):
     """\
     parse_content_identifier_Descriptor(data,i,length,end) -> dict(parsed descriptor elements).
@@ -1752,6 +1798,39 @@ def parse_content_identifier_Descriptor(data,i,length,end):
              "crids" : crids,
            }
 
+
+def ext_parser_uri_linkage_Descriptor(data,i,length,end):
+    """\
+    ext_parser_uri_linkage_Descriptor(data,i,length,end) -> dict(parsed descriptor elements)
+
+    Parses an extensions descriptor carrying URI obtainable via IP networks. The returned dict contains:
+       { "type" : "uri_linkage",
+         "uri" : URI-STRING,
+         "uri_linkage_type" : NUMBER,
+         "private" : STRING
+       }
+       
+    where TYPE is a number. URI is a string and DATA is a string containing binary data.
+
+    (Defined in ETSI EN 300 468 specification)
+    """
+    uri_linkage_type = ord(data[i+3])
+    uri = data[i+5:i+5+ord(data[i+4])]
+    private = data[i+5+ord(data[i+4]):end]
+    return { "type":"uri_linkage", "uri":uri, "uri_linkage_type":uri_linkage_type, "private":private }
+    
+
+def ext_parser_bci_ancillary_data_Descriptor(data,i,length,end):
+    """\
+    ext_parser_bci_ancillary_data_Descriptor(data,i,length,end) -> dict(parsed descriptor elements)
+    
+    Parses an extension descriptor carrying BCI Ancillary Data, as used in ETSI TS 103 286-2 content IDs.
+    The dict returned contains:
+       { "type": "bci_ancillary_data", "data":string-containing-binary-data }
+    
+    (Defined in ETSI EN 300 468 specification)
+    """
+    return { "type": "bci_ancillary_data", "data": data[i+3:end] }
 
 
 __core_descriptor_parsers = {
@@ -1829,11 +1908,13 @@ __core_descriptor_parsers = {
         0x6C : parser_cell_list_Descriptor,
         0x6D : parser_cell_frequency_link_Descriptor,
         0x6E : parser_announcement_support_Descriptor,
+        0x7F : parser_extension_Descriptor,
         
     # ETSI TS 102 323 defined descriptors
     
         0x73 : parse_default_authority_Descriptor,
         0x74 : parse_related_content_Descriptor,
+        0x75 : parse_tva_id_Descriptor,
         0x76 : parse_content_identifier_Descriptor,
     
     # "Digital Terrestrial Television: Requirements for Interoperability V4.0"
@@ -1846,6 +1927,12 @@ __core_descriptor_parsers = {
         0x87 : parser_short_service_name_Descriptor,
 }
 
+
+
+__core_ext_descriptor_parsers = {
+        0x13 : ext_parser_uri_linkage_Descriptor,
+        0x14 : ext_parser_bci_ancillary_data_Descriptor,
+}
 
 
 __ts102323_override_descriptor_parsers = {
