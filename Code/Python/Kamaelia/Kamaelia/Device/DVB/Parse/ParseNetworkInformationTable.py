@@ -395,6 +395,7 @@ class ParseNetworkInformationTable(component):
                 "actual_other" : self.acceptTables[table_id],
                 "current"      : current_next,
                 "network_id"   : network_id,
+                "descriptors"  : [],
               }
         services = {}
         
@@ -404,7 +405,6 @@ class ParseNetworkInformationTable(component):
             network_descriptors_length = ((ord(data[8])<<8) + ord(data[9])) & 0x0fff
             i=10
             network_descriptors_end = i+network_descriptors_length
-            msg['descriptors'] = []
             while i < network_descriptors_end:
                 descriptor, i = parseDescriptor(i,data)
                 msg['descriptors'].append(descriptor)
