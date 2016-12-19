@@ -75,6 +75,7 @@ from Axon.Component import component
 from Axon.AdaptiveCommsComponent import AdaptiveCommsComponent
 from Axon.AxonExceptions import ServiceAlreadyExists
 from Axon.CoordinatingAssistantTracker import coordinatingassistanttracker as CAT
+from Axon.Ipc import shutdownMicroprocess,producerFinished
 
 import struct
 
