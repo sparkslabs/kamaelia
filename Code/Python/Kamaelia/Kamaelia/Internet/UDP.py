@@ -129,6 +129,7 @@ does not implement a main() method.
 #
 
 import socket
+import sys
 import Axon
 
 # ---------------------------- # SimplePeer
