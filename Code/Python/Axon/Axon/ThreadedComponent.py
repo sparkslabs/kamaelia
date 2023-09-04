@@ -533,7 +533,7 @@ class threadedcomponent(Component.component):
        stuffWaiting = False
        while running or stuffWaiting:
           # decide if we need to stop...
-          running = self._thethread.isAlive()
+          running = self._thethread.is_alive()
           # ...but we'll still flush queue's through:
           # (must make sure we flush ALL messages from each queue)
           
