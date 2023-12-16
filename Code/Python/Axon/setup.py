@@ -55,8 +55,7 @@ setup(name = "axon",
       url = "http://www.kamaelia.org/",
       license ="Apache Software License",
       packages = [
-                  "Axon", ### START
-                  "Axon.experimental", ### LAST
+                  "Axon", ### START ###LAST
                   ],
       long_description = """
 Axon is a software component system. In Axon, components are active and

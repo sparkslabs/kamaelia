@@ -98,8 +98,8 @@ from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
 
-from Vector import Vector
-from Transform import Transform
+from .Vector import Vector
+from .Transform import Transform
 
 
 class Container(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):

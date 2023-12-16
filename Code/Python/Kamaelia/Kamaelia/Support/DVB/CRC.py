@@ -42,6 +42,8 @@ CRC algorithm used to verify the integrity of data in DVB transport streams.
 # def dvbcrc(data):
 #     return not crc32(data)
 
+raise NotImplementedError("Due to drift/bit rot, DVB libraries need updating")
+
 def __MakeCRC32(polynomial = 0x4c11db7,initial=0xffffffff):
     """\
     MakeCRC32([polynomial][,inital]) -> (string -> 32bit CRC of binary string data)

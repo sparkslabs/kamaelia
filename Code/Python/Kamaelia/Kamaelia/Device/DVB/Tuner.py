@@ -97,6 +97,7 @@ dictionary::
          "inversion"             : dvb3.frontend.INVERSION_AUTO
     }
 """
+raise NotImplementedError("Due to drift/bit rot, DVB libraries need updating")
 
 import os
 import dvb3.frontend

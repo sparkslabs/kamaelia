@@ -5,6 +5,7 @@ Interface to Twitter search API
 - Returns results of people searches as a dictionary
 '''
 
+raise NotImplementedError("Needs fixing due to MySQLdb  -- python 2.0 based -- httplib")
 from datetime import datetime, timedelta
 import httplib
 import os

@@ -150,6 +150,7 @@ References
 To be written.
 
 """
+raise NotImplementedError("Due to drift/bit rot, DVB libraries need updating")
 
 import dvb3.frontend
 import os.path

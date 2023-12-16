@@ -45,7 +45,7 @@ first time they are entered::
     ).run()
 
 """
-from PureTransformer import PureTransformer
+from .PureTransformer import PureTransformer
     
 class UnseenOnly(PureTransformer):
     """\

@@ -121,7 +121,7 @@ OpenGLDisplay service and does not free any requested resources.
 
 import pygame
 from pygame.locals import *
-from OpenGLDisplay import *
+from .OpenGLDisplay import *
 
 import Axon
 

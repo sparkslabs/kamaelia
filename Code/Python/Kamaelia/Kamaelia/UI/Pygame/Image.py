@@ -81,7 +81,7 @@ its "control" inbox, then this will be forwarded out of its "signal" outbox and
 the component will then terminate.
 """
 
-import StringIO
+from io import StringIO
 import pygame
 import Axon
 from Axon.Ipc import producerFinished, shutdownMicroprocess

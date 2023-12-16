@@ -280,7 +280,7 @@ from Kamaelia.UI.OpenGL.Intersect import Intersect
 
 _cat = Axon.CoordinatingAssistantTracker
 
-from Particles3D import CuboidParticle3D, SphereParticle3D, TeapotParticle3D
+from .Particles3D import CuboidParticle3D, SphereParticle3D, TeapotParticle3D
 from Kamaelia.Support.Particles.ParticleSystem import ParticleSystem
 
                  

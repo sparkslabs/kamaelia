@@ -20,8 +20,8 @@
 
 
 cdef extern from "Python.h": 
-    object PyString_FromStringAndSize(char *, int)
-    cdef char* PyString_AsString(object)
+    object PyUnicode_FromStringAndSize(char *, int)
+    cdef char* PyUnicode_AsUTF8(object)
 
 
 cdef double ComputeMAD(unsigned char *prev, unsigned char *curr, int size):
@@ -50,7 +50,7 @@ def ComputeMeanAbsDiff(ydata1,ydata2):
     cdef unsigned char *y1
     cdef unsigned char *y2
 
-    y1 = <unsigned char *>PyString_AsString(ydata1)
-    y2 = <unsigned char *>PyString_AsString(ydata2)
+    y1 = <unsigned char *>PyUnicode_AsUTF8(ydata1)
+    y2 = <unsigned char *>PyUnicode_AsUTF8(ydata2)
 
     return ComputeMAD(y1, y2, len(ydata1))

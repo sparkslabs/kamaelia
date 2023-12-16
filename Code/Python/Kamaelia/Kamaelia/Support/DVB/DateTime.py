@@ -22,6 +22,7 @@
 """\
 Date and time parsing for DVB PSI tables
 """
+raise NotImplementedError("Due to drift/bit rot, DVB libraries need updating")
 
 def parseMJD(MJD):
     """Parse 16 bit unsigned int containing Modified Julian Date, as per DVB-SI spec

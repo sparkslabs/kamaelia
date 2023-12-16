@@ -201,4 +201,4 @@ following items are required to be defined:
 FIXME:  It would be nice if the WsgiConfig were made into an object rather than a
 dictionary.
 """
-from _factory import WSGIFactory, SimpleWSGIFactory
+from . _factory import WSGIFactory, SimpleWSGIFactory

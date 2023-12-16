@@ -38,6 +38,8 @@ Dependencies
 This app requires CherryPy version 3.1.
 """
 
+raise NotImplementedError("Slated for removal since depends on CherryPy")
+
 import cherrypy
 
 def application(environ, start_response):

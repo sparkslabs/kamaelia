@@ -73,6 +73,8 @@ See http://www.w3.org/TR/rdf-sparql-query/ for more information about SPARQL que
 http://www.w3.org/RDF/ about for more information about RDF.
 """
 
+raise NotImplementedError("Needs Fixing - RDF library is a dependency that needs checking")
+
 import Axon
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 

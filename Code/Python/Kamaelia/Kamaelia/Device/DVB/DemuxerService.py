@@ -71,6 +71,8 @@ When it terminates, this component will unwire itself from all clients to which
 it has been sending packets.
 """
 
+raise NotImplementedError("Due to drift/bit rot, DVB libraries need updating")
+
 from Axon.Component import component
 from Axon.AdaptiveCommsComponent import AdaptiveCommsComponent
 from Axon.AxonExceptions import ServiceAlreadyExists

@@ -67,7 +67,7 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 
 import Axon
-from Interactor import *
+from .Interactor import *
 
 class SimpleTranslationInteractor(Interactor):
     """\

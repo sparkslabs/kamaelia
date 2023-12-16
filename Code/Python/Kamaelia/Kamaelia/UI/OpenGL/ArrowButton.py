@@ -52,8 +52,8 @@ import pygame
 from pygame.locals import *
 from OpenGL.GL import *
 
-from Vector import Vector
-from SimpleButton import SimpleButton
+from .Vector import Vector
+from .SimpleButton import SimpleButton
 
 
 class ArrowButton(SimpleButton):

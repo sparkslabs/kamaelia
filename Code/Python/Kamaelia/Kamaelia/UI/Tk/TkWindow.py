@@ -118,7 +118,7 @@ Turned out to be remarkably resilient so far, so migrated into the main codebase
 #
 # XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
-import Tkinter
+import tkinter as Tkinter
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 

@@ -20,6 +20,8 @@
 # limitations under the License.
 # -------------------------------------------------------------------------
 #
+raise NotImplementedError("PyMedia doesn't seem to be available for python 3")
+
 from Kamaelia.Audio.PyMedia.Input  import Input  as _SoundInput
 from Kamaelia.Audio.PyMedia.Output import Output as _SoundOutput
 from Kamaelia.Audio.RawAudioMixer import RawAudioMixer as _RawAudioMixer

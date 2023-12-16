@@ -35,10 +35,10 @@ sys.path.append("../Sketcher")
 from Kamaelia.Apps.Whiteboard.Canvas import Canvas
 import pygame
 
-from Pen import *
-from PreProcessing import *
-from Analyser import *
-from Grammar import *
+from . Pen import *
+from . PreProcessing import *
+from . Analyser import *
+from . Grammar import *
 
 from Kamaelia.Chassis.Graphline import Graphline
 from Kamaelia.Chassis.Pipeline import Pipeline

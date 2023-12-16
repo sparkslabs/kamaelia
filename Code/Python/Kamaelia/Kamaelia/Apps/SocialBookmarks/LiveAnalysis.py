@@ -8,7 +8,8 @@ Need to ensure one rogue user can't cause a trend - things must be mentioned by 
 
 # Having added this as a component, the Printed output is a bit confusing, so 'Analysis component: ' has been added to everything.
 
-import cjson
+raise NotImplementedError("Needs fixing due to MySQLdb  -- python 2.0 based -- dependency")
+import json as cjson
 import math
 import re
 import time

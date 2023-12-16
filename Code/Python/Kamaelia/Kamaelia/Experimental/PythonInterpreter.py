@@ -65,7 +65,7 @@ More detailed examples.
 """
 import code
 import traceback
-import StringIO
+from io import StringIO
 import string
 
 import Axon
@@ -110,7 +110,7 @@ class StandaloneInterpreter(Axon.ThreadedComponent.threadedcomponent):
                             env.update(globals())
                             env.update(locals())
                             env["_"] = pre
-                            exec __co__ in env
+                            exec(__co__, env)
                             if env["_"]:
                                 print (env["_"])
                                 env["_"] = None
@@ -164,7 +164,7 @@ class InterpreterTransformer(Axon.ThreadedComponent.threadedcomponent):
                             env.update(globals())
                             env.update(locals())
                             env["_"] = pre
-                            exec __co__ in env
+                            exec(__co__, env)
                             if env["_"]:
                                 self.send( env["_"] )
                                 env["_"] = None

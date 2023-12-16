@@ -4,10 +4,11 @@
 Saves relevant data fed back from TwitterStream etc next to its PID and timestamp ready for analysis
 Needs to do limited analysis to work out which keywords in the tweet stream correspond to which programme
 '''
+raise NotImplementedError("Needs fixing due to MySQLdb  -- python 2.0 based -- dependency")
 
 import os
 import string
-import cjson
+import json as cjson
 import time
 from datetime import datetime
 from dateutil.parser import parse

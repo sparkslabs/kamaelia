@@ -186,6 +186,7 @@ message is sent to the "control" inbox. The message will be forwarded on out of
 the "signal" outbox just before termination.
 
 """
+raise NotImplementedError("Due to drift/bit rot, DVB libraries need updating")
 
 import os
 import dvb3.frontend

@@ -20,6 +20,8 @@
 # limitations under the License.
 # -------------------------------------------------------------------------
 
+raise NotImplementedError("Due to drift/bit rot, DVB libraries need updating")
+
 #import dvb3.soft_dmx
 from Kamaelia.Support.Optimised.MpegTsDemux import MpegTsDemux
 import Axon.AdaptiveCommsComponent

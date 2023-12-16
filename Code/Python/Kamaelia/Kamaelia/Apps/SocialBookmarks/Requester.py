@@ -4,7 +4,8 @@
 # One requester for ALL channels - avoids creating multiple Twitter streams
 # Only sends keywords to Twitter once per programme, then monitors for the next programme
 
-import cjson
+raise NotImplementedError("Needs fixing due to MySQLdb  -- python 2.0 based -- rdflib")
+import json as cjson
 import os
 import re
 import string

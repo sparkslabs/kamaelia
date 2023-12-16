@@ -29,8 +29,8 @@ cdef extern from "_PixFormatConvertCore.c":
 
 
 cdef extern from "Python.h": 
-    object PyString_FromStringAndSize(char *, int)
-    cdef char* PyString_AsString(object)
+    object PyUnicode_FromStringAndSize(char *, int)
+    cdef char* PyUnicode_AsUTF8(object)
 
 #-------------------------------------------------------------------------------
 
@@ -40,15 +40,15 @@ def rgbi_to_yuv420p(rgb, width, height):
     cdef unsigned char *vchr
     cdef unsigned char *rgbchr
 
-    y = PyString_FromStringAndSize(NULL, (width*height))
-    u = PyString_FromStringAndSize(NULL, ((width>>1)*(height>>1)))
-    v = PyString_FromStringAndSize(NULL, ((width>>1)*(height>>1)))
+    y = PyUnicode_FromStringAndSize(NULL, (width*height))
+    u = PyUnicode_FromStringAndSize(NULL, ((width>>1)*(height>>1)))
+    v = PyUnicode_FromStringAndSize(NULL, ((width>>1)*(height>>1)))
 
-    ychr = <unsigned char *>PyString_AsString(y)
-    uchr = <unsigned char *>PyString_AsString(u)
-    vchr = <unsigned char *>PyString_AsString(v)
+    ychr = <unsigned char *>PyUnicode_AsUTF8(y)
+    uchr = <unsigned char *>PyUnicode_AsUTF8(u)
+    vchr = <unsigned char *>PyUnicode_AsUTF8(v)
 
-    rgbchr = <unsigned char *>PyString_AsString(rgb)
+    rgbchr = <unsigned char *>PyUnicode_AsUTF8(rgb)
     
     RGB_to_YUV420(rgbchr, ychr,uchr,vchr, width, height)
 
@@ -60,13 +60,13 @@ def yuv422p_to_rgbi(y,u,v, width, height):
     cdef unsigned char *vchr
     cdef unsigned char *rgbchr
 
-    rgb = PyString_FromStringAndSize(NULL, (width*height*3))
+    rgb = PyUnicode_FromStringAndSize(NULL, (width*height*3))
 
-    ychr = <unsigned char *>PyString_AsString(y)
-    uchr = <unsigned char *>PyString_AsString(u)
-    vchr = <unsigned char *>PyString_AsString(v)
+    ychr = <unsigned char *>PyUnicode_AsUTF8(y)
+    uchr = <unsigned char *>PyUnicode_AsUTF8(u)
+    vchr = <unsigned char *>PyUnicode_AsUTF8(v)
 
-    rgbchr = <unsigned char *>PyString_AsString(rgb)
+    rgbchr = <unsigned char *>PyUnicode_AsUTF8(rgb)
     
     YUV422_to_RGB(ychr,uchr,vchr, rgbchr, width, height)
 
@@ -78,13 +78,13 @@ def yuv420p_to_rgbi(y,u,v, width, height):
     cdef unsigned char *vchr
     cdef unsigned char *rgbchr
 
-    rgb = PyString_FromStringAndSize(NULL, (width*height*3))
+    rgb = PyUnicode_FromStringAndSize(NULL, (width*height*3))
 
-    ychr = <unsigned char *>PyString_AsString(y)
-    uchr = <unsigned char *>PyString_AsString(u)
-    vchr = <unsigned char *>PyString_AsString(v)
+    ychr = <unsigned char *>PyUnicode_AsUTF8(y)
+    uchr = <unsigned char *>PyUnicode_AsUTF8(u)
+    vchr = <unsigned char *>PyUnicode_AsUTF8(v)
 
-    rgbchr = <unsigned char *>PyString_AsString(rgb)
+    rgbchr = <unsigned char *>PyUnicode_AsUTF8(rgb)
     
     YUV420_to_RGB(ychr,uchr,vchr, rgbchr, width, height)
 

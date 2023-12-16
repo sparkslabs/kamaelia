@@ -23,6 +23,8 @@
 Simple Vorbis Decoder Component, and Audio Playback Adaptor
 
 """
+
+raise NotImplementedError("Due to drift/bit rot, vorbissimple libraries are not currently available for python")
 import Axon
 from Axon.Component import component, scheduler
 from Axon.Ipc import producerFinished

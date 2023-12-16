@@ -111,7 +111,7 @@ from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 from Axon.AxonExceptions import noSpaceInBox
 
-import Image
+from PIL import Image
 
 
 class CropAndScale(component):

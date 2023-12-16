@@ -96,10 +96,10 @@ from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
 
-from Vector import Vector
-from Transform import Transform
-from OpenGLComponent import *
-from Intersect import *
+from .Vector import Vector
+from .Transform import Transform
+from .OpenGLComponent import *
+from .Intersect import *
 
 import copy
 

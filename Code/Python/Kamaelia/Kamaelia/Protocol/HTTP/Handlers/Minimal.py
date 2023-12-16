@@ -37,7 +37,8 @@ System Requirements
 This component requires a UNIX system to be run currently.
 """
 
-import string, time, dircache, os
+import string, time, os
+#import dircache  # Used to be used, currently comment out and is a python-2-ism so removed
 #from cgi import escape
 
 from Axon.Ipc import producerFinished, shutdown

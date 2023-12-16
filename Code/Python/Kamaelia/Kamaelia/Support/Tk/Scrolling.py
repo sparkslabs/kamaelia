@@ -23,7 +23,8 @@
 A couple of experimental classes to support some useful basic user interface elements
 One of these is a scrolling menu (!)
 """
-from Tkinter import *
+#from Tkinter import *
+from tkinter import *
 
 def _defaultCallback(*args):
     pass
@@ -57,7 +58,7 @@ class ScrollingMenu(Frame):
         self.callback = command
         self.SelectedItem = 0
         self.SelectedItemText = items[0]
-        if width is 0:
+        if width == 0:
             width = 0
             for item in items:
                 width = max(len(item), width)

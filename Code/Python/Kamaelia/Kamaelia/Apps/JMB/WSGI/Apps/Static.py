@@ -40,6 +40,8 @@ Dependencies
 This source file requires Static by Luke Arno.
 """
 
+raise NotImplementedError("Slated for removal since depends on 'Static' ")
+
 from support.la_static import Cling
 import os
 
