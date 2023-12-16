@@ -57,8 +57,8 @@ from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
 
-from Vector import Vector
-from OpenGLComponent import *
+from .Vector import Vector
+from .OpenGLComponent import *
 
 class SimpleCube(OpenGLComponent):
     """\

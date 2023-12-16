@@ -21,8 +21,8 @@
 # implemented here for efficiency
 
 cdef extern from "Python.h": 
-    object PyString_FromStringAndSize(char *, int)
-    cdef char* PyString_AsString(object)
+    object PyUnicode_FromStringAndSize(char *, int)
+    cdef char* PyUnicode_AsUTF8(object)
 
 cdef extern from "string.h":
     cdef void *memcpy(void *, void *, int)
@@ -45,7 +45,7 @@ cdef class MpegTsDemux:
 
     cdef char pidfilter[8192]
     
-    def __new__(self, pidfilter=None):
+    def __cinit__(self, pidfilter=None):
         cdef int pid
         
         self.frag_buffer = []
@@ -84,7 +84,7 @@ cdef class MpegTsDemux:
         self.frag_buffer.append(fragment)
 
         if self.length == 0:
-            self.cfrag = <unsigned char*>PyString_AsString(self.frag_buffer[0])
+            self.cfrag = <unsigned char*>PyUnicode_AsUTF8(self.frag_buffer[0])
             self.cfrag_remaining = len(self.frag_buffer[0])
 
         self.length = self.length + fraglen
@@ -123,8 +123,8 @@ cdef class MpegTsDemux:
                     
                 if accepting:  # != 0
                     # allocate python string we're going to put the packet into
-                    packet = PyString_FromStringAndSize(NULL, 188)
-                    cpacket = <unsigned char*>PyString_AsString(packet)
+                    packet = PyUnicode_FromStringAndSize(NULL, 188)
+                    cpacket = <unsigned char*>PyUnicode_AsUTF8(packet)
         
                 # copy the 188 bytes of packet out of the buffer and into the new string
                 # or if filtering, just skip forwards through the buffer
@@ -145,7 +145,7 @@ cdef class MpegTsDemux:
                     if self.cfrag_remaining == 0:
                         self.frag_buffer.pop(0)
                         if self.length > 0:
-                            self.cfrag = <unsigned char*>PyString_AsString(self.frag_buffer[0])
+                            self.cfrag = <unsigned char*>PyUnicode_AsUTF8(self.frag_buffer[0])
                             self.cfrag_remaining = len(self.frag_buffer[0])
         
                 # go back to beginning of packet and extract pid and flags
@@ -171,7 +171,7 @@ cdef class MpegTsDemux:
                 if self.cfrag_remaining == 0:
                     self.frag_buffer.pop(0)
                     if self.length > 0:
-                        self.cfrag = <unsigned char*>PyString_AsString(self.frag_buffer[0])
+                        self.cfrag = <unsigned char*>PyUnicode_AsUTF8(self.frag_buffer[0])
                         self.cfrag_remaining = len(self.frag_buffer[0])
         
         return extracted

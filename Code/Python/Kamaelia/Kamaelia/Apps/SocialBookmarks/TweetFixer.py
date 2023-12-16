@@ -4,9 +4,10 @@ and provide the option to strip user mentions, hashtags and links from tweet tex
 Links can also be resolved to their real URL - particularly helpful for finding hidden PIDs
 '''
 
+raise NotImplementedError("Needs fixing due to MySQLdb  -- python 2.0 based -- MySQLdb")
+import json as cjson
 import os
 import re
-import cjson
 import MySQLdb
 import urllib2
 

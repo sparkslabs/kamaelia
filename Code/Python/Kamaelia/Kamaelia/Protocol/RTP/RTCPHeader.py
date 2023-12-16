@@ -32,7 +32,7 @@ represent the fields in the header:
 
 The order of the fields and sizes are defined in the variable "struct".
 """
-from Kamaelia.bitfieldrec import bfrec, field
+from Kamaelia.Support.Data.bitfieldrec import bfrec, field
 
 class RTCPHeader(bfrec):
    "Abstract (note, *not* base) class for RTCP packet types"
@@ -229,13 +229,13 @@ class AppPacket(RTCPHeader):
                            self.appData.size * (len(self.appData))) / 32 - 1
       return True
 
-class RawRTPPayload(object):
-   RTPHeader()
-   RawRTPPayloadHeader()
-   def pack(self):
-      rtpheader = self.header.pack()
-      rtppayloadheader = self.payloadheader.pack()
-      result = rtpheader+rtppayloadheader+self.data
+#class RawRTPPayload(object):
+#   RTPHeader()
+#   RawRTPPayloadHeader()
+#   def pack(self):
+#      rtpheader = self.header.pack()
+#      rtppayloadheader = self.payloadheader.pack()
+#      result = rtpheader+rtppayloadheader+self.data
 
 if __name__== "__main__":
 

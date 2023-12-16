@@ -22,9 +22,10 @@
 #
 
 import smtplib
-from email.MIMEText import MIMEText
-from email.MIMEMultipart import MIMEMultipart
-from email.MIMEBase import MIMEBase
+#from email.MIMEText import MIMEText
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
 from email.encoders import encode_base64
 import socket
 import os

@@ -9,6 +9,7 @@ TODO: Build in the facility to handle a second urllib connection so they overlap
 
 # May change to use httplib instead to better handle different types of requests
 
+raise NotImplementedError("Needs fixing due to MySQLdb  -- python 2.0 based -- httplib")
 import httplib
 import time
 import urllib2

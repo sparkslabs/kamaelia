@@ -21,10 +21,10 @@
 # -------------------------------------------------------------------------
 #
 
-from Tkinter import Tk
-from tkFileDialog import askopenfilename
-from tkSimpleDialog import askstring
-from tkMessageBox import askyesno
+from tkinter import Tk
+from tkinter.filedialog import askopenfilename
+from tkinter.simpledialog import askstring
+from tkinter.messagebox import askyesno
 
 from zipfile import ZipFile
 from datetime import datetime

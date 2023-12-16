@@ -163,8 +163,8 @@ References: 1. Kamaelia.UI.OpenGL.Button
 
 import math, os
 
-from urllib import urlopen
-from cStringIO import StringIO
+#from urllib import urlopen
+from io import StringIO as cStringIO 
                 
 import pygame
 from OpenGL.GL import *

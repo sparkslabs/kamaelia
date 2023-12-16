@@ -31,7 +31,7 @@ arguments.
 """
 
 from math import *
-from Vector import Vector
+from .Vector import Vector
 
 # =============================
 # Transform: for generating transformation matrices

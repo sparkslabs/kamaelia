@@ -65,7 +65,7 @@ More detailed examples.
 """
 import code
 import traceback
-import StringIO
+from io import StringIO
 import string
 
 import Axon

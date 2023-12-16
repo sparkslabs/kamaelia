@@ -68,7 +68,9 @@ Original Maintainer: U{Paul Swartz<mailto:z3p@twistedmatrix.com>} for Twisted
 Modified 12 Jul 2007 by Jinna Lei for Kamaelia.
 """
 
-from __future__ import nested_scopes
+raise NotImplementedError("Slated for removal since AIM No Longer Exists")
+
+# from __future__ import nested_scopes
 import struct
 import md5
 

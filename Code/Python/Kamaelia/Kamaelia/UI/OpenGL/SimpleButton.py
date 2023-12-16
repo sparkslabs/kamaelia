@@ -63,8 +63,8 @@ import pygame
 from pygame.locals import *
 from OpenGL.GL import *
 
-from Vector import Vector
-from OpenGLComponent import OpenGLComponent
+from .Vector import Vector
+from .OpenGLComponent import OpenGLComponent
 
 
 class SimpleButton(OpenGLComponent):

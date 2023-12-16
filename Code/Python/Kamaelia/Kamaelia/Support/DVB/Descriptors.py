@@ -344,6 +344,7 @@ Note that 0xf0 to 0xff range is a user defined field. The mapping it is assigned
 
 
 """
+raise NotImplementedError("Due to drift/bit rot, DVB libraries need updating")
 
 # parsing routines for DVB PSI table descriptors
 try:

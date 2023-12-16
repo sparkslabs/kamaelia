@@ -20,7 +20,7 @@
 # limitations under the License.
 
 import os
-import cjson
+import json as cjson
 
 class Folder(object):
     def __init__(self, folder="messages"):

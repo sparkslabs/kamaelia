@@ -189,9 +189,9 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 
 import Axon
-from OpenGLDisplay import OpenGLDisplay
-from Vector import Vector
-from Transform import Transform
+from .OpenGLDisplay import OpenGLDisplay
+from .Vector import Vector
+from .Transform import Transform
 
 
 class OpenGLComponent(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):

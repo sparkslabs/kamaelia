@@ -81,8 +81,8 @@ from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
 
-from OpenGLComponent import OpenGLComponent
-from Vector import Vector
+from .OpenGLComponent import OpenGLComponent
+from .Vector import Vector
 from math import *
 
 

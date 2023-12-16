@@ -274,6 +274,7 @@ If a shutdownMicroprocess or producerFinished message is received on the
 and the component will then immediately terminate.
 """
 
+raise NotImplementedError("Due to drift/bit rot, DVB libraries need updating")
 from Axon.Component import component
 from Axon.Ipc import producerFinished,shutdownMicroprocess
 

@@ -83,7 +83,7 @@ Whenever it receives data (JSON string) from its inbox, it decodes the data usin
 to its original format and then send the decoded data to its outbox.
 """
 
-import cjson
+import json as cjson
 
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess

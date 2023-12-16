@@ -82,8 +82,8 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 
 import Axon
-from Intersect import *
-from Interactor import *
+from .Intersect import *
+from .Interactor import *
 
 class MatchedTranslationInteractor(Interactor):
     """\

@@ -137,6 +137,9 @@ and "pixformat".
 
 """
 
+raise NotImplementedError("Due to drift/bit rot, Direc libraries are not currently available for python")
+
+
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 

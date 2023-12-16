@@ -56,6 +56,9 @@ message is sent to the "control" inbox. The message will be forwarded on out of
 the "signal" outbox just before termination.
 
 """
+
+raise NotImplementedError("PyMedia doesn't seem to be available for python 3")
+
 from Axon.Component import component
 from Axon.Ipc import shutdownMicroprocess, producerFinished
 

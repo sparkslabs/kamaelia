@@ -292,8 +292,8 @@ from math import *
 
 from Kamaelia.UI.Pygame.Display import PygameDisplay, _PygameEventSource
 
-from Vector import Vector
-from Transform import Transform
+from .Vector import Vector
+from .Transform import Transform
 
 import time
 

@@ -6,6 +6,8 @@
     @license: GNU GPL, see COPYING for details.
 """
 
+raise NotImplementedError("Slated for removal since depends on MoinMoin")
+
 import sys
 
 

@@ -78,7 +78,7 @@ example)::
 """
 
 import Axon
-from Vector import Vector
+from .Vector import Vector
 from math import *
 
 

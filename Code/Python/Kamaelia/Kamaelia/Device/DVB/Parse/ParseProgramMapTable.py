@@ -190,6 +190,7 @@ cleared, and the component starts collecting the sections again from scratch.
 
 """
 
+raise NotImplementedError("Due to drift/bit rot, DVB libraries need updating")
 from Axon.Component import component
 from Axon.Ipc import producerFinished,shutdownMicroprocess
 

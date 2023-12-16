@@ -21,7 +21,7 @@
 # -------------------------------------------------------------------------
 # Licensed to the BBC under a Contributor Agreement: RJL
 
-from PureTransformer import PureTransformer
+from .PureTransformer import PureTransformer
     
 class LineSplit(PureTransformer):
     """Split each message into its separate lines and send them on as separate messages"""

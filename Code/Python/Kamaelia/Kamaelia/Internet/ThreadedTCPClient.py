@@ -81,7 +81,7 @@ import errno
 import Axon
 from Axon.Component import component
 from Kamaelia.IPC import socketShutdown
-from Queue import Empty
+from queue import Empty
 import Axon.ThreadedComponent
 
 

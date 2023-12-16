@@ -120,6 +120,7 @@ the following entries::
 
 
 """
+raise NotImplementedError("Needs Rethink: pygame removed Overlay / YUV support")
 
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdownMicroprocess

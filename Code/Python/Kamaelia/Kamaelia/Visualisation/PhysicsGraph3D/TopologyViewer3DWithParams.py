@@ -118,7 +118,7 @@ def paramStr2paramDict(string):
     return dictionary
 
 
-from TopologyViewer3D import TopologyViewer3D
+from . TopologyViewer3D import TopologyViewer3D
 
 class TopologyViewer3DWithParams(TopologyViewer3D):
     """\

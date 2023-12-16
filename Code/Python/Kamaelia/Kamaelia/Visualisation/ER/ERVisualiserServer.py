@@ -25,12 +25,12 @@ from Kamaelia.Visualisation.PhysicsGraph.TopologyViewer import TopologyViewer as
 
 _TopologyViewerServer = Kamaelia.Visualisation.PhysicsGraph.TopologyViewerServer
 
-from PEntity import PEntity
-from PRelation import PRelation
-from PISA import PISA
-from PAttribute import PAttribute
-from ERLaws import AxonLaws
-from ExtraWindowFurniture import ExtraWindowFurniture
+from .PEntity import PEntity
+from .PRelation import PRelation
+from .PISA import PISA
+from .PAttribute import PAttribute
+from .ERLaws import AxonLaws
+from .ExtraWindowFurniture import ExtraWindowFurniture
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Visualisation.PhysicsGraph.chunks_to_lines import chunks_to_lines
 from Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists import lines_to_tokenlists

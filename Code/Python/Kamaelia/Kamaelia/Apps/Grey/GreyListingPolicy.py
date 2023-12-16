@@ -89,7 +89,7 @@ Now there is a little more subtlty here, based on the following conditions:
 """
 
 
-import anydbm
+import dbm as anydbm
 import math
 import time
 from Kamaelia.Apps.Grey.ConcreteMailHandler import ConcreteMailHandler

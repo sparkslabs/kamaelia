@@ -61,7 +61,7 @@ To output "wibble" each time a line is entered to the console::
 
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdown
-from PureTransformer import PureTransformer
+from .PureTransformer import PureTransformer
 
 class DataSource(component):
     def __init__(self, messages):

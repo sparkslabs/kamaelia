@@ -23,8 +23,8 @@
 from Kamaelia.UI.Tk.TkWindow import TkWindow
 from Kamaelia.Support.Tk.Scrolling import ScrollingMenu
 from Axon.Ipc import producerFinished, shutdownMicroprocess
-from ArgumentsPanel import ArgumentsPanel
-import Tkinter
+from .ArgumentsPanel import ArgumentsPanel
+import tkinter as Tkinter
 import pprint
 
 class BuilderControlsGUI(TkWindow):

@@ -19,6 +19,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # -------------------------------------------------------------------------
+raise NotImplementedError("Needs Updating: pymedia library which was a python2-ism")
 
 import pymedia.audio.sound as sound
 

@@ -10,6 +10,7 @@
 # for the specific language governing rights and limitations under the
 # License.
 
+raise NotImplementedError("Due to drift/bit rot, BitTorrent libraries need updating")
 import os
 os.environ["LANG"] = "en_GB.UTF-8"
 

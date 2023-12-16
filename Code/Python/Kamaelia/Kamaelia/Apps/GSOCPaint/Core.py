@@ -32,6 +32,7 @@ right to erase your artwork.
 
 """
 
+raise NotImplementedError("Requires pprocess which is not a py3 app - needs redoing")
 
 import pprocess
 import pygame

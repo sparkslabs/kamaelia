@@ -24,7 +24,7 @@ from Kamaelia.UI.Tk.TkWindow import TkWindow
 from Kamaelia.Support.Tk.Scrolling import ScrollingMenu
 from Axon.Ipc import producerFinished, shutdownMicroprocess
 
-import Tkinter
+import tkinter as Tkinter
 
 class TextOutputGUI(TkWindow):
 

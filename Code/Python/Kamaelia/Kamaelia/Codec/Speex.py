@@ -23,6 +23,7 @@
 # Based on original code by Devendra (original in /Sketches/DL/modules/Speex.py)
 # with modifications to improve shutdown, and a few other things
 
+raise NotImplementedError("Due to drift/bit rot, Speex libraries are not currently available for python")
 
 from sys import path
 import Axon

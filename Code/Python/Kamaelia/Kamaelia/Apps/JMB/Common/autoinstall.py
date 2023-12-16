@@ -24,7 +24,9 @@ This module contains the functionality for autoinstall of necessary config files
 
 FIXME:  Allow user to override the default install location.
 """
-import sys, zipfile, os, tarfile, cStringIO
+import sys, zipfile, os, tarfile
+
+from io import StringIO as cStringIO
 
 import Axon
 from Axon.Component import component

@@ -32,6 +32,8 @@ Credit goes to Alexandr Shutko for errorCodes dictionary (and for writing an
 excellent guide on the OSCAR protocol). You can find the original table at
 `this page <http://iserverd.khstu.ru/oscar/auth_failed.html>`_.
 """
+raise NotImplementedError("Slated for removal since AIM No Longer Exists")
+
 import struct
 
 def Single(num):

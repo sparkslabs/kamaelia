@@ -40,6 +40,8 @@ Dependencies
 This application requires Paste Deploy (obviously).
 """
 
+raise NotImplementedError("Slated for removal since depends on Paste")
+
 from paste.deploy import loadapp
 import os
 

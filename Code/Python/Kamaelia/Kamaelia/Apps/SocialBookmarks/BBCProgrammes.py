@@ -7,7 +7,7 @@ Interface to BBC /programmes JSON etc
 - Identifies currently playing tracks on radio channels TODO
 '''
 
-import cjson
+import json as cjson
 import pytz
 import string
 import time

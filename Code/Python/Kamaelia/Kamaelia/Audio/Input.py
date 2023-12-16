@@ -19,6 +19,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # -------------------------------------------------------------------------
+raise NotImplementedError("PyMedia doesn't seem to be available for python 3")
 
 import sys,os
 # sys.path.append(__file__[:1+__file__.rfind(os.sep)] + (".."+os.sep)*1)

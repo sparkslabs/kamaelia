@@ -107,7 +107,8 @@ resulting dict out:
 from Axon.Component import component
 from Axon.Ipc import producerFinished
 from Kamaelia.Chassis.Pipeline import Pipeline
-from ConfigParser import SafeConfigParser
+#from ConfigParser import SafeConfigParser
+from configparser import SafeConfigParser
 from pprint import pprint
 import os
 

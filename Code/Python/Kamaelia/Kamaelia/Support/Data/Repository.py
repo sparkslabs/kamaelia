@@ -245,6 +245,7 @@ introspection of the codebase but then throw most of the information away.
 
 """
 
+raise NotImplementedError("Needs Updating: 'compiler' library which was a python2-ism")
 
 import os
 import sys

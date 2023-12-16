@@ -25,6 +25,7 @@ Bi-directional JsonRPC Server and Client for Kamaelia.
 Copyright (c) 2009 Rasjid Wilcox and CDG Computer Services.
 Licensed to the BBC under a Contributor Agreement
 '''
+raise NotImplementedError("Slated for removal since depends on jsonrpc")
 
 import Axon
 from Axon.Handle import Handle

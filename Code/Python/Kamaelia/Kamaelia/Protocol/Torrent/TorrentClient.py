@@ -67,7 +67,9 @@ seen but don't rely on it). Inboxes are checked periodically (every tickInterval
 seconds, where tickInterval is 5 by default)
 """
 
-from __future__ import division
+raise NotImplementedError("Due to drift/bit rot, BitTorrent libraries need updating")
+
+# from __future__ import division
 import os
 os.environ["LANG"] = "en_GB.UTF-8"
 
