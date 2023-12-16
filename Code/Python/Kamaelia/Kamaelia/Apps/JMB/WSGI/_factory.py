@@ -25,7 +25,7 @@ This module is what you use to create a WSGI Handler.
 
 import re
 
-from _WSGIHandler import _WsgiHandler
+from . _WSGIHandler import _WsgiHandler
 from Kamaelia.Support.Protocol.HTTP import ReqTranslatorFactory, WSGILikeTranslator, \
     PopWsgiURI
 import logging
