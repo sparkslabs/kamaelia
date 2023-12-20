@@ -60,8 +60,7 @@ Kamaelia.Visualisation.Axon.ExtraWindowFurniture.
 
 import Kamaelia.Visualisation.PhysicsGraph
 from Kamaelia.Visualisation.PhysicsGraph.TopologyViewer import TopologyViewer as _TopologyViewer
-
-_TopologyViewerServer = Kamaelia.Visualisation.PhysicsGraph.TopologyViewerServer
+from Kamaelia.Visualisation.PhysicsGraph.TopologyViewerServer import TopologyViewerServer as _TopologyViewerServer
 
 from .PComponent import PComponent
 from .PPostbox import PPostbox
