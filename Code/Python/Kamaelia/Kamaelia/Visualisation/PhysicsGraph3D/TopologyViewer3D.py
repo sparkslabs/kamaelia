@@ -267,9 +267,8 @@ import re
 import sys
 import pygame
 
-from OpenGL.GL import *
-from OpenGL.GLU import *
-from OpenGL.GLUT import *
+from OpenGL.GL import glGenLists, glNewList, glEndList, glMatrixMode, glLoadIdentity, GL_PROJECTION, GL_COMPILE
+from OpenGL.GLUT import glutInit
 
 import Axon
 import Kamaelia.Support.Particles

@@ -19,12 +19,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # -------------------------------------------------------------------------
-
-import pygame
-
-from Kamaelia.Visualisation.PhysicsGraph import BaseParticle
-from pygame.locals import *
-
 """\
 ====================================================
 "Component" particle for Axon/Kamaelia visualisation
@@ -74,6 +68,9 @@ the display surface.
 See TopologyViewer for more details.
 
 """
+import pygame
+
+from Kamaelia.Visualisation.PhysicsGraph import BaseParticle
 
 
 _COMPONENT_RADIUS = 32

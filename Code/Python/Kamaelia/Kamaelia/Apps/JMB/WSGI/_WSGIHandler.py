@@ -141,9 +141,7 @@ dictionary.
 
 from pprint import pprint, pformat
 import sys, os, cgitb, traceback, logging, copy
-
 from io import StringIO as cStringIO
-
 from datetime import datetime
 from wsgiref.util import is_hop_by_hop
 import Axon

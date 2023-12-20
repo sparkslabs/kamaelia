@@ -19,13 +19,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # -------------------------------------------------------------------------
-
-import Kamaelia.Visualisation
-from Kamaelia.Visualisation.PhysicsGraph import TopologyViewerServer, BaseParticle
-from Kamaelia.Support.Particles import SimpleLaws, MultipleLaws
-
-from pygame.locals import *
-
 """\
 ====================================
 Particle Laws for Axon Visualisation
@@ -67,6 +60,12 @@ magnitude) are scaled appropriately.
 See MultipleLaws for information on the role of this class for physics
 simulation and topology visualisation.
 """
+
+import Kamaelia.Visualisation
+from Kamaelia.Visualisation.PhysicsGraph import TopologyViewerServer, BaseParticle
+from Kamaelia.Support.Particles import SimpleLaws, MultipleLaws
+
+from pygame.locals import *
 
 _COMPONENT_RADIUS = 32    
 

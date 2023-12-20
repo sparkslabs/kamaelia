@@ -365,7 +365,7 @@ if __name__ == "__main__":
     from Kamaelia.Apps.Compose.BuildViewer import BuildViewer
     from Kamaelia.Apps.Compose.GUI.BuilderControlsGUI import BuilderControlsGUI
     from Kamaelia.Apps.Compose.GUI.TextOutputGUI import TextOutputGUI
-    from Kamaelia.Util.Backplane import *
+    from Kamaelia.Util.Backplane import Backplane, PublishTo, SubscribeTo
 
     items = getAllComponents()
 

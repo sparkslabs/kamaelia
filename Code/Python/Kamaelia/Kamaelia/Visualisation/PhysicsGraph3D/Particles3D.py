@@ -167,9 +167,11 @@ import math, os
 from io import StringIO as cStringIO 
                 
 import pygame
-from OpenGL.GL import *
-from OpenGL.GLU import *
-from OpenGL.GLUT import *
+from OpenGL.GL import glBegin, glBindTexture, glColor4f, glDisable, glEnable, glEnd, glFrontFace, glGenTextures, glLoadIdentity, glLoadMatrixf, glMatrixMode, glPopMatrix, glPushMatrix, glRotatef, glTexCoord2f, glTexEnvf, glTexImage2D, glTexParameterf, glVertex3f
+from OpenGL.GL import GL_QUADS, GL_TEXTURE, GL_TEXTURE_2D, GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE, GL_TEXTURE_2D, GL_MODELVIEW, GL_LINES, GL_TRUE
+
+from OpenGL.GLU import gluNewQuadric, gluQuadricNormals, gluQuadricTexture, gluSphere, GLU_SMOOTH
+from OpenGL.GLUT import glutSolidTeapot
 
 from Kamaelia.UI.OpenGL.Vector import Vector
 from Kamaelia.UI.OpenGL.Transform import Transform
