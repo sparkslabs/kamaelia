@@ -25,7 +25,7 @@ from Axon.Component import component
 
 
 
-from .Patterns import *
+from Patterns import patterns, BCK
 
 MIN_SIZE_THRESHOLD=8
 DIVERGENCE_CURVE_IDEAL = ((2**0.5) - 1)**2     # peak expected divergence assuming moving through a 1/4 circle arc

@@ -19,8 +19,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import sys
-from Kamaelia.Util.Backplane import *
-from Kamaelia.Util.Console import *
+from Kamaelia.Util.Backplane import Backplane, PublishTo, SubscribeTo
+from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Visualisation.PhysicsGraph.TopologyViewer import TopologyViewer
 from Kamaelia.Visualisation.PhysicsGraph.lines_to_tokenlists import lines_to_tokenlists

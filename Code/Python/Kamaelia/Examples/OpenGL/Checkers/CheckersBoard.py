@@ -28,11 +28,9 @@ Checkers Board
 
 import Axon
 import pygame
-from pygame.locals import *
-from OpenGL.GL import *
-from OpenGL.GLU import *
+from OpenGL.GL import glBegin, glEnd, glColor, glVertex, GL_QUADS
 
-from Kamaelia.UI.OpenGL.OpenGLComponent import *
+from Kamaelia.UI.OpenGL.OpenGLComponent import OpenGLComponent
 
 
 class CheckersBoard(OpenGLComponent):

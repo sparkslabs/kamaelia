@@ -276,7 +276,7 @@ from Axon.idGen import strId, numId
 from Axon.debug import debug
 from Axon.Microprocess import microprocess
 from Axon.Base import AxonObject as _AxonObject
-from Axon.Ipc import *
+from Axon.Ipc import ipc, WaitComplete, reactivate, newComponent, shutdownMicroprocess, notify, shutdown, status, wouldblock, producerFinished, errorInformation,     
 try:
     import Queue as queue
     vrange = xrange

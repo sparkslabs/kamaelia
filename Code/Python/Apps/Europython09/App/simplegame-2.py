@@ -24,7 +24,7 @@ import math
 import Axon
 import pygame
 from Kamaelia.Chassis.Pipeline import Pipeline
-from Kamaelia.Util.Backplane import *
+from Kamaelia.Util.Backplane import Backplane, PublishTo, SubscribeTo
 
 from Kamaelia.Apps.Games4Kids.BasicSprite import BasicSprite
 from Kamaelia.Apps.Games4Kids.SpriteScheduler import SpriteScheduler

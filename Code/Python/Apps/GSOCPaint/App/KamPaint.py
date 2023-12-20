@@ -20,7 +20,6 @@
 # limitations under the License.
 # -------------------------------------------------------------------------
 
-from pygame.locals import *
 from Axon.experimental.Process import ProcessGraphline
 
 from Kamaelia.Chassis.Seq import Seq

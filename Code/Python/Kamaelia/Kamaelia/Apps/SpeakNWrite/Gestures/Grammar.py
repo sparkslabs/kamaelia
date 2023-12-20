@@ -21,7 +21,7 @@
 # Multistroke grammar processor
 # see grammar rules for info
 
-from .GrammarRules import *
+from GrammarRules import BCK, grammar
 
 from Axon.Component import component
 

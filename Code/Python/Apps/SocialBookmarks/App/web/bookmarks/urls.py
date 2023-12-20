@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import *
+#FIXME: --removed from recent django from django.conf.urls.defaults im port *
 
 # Uncomment the next two lines to enable the admin:
 #from django.contrib import admin

@@ -92,7 +92,6 @@ from Kamaelia.IPC import newReader, newWriter, removeReader, removeWriter
 
 # from Kamaelia.Apps.SocialBookmarks.Print import Print # For debug purposes
 
-from Kamaelia.KamaeliaExceptions import *
 import traceback
 import ssl
 

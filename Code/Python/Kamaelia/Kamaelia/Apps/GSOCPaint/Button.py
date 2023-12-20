@@ -105,7 +105,7 @@ __kamaelia_components__  = ( ImageButton, )
 
 
 if __name__ == "__main__":
-    from pygame.locals import *
+
     from Kamaelia.Chassis.PAR import PAR
     from Kamaelia.Chassis.Pipeline import Pipeline
     from Kamaelia.Util.Console import ConsoleEchoer
@@ -113,8 +113,8 @@ if __name__ == "__main__":
     import os
     Pipeline(
         PAR(
-            ImageButton(caption='../../../Examples/SupportingMediaFiles/cat-logo.png',key=K_SPACE,msg="cat"),
-            Button(caption="Press SPACE or click",key=K_SPACE, msg="space"),
+            ImageButton(caption='../../../Examples/SupportingMediaFiles/cat-logo.png',key=pygame.K_SPACE,msg="cat"),
+            Button(caption="Press SPACE or click",key=pygame.K_SPACE, msg="space"),
             Button(caption="Reverse colours",fgcolour=(255,255,255),bgcolour=(0,0,0), msg="reverse"),
             Button(caption="Mary...",msg="Mary had a little lamb", position=(200,100)),
         ),

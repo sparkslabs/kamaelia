@@ -24,7 +24,6 @@
 #
 
 import pygame
-from pygame.locals import *
 import pygame.mixer
 import random
 import os

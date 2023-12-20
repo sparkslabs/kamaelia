@@ -25,7 +25,7 @@ from Kamaelia.UI.PygameDisplay import PygameDisplay
 from Kamaelia.UI.Pygame.Ticker import Ticker
 from Kamaelia.UI.OpenGL.OpenGLDisplay import OpenGLDisplay
 from Kamaelia.UI.OpenGL.PygameWrapper import PygameWrapper
-from Kamaelia.UI.Pygame.MagnaDoodle import *
+from Kamaelia.UI.Pygame.MagnaDoodle import MagnaDoodle
 
 # override pygame display service
 ogl_display = OpenGLDisplay.getDisplayService()

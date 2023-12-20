@@ -198,7 +198,7 @@ Some basic examples on how to use this interpreter.
 
 #FILE: Console Embeddable
     if 0:
-        from Kamaelia.Util.Console import *
+        from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
         Pipeline(
             ConsoleReader(),
             InterpreterTransformer(),

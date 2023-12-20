@@ -364,7 +364,7 @@ class EchoServer(MoreComplexServer):
         CSA = NoActivityTimeout(ConnectedSocketAdapter, timeout=2, debug=True)
 
 if __name__ == "__main__":
-    from Kamaelia.Util.Console import *
+    from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
     from Kamaelia.Chassis.Pipeline import Pipeline
     EchoServer().run()
 
