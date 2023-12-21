@@ -380,7 +380,7 @@ from Axon.Postoffice import postoffice
 from Axon.Scheduler import scheduler
 from Axon.AxonExceptions import noSpaceInBox
 from Axon.Linkage import linkage
-from Axon.Ipc import ipc, WaitComplete, reactivate, newComponent, shutdownMicroprocess, notify, shutdown, status, wouldblock, producerFinished, errorInformation,     
+from Axon.Ipc import ipc, WaitComplete, reactivate, newComponent, shutdownMicroprocess, notify, shutdown, status, wouldblock, producerFinished, errorInformation
 
 
 from Axon.Box import makeInbox,makeOutbox

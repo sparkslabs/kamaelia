@@ -65,13 +65,13 @@ caption texture on both the front and the back surface.
 
 import Axon
 import pygame
-from pygame.locals import *
-from OpenGL.GL import *
-from OpenGL.GLU import *
+
+from OpenGL.GL import glBegin, glBindTexture, glColor4f, glEnable, glDisable, glEnd, glGenTextures, glVertex3f, glTexCoord2f, glTexEnvf, glTexImage2D, glTexParameterf
+from OpenGL.GL import GL_LINEAR, GL_QUADS, GL_REPLACE, GL_RGBA, GL_TEXTURE_2D, GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_MIN_FILTER, GL_UNSIGNED_BYTE
 
 from .Vector import Vector
-from .OpenGLComponent import *
-from math import *
+from .OpenGLComponent import OpenGLComponent
+import math
 
 
 class Label(OpenGLComponent):
@@ -183,7 +183,7 @@ class Label(OpenGLComponent):
             self.size=Vector(texsize[0]/float(self.pixelscaling), texsize[1]/float(self.pixelscaling), self.thickness)
 
         # create power of 2 dimensioned surface
-        pow2size = (int(2**(ceil(log(texsize[0]+2*self.margin, 2)))), int(2**(ceil(log(texsize[1]+2*self.margin, 2)))))
+        pow2size = (int(2**(math.ceil(log(texsize[0]+2*self.margin, 2)))), int(2**(math.ceil(log(texsize[1]+2*self.margin, 2)))))
         textureSurface = pygame.Surface(pow2size)
         textureSurface.fill( self.backgroundColour )
         # determine texture coordinates

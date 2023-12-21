@@ -64,7 +64,7 @@ from Axon.Ipc import shutdown, producerFinished
 from Axon.AdaptiveCommsComponent import AdaptiveCommsComponent
 
 from Kamaelia.Protocol.Torrent.TorrentClient import TorrentClient
-from Kamaelia.Protocol.Torrent.TorrentIPC import *
+from Kamaelia.Protocol.Torrent.TorrentIPC import TIPCServicePassOn, TIPCServiceAdd, TIPCServiceRemove, TIPCNewTorrentCreated, TIPCTorrentAlreadyDownloading, TIPCTorrentStartFail, TIPCTorrentStatusUpdate, TIPCCreateNewTorrent
 
 class TorrentService(AdaptiveCommsComponent):
     """\

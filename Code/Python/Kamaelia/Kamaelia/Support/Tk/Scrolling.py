@@ -23,8 +23,7 @@
 A couple of experimental classes to support some useful basic user interface elements
 One of these is a scrolling menu (!)
 """
-#from Tkinter import *
-from tkinter import *
+from tkinter import Button, Frame, Listbox, Scrollbar, BOTH, END, LEFT, RAISED, RIGHT, VERTICAL, Y
 
 def _defaultCallback(*args):
     pass

@@ -105,7 +105,7 @@ from Axon.Ipc import shutdown, producerFinished
 from Axon.ThreadedComponent import threadedcomponent
 from Axon.Component import component
 
-from Kamaelia.Protocol.Torrent.TorrentIPC import *
+from Kamaelia.Protocol.Torrent.TorrentIPC import TIPCCreateNewTorrent, TIPCTorrentAlreadyDownloading, TIPCCloseTorrent, TIPCTorrentStatusUpdate, TIPCNewTorrentCreated
 from Kamaelia.Util.PureTransformer import PureTransformer
 
 class MakeshiftTorrent(object):

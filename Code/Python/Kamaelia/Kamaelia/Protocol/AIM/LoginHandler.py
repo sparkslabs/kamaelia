@@ -84,13 +84,15 @@ OSCARClient will be able to send and receive AIM messages.
 
 """
 
-from Kamaelia.Support.OscarUtil import *
-from Kamaelia.Support.OscarUtil2 import *
+from Kamaelia.Support.OscarUtil import Single, Double, Quad, unpackDoubles, STATUS_MISC_DCDISABLED, STATUS_ONLINE, CHANNEL_NEWCONNECTION, AUTH_SERVER
+from Kamaelia.Support.OscarUtil2 import encryptPasswordMD5, readTLVs, TLV
 from Kamaelia.Protocol.AIM.OSCARClient import OSCARClient, SNACExchanger
 from Axon.Component import component
 import Kamaelia.Util.Clock as Clock
 import time
 import Axon
+
+
 
 class LoginHandler(SNACExchanger):
     """\
@@ -369,7 +371,6 @@ class LoginHandler(SNACExchanger):
             else:
                 done = True
         assert self.debugger.note("LoginHandler.main", 5, "last reply: " + str((header[0], header[1])))
-
 
     def activateConnection(self):
         """

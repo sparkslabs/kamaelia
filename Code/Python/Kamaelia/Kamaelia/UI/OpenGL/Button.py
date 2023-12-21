@@ -77,13 +77,13 @@ In frame() the button gets rotated when it has been activated.
 
 import Axon
 import pygame
-from pygame.locals import *
-from OpenGL.GL import *
-from OpenGL.GLU import *
+
+from OpenGL.GL import GL_QUADS, GL_REPLACE, GL_LINEAR, GL_RGBA, GL_UNSIGNED_BYTE, GL_TEXTURE_2D, GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_MIN_FILTER
+from OpenGL.GL import glBegin, glBindTexture, glColor4f, glDisable, glEnable, glEnd, glGenTextures, glTexCoord2f, glTexEnvf, glTexImage2D, glTexParameterf, glVertex3f
 
 from .OpenGLComponent import OpenGLComponent
 from .Vector import Vector
-from math import *
+import math
 
 
 class Button(OpenGLComponent):
@@ -235,7 +235,7 @@ class Button(OpenGLComponent):
             self.size=Vector(texsize[0]/float(self.pixelscaling), texsize[1]/float(self.pixelscaling), self.thickness)
 
         # create power of 2 dimensioned surface
-        pow2size = (int(2**(ceil(log(texsize[0]+2*self.margin, 2)))), int(2**(ceil(log(texsize[1]+2*self.margin, 2)))))
+        pow2size = (int(2**(math.ceil(log(texsize[0]+2*self.margin, 2)))), int(2**(math.ceil(log(texsize[1]+2*self.margin, 2)))))
         textureSurface = pygame.Surface(pow2size)
         textureSurface.fill( self.backgroundColour )
         # determine texture coordinates

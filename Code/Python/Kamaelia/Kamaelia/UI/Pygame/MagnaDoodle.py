@@ -178,7 +178,6 @@ __kamaelia_components__  = ( MagnaDoodle, )
                   
 if __name__ == "__main__":
    from Kamaelia.Util.ConsoleEcho import consoleEchoer
-   from pygame.locals import *
    
    Magna = MagnaDoodle().activate()
    

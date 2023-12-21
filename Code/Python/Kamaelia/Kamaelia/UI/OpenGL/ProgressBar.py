@@ -64,12 +64,12 @@ is made read only and the transparent bar is drawn.
 
 import Axon
 import pygame
-from pygame.locals import *
-from OpenGL.GL import *
-from OpenGL.GLU import *
+
+from OpenGL.GL import glBegin, glPolygonMode, glEnable, glDepthMask, glBlendFunc, glColor4f, glVertex3f, glEnd, glDepthMask, glDisable
+from OpenGL.GL import GL_BLEND, GL_QUADS, GL_FRONT_AND_BACK, GL_FILL, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_FALSE, GL_TRUE
 
 from .Vector import Vector
-from .OpenGLComponent import *
+from .OpenGLComponent import OpenGLComponent
 
 
 class ProgressBar(OpenGLComponent):

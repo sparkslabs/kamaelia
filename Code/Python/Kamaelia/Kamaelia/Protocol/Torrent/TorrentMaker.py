@@ -9,11 +9,6 @@
 # WITHOUT WARRANTY OF ANY KIND, either express or implied.  See the License
 # for the specific language governing rights and limitations under the
 # License.
-
-raise NotImplementedError("Due to drift/bit rot, BitTorrent libraries need updating")
-import os
-os.environ["LANG"] = "en_GB.UTF-8"
-
 """\
 =================
 .torrent Maker
@@ -45,6 +40,12 @@ BitTorrent client.
 #if __name__ == '__main__':
 #    from BitTorrent.translation import _
 
+
+raise NotImplementedError("Due to drift/bit rot, BitTorrent libraries need updating")
+import os
+os.environ["LANG"] = "en_GB.UTF-8"
+
+
 import sys
 import locale
 #from BitTorrent.defaultargs import get_defaults
@@ -54,7 +55,7 @@ from BitTorrent.parseargs import parseargs, printHelp
 from BitTorrent import BTFailure
 
 from Axon.ThreadedComponent import threadedcomponent
-from Kamaelia.Protocol.Torrent.TorrentIPC import *
+from Kamaelia.Protocol.Torrent.TorrentIPC import TIPCMakeTorrent
 import time
 import os
 import tempfile

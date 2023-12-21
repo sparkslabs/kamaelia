@@ -26,7 +26,6 @@
 """
 
 import pygame
-from pygame.locals import *
 
 import sys; sys.path.append("..")
 from PyGameApp import PyGameApp
@@ -68,7 +67,7 @@ if __name__=="__main__":
         def __init__( self, app, position, velocity, radius):
             """Initialise, registering dragging event handler and setting initial position and velocity"""
             self.app = app
-            self.app.addHandler(MOUSEBUTTONDOWN, lambda event : CircleDragHandler.handle(event, self.app, self))
+            self.app.addHandler(pygame.MOUSEBUTTONDOWN, lambda event : CircleDragHandler.handle(event, self.app, self))
 
             (self.x,  self.y)  = position
             (self.vx, self.vy) = velocity

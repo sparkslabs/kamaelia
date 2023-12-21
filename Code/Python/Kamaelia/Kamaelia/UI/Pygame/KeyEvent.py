@@ -35,15 +35,15 @@ Example Usage
 
 Capture keypresses in pygame for numbers 1,2,3 and letters a,b,c::
 
-    fom pygame.locals import *
+    import pygame
   
     Graphline( output = ConsoleEchoer(),
-               keys = KeyEvent( key_events={ K_1 : (1,"numbers"),
-                                             K_2 : (2,"numbers"),
-                                             K_3 : (3,"numbers"),
-                                             K_a : ("A", "letters"),
-                                             K_b : ("B", "letters"),
-                                             K_c : ("C", "letters"),
+               keys = KeyEvent( key_events={ pygame.K_1 : (1,"numbers"),
+                                             pygame.K_2 : (2,"numbers"),
+                                             pygame.K_3 : (3,"numbers"),
+                                             pygame.K_a : ("A", "letters"),
+                                             pygame.K_b : ("B", "letters"),
+                                             pygame.K_c : ("C", "letters"),
                                            },
                                 outboxes={ "numbers" : "numbers between 1 and 3",
                                            "letters" : "letters between A and C",
@@ -53,10 +53,6 @@ Capture keypresses in pygame for numbers 1,2,3 and letters a,b,c::
                             ("keys","letters"):("output","inbox")
                           }
              ).run()
-
-The symbols *K_1*, *K_2*, etc are keycodes defined in defined in *pygame.locals*.
-
-
 
 How does it work?
 -----------------

@@ -79,7 +79,7 @@ example)::
 
 import Axon
 from .Vector import Vector
-from math import *
+import math
 
 
 class LinearPath:
@@ -299,13 +299,13 @@ class WheelMover(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.slots = slots
         self.distance = steps/slots
         
-        stepangle = 2*pi/steps
+        stepangle = 2*math.pi/steps
     
         self.points = []
         for i in range(steps):
             angle = i*stepangle
-            x = cos(angle)*float(radius)
-            y = sin(angle)*float(radius)
+            x = math.cos(angle)*float(radius)
+            y = math.sin(angle)*float(radius)
             
             self.points.append((Vector(0,y,x)+Vector(*center)).toTuple())
             

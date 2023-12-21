@@ -96,7 +96,7 @@ from Axon.Ipc import shutdown, producerFinished
 from Axon.Component import component
 
 from Kamaelia.Protocol.Torrent.TorrentService import TorrentService
-from Kamaelia.Protocol.Torrent.TorrentIPC import *
+from Kamaelia.Protocol.Torrent.TorrentIPC import TIPCServicePassOn, TIPCServiceAdd, TIPCServiceRemove, TIPCNewTorrentCreated, TIPCTorrentAlreadyDownloading, TIPCTorrentStartFail, TIPCTorrentStatusUpdate
 
 class TorrentPatron(component):
     """Inboxes/outboxes and message behaviour identical to TorrentClient but

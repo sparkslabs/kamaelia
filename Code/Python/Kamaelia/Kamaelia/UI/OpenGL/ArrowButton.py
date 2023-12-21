@@ -49,8 +49,7 @@ Two arrow buttons printing to the console::
 
 import Axon
 import pygame
-from pygame.locals import *
-from OpenGL.GL import *
+from OpenGL.GL import GL_QUADS, GL_TRIANGLES, glBegin, glColor4f, glEnd, glVertex3f
 
 from .Vector import Vector
 from .SimpleButton import SimpleButton

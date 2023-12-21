@@ -53,12 +53,9 @@ In draw() a simple cube made of 6 quads with different colours is drawn.
 
 import Axon
 import pygame
-from pygame.locals import *
-from OpenGL.GL import *
-from OpenGL.GLU import *
-
+from OpenGL.GL import GL_QUADS, glBegin, glColor4f, glVertex3f, glEnd
 from .Vector import Vector
-from .OpenGLComponent import *
+from .OpenGLComponent import OpenGLComponent
 
 class SimpleCube(OpenGLComponent):
     """\

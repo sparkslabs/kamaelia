@@ -56,15 +56,11 @@ In draw() a simple plane is drawn whith the loaded texture on it.
 
 import Axon
 import pygame
-from pygame.locals import *
-from OpenGL.GL import *
-from OpenGL.GLU import *
+from OpenGL.GL import GL_TEXTURE_2D, GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE, GL_QUADS, GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR, GL_TEXTURE_MIN_FILTER, GL_RGBA, GL_UNSIGNED_BYTE
+from OpenGL.GL import glEnable, glBindTexture, glTexEnvf, glTexCoord2f, glVertex3f, glEnd, glDisable, glGenTextures, glTexParameterf, glTexImage2D, glDisable
 
 from .Vector import Vector
-from .OpenGLComponent import *
-
-from math import *
-
+from .OpenGLComponent import OpenGLComponent
 
 class TexPlane(OpenGLComponent):
     """\

@@ -131,7 +131,8 @@ from Axon.Ipc import producerFinished, shutdown
 from Axon.Component import component
 from Axon.ThreadedComponent import threadedcomponent
 
-from Kamaelia.Protocol.HTTP.HTTPParser import *
+from Kamaelia.Protocol.HTTP.HTTPParser import ParsedHTTPHeader, ParsedHTTPBodyChunk, ParsedHTTPEnd
+
 MapStatusCodeToText = {
         "100" : "100 Continue",
         "200" : "200 OK",
