@@ -114,7 +114,6 @@ began.
 """
 
 import pygame
-from pygame.locals import *
 
 
 class DragHandler(object):
@@ -166,8 +165,8 @@ class DragHandler(object):
         self.offsetx = centre[0] - self.event.pos[0]
         self.offsety = centre[1] - self.event.pos[1]
 
-        self.mm_handler = self.app.addHandler(MOUSEMOTION,   lambda event : self._drag(event.pos, event.buttons) )
-        self.mu_handler = self.app.addHandler(MOUSEBUTTONUP, lambda event : self._release(event.pos) )
+        self.mm_handler = self.app.addHandler(pygame.MOUSEMOTION,   lambda event : self._drag(event.pos, event.buttons) )
+        self.mu_handler = self.app.addHandler(pygame.MOUSEBUTTONUP, lambda event : self._release(event.pos) )
         self.isDragging=True
     
     def detect(self, pos, button):
@@ -199,8 +198,8 @@ class DragHandler(object):
 
         Terminates drag by calling release(...) and unbinding event handlers.
         """
-        self.app.removeHandler(MOUSEMOTION,   self.mm_handler)
-        self.app.removeHandler(MOUSEBUTTONUP, self.mu_handler)
+        self.app.removeHandler(pygame.MOUSEMOTION,   self.mm_handler)
+        self.app.removeHandler(pygame.MOUSEBUTTONUP, self.mu_handler)
         self.release( pos[0] + self.offsetx, pos[1] + self.offsety )
 
     def drag(self,newx,newy):

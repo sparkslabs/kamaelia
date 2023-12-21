@@ -60,14 +60,9 @@ This factor must be specified on creation of the component.
 
 """
 
-
 import pygame
-from pygame.locals import *
-from OpenGL.GL import *
-from OpenGL.GLU import *
-
 import Axon
-from .Interactor import *
+from .Interactor import Interactor
 
 class SimpleTranslationInteractor(Interactor):
     """\
@@ -113,7 +108,7 @@ class SimpleTranslationInteractor(Interactor):
 __kamaelia_components__ = (SimpleTranslationInteractor,)
 
 if __name__=='__main__':
-    from SimpleCube import *
+    from SimpleCube import SimpleCube, SimpleTranslationInteractor
     
     o1 = SimpleCube(position=(6, 0,-30), size=(1,1,1), name="center").activate()
     i1 = SimpleTranslationInteractor(target=o1).activate()

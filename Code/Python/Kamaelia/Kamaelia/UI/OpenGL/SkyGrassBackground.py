@@ -19,7 +19,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # -------------------------------------------------------------------------
-
 """\
 ======================
 Sky & Grass background
@@ -43,11 +42,9 @@ Only a background::
 
 import Axon
 import pygame
-from pygame.locals import *
-from OpenGL.GL import *
-from OpenGL.GLU import *
+from OpenGL.GL import GL_QUADS, glBegin, glColor4f, glVertex3f, glEnd
 
-from .OpenGLComponent import *
+from .OpenGLComponent import OpenGLComponent
 
 class SkyGrassBackground(OpenGLComponent):
     """\

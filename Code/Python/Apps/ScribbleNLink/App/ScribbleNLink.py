@@ -21,7 +21,7 @@
 import random
 import Axon
 
-from Kamaelia.Util.Backplane import *
+from Kamaelia.Util.Backplane import Backplane, PublishTo, SubscribeTo
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Chassis.Graphline import Graphline
 

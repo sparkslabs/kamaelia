@@ -26,7 +26,6 @@ import Kamaelia.Support.Particles
 import Kamaelia.UI.MH
 
 import pygame
-from pygame.locals import *
 
 from random import randrange
 import random
@@ -99,8 +98,8 @@ class PhysApp1(Kamaelia.UI.MH.PyGameApp, component):
         self.physics.add( particle )
 
     def initialiseComponent(self):
-        self.addHandler(MOUSEBUTTONDOWN, lambda event: ParticleDragger(event,self))
-        self.addHandler(KEYDOWN, self.quit)
+        self.addHandler(pygame.MOUSEBUTTONDOWN, lambda event: ParticleDragger(event,self))
+        self.addHandler(pygame.KEYDOWN, self.quit)
         
         self.laws    = Kamaelia.Support.Particles.SimpleLaws(bondLength = 100)
         self.physics = Kamaelia.Support.Particles.ParticleSystem(self.laws, [], 0)

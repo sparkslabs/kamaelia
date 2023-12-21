@@ -21,8 +21,8 @@
 
 import time
 import Axon
-from Kamaelia.Util.Backplane import *
-from Kamaelia.Util.Console import *
+from Kamaelia.Util.Backplane import Backplane, PublishTo, SubscribeTo
+from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
 from Kamaelia.Chassis.Pipeline import Pipeline
 
 class Source(Axon.ThreadedComponent.threadedcomponent):

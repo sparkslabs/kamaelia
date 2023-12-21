@@ -132,7 +132,7 @@ from Axon.Component import component
 from Axon.ThreadedComponent import threadedcomponent
 
 from Kamaelia.Chassis.Graphline import Graphline
-from Kamaelia.Protocol.HTTP.HTTPParser import *
+from Kamaelia.Protocol.HTTP.HTTPParser import HTTPParser
 from Kamaelia.Protocol.HTTP.HTTPRequestHandler import HTTPRequestHandler
 
 MapStatusCodeToText = {

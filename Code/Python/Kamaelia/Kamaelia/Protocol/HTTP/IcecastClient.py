@@ -63,8 +63,9 @@ import string, time
 from Axon.Component import component
 from Axon.Ipc import producerFinished, shutdown
 
-from Kamaelia.Protocol.HTTP.HTTPParser import *
-from Kamaelia.Protocol.HTTP.HTTPClient import *
+from Kamaelia.Protocol.HTTP.HTTPParser import splitUri, ParsedHTTPHeader, ParsedHTTPBodyChunk, ParsedHTTPEnd
+from Kamaelia.Protocol.HTTP.HTTPClient import HTTPRequest, SingleShotHTTPClient
+
 from Kamaelia.Util.PureTransformer import PureTransformer
 from Kamaelia.BaseIPC import IPC
 

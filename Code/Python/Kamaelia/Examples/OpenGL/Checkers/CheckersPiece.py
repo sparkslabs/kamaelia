@@ -29,11 +29,10 @@ Checkers Piece
 
 import Axon
 import pygame
-from pygame.locals import *
-from OpenGL.GL import *
-from OpenGL.GLU import *
+from OpenGL.GL import glBegin, glEnd, GL_QUADS, glColor, glVertex, glColor, glTranslate
+from OpenGL.GLU import gluCylinder, gluDisk
 
-from Kamaelia.UI.OpenGL.OpenGLComponent import *
+from Kamaelia.UI.OpenGL.OpenGLComponent import OpenGLComponent
 
 
 class CheckersPiece(OpenGLComponent):
@@ -61,8 +60,8 @@ class CheckersPiece(OpenGLComponent):
 if __name__=='__main__':
     
     from Kamaelia.UI.OpenGL.LiftTranslationInteractor import LiftTranslationInteractor
-    from CheckersBoard import *
-    from CheckersInteractor import *
+    from CheckersBoard import CheckersBoard
+    from CheckersInteractor import CheckersInteractor
     
     display = OpenGLDisplay(viewerposition=(0,-10,0), lookat=(0,0,-15)).activate()
     OpenGLDisplay.setDisplayService(display)

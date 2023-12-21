@@ -102,15 +102,12 @@ Simple client with a truly horrible interface::
             ).run()
 
 """
-#FIXME:  One or two import *s isn't necessarily a big deal, but this many makes it difficult
-#to tell which method/object comes from where.
-from Kamaelia.Protocol.AIM.OSCARClient import *
-from Kamaelia.Support.OscarUtil import *
-from Kamaelia.Support.OscarUtil2 import *
+from Kamaelia.Protocol.AIM.OSCARClient import OSCARProtocol, OSCARClient, SNACExchanger
+from Kamaelia.Support.OscarUtil import Single, Double, Quad, unpackDoubles, STATUS_MISC_DCDISABLED, STATUS_ONLINE, CHANNEL_NEWCONNECTION, AUTH_SERVER, unpackSingles, CHANNEL_NEWCONNECTION
+from Kamaelia.Support.OscarUtil2 import SNAC, readSNAC, TLV, encryptPasswordMD5, readTLVs, TLV
 from Kamaelia.Internet.TCPClient import TCPClient
 from Axon.Component import component
 import re
-
 
 class ChatManager(SNACExchanger):
     """
@@ -208,7 +205,6 @@ if __name__ == '__main__':
     from Kamaelia.Util.Console import ConsoleEchoer
     import sys
     sys.path.append('..')
-    from likefile import *
 
     flap = open('/home/jlei/aim/snacs/0407').read()
     class Chargen(component):

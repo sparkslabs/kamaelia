@@ -74,7 +74,8 @@ raise NotImplementedError("Slated for removal since AIM No Longer Exists")
 import struct
 import md5
 
-from Kamaelia.Support.OscarUtil import *
+from Kamaelia.Support.OscarUtil import Single,Double,Quad
+
 
 def SNAC(fam,sub,data,id=1, flags=[0,0]):
     """construct a SNAC from the given data"""

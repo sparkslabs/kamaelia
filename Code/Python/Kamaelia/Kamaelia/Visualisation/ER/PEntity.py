@@ -23,7 +23,6 @@
 import pygame
 
 from Kamaelia.Visualisation.PhysicsGraph import BaseParticle
-from pygame.locals import *
 
 _COMPONENT_RADIUS = 32
 _COMPONENT_RADIUS_FACTOR = 1.3
@@ -129,22 +128,6 @@ class PEntity(BaseParticle):
     
                 pygame.draw.line(surface, colour, mid, leftarrow,2  )
                 pygame.draw.line(surface, colour, mid, rightarrow,2 )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         yield 2
 

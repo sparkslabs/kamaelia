@@ -156,8 +156,8 @@ For a more complete example, see LoginHandler.py
                   
           
 import struct
-from Kamaelia.Support.OscarUtil import *
-from Kamaelia.Support.OscarUtil2 import *
+from Kamaelia.Support.OscarUtil import unpackSingles, CHANNEL_NEWCONNECTION
+from Kamaelia.Support.OscarUtil2 import SNAC, readSNAC, TLV
 from Axon.Component import component
 from Axon.Ipc import shutdownMicroprocess
 from Kamaelia.Chassis.Graphline import Graphline
@@ -255,7 +255,6 @@ class OSCARProtocol(component):
                          seqnum, len(data))
         self.send(head+str(data))
 
-
 def OSCARClient(server, port):
     """\
     OSCARClient(server, port) -> returns an OSCARProtocol component connected to
@@ -279,7 +278,6 @@ def OSCARClient(server, port):
                          }
                      )
     
-
 
 class SNACExchanger(component):
     """\

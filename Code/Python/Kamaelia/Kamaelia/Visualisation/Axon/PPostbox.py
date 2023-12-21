@@ -19,12 +19,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # -------------------------------------------------------------------------
-
-from Kamaelia.Visualisation.PhysicsGraph import BaseParticle
-
-import pygame
-from pygame.locals import *
-
 """\
 ====================================================
 "Postbox" particle for Axon/Kamaelia visualisation
@@ -84,6 +78,9 @@ See TopologyViewer for more details.
 
 """
 
+from Kamaelia.Visualisation.PhysicsGraph import BaseParticle
+
+import pygame
 
 
 def abbreviate(string):

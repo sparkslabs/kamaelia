@@ -21,8 +21,6 @@
 # -------------------------------------------------------------------------
 #
 # Bunch of Exceptions Specific to Kamaelia.
-# This module should be usable using the idiom
-#     from KamaeliaExceptions import *
 #
 # since it takes care to only have publicly visible values that should be.
 # (cf import foo as _foo)

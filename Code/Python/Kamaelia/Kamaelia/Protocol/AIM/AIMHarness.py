@@ -80,7 +80,8 @@ This component does not terminate.
 
 """
 
-from Kamaelia.Protocol.AIM.OSCARClient import *
+from Kamaelia.Protocol.AIM.OSCARClient import OSCARProtocol, OSCARClient, SNACExchanger
+
 import Kamaelia.Protocol.AIM.LoginHandler
 from Kamaelia.Internet.TCPClient import TCPClient
 from Axon.Component import component

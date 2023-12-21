@@ -22,7 +22,7 @@
 
 import Axon
 import pygame
-from OpenGL.GL import *
+from OpenGL.GL import glBegin, glEnd, GL_QUADS, glColor, glVertex, glColor, glTranslate
 from Kamaelia.UI.OpenGL.OpenGLComponent import OpenGLComponent
 from Kamaelia.UI.OpenGL.Vector import Vector
 

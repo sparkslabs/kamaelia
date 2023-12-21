@@ -456,7 +456,6 @@ class DisplayConfig(Axon.Component.component):
 
 
 if __name__ == "__main__":
-   from pygame.locals import *
    from ToolBox import ToolBox
    from Axon.experimental.Process import ProcessGraphline
    from Kamaelia.Chassis.Graphline import Graphline

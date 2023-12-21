@@ -83,7 +83,7 @@ is no specific 'quit' event handler.
 # XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 import pygame
-from pygame.locals import *
+
 import Axon as _Axon
 from Kamaelia.UI.GraphicDisplay import PygameDisplay
 

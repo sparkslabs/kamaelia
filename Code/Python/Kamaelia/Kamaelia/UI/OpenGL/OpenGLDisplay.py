@@ -286,9 +286,14 @@ service itself does not terminate.
 
 import pygame
 import Axon
-from OpenGL.GL import *
-from OpenGL.GLU import *
-from math import *
+import OpenGL
+import OpenGL.GLU
+import OpenGL.GL
+from OpenGL.GL import glBegin, glBindTexture, glCallList, glClear, glClearColor, glClearDepth, glColor3f, glDeleteLists, glDepthFunc, glDisable, glEnable, glEnd, glFlush, glFogf, glGenTextures, glGetIntegerv, glHint, glInitNames, glIsTexture, glLoadIdentity, glLoadMatrixf, glLoadName, glMatrixMode, glPopMatrix, glPushMatrix, glPushName, glRenderMode, glSelectBuffer, glTexCoord2f, glTexEnvf, glTexImage2D, glTexParameterf, glTexParameterf, glVertex3f
+from OpenGL.GL import GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_DEPTH_TEST, GL_FOG, GL_FOG_HINT, GL_FOG_MODE, GL_FOG_COLOR, GL_FOG_DENSITY, GL_FOG_END, GL_FOG_START, GL_LEQUAL, GL_LINEAR, GL_MODELVIEW, GL_NICEST, GL_PERSPECTIVE_CORRECTION_HINT, GL_PROJECTION, GL_QUADS, GL_RENDER, GL_REPLACE, GL_RGBA, GL_SELECT, GL_TEXTURE_2D, GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_TEXTURE_MAG_FILTER, GL_UNSIGNED_BYTE, GL_VIEWPORT
+
+from OpenGL.GLU import gluLookAt, gluPerspective, gluPickMatrix
+import math
 
 from Kamaelia.UI.Pygame.Display import PygameDisplay, _PygameEventSource
 
@@ -437,8 +442,8 @@ class OpenGLDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         self.farPlaneDist = argd.get("far", 100.0)
         self.perspectiveAngle = argd.get("perspective", 45.0)
         self.aspectRatio = float(self.width)/float(self.height)
-        global pi
-        self.farPlaneHeight = self.farPlaneDist*2.0/tan(pi/2.0-self.perspectiveAngle*pi/360.0)
+
+        self.farPlaneHeight = self.farPlaneDist*2.0/math.tan(math.pi/2.0-self.perspectiveAngle*math.pi/360.0)
         self.farPlaneWidth = self.farPlaneHeight*self.aspectRatio
         self.farPlaneScaling = self.farPlaneWidth/self.width
         
@@ -466,14 +471,14 @@ class OpenGLDisplay(Axon.AdaptiveCommsComponent.AdaptiveCommsComponent):
         fog_dists = argd.get("fog", None)
         if fog_dists is not None:
             glEnable(GL_FOG)
-            glFog(GL_FOG_MODE, GL_LINEAR)
+            glFogf(GL_FOG_MODE, GL_LINEAR)
             glHint(GL_FOG_HINT, GL_NICEST)
-            glFog(GL_FOG_START, fog_dists[0])
-            glFog(GL_FOG_END, fog_dists[1])
-            glFog(GL_FOG_DENSITY, argd.get("fog_density", 1.0) )
+            glFogf(GL_FOG_START, fog_dists[0])
+            glFogf(GL_FOG_END, fog_dists[1])
+            glFogf(GL_FOG_DENSITY, argd.get("fog_density", 1.0) )
             fog_colour = argd.get("fog_colour", (255,255,255))
             fog_colour = [float(x)/255.0 for x in fog_colour]
-            glFog(GL_FOG_COLOR, fog_colour)
+            glFogf(GL_FOG_COLOR, fog_colour)
         
         # set projection matrix
         glMatrixMode(GL_PROJECTION)                 

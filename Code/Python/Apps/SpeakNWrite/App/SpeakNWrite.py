@@ -25,7 +25,7 @@ from Axon.STM import Store
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Chassis.Graphline import Graphline
 
-from Kamaelia.Util.Backplane import *
+from Kamaelia.Util.Backplane import Backplane, PublishTo, SubscribeTo
 from Kamaelia.Util.Console import ConsoleEchoer
 
 from Kamaelia.UI.Pygame.Display import PygameDisplay

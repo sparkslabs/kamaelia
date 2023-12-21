@@ -23,7 +23,6 @@
 from Kamaelia.Visualisation.PhysicsGraph import BaseParticle
 
 import pygame
-from pygame.locals import *
 
 def abbreviate(string):
     """Abbreviates strings to capitals, word starts and numerics and underscores"""

@@ -184,9 +184,8 @@ OpenGLDisplay service and does not free any requested resources.
 
 
 import pygame
-from pygame.locals import *
-from OpenGL.GL import *
-from OpenGL.GLU import *
+
+from OpenGL.GL import glBegin, glColor, glEnd, glEndList, glGenLists, glNewList, glVertex, GL_COMPILE, GL_POINTS, GL_QUADS
 
 import Axon
 from .OpenGLDisplay import OpenGLDisplay

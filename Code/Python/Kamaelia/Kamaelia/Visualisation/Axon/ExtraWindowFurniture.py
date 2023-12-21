@@ -63,8 +63,6 @@ See TopologyViewer for more details.
 """
 
 import pygame
-from pygame.locals import *
-
 
 class ExtraWindowFurniture(object):
     """\

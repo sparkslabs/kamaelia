@@ -35,9 +35,6 @@ required.
 
 import Axon
 import pygame
-from pygame.locals import *
-from OpenGL.GL import *
-from OpenGL.GLU import *
 
 from Kamaelia.UI.OpenGL.Vector import Vector
 from Kamaelia.UI.OpenGL.Button import Button
@@ -50,7 +47,7 @@ from Kamaelia.UI.OpenGL.PygameWrapper import PygameWrapper
 from Kamaelia.UI.OpenGL.Movement import WheelMover, PathMover, LinearPath
 
 from Kamaelia.UI.Pygame.Ticker import Ticker
-from Kamaelia.Protocol.Torrent.TorrentIPC import *
+from Kamaelia.Protocol.Torrent.TorrentIPC import TIPCMakeTorrent, TIPCServicePassOn, TIPCServiceAdd, TIPCServiceRemove, TIPCNewTorrentCreated, TIPCTorrentAlreadyDownloading, TIPCTorrentStartFail, TIPCTorrentStatusUpdate, TIPCCreateNewTorrent, TIPCCloseTorrent
 
 from BitTorrent.bencode import bdecode
 

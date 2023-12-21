@@ -92,14 +92,14 @@ the front plane is drawn.
 
 import Axon
 import pygame
-from pygame.locals import *
-from OpenGL.GL import *
-from OpenGL.GLU import *
+
+from OpenGL.GL import glBegin, glBindTexture, glDisable, glEnd, glEnable, glColor4f, glTexCoord2f, glTexEnvf, glVertex3f
+from OpenGL.GL import GL_QUADS, GL_TEXTURE_2D, GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE
 
 from .Vector import Vector
 from .Transform import Transform
-from .OpenGLComponent import *
-from .Intersect import *
+from .OpenGLComponent import OpenGLComponent
+from .Intersect import Intersect
 
 import copy
 
@@ -291,7 +291,7 @@ if __name__=='__main__':
     from Kamaelia.UI.Pygame.Ticker import Ticker
     import sys;
     sys.path.append("../Pygame/")
-    from MagnaDoodle import *
+    from MagnaDoodle import MagnaDoodle
     
     # override pygame display service
     ogl_display = OpenGLDisplay.getDisplayService()

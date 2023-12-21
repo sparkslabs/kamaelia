@@ -19,17 +19,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # -------------------------------------------------------------------------
-
-import Kamaelia.Visualisation.PhysicsGraph
-from Kamaelia.Visualisation.PhysicsGraph.TopologyViewer import TopologyViewer as _TopologyViewer
-
-_TopologyViewerServer = Kamaelia.Visualisation.PhysicsGraph.TopologyViewerServer
-
-from .PComponent import PComponent
-from .PPostbox import PPostbox
-from .AxonLaws import AxonLaws
-from .ExtraWindowFurniture import ExtraWindowFurniture
-
 """\
 ----------------------------------
 Axon/Kamaelia Visualisation Server
@@ -68,6 +57,15 @@ The laws used are Kamaelia.Visualisation.Axon.AxonLaws.
 The extra window furniture is supplied by 
 Kamaelia.Visualisation.Axon.ExtraWindowFurniture.
 """
+
+import Kamaelia.Visualisation.PhysicsGraph
+from Kamaelia.Visualisation.PhysicsGraph.TopologyViewer import TopologyViewer as _TopologyViewer
+from Kamaelia.Visualisation.PhysicsGraph.TopologyViewerServer import TopologyViewerServer as _TopologyViewerServer
+
+from .PComponent import PComponent
+from .PPostbox import PPostbox
+from .AxonLaws import AxonLaws
+from .ExtraWindowFurniture import ExtraWindowFurniture
 
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Visualisation.PhysicsGraph.chunks_to_lines import chunks_to_lines

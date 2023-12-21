@@ -47,7 +47,7 @@ the running system)
 
 Example code:
 
-from Axon.Component import *
+from Axon.Component import component, newComponent, scheduler
 
 class Producer(component):
    Inboxes=[]

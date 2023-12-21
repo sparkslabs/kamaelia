@@ -78,13 +78,10 @@ point of view)::
 
 
 import pygame
-from pygame.locals import *
-from OpenGL.GL import *
-from OpenGL.GLU import *
 
 import Axon
-from .Intersect import *
-from .Interactor import *
+from .Intersect import Intersect
+from .Interactor import Interactor
 
 class LiftTranslationInteractor(Interactor):
     """\
@@ -159,7 +156,7 @@ class LiftTranslationInteractor(Interactor):
 __kamaelia_components__ = ( LiftTranslationInteractor, )
 
 if __name__=='__main__':
-    from SimpleCube import *
+    from SimpleCube import SimpleCube
 
     o1 = SimpleCube(position=(6, 0,-30), size=(1,1,1), name="center").activate()
     i1 = LiftTranslationInteractor(target=o1).activate()

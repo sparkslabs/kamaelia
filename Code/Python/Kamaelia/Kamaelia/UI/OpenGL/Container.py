@@ -94,9 +94,6 @@ OpenGLDisplay service and does not free any requested resources.
 
 import Axon
 import pygame
-from pygame.locals import *
-from OpenGL.GL import *
-from OpenGL.GLU import *
 
 from .Vector import Vector
 from .Transform import Transform

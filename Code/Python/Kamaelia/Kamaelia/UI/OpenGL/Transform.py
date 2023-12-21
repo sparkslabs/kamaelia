@@ -30,7 +30,7 @@ to use/alter it. Transform uses Vector objects for most of its methods
 arguments.
 """
 
-from math import *
+import math
 from .Vector import Vector
 
 # =============================
@@ -68,32 +68,32 @@ class Transform:
         Arguments:
         - xyzangle -- A Vector containing the amount of rotation around each axis.
         """
-        global pi
+
         t = Transform()
         # convert degrees to radiant
-        xyzangle *= pi/180.0
+        xyzangle *= math.pi/180.0
         #rotation around x axis
         if xyzangle.x != 0:
-            t.m[5] = cos(xyzangle.x)
-            t.m[6] = sin(xyzangle.x)
-            t.m[9] = -sin(xyzangle.x)
-            t.m[10] = cos(xyzangle.x)
+            t.m[5] = math.cos(xyzangle.x)
+            t.m[6] = math.sin(xyzangle.x)
+            t.m[9] = -math.sin(xyzangle.x)
+            t.m[10] = math.cos(xyzangle.x)
             self.m = (self*t).m
         #rotation around y axis
         t.reset()
         if xyzangle.y != 0:
-            t.m[0] = cos(xyzangle.y)
-            t.m[2] = -sin(xyzangle.y)
-            t.m[8] = sin(xyzangle.y)
-            t.m[10] = cos(xyzangle.y)
+            t.m[0] = math.cos(xyzangle.y)
+            t.m[2] = -math.sin(xyzangle.y)
+            t.m[8] = math.sin(xyzangle.y)
+            t.m[10] = math.cos(xyzangle.y)
             self.m = (self*t).m
         #rotation around z axis
         t.reset()
         if xyzangle.z != 0:
-            t.m[0] = cos(xyzangle.z)
-            t.m[1] = sin(xyzangle.z)
-            t.m[4] = -sin(xyzangle.z)
-            t.m[5] = cos(xyzangle.z)
+            t.m[0] = math.cos(xyzangle.z)
+            t.m[1] = math.sin(xyzangle.z)
+            t.m[4] = -math.sin(xyzangle.z)
+            t.m[5] = math.cos(xyzangle.z)
             self.m = (self*t).m
     
     def applyTranslation(self, vector):

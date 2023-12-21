@@ -23,27 +23,8 @@
 # Simple topography viewer server - takes textual commands from a single socket
 # and renders the appropriate graph
 
-import pygame
-from pygame.locals import *
-
-import random, time, re, sys
-
-from Axon.Scheduler import scheduler as _scheduler
-import Axon as _Axon
-
-# import Kamaelia.Physics
+import re
 from Kamaelia.Support.Particles import Particle as BaseParticle
-from Kamaelia.UI.MH import PyGameApp, DragHandler
-
-component = _Axon.Component.component
-
-# from GridRenderer import GridRenderer
-# from RenderingParticle import RenderingParticle
-# from ParticleDragger import ParticleDragger
-# from TopologyViewer import TopologyViewer
-# from lines_to_tokenlists import lines_to_tokenlists
-# from chunks_to_lines import chunks_to_lines
-from .TopologyViewerServer import TopologyViewerServer
 
 def parseArgs(argv, extraShortArgs="", extraLongArgs=[]):
     import getopt
@@ -83,6 +64,10 @@ def parseArgs(argv, extraShortArgs="", extraLongArgs=[]):
                     
 if __name__=="__main__":
     import sys
+    import Axon
+    from Axon.Scheduler import scheduler as _scheduler
+    from .TopologyViewerServer import TopologyViewerServer
+
     print ("X1", sys.argv)
     print ("X2", sys.argv[1:])
     print ("X3", parseArgs(sys.argv[1:]))

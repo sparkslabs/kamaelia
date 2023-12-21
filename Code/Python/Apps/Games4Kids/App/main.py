@@ -83,7 +83,7 @@ class Distancer(Axon.Component.component):
             yield 1
                             
 
-from Kamaelia.Util.Backplane import *
+from Kamaelia.Util.Backplane import Backplane, PublishTo, SubscribeTo
 Backplane("PLAYERS").activate()
 
 Pipeline(

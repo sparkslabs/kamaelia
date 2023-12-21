@@ -19,7 +19,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # -------------------------------------------------------------------------
-
 """\
 =======================
 Simple Button component
@@ -60,8 +59,7 @@ is shrunk by a small amount until the button is released.
 
 import Axon
 import pygame
-from pygame.locals import *
-from OpenGL.GL import *
+from OpenGL.GL import GL_QUADS, glBegin, glColor4f, glVertex3f, glEnd
 
 from .Vector import Vector
 from .OpenGLComponent import OpenGLComponent

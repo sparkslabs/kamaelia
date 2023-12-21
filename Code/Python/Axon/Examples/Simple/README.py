@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from Axon.Component import *
+from Axon.Component import component, newComponent, scheduler
 
 class Producer(component):
    Inboxes=[]

@@ -27,7 +27,7 @@ from Kamaelia.Internet.TCPServer import TCPServer
 from Kamaelia.Internet.TimeOutCSA import NoActivityTimeout
 from Kamaelia.Internet.ConnectedSocketAdapter import ConnectedSocketAdapter
 
-from Kamaelia.Apps.Grey.Support import *
+from Kamaelia.Apps.Grey.Support import SlurpFile, openConfig, parseConfigFile
 
 from Kamaelia.Apps.Grey.MailHandler import MailHandler
 from Kamaelia.Apps.Grey.ConcreteMailHandler import ConcreteMailHandler

@@ -164,7 +164,7 @@ class InterpreterTransformer(Axon.ThreadedComponent.threadedcomponent):
                             env.update(globals())
                             env.update(locals())
                             env["_"] = pre
-                            exec(__co__, env)
+                            exec( __co__ , env)
                             if env["_"]:
                                 self.send( env["_"] )
                                 env["_"] = None
@@ -198,7 +198,7 @@ Some basic examples on how to use this interpreter.
 
 #FILE: Console Embeddable
     if 0:
-        from Kamaelia.Util.Console import *
+        from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
         Pipeline(
             ConsoleReader(),
             InterpreterTransformer(),

@@ -19,7 +19,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from Kamaelia.Util.Console import *
+from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.File.Reading import SimpleReader
 from Kamaelia.Util.RateFilter import MessageRateLimit

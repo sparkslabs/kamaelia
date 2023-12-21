@@ -73,9 +73,7 @@ from Kamaelia.UI.Pygame.Display import PygameDisplay
 from Kamaelia.UI.Pygame.KeyEvent import KeyEvent
 from Axon.Component import component
 from Axon.Ipc import shutdownMicroprocess, producerFinished, WaitComplete
-from pygame.locals import *
 
-    
 class TextDisplayer(component): # FIXME - can this be used to replace Ticker ?
     """\
     TextDisplayer(...) -> new TextDisplayer Pygame component.
@@ -296,9 +294,9 @@ class Textbox(TextDisplayer):
                     if char == '\n' or char == '\r':
                         self.send(string_buffer)
                         string_buffer = ''
-                    elif event.key == K_BACKSPACE:
+                    elif event.key == pygame.K_BACKSPACE:
                         string_buffer = string_buffer[:-1]
-                    elif event.key == K_ESCAPE:
+                    elif event.key == pygame.K_ESCAPE:
                         self.done = True
                     else:
                         string_buffer += char

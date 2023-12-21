@@ -20,7 +20,7 @@
 # limitations under the License.
 # -------------------------------------------------------------------------
 
-from Kamaelia.UI.OpenGL.SimpleCube import *
+from Kamaelia.UI.OpenGL.SimpleCube import SimpleCube
 from Kamaelia.UI.OpenGL.MatchedTranslationInteractor import MatchedTranslationInteractor
 
 o1 = SimpleCube(position=(6, 0,-30), size=(1,1,1), name="center").activate()

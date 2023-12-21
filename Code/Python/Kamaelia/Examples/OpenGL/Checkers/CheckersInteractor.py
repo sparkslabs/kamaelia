@@ -27,12 +27,9 @@ Checkers Interactor
 
 
 import pygame
-from pygame.locals import *
-from OpenGL.GL import *
-from OpenGL.GLU import *
 
 import Axon
-from Kamaelia.UI.OpenGL.Intersect import *
+from Kamaelia.UI.OpenGL.Intersect import Intersect
 from Kamaelia.UI.OpenGL.Interactor import Interactor
 from Kamaelia.UI.OpenGL.Vector import Vector
 

@@ -20,7 +20,7 @@
 # limitations under the License.
 # -------------------------------------------------------------------------
 import Axon
-from Kamaelia.UI.OpenGL.SimpleCube import *
+from Kamaelia.UI.OpenGL.SimpleCube import SimpleCube
 from Kamaelia.UI.OpenGL.SimpleRotationInteractor import SimpleRotationInteractor
 
 o1 = SimpleCube(position=(6, 0,-30), size=(1,1,1), name="center").activate()

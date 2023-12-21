@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import *
+#FIXME: --removed from recent django from django.conf.urls.defaults im port *
 from piston.resource import Resource
 from bookmarks.api.handlers import ProgrammesHandler, SummaryHandler, TimestampHandler, TweetHandler
 

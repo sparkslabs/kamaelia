@@ -29,8 +29,7 @@ A class for 3 dimensional vectors providing several methods for common
 vector operations.
 """
 
-from math import *
-
+import math
 
 # =====================
 # Vector: used for handling 3D Vectors
@@ -73,7 +72,7 @@ class Vector:
     
     def length(self):
         """ Returns the length of the vector. """
-        return sqrt(self.x*self.x + self.y*self.y + self.z*self.z)
+        return math.sqrt(self.x*self.x + self.y*self.y + self.z*self.z)
     
     def dot(self, other):
         """ Returns the dot product between self and other. """
@@ -85,7 +84,7 @@ class Vector:
          
     def norm(self):
         """ Returns a normalised version of the vector. """
-        l = sqrt(self.x*self.x + self.y*self.y + self.z*self.z)
+        l = math.sqrt(self.x*self.x + self.y*self.y + self.z*self.z)
         return Vector(self.x / l, self.y / l, self.z / l)
         
     def __str__(self):

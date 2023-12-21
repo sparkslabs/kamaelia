@@ -26,7 +26,6 @@ Intersect: provides a set of static 3D intersection functions
 =============================================================
 """
 
-from math import *
 
 class Intersect:
     """ A collection of static intersection functions. """
