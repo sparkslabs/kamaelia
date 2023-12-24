@@ -109,7 +109,7 @@ class SimpleRotationInteractor(Interactor):
 __kamaelia_components__ = (SimpleRotationInteractor,)
 
 if __name__=='__main__':
-    from SimpleCube import SimpleCube, SimpleRotationInteractor
+    from SimpleCube import SimpleCube
 
     o1 = SimpleCube(position=(6, 0,-30), size=(1,1,1), name="center").activate()
     i1 = SimpleRotationInteractor(target=o1).activate()

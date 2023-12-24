@@ -108,7 +108,7 @@ class SimpleTranslationInteractor(Interactor):
 __kamaelia_components__ = (SimpleTranslationInteractor,)
 
 if __name__=='__main__':
-    from SimpleCube import SimpleCube, SimpleTranslationInteractor
+    from SimpleCube import SimpleCube
     
     o1 = SimpleCube(position=(6, 0,-30), size=(1,1,1), name="center").activate()
     i1 = SimpleTranslationInteractor(target=o1).activate()
