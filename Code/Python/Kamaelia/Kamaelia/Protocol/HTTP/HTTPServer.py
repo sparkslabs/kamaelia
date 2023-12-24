@@ -259,7 +259,7 @@ def HTTPServer(createRequestHandler, **argd):
         }
     )
 
-__kamaelia_components__  = ( HTTPShutdownLogicHandling )
+__kamaelia_components__  = ( HTTPShutdownLogicHandling, )
 __kamaelia_prefabs__  = ( HTTPServer, )
 
 if __name__ == '__main__':
