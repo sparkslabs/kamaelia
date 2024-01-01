@@ -108,44 +108,56 @@ def describe_module(modulename, mod_info, module, components, component_names):
 #            heading_three(name)
             #print("*", name)
 
+def usage():
+    p = sys.argv[0]
+    prog = p.split("/")[-1]
+    print("Usage:")
+    print("   %s package-name" % prog)
 
-print("- Kamaelia ---------------------------------------------------------------")
-modules = get_tree("Kamaelia")
-for modulename in modules:
-    #print(modulename)
-    try:
-        module = importlib.import_module(modulename)
-    except NotImplementedError as e:
-        #print("* Module", modulename, "has import error", *e.args)
-        continue
-    components = getattr(module, "__kamaelia_components__", [])
-    component_names = []
-    if components:
+if __name__ == "__main__":
+    
+    import sys
+    if len(sys.argv) != 2:
+        usage()
+        sys.exit(1)
+
+    docpackage = sys.argv[1]
+
+    print("- %s ---------------------------------------------------------------" % docpackage)
+    modules = get_tree(docpackage)
+    for modulename in modules:
         try:
-            [x.__name__ for x in components]
-#            print([x.__name__ for x in components])
-        except TypeError as e:
-            print("TYPE ERROR", e)
-            raise
+            module = importlib.import_module(modulename)
+        except NotImplementedError as e:
+            #print("* Module", modulename, "has import error", *e.args)
+            continue
+        components = getattr(module, "__kamaelia_components__", [])
+        component_names = []
+        if components:
+            try:
+                [x.__name__ for x in components]
+            except TypeError as e:
+                print("TYPE ERROR", e)
+                raise
 
-        component_names = [x.__name__ for x in components]
+            component_names = [x.__name__ for x in components]
 
-    mod_info = modnames.get_module_names(modulename)
+        mod_info = modnames.get_module_names(modulename)
 
-    module_names = mod_info["module_names_no_private"]
+        module_names = mod_info["module_names_no_private"]
 
-    strict_subset = True
-    for component in component_names:
-        if component not in module_names:
-            print("component %s not in namespace %s", component, modulename)
-            print(module_names)
-            print(module.__file__)
-            strict_subset = False
-            raise ValueError("component %s not in namespace %s", component, modulename)
+        strict_subset = True
+        for component in component_names:
+            if component not in module_names:
+                print("component %s not in namespace %s", component, modulename)
+                print(module_names)
+                print(module.__file__)
+                strict_subset = False
+                raise ValueError("component %s not in namespace %s", component, modulename)
 
-    #print("Defines:", mod_info["module_names_no_private"])
+        #print("Defines:", mod_info["module_names_no_private"])
 
-    doc = module.__doc__
+        doc = module.__doc__
 
-    describe_module(modulename, mod_info, module, components, component_names)
+        describe_module(modulename, mod_info, module, components, component_names)
 
