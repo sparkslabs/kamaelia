@@ -1,0 +1,85 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<p><span style="font-size: 20pt; font-weight: 600;">Downloads</span></p>
+<p>Kamaelia's main download site is the Kamaelia project page on sourceforge:</p>
+<ul>
+<li><a href="http://sourceforge.net/projects/kamaelia" class="uri">http://sourceforge.net/projects/kamaelia</a></li>
+</ul>
+<p><span style="font-weight: 600;">You are highly recommended to look at the</span><a href="/GettingStarted.html"><span style="font-weight: 600;">download, setup and quickstart page</span></a><span style="font-weight: 600;">for instructions on getting started quickly!</span></p>
+<p>Kamaelia is divided into two portions - Axon and Kamaelia. Axon forms the core concurrency toolkit, like a kernal. Kamaelia is a collection a components that use Axon to run (like user apps). You need BOTH in order to run Kamaelia based systems.</p>
+<ul>
+<li>Kamaelia's main release currently stands at 0.5.0, and requires Axon 1.5.1 for full functionality.</li>
+<li>Axon's main release currently stands at 1.5.1</li>
+<li>The preferred way for ensuring you have all the dependencies is to use the <a href="http://sourceforge.net/project/showfiles.php?group_id=122494&amp;package_id=183774&amp;release_id=451251">Kamaelia Mega Bundle</a></li>
+</ul>
+<p>Installation of these packages is the usual dance:</p>
+<ul>
+<li><span style="font-family: Courier;">sudo python setup.py install</span></li>
+</ul>
+<p>The following packages are up to date:</p>
+<ul>
+<li><a href="http://sourceforge.net/project/showfiles.php?group_id=122494&amp;package_id=133714&amp;release_id=451253">Kamaelia-0.5.0</a></li>
+<li><a href="http://sourceforge.net/project/showfiles.php?group_id=122494&amp;package_id=139298&amp;release_id=451254">Axon-1.5.1</a></li>
+<li><a href="http://sourceforge.net/project/showfiles.php?group_id=122494&amp;package_id=183774&amp;release_id=451251">KamaeliaMegaBundle-1.4.0</a></li>
+<li><a href="http://sourceforge.net/project/showfiles.php?group_id=122494&amp;package_id=176999&amp;release_id=387737">python-dvb3-0.0.4</a></li>
+<li><a href="http://sourceforge.net/project/showfiles.php?group_id=122494&amp;package_id=145510&amp;release_id=427115">vorbissimple-0.0.2</a></li>
+<li><a href="http://sourceforge.net/project/showfiles.php?group_id=122494&amp;package_id=163564&amp;release_id=356353">python-dirac-0.0.1</a></li>
+</ul>
+<p>The following packages need updating:<br />
+</p>
+<ul>
+<li><a href="http://sourceforge.net/project/showfiles.php?group_id=122494&amp;package_id=158831&amp;release_id=344740">debian-python-2.4-axon-1.1.1</a></li>
+<li><a href="http://sourceforge.net/project/showfiles.php?group_id=122494&amp;package_id=158832&amp;release_id=344745">debian-python-2.4-kamaelia-0.2.0</a></li>
+<li><a href="http://sourceforge.net/project/showfiles.php?group_id=122494&amp;package_id=183773&amp;release_id=427118">KamaeliaBundle-1.2.0</a></li>
+</ul>
+<p><span style="font-weight: 600;">SVN</span></p>
+<p>Developers are particularly welcome to play with the SVN tree.<br />
+</p>
+<p>This always has more in than the releases! In the following <span style="font-family: Courier;">$root</span> refers to the directory in which you've done a checkout of the main trunk. (kamaelia/trunk)</p>
+<p>The development approach taken is this:</p>
+<p>New ideas are developed in <span style="font-family: Courier;">$root/Sketches.</span> Most new stuff is developed under <span style="font-family: Courier;">$root/Sketches/</span><span style="font-family: Courier; font-style: italic;">DI</span> (Where DI stands for <span style="font-weight: 600;">D</span>eveloper <span style="font-weight: 600;">I</span>nitials.)</p>
+<p>After they have proven useful for some purpose, a position is chosen in the main tree.</p>
+<ul>
+<li>If the sketch extends Axon, the locatiion will be below <span style="font-family: Courier;">$root/Code/Python/Axon/.…</span></li>
+<li>If the sketch is a collection of Kamaelia components it will be below: <span style="font-family: Courier;">$root/Code/Python/Kamaelia/Kamaelia...</span></li>
+<li>If the sketch simply glues together existing components, if it's unlikely to be extended further or is trivial is will go below:<span style="font-family: Courier;">$root/Code/Python/Kamaelia/Examples...</span></li>
+<li>If the sketch is a useful application of some kind related to Kamaelia, it will go in <span style="font-family: Courier;">$root/Code/Python/Kamaelia/Tools.</span></li>
+</ul>
+<p>After using the resulting components in their new location, once we're sure these components are useful and in a good place, they're added into the RELEASE branch.</p>
+<p>New releases of Axon are created by doing the following: (NB, the scripts need updating due to change to SVN)</p>
+<p>New releases of Kamaelia are created by doing the following: (NB, the scripts need updating due to change to SVN)</p>
+<p>Updated: Michael, November 2006 (Needs updating)</p>
+<p><br />
+</p>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>

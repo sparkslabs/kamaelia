@@ -1,0 +1,155 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<h1 id="cookbookpipelinesandgraphlinesdiscuss">Cookbook/PipelinesAndGraphlinesDiscuss</h1>
+<p>I've been wanted to write something like this for ages, so it's cool to see this :-)<br />
+</p>
+<p>I have some concerns about this page, which revolve around this idea from the <a href="../../../Developers/Principles">Kamaelia Principles Page</a>:<br />
+</p>
+<ul>
+<li>Descriptions of things optimised for the 80% of programmers are preferable to those with only the top 20% will understand. If this seems "dumbing down", consider that it is often harder to describe something complex simply, than to describe something simple in a complex fashion.<br />
+</li>
+</ul>
+<p>As a result, in the spirit of improving this page, some hopefully constructive criticism:<br />
+</p>
+<p>This page is really 2 pages (perhaps even part of a sequence/progression like MiniAxon!) - one about pipelines and one about graphlines - it's trying to do too much. Creating 2 pages base on this (and linked from this ala the MiniAxon tutorial) would be really cool :-)</p>
+<p>Repace PureTransformer with something real or simply drop it ( <em>lambda</em> in a tutorial? :-)</p>
+<ul>
+<li>Replaced with multicast example<br />
+</li>
+</ul>
+<p>If all inboxes &amp; outboxes are linked, in <em>initial</em> diagrams on the page, perhaps use the sort of diagram the Visual Pipe Builder used to show (ie single line :-) )<br />
+</p>
+<p>Consider building the diagrams with <strong>Compose</strong> and snapshotting those instead :-)</p>
+<ul>
+<li>Alternatively - if a box isn't linked, do you need to show it on the diagram?</li>
+<li>If all the boxes are linked in the same way, can't you just show one arrow?</li>
+</ul>
+<p>I prefer the approach taken with the Graphlines example over that of the pipeline - ie taking a real example which is in the Examples directory and using that to talk about. More specifically, the Graphline example is an example that has general usefulness, whereas I'm unconvinced of the <em>general</em> usefulness of the Pipeline example. (Sure <strong>I'd</strong> find it useful, maybe, but... :-)</p>
+<p>Final point: don't start off saying "these are chassis". It's very useful to finish on that point, but starting on it confuses things. Consider:</p>
+<ul>
+<li>This is how you could link together some components</li>
+<li>But this is how you can do it with a Pipeline</li>
+</ul>
+<p>And:</p>
+<ul>
+<li>This is how you can link together lots of components</li>
+<li>But isn't this Graphline easier?<br />
+</li>
+</ul>
+<p>Followed by:</p>
+<p>And hey, actually, this is a general principle - you can have components you give components to and they get wired up</p>
+<p>Hey that's just like a chassis with a car isn't that cool?</p>
+<p>But hey look, you do that with SimpleServer - a tutorial for another time</p>
+<p>And look, that's what the Carousel is - and that's another tutorial for another time</p>
+<ul>
+<li>I still find Carousel breaks my head...</li>
+</ul>
+<p>Let me see if that Kathy Sierra page is around still... <a href="http://headrush.typepad.com/creating_passionate_users/2005/01/keeping_users_e.html">It is it's here</a> - the part I'm thinking of is where she starts talking about superpowers. (The miniaxon tutorial kinda does this without thinking... and then stops...)</p>
+<p>Oh, and consider also:</p>
+<ul>
+<li>Fun descriptions, ideas and code tend to win arguments :-)</li>
+<li>;-)<br />
+</li>
+</ul>
+<p>All that said, <strong><em>something</em></strong> is <em>(almost :)</em> always more useful than nothing, so many thanks who-ever wrote the first draft - rewriting (docs) almost always easier than writing :-) (The (hopefully constructive) criticism above is <strong>certainly</strong> easier to write than the first draft)<br />
+<br />
+Oh, and as I say above, I've been wanted to write something like this for ages, but it's cool to see this :-)<br />
+<br />
+-- Michael Sparks, 17 December 2006<br />
+</p>
+<hr />
+<p>Thanks for the feedback.<br />
+<br />
+</p>
+<ul>
+<li>Pages separated as suggested.</li>
+<li>"These are chassis" wording dropped for the moment</li>
+<li>Pipeline example switched for a 'real' one (multicast sender)<br />
+</li>
+</ul>
+<p>Things I've not done (yet):<br />
+</p>
+<ul>
+<li>My concern with a compose/visualiser style diagram would be that it would not show the encapsulation. I'm thinking that it may be as helpful to show what the graphline or pipeline isn't doing as well as what it is - if pipeline/graphline is wiring up some boxes but not others, then perhaps its important to show that?</li>
+<li>I'm thinking of perhaps doing a simpler initial diagram for both pipeline and graphline to give a rough idea of the flow, then following it with the existing diagrams to be more explicit.<br />
+</li>
+<li>Carousel page - in the pipeline (sic) ... though its a concern if you find it hard to get your head round them. If I'm the only person really able to make use of them, then perhaps they need a rethink.<br />
+</li>
+</ul>
+<p><br />
+I'll do some more editing tomorrow :)<br />
+<br />
+-- Matt Hammond, 17 Dec 2006<br />
+<br />
+The comment about a page for Carousel was a bit of a side joke - I don't have a problem with balancing power vs complexity - it's just that the latter is a lot harder to explain. I think it really comes under the concept of a higher order component (as chassises/ chasses? (sp?)) are, and hence that's probably why it's more awkward. (I really think you'd need to have some sort of animation to make it clear to be honest!)<br />
+<br />
+Regarding the encapsulation, true - that can be handled by some light editting after perhaps. If not, I can always put a <a href="/Home">santa hat on it too</a> :).<br />
+Something worth bearing in mind - perhaps:<br />
+</p>
+<ul>
+<li>Initially pipelines are a nice shortcut for, well, building pipelines.</li>
+<li>Initially graphlines are a nice shortcut for the other useful shapes.</li>
+<li>It's only later that it becomes clear that pipelines are useful abstractions in and of themselves (cf how you use them like crazy in the Whiteboard)</li>
+<li>Similarly for graphlines.</li>
+</ul>
+<p>Each of these aspects are all independent topics - at least in my mind. Each step gives you an extra level of power. For example, consider the following plan for developing Compose (which I accidentally wiped a while back):<br />
+</p>
+<ul>
+<li>Introspect a system</li>
+<li>Create a pipeline</li>
+<li>Create a graphline</li>
+<li>Be able to edit set up code before a pipeline/graphline</li>
+<li>Be able to take the setup code &amp; pipeline/graphline body and add that as a component to the repository.</li>
+<li>Be able to edit the body of the component instead of use a pipeline/graphline &amp; insert that into the repository.</li>
+</ul>
+<p>By their very nature, a description of Pipeline/Graphline <strong><em>could</em></strong> follow a similar path (doesn't have to), but it does allude to the "just a container" vs "not just a container" nature.<br />
+<br />
+As for the final comment on piplelines, bear in mind that just because they're (at present) only really <strong><em>used</em></strong> by you (as far as I can tell), that doesn't mean that they need a rethink :). (I can use it BTW, it's just that I often find a different method instead, at present).<br />
+<br />
+Also, there's no rush :)<br />
+<br />
+-- Michael Sparks, 17 December 2006<br />
+<br />
+</p>
+<hr />
+<p>I've stuck with the current diagram style for the moment, but added extra, simplified, diagrams hopefully better demonstrate the pipeline concept.<br />
+<br />
+I've also fleshed out the explanations a little starting more from the perspective of simply wanting to chain the components together. The greater detail level around using a pipeline as a container, and the detail of how the wiring is done as been separated a little by grouping it under more distinct headings - hopefully giving a natural break point for those who aren't interested in reading that far.<br />
+<br />
+Your "final comment" was wrt. Carousels? :-)<br />
+<br />
+-- Matt Hammond, 18 December 2006<br />
+<br />
+</p>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>

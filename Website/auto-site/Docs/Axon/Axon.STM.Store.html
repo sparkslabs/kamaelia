@@ -1,0 +1,71 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<section>
+<h2 id="axon.stm.store"><a href="/Docs/Axon/Axon.html" class="reference">Axon</a>.<a href="/Docs/Axon/Axon.STM.html" class="reference">STM</a>.<a href="/Docs/Axon/Axon.STM.Store.html" class="reference">Store</a></h2>
+<p>For examples and more explanations, see the <a href="/Docs/Axon/Axon.STM.html" class="reference">module level docs.</a></p>
+<hr />
+<h2 id="symbol-Store">class Store(object)</h2>
+<section>
+<p>Store() -&gt; new Store object</p>
+<p>A thread-safe versioning store for key-value pairs</p>
+<p>You instantiate this as per the documentation for this module</p>
+</section>
+<h3 id="methods-defined-here">Methods defined here</h3>
+<h4 id="can_updateself-key-value"><span id="symbol-Store.__can_update">__can_update(self, key, value)</span></h4>
+<p>Returns true if a value can be safely updated. Potentially not thread-safe</p>
+<h4 id="do_updateself-key-value"><span id="symbol-Store.__do_update">__do_update(self, key, value)</span></h4>
+<p>Update a key-value pair and increment the version. Not thread-safe</p>
+<h4 id="getself-key"><span id="symbol-Store.__get">__get(self, key)</span></h4>
+<p>Retreive a value. Returns a clone of the Value. Not thread-safe.</p>
+<h4 id="init__self"><span id="symbol-Store.__init__">__init__(self)</span></h4>
+<h4 id="makeself-key"><span id="symbol-Store.__make">__make(self, key)</span></h4>
+<p>Create a new key-value pair. Not thread-safe</p>
+<h4 id="dumpself"><span id="symbol-Store.dump">dump(self)</span></h4>
+<h4 id="setself-key-value"><span id="symbol-Store.set">set(self, key, value)</span></h4>
+<p>Tries to update a value in the store. If the store is already in use a BusyRetry error is raised. If the value has been updated by another thread a ConcurrentUpdate error is raised</p>
+<h4 id="set_valuesself-d"><span id="symbol-Store.set_values">set_values(self, D)</span></h4>
+<p>Tries to update a selection of values in the store. If the store is already in use a BusyRetry error is raised. If one of the values has been updated by another thread a ConcurrentUpdate error is raised.</p>
+<h4 id="usevarself-key-islocked"><span id="symbol-Store.usevar">usevar(self, key[, islocked])</span></h4>
+<p>Tries to get an item from the store. Returns the requested Value object. If the store is already in use a BusyRetry error is raised.</p>
+<h4 id="usingself-keys"><span id="symbol-Store.using">using(self, *keys)</span></h4>
+<p>Tries to get a selection of items from the store. Returns a Collection dictionary containing the requested values. If the store is already in use a BusyRetry error is raised.</p>
+<section>
+
+</section>
+</section>
+<h1 id="feedback">Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer? Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback <a href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701" class="reference">here</a> in reply to the documentation thread in the Kamaelia blog.</p>
+<p><em>-- Automatic documentation generator, 09 Dec 2009 at 04:00:25 UTC/GMT</em></p>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>

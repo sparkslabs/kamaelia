@@ -1,0 +1,188 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<h1 id="cookbook-httpclient">Cookbook: HTTPClient</h1>
+<p>The web client support in Kamaelia currently comes in two forms:</p>
+<ul>
+<li>A single shot web client</li>
+<li>A reusable web client</li>
+</ul>
+<p>As well as basic examples for these two, this page also shows:<br />
+</p>
+<ul>
+<li>How to build a basic RSS client (well, actually any feed <a href="http://feedparser.org/">the universal feedparser</a> will parse, which is a lot more than just RSS)</li>
+</ul>
+<p><br />
+</p>
+<h2 id="the-single-shot-web-client">The Single Shot Web Client</h2>
+<blockquote>
+<pre><code>from Kamaelia.Chassis.Pipeline import Pipeline
+from Kamaelia.Protocol.HTTP.HTTPClient import *
+from Kamaelia.Util.Console import *
+
+Pipeline(
+    SingleShotHTTPClient(&quot;http://kamaelia.sourceforge.net/Home&quot;),
+    ConsoleEchoer(),
+).run()</code></pre>
+</blockquote>
+<p>As you can see, this component takes a single argument, goes off, fetches it, and spits it out of it's main outbox "outbox". If we run this, we get the following:<br />
+</p>
+<blockquote>
+<pre><code>~&gt; ./test.py</code></pre>
+</blockquote>
+<p>As you can see this is not as simple an object as you might have expected. Rather than just being passed the data, you are passed an object. You're not really expected to use this, but it is useful to know about.<br />
+</p>
+<h2 id="the-reusable-web-client">The Reusable Web Client</h2>
+<div class="boxright">
+<p><strong>NOTE:</strong> The URLs passed over to the SimpleHTTPClient <strong>MUST NOT</strong> include a newline, or else you will be left wondering why your code doesn't work. This is why this example ensures that the ConsoleReader strips the carriage return from the end of line!</p>
+</div>
+<p><br />
+</p>
+<blockquote>
+<pre><code>from Kamaelia.Chassis.Pipeline import Pipeline
+from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
+from Kamaelia.Protocol.HTTP.HTTPClient import SimpleHTTPClient
+
+Pipeline(
+    ConsoleReader(eol=&quot;&quot;),
+    SimpleHTTPClient(),
+    ConsoleEchoer(),
+).run()</code></pre>
+</blockquote>
+<p><br />
+As you can see, this time we have a console reader - where we're expected to type URLs. These URLs are passed to the SimpleHTTPClient which goes off, grabs the URLs and dumps them out of it's main outbox "outbox". If we runs this, we get the following:<br />
+</p>
+<blockquote>
+<pre><code>~&gt; ./PipedHTTP.py
+&gt;&gt;&gt; http://kamaelia.sourceforge.net/Home
+&gt;&gt;&gt; 
+.bodytext {
+    font-size: 10pt;
+...snip...
+
+&gt;&gt;&gt;</code></pre>
+</blockquote>
+<p>As you can see, this version of the system simple sends the body of the HTTP response to its main outbox "outbox". If you want more information (such as response headers etc), you have to use these components differently. However as basic examples hopefully these are sufficient :-)<br />
+<br />
+</p>
+<h2 id="feed-fetching-parsing-printing-displaying">Feed Fetching, Parsing, Printing, Displaying</h2>
+<div class="boxright">
+<p>Note: This example can be simplified - see <a href="/Cookbook/PureTransformer">Cookbook PureTransformer</a></p>
+</div>
+<p>This is a more substantial, but relatively basic example.<br />
+</p>
+<blockquote>
+<pre><code>import feedparser
+import pprint
+import Axon
+from Kamaelia.Chassis.Pipeline import Pipeline
+from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
+from Kamaelia.Protocol.HTTP.HTTPClient import SimpleHTTPClient
+
+class Feedparser(Axon.Component.component):
+    def main(self):
+        while 1:
+            while self.dataReady(&quot;inbox&quot;):
+                data = self.recv(&quot;inbox&quot;)
+                parseddata = feedparser.parse(data)
+                self.send(parseddata, &quot;outbox&quot;)
+
+            if not self.anyReady():
+                self.pause()
+            yield 1
+
+class PrettyPrinter(Axon.Component.component):
+    def main(self):
+        while 1:
+            while self.dataReady(&quot;inbox&quot;):
+                data = self.recv(&quot;inbox&quot;)
+                prettified = pprint.pformat(data)
+                self.send(prettified, &quot;outbox&quot;)
+
+            if not self.anyReady():
+                self.pause()
+            yield 1
+
+Pipeline(
+    ConsoleReader(eol=&quot;&quot;),
+    SimpleHTTPClient(),
+    Feedparser(),
+    PrettyPrinter(),
+    ConsoleEchoer(),
+).run()</code></pre>
+</blockquote>
+<p>If we run this, we get the following:<br />
+</p>
+<blockquote>
+<pre><code>~&gt; ./PipedFeedFetcher.py
+&gt;&gt;&gt; http://kamaelia.sourceforge.net/cgi-bin/blog/feed.cgi
+&gt;&gt;&gt; {&#39;bozo&#39;: 0,
+ &#39;encoding&#39;: &#39;utf-8&#39;,
+ &#39;entries&#39;: [{&#39;author&#39;: u&#39;Michael&#39;,
+              &#39;guidislink&#39;: False,
+              &#39;id&#39;: u&#39;http://kamaelia.sourceforge.net/cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1158348609.1&#39;,
+              &#39;link&#39;: u&#39;http://kamaelia.sourceforge.net/cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1158348609.1&#39;,
+...
+              &#39;title_detail&#39;: {&#39;base&#39;: &#39;&#39;,
+                               &#39;language&#39;: None,
+                               &#39;type&#39;: &#39;text/plain&#39;,
+                               &#39;value&#39;: u&#39;How do I register?&#39;},
+              &#39;updated&#39;: u&#39;Fri, 29 Sep 2006 12:11:29 +0000&#39;,
+              &#39;updated_parsed&#39;: (2006, 9, 29, 12, 11, 29, 4, 272, 0)},
+             {&#39;author&#39;: u&#39;Michael&#39;,
+              &#39;guidislink&#39;: False,
+              &#39;id&#39;: u&#39;http://kamaelia.sourceforge.net/cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1148942995&#39;,
+              &#39;link&#39;: u&#39;http://kamaelia.sourceforge.net/cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1148942995&#39;,
+...
+              &#39;updated&#39;: u&#39;Mon, 29 May 2006 22:49:55 +0000&#39;,
+              &#39;updated_parsed&#39;: (2006, 5, 29, 22, 49, 55, 0, 149, 0)}],
+ &#39;feed&#39;: {&#39;author&#39;: u&#39;email@example.com&#39;,
+          &#39;author_detail&#39;: {&#39;name&#39;: u&#39;&#39;, &#39;email&#39;: u&#39;email@example.com&#39;},
+          &#39;docs&#39;: u&#39;http://blogs.law.harvard.edu/tech/rss&#39;,
+          &#39;generator&#39;: u&#39;Kamaelia 0.1&#39;,
+          &#39;generator_detail&#39;: {&#39;name&#39;: u&#39;Kamaelia 0.1&#39;},
+...
+          &#39;updated&#39;: u&#39;Wed, 27 Dec 2006 22:23:49 +0000&#39;,
+          &#39;updated_parsed&#39;: (2006, 12, 27, 22, 23, 49, 2, 361, 0)},
+ &#39;namespaces&#39;: {},
+ &#39;version&#39;: &#39;rss20&#39;}
+&gt;&gt;&gt;</code></pre>
+</blockquote>
+<p>It's probably worth noting at this point that you can pretty much use this then in a similar way to the way <a href="/Developers/Projects/KamaeliaMacro">Kamaelia Macro</a> handles multiplexes EIT information and uses that to trigger events (such as finishing a transcoding session).<br />
+<br />
+-- Michael, December 2006<br />
+<br />
+<br />
+<br />
+</p>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>

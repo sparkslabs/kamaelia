@@ -1,0 +1,110 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<h1 id="kamaelia.visualisation.physicsgraph.topologyviewercomponent.topologyviewercomponent">Kamaelia.Visualisation.PhysicsGraph.TopologyViewerComponent.TopologyViewerComponent</h1>
+<h2 id="class-topologyviewercomponentkamaelia.ui.mh.pygameapp.pygameappaxon.component.component">class TopologyViewerComponent(Kamaelia.UI.MH.PyGameApp.PyGameApp,Axon.Component.component)</h2>
+<p>TopologyViewerComponent(...) -&gt; new TopologyViewerComponent component.</p>
+<p>A component that takes incoming topology (change) data and displays it live using pygame. A simple physics model assists with visual layout. Particle types, appearance and physics interactions can be customised.</p>
+<p>Keyword arguments (in order): - screensize -- (width,height) of the display area (default = (800,600)) - fullscreen -- True to start up in fullscreen mode (default = False) - caption -- Caption for the pygame window (default = "Topology Viewer") - particleTypes -- dict("type" -&gt; klass) mapping types of particle to classes used to render them (default = {"-":RenderingParticle}) - initialTopology -- (nodes,bonds) where bonds=list((src,dst)) starting state for the topology (default=([],[])) - laws -- Physics laws to apply between particles (default = SimpleLaws(bondlength=100)) - simCyclesPerRedraw -- number of physics sim cycles to run between each redraw (default=1) - border -- Minimum distance from edge of display area that new particles appear (default=100) - extraDrawing -- Optional extra object to be rendered (default=None) - showGrid -- False, or True to show gridlines (default=True) - transparency -- None, or (r,g,b) colour to make transparent - position -- None, or (left,top) position for surface within pygame window</p>
+<h4 id="inboxes">Inboxes</h4>
+<ul>
+<li>control : Shutdown signalling</li>
+<li>events : Place where we recieve events from the outside world</li>
+<li>displaycontrol : Replies from PygameDisplay service</li>
+<li>inbox : Topology (change) data describing an Axon system</li>
+<li>alphacontrol : Alpha (transparency) of the image (value 0..255)</li>
+</ul>
+<h4 id="outboxes">Outboxes</h4>
+<ul>
+<li>outbox : Notification and topology output</li>
+<li>signal : NOT USED</li>
+<li>displaysignal : Requests to PygameDisplay service</li>
+</ul>
+<h2 id="methods-defined-here">Methods defined here</h2>
+<div class="boxright">
+<p><span style="font-weight:600">Warning!</span></p>
+</div>
+<h3 id="init__self-screensize-fullscreen-caption-particletypes-initialtopology-laws-simcyclesperredraw-border-extradrawing-showgrid-transparency-position">__init__(self, screensize, fullscreen, caption, particleTypes, initialTopology, laws, simCyclesPerRedraw, border, extraDrawing, showGrid, transparency, position)</h3>
+<p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</p>
+<h3 id="generatexyself-posspec">_generateXY(self, posSpec)</h3>
+<p>generateXY(posSpec) -&gt; (x,y) or raises ValueError</p>
+<p>posSpec == "randompos" or "auto" -&gt; random (x,y) within the surface (specified border distance in from the edege) posSpec == "(XXX,YYY)" -&gt; specified x,y (positive or negative integers)</p>
+<h3 id="addparticleself">addParticle(self)</h3>
+<p>Add particles to the system</p>
+<h3 id="breakbondself-source-dest">breakBond(self, source, dest)</h3>
+<p>Break a bond from source to destination particle, specified by IDs</p>
+<h3 id="docommandself-msg">doCommand(self, msg)</h3>
+<dl>
+<dt>Proceses a topology command tuple:</dt>
+<dd>[ "ADD", "NODE", &lt;id&gt;, &lt;name&gt;, &lt;positionSpec&gt;, &lt;particle type&gt; ] [ "DEL", "NODE", &lt;id&gt; ] [ "ADD", "LINK", &lt;id from&gt;, &lt;id to&gt; ] [ "DEL", "LINK", &lt;id from&gt;, &lt;id to&gt; ] [ "DEL", "ALL" ] [ "GET", "ALL" ]
+</dd>
+</dl>
+<h3 id="getparticlelabelself-node_id">getParticleLabel(self, node_id)</h3>
+<p>getParticleLabel(node_id) -&gt; particle's name</p>
+<p>Returns the name/label of the specified particle.</p>
+<h3 id="gettopologyself">getTopology(self)</h3>
+<p>getTopology() -&gt; list of command tuples that would build the current topology</p>
+<h3 id="initialisecomponentself">initialiseComponent(self)</h3>
+<p>Initialises.</p>
+<h3 id="keydownhandlerself-event">keyDownHandler(self, event)</h3>
+<dl>
+<dt>Handle keypresses:</dt>
+<dd>ESCAPE, Q : quits F : toggles fullscreen mode arrows : scroll the view
+</dd>
+</dl>
+<h3 id="keyuphandlerself-event">keyUpHandler(self, event)</h3>
+<p>Handle releases of keys</p>
+<h3 id="mainloopself">mainLoop(self)</h3>
+<p>Main loop.</p>
+<p>Proceses commands from "inbox" inbox, runs physics simulation, then renders display</p>
+<h3 id="makebondself-source-dest">makeBond(self, source, dest)</h3>
+<p>Make a bond from source to destination particle, specified by IDs</p>
+<h3 id="quitself-event">quit(self, event)</h3>
+<p>Cause termination.</p>
+<h3 id="removeparticleself">removeParticle(self)</h3>
+<p>Remove particle(s) specified by their ids.</p>
+<p>Also breaks any bonds to/from that particle.</p>
+<h3 id="renderself">render(self)</h3>
+<p>Render elements to self.screen</p>
+<h3 id="scrollself-dx-dy">scroll(self, (dx, dy))</h3>
+<p>Scroll the contents being displayed on the surface by (dx,dy) left and up.</p>
+<h3 id="selectparticleself-particle">selectParticle(self, particle)</h3>
+<p>Select the specified particle.</p>
+<h3 id="updateparticlelabelself-node_id-new_name">updateParticleLabel(self, node_id, new_name)</h3>
+<p>updateParticleLabel(node_id, new_name) -&gt; updates the given nodes name &amp; visual label if it exists</p>
+<p>node_id - an id for an already existing node new_name - a string (may include spaces) defining the new node name</p>
+<hr />
+<h2 id="feedback">Feedback</h2>
+<p>Got a problem with the documentation? Something unclear, could be clearer? Want to help with improving? Constructive criticism, preferably in the form of suggested rewording is very welcome.</p>
+<p>Please leave the feedback <a href="http://kamaelia.sourceforge.net/cgi-bin/blog/blog.cgi?rm=addpostcomment&amp;postid=1131454685">here, in reply to the documentation thread in the Kamaelia blog</a>.</p>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>

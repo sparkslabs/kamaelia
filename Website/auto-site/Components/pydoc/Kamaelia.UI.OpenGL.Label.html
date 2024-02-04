@@ -1,0 +1,113 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<div class="container">
+<h1 id="kamaelia.ui.opengl.label"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.UI.html" class="reference">UI</a>.<a href="/Components/pydoc/Kamaelia.UI.OpenGL.html" class="reference">OpenGL</a>.<a href="/Components/pydoc/Kamaelia.UI.OpenGL.Label.html" class="reference">Label</a></h1>
+<section>
+<div class="container">
+<ul>
+<li><strong>component <a href="/Components/pydoc/Kamaelia.UI.OpenGL.Label.Label.html" class="reference">Label</a></strong></li>
+</ul>
+</div>
+<ul>
+<li><a href="#342" class="reference">OpenGL Label Widget</a>
+<ul>
+<li><a href="#343" class="reference">Example Usage</a></li>
+<li><a href="#344" class="reference">How does it work?</a></li>
+</ul></li>
+</ul>
+</section>
+<h1 id="opengl-label-widget-342">OpenGL Label Widget {#342}</h1>
+<p>A Label widget for the OpenGL display service.</p>
+<p>This component is a subclass of OpenGLComponent and therefore uses the OpenGL display service.</p>
+<h2 id="example-usage-343"><span id="example-usage">Example Usage</span> {#343}</h2>
+<p>4 Labels with various sizes, colours, captions and positions:</p>
+<pre class="literal-block"><code>Graphline(
+    Label1 = Label(caption=&quot;That&quot;, size=(2,2,1), sidecolour=(0,200,0), position=(-3,0,-10)),
+    Label2 = Label(caption=&quot;Boy&quot;, bgcolour=(200,100,0), position=(3,0,-10)),
+    Label3 = Label(caption=&quot;Needs&quot;, margin=15, position=(-1,0,-10), rotation=(30,0,10)),
+    Label4 = Label(caption=&quot;Therapy!&quot;, fontsize=20, size=(0.3,0.3,1), position=(1,0,-10)),
+    ECHO = ConsoleEchoer(),
+    linkages = {
+        (&quot;Label1&quot;, &quot;outbox&quot;) : (&quot;ECHO&quot;, &quot;inbox&quot;),
+        (&quot;Label2&quot;, &quot;outbox&quot;) : (&quot;ECHO&quot;, &quot;inbox&quot;),
+        (&quot;Label3&quot;, &quot;outbox&quot;) : (&quot;ECHO&quot;, &quot;inbox&quot;),
+        (&quot;Label4&quot;, &quot;outbox&quot;) : (&quot;ECHO&quot;, &quot;inbox&quot;),
+    }
+).run()</code></pre>
+<h2 id="how-does-it-work-344"><span id="how-does-it-work">How does it work?</span> {#344}</h2>
+<p>This component is a subclass of OpenGLComponent. It overrides __init__(), setup(), draw(), handleEvents() and frame().</p>
+<p>In setup() only buildCaption() gets called where the set caption is rendered on a pygame surface. This surface is then set as OpenGL texture.</p>
+<p>In draw() a flat cuboid is drawn (if size is not specified) with the caption texture on both the front and the back surface.</p>
+<hr />
+<h1 id="kamaelia.ui.opengl.label.label"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.UI.html" class="reference">UI</a>.<a href="/Components/pydoc/Kamaelia.UI.OpenGL.html" class="reference">OpenGL</a>.<a href="/Components/pydoc/Kamaelia.UI.OpenGL.Label.html" class="reference">Label</a>.<a href="/Components/pydoc/Kamaelia.UI.OpenGL.Label.Label.html" class="reference">Label</a></h1>
+<h2 id="symbol-Label">class Label(OpenGLComponent)</h2>
+<p>Label(...) -&gt; A new Label component.</p>
+<p>A Label widget for the OpenGL display service.</p>
+<p>Keyword arguments:</p>
+<ul>
+<li>caption -- Label caption (default="Label")</li>
+<li>bgcolour -- Colour of surfaces behind caption (default=(200,200,200))</li>
+<li>fgcolour -- Colour of the caption text (default=(0,0,0)</li>
+<li>sidecolour -- Colour of side planes (default=(200,200,244))</li>
+<li>margin -- Margin size in pixels (default=8)</li>
+<li>fontsize -- Font size for caption text (default=50)</li>
+<li>pixelscaling -- Factor to convert pixels to units in 3d, ignored if size is specified (default=100)</li>
+<li>thickness -- Thickness of Label widget, ignored if size is specified (default=0.3)</li>
+</ul>
+<h3 id="inboxes"><span id="symbol-Label.Inboxes">Inboxes</span></h3>
+<h3 id="outboxes"><span id="symbol-Label.Outboxes">Outboxes</span></h3>
+<h3 id="methods-defined-here">Methods defined here</h3>
+<div class="container">
+<div class="boxright">
+<p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div>
+</div>
+<h4 id="init__self-argd"><span id="symbol-Label.__init__">__init__(self, **argd)</span></h4>
+<p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</p>
+<h4 id="buildcaptionself"><span id="symbol-Label.buildCaption">buildCaption(self)</span></h4>
+<p>Pre-render the text to go on the label.</p>
+<h4 id="drawself"><span id="symbol-Label.draw">draw(self)</span></h4>
+<p>Draw label cuboid.</p>
+<h4 id="setupself"><span id="symbol-Label.setup">setup(self)</span></h4>
+<p>Build caption.</p>
+<section>
+
+</section>
+</div>
+<h1 id="feedback">Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer? Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback <a href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701" class="reference">here</a> in reply to the documentation thread in the Kamaelia blog.</p>
+<p><em>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</em></p>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>

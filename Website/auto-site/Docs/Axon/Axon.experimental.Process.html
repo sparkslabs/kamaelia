@@ -1,0 +1,121 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<div class="container">
+<section>
+<h2 id="axon.experimental.process"><a href="/Docs/Axon/Axon.html" class="reference">Axon</a>.<a href="/Docs/Axon/Axon.experimental.html" class="reference">experimental</a>.<a href="/Docs/Axon/Axon.experimental.Process.html" class="reference">Process</a></h2>
+</section>
+<section>
+<div class="container">
+<ul>
+<li><strong><a href="/Docs/Axon/Axon.experimental.Process.ProcessGraphline.html" class="reference">ProcessGraphline</a></strong>(**graphline_spec)</li>
+<li><strong><a href="/Docs/Axon/Axon.experimental.Process.ProcessPipeline.html" class="reference">ProcessPipeline</a></strong>(*components)</li>
+<li><strong>class <a href="/Docs/Axon/Axon.experimental.Process.ProcessPipelineComponent.html" class="reference">ProcessPipelineComponent</a></strong></li>
+<li><strong>class <a href="/Docs/Axon/Axon.experimental.Process.ProcessWrapComponent.html" class="reference">ProcessWrapComponent</a></strong></li>
+</ul>
+</div>
+</section>
+<section>
+
+</section>
+<hr />
+<section>
+<h1 id="axon.experimental.process.processgraphline"><a href="/Docs/Axon/Axon.html" class="reference">Axon</a>.<a href="/Docs/Axon/Axon.experimental.html" class="reference">experimental</a>.<a href="/Docs/Axon/Axon.experimental.Process.html" class="reference">Process</a>.<a href="/Docs/Axon/Axon.experimental.Process.ProcessGraphline.html" class="reference">ProcessGraphline</a></h1>
+<h2 id="processgraphlinegraphline_spec"><span id="symbol-ProcessGraphline">ProcessGraphline(**graphline_spec)</span></h2>
+<h1 id="axon.experimental.process.processpipeline"><a href="/Docs/Axon/Axon.html" class="reference">Axon</a>.<a href="/Docs/Axon/Axon.experimental.html" class="reference">experimental</a>.<a href="/Docs/Axon/Axon.experimental.Process.html" class="reference">Process</a>.<a href="/Docs/Axon/Axon.experimental.Process.ProcessPipeline.html" class="reference">ProcessPipeline</a></h1>
+<h2 id="processpipelinecomponents"><span id="symbol-ProcessPipeline">ProcessPipeline(*components)</span></h2>
+<h1 id="axon.experimental.process.processpipelinecomponent"><a href="/Docs/Axon/Axon.html" class="reference">Axon</a>.<a href="/Docs/Axon/Axon.experimental.html" class="reference">experimental</a>.<a href="/Docs/Axon/Axon.experimental.Process.html" class="reference">Process</a>.<a href="/Docs/Axon/Axon.experimental.Process.ProcessPipelineComponent.html" class="reference">ProcessPipelineComponent</a></h1>
+<h2 id="symbol-ProcessPipelineComponent">class ProcessPipelineComponent(<a href="/Docs/Axon/Axon.Component.component.html" class="reference">Axon.Component.component</a>)</h2>
+<section>
+
+</section>
+<h3 id="methods-defined-here">Methods defined here</h3>
+<h4 id="init__self-components-argd"><span id="symbol-ProcessPipelineComponent.__init__">__init__(self, *components, **argd)</span></h4>
+<h4 id="mainself"><span id="symbol-ProcessPipelineComponent.main">main(self)</span></h4>
+<section>
+<h4 id="methods-inherited-from-axon.component.component">Methods inherited from <a href="/Docs/Axon/Axon.Component.component.html" class="reference">Axon.Component.component</a> :</h4>
+<ul>
+<li><a href="/Docs/Axon/Axon.Component.html#symbol-component.mainBody" class="reference">mainBody</a>(self)</li>
+<li><a href="/Docs/Axon/Axon.Component.html#symbol-component.__str__" class="reference">__str__</a>(self)</li>
+<li><a href="/Docs/Axon/Axon.Component.html#symbol-component.childComponents" class="reference">childComponents</a>(self)</li>
+<li><a href="/Docs/Axon/Axon.Component.html#symbol-component.setInboxSize" class="reference">setInboxSize</a>(self, boxname, size)</li>
+<li><a href="/Docs/Axon/Axon.Component.html#symbol-component.send" class="reference">send</a>(self, message[, boxname])</li>
+<li><a href="/Docs/Axon/Axon.Component.html#symbol-component.dataReady" class="reference">dataReady</a>(self[, boxname])</li>
+<li><a href="/Docs/Axon/Axon.Component.html#symbol-component.initialiseComponent" class="reference">initialiseComponent</a>(self)</li>
+<li><a href="/Docs/Axon/Axon.Component.html#symbol-component.anyReady" class="reference">anyReady</a>(self)</li>
+<li><a href="/Docs/Axon/Axon.Component.html#symbol-component.__addChild" class="reference">__addChild</a>(self, child)</li>
+<li><a href="/Docs/Axon/Axon.Component.html#symbol-component.closeDownComponent" class="reference">closeDownComponent</a>(self)</li>
+<li><a href="/Docs/Axon/Axon.Component.html#symbol-component._closeDownMicroprocess" class="reference">_closeDownMicroprocess</a>(self)</li>
+<li><a href="/Docs/Axon/Axon.Component.html#symbol-component.link" class="reference">link</a>(self, source, sink, *optionalargs, **kwoptionalargs)</li>
+<li><a href="/Docs/Axon/Axon.Component.html#symbol-component.unlink" class="reference">unlink</a>(self[, thecomponent][, thelinkage])</li>
+<li><a href="/Docs/Axon/Axon.Component.html#symbol-component.recv" class="reference">recv</a>(self[, boxname])</li>
+<li><a href="/Docs/Axon/Axon.Component.html#symbol-component._deliver" class="reference">_deliver</a>(self, message[, boxname])</li>
+<li><a href="/Docs/Axon/Axon.Component.html#symbol-component.removeChild" class="reference">removeChild</a>(self, child)</li>
+<li><a href="/Docs/Axon/Axon.Component.html#symbol-component.Inbox" class="reference">Inbox</a>(self[, boxname])</li>
+<li><a href="/Docs/Axon/Axon.Component.html#symbol-component.addChildren" class="reference">addChildren</a>(self, *children)</li>
+</ul>
+<h4 id="methods-inherited-from-axon.microprocess.microprocess">Methods inherited from <a href="/Docs/Axon/Axon.Microprocess.microprocess.html" class="reference">Axon.Microprocess.microprocess</a> :</h4>
+<ul>
+<li><a href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.pause" class="reference">pause</a>(self)</li>
+<li><a href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._unpause" class="reference">_unpause</a>(self)</li>
+<li><a href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._microprocessGenerator" class="reference">_microprocessGenerator</a>(self, someobject[, mainmethod])</li>
+<li><a href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._isStopped" class="reference">_isStopped</a>(self)</li>
+<li><a href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.stop" class="reference">stop</a>(self)</li>
+<li><a href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.next" class="reference">next</a>(self)</li>
+<li><a href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.activate" class="reference">activate</a>(self[, Scheduler][, Tracker][, mainmethod])</li>
+<li><a href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.unpause" class="reference">unpause</a>(self)</li>
+<li><a href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.run" class="reference">run</a>(self)</li>
+<li><a href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._isRunnable" class="reference">_isRunnable</a>(self)</li>
+</ul>
+</section>
+<h1 id="axon.experimental.process.processwrapcomponent"><a href="/Docs/Axon/Axon.html" class="reference">Axon</a>.<a href="/Docs/Axon/Axon.experimental.html" class="reference">experimental</a>.<a href="/Docs/Axon/Axon.experimental.Process.html" class="reference">Process</a>.<a href="/Docs/Axon/Axon.experimental.Process.ProcessWrapComponent.html" class="reference">ProcessWrapComponent</a></h1>
+<h2 id="symbol-ProcessWrapComponent">class ProcessWrapComponent(object)</h2>
+<section>
+
+</section>
+<h3 id="methods-defined-here-1">Methods defined here</h3>
+<h4 id="init__self-somecomponent"><span id="symbol-ProcessWrapComponent.__init__">__init__(self, somecomponent)</span></h4>
+<h4 id="activateself"><span id="symbol-ProcessWrapComponent.activate">activate(self)</span></h4>
+<h4 id="mainself-1"><span id="symbol-ProcessWrapComponent.main">main(self)</span></h4>
+<h4 id="runself-channel"><span id="symbol-ProcessWrapComponent.run">run(self, channel)</span></h4>
+<h4 id="tickingself"><span id="symbol-ProcessWrapComponent.ticking">ticking(self)</span></h4>
+<section>
+
+</section>
+</section>
+</div>
+<h1 id="feedback">Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer? Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback <a href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701" class="reference">here</a> in reply to the documentation thread in the Kamaelia blog.</p>
+<p><em>-- Automatic documentation generator, 09 Dec 2009 at 04:00:25 UTC/GMT</em></p>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>

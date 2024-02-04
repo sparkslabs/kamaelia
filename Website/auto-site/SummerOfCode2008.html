@@ -1,0 +1,119 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<h1 id="google-summer-of-code-2008">Google Summer Of Code 2008</h1>
+<p>::: {#__ss_289017 style=“float: right; width: 425px; text-align: left;”} ::: {style=“font-size: 11px; font-family: tahoma,arial; height: 26px; padding-top: 2px;”} <a href="http://www.slideshare.net/?src=embed"><img src="http://static.slideshare.net/swf/logo_embd.png" alt="SlideShare" /></a> | <a href="http://www.slideshare.net/kamaelian/sociable-software?src=embed" title="View &#39;Sociable Software&#39; on SlideShare">View</a> | <a href="http://www.slideshare.net/upload?src=embed">Upload your own</a> ::: :::</p>
+<p><strong>We've been accepted as mentor org for Google Summer of Code 2008! (<a href="http://www.bbc.co.uk/rd/">BBC Research</a>)<br />
+<br />
+</strong><a href="/SummerOfCode.html">This is primarily our ideas page, you really ought to read our overall summer of code page as well. This details expectations, how to apply, what we're looking for, who we're looking for (YOU), and a whole bunch of notes on stuff students have done in previous years.</a><br />
+<strong><br />
+Previous years ideas pages( <a href="/SummerOfCode2007.html">2007</a>, <a href="/cgi-bin/projects/blog.cgi">2006)</a> landing pages(</strong> <strong><a href="/SummerOfCode.html">2007</a>,</strong> <strong><a href="/SummerOfCode2006.html">2006</a> )</strong><br />
+</p>
+<h1 id="ideas">Ideas!</h1>
+<p>Please note that we're likely to give significant weight to Kamaelia based exemplar projects. If you're wondering what we mean by that, the Whiteboard, Greylisting and ER Modelling systems are all useful tools in their own right, but also very useful exemplars showing how to build large systems. Community systems like Bucker are similarly really cool exemplars. The difference really between exemplars in Kamaelia and exemplars in other projects is that you will often result in creating a large number of reusable components.<br />
+<strong><br />
+Exemplar Related</strong><br />
+<br />
+In previous years we've taken a couple of different approaches to the ideas list. The first year was based around idea of distribution, (user) security and visual interfaces. That worked pretty well. Last year we really looked at an approach largely based around the idea of targetted simple thing which would make kamaelia useful in particular targetted ways, which achieved around 75% of our goals. This year though, we'd actually be much more interested in a systems view. ie rather than building small bits and pieces we'd be interested to see what <strong>you</strong> can build in 2-3 months of work that's a real living breathing system. For an idea of the sort of thing that that can entail, the visual system builder was around 4 weeks of work all told and the P2P whiteboard was actually around 2 -3 weeks all told. By contrast, <a href="/KamaeliaGrey.html">Kamaelia Grey</a> was literally a few days work.<br />
+<br />
+This list of possible exemplars is still being fleshed out, but really interesting, useful exemplars are something that would get a high priority this time round. Suprise us with a really exciting idea of something you'd like to build, and we might surprise you by accepting it.<br />
+</p>
+<ul>
+<li>A neat exemplar of the multiprocess idea above would be a <strong><a href="http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1196129474">multiwindow pygame</a> based paint program</strong> (or even post production tool). This could and should go to town in dealing with stacks of images. This could ideally build on the whiteboard, to the extent of allowing the simple creation of animated shorts. Ideally this would build on the whiteboard, ideally build on the video whiteboard even, to allow the creation, extension and annotation of video with simple (limited) video editting functionality.<br />
+</li>
+<li><strong>Extend the <a href="http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1195955570">ER modelling</a> tool to be a full database front end</strong> for <a href="http://www.python.org/dev/peps/pep-0333/">WSGI</a> based web systems. (This would require the creation of comtponents for managing databases of course)</li>
+<li><strong>Small children friendly version of Compose</strong>. At present a basic <a href="http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/trunk/Sketches/MPS/KamaeliaKids.py?view=markup">Kamaelia based Logo interpreter</a> exists (with pygame interface). Extending this to be a full, reliable Logo interpretation capable of building basic kamaelia pipelines or even graphlines would be extremely awesome. This should include support for espeak (on linux), speak (on Mac OSX) and pyTTS (on windows) based speech synthesis for feedback. Bonus points would come from integrating with the <a href="http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/trunk/Sketches/MH/GestureRecognition/">gesture recognition code</a> to allow usage without using the keyboard.</li>
+<li><strong>Extend the <a href="http://trac.defuze.org/wiki/headstock">XMPP implementation</a> code,</strong> documentation and example so that the core and some common XMPP extensions are implemented</li>
+<li>Tools for working with SQL Databases. Build a Kamaelia interface for SQL so that databases can be linked to other Kamaelia components.</li>
+<li><strong>3D Social Network Visualisation tool</strong>. This builds on 2 core project ideas. The assumption is that the social network will be embedded in some kind of SQL database, which can be extracted by a component. Then, extend topologyVisualiser in the Kamaelia distribution to work in 3D. This will allow complex datasets to be viewed as 3D shapes with nodes and connectors. Imagine that a database contains a set of relationships with assocated data (such as you might find on facebook), extend topologyVisualiser to allow relationships to be clearly explored and viewed.</li>
+<li><strong>Kamaelia, <a href="http://www.jython.org/Project/index.html">Jython</a></strong> <strong>&amp; <a href="http://processing.org/">Processing</a></strong> <strong>integration.</strong> (<a href="http://itp.nyu.edu/blogs/drawingmachines/2008/02/10/jythonprocessing-fun/">Processing on Jython has been done</a>) For something completely different, howabout getting Kamaelia working with Jython using the processing library? This should work, though require a bit of effort. The neat thing about this though would be the ability to have great visualisations in a browser (due to processing), which have all the fun and extensibility of Kamaelia (due to jython). This could actually be a much nicer way of visualising databases using kamaelia (as suggested by the social network visualisation project idea)</li>
+<li><strong>Simple Video conferencing tool.</strong> You'll need to wrap some webcam bindings and wrap those. You'd expect to take those images for display, but also change them to pipe into (say) the Dirac compression components, send over a link, decompress and display. This would actually be an exemplar of showing what happens when a new component for handling a new device comes into play since the communications/compression &amp; decompression work pretty much already exist, as does the display tools. The webcam bindings idea actually comes from <a href="http://www.pygame.org/wiki/gsoc2008ideas">pygame's GSOC ideas list</a> and is more of an example application of said bindings.</li>
+<li><strong>Swarming P2P / layer 5 multicast radio system.</strong> Last year at <a href="http://www.lugradio.org/live/2007/index.php/Main_Page">LUG Radio Live</a> Michael demonstrated/explained how a simple swarming radio system could be built using Kamaelia. It consisted of two main parts - a <a href="http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/trunk/Sketches/MPS/LUGRadio/SimpleSwarmRadioSource.py?revision=3294&amp;view=markup">radio source</a> and <a href="http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/trunk/Sketches/MPS/LUGRadio/SimpleSwarm.py?revision=3293&amp;view=markup">a swarm peer</a>. It would be interesting to see this extended to be a robust P2P swarming radio system. One of the more interesting ways this could be made more robust would be to allow the P2P tree created to actually turn into a P2P mesh that forms a Layer 5 Multicast overlay network. One particular approach that would work well when sitting on top of this would be a <a href="http://research.chawathe.com/people/yatin/publications/">scattercast type</a> system, which could work extremely well when constructed in a P2P fashion. (<a href="http://www.slideshare.net/kamaelian/building-systems-with-kamaelia">see the tail of this presentation for more detail</a>)<br />
+</li>
+</ul>
+<p><br />
+<strong>Core project related</strong><br />
+</p>
+<p>Integrate Kamaelia with...</p>
+<ul>
+<li><strong>Integrate kamaelia with Stackless</strong> - provide mappings from the stackless world of tasklets &amp; channels to components and in/outboxes. This should be idiomatic for both stackless and kamaelia. One way to do this would be to implement a "TaskletComponent" like we have Component, ThreadedComponent and ProcessComponent.</li>
+<li><strong>Integrate Kamaelia with Twisted</strong> - We have kinda partially done this before in the BitTorrent code, but it would be really nice to be able to write a TwistedComponent, and to be able to use Twisted from Kamaelia and to be able to run the Kamaelia scheduler from Twisted. The LikeFile backgrounding code may be useful here.</li>
+<li><strong>Integrate Kamaelia with gstreamer</strong> - similar dance ! :-)<br />
+</li>
+</ul>
+<p><strong>WSGI-ify the Kamaelia Web Server</strong> - Extend &amp; make more user friendly the Kamaelia Web Server, including <a href="http://www.python.org/dev/peps/pep-0333/">WSGI</a> compliance, to enable clientside mashups based around (say) django or pylons</p>
+<p><strong>Tools for working with SQL Databases.</strong> Build a Kamaelia interface for SQL so that databases can be linked to other Kamaelia components.</p>
+<p>A <strong>Testing Framework</strong> for Kamaelia Systems</p>
+<p><strong>Improved Multicore support:</strong> Extend python <a href="http://www.boddie.org.uk/python/pprocess.html">pprocess</a> to enable full duplex channel communications (or multichannel communications with processes) for multicore/multiprocess comms (eg <a href="http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1196029230">1,</a> <a href="http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1196129474">2</a> )<br />
+</p>
+<p><strong>Extensions to the <a href="/Docs/Axon/Axon.CoordinatingAssistantTracker.html">co-ordinating assistant tracker</a></strong> :</p>
+<ul>
+<li>Modify the <a href="/Docs/Axon/Axon.CoordinatingAssistantTracker.html">co-ordinating assistant tracker</a> to use the minimal <a href="/STM.html">STM</a> code</li>
+</ul>
+<!-- -->
+<ul>
+<li>Make <a href="/Docs/Axon/Axon.CoordinatingAssistantTracker.html">co-ordinating assistant tracker</a> environments inheritable</li>
+</ul>
+<p><strong>Change the <a href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph.TopologyViewer.html">topology visualiser</a> to work in full 3D</strong> - this would relate to changing the implementation from using the pygame code and replacing it with open GL code. Most of the physics engine would still work. This would then turn into an exemplar you you extended to allow the construction of models this way. This sounds difficult, but should be relatively simple<br />
+</p>
+<p><strong>Extend Kamaelia's <a href="http://dirac.sourceforge.net/">Dirac</a> support to include</strong> support for the optimsed version of <a href="http://dirac.sourceforge.net/">Dirac</a> called <strong><a href="http://schrodinger.sourceforge.net/ideas.php">Schoedinger.</a></strong> (Rather amusingly you'd be working on schoedinger's cat (sorry))</p>
+<p><strong>Improve Kamaelia's support on Windows</strong> - come up with windows equivalents of the mega bundles or better the app bundles</p>
+<p>See how much of <strong>Kamaelia</strong> can run <strong>on IronPython 2</strong> (notably see how many tests can pass)</p>
+<h2 id="projects-tend-to-succeed-if-you-discuss-them-upfront-with-the-mentor-organisation."><strong>Projects tend to succeed if you</strong> <strong>discuss them upfront with the mentor organisation.</strong></h2>
+<p><em>So, if you're interested in any of these ideas, please discuss them with either Michael Sparks or Matt Hammond over email - kamaelia-list@lists.sourceforge.net ( or anyone else on the list). You'll also find us in #kamaelia on <a href="http://freenode.net/">freenode's</a> IRC network.</em><br />
+<br />
+</p>
+<h2 id="project-introductions">Project Introductions</h2>
+<p>Think "lego for software", and "concurrency made easy" if you're after a soundbite. The presentation above should give you the basic idea<br />
+<br />
+<strong>More Technical intros:</strong><br />
+</p>
+<ul>
+<li><a href="http://tinyurl.com/2hl8kj" class="uri">http://tinyurl.com/2hl8kj</a> - App focussed description on the P2P networked whiteboard with local remixing of audio (written for Linux Format)</li>
+<li><a href="http://tinyurl.com/yp7crf" class="uri">http://tinyurl.com/yp7crf</a> - general light technical intro (written for Linux Magazin germany)</li>
+<li><a href="http://www.slideshare.net/kamaelian/building-systems-with-kamaelia" class="uri">http://www.slideshare.net/kamaelian/building-systems-with-kamaelia</a> the first half of a talk given at LUG Radio - given as a standalone at pycon UK last year. Includes how to build a P2P streaming system for audio off DVB. (sans buffering &amp; error handling)</li>
+</ul>
+<p><strong>Fluffy:</strong><br />
+</p>
+<ul>
+<li><a href="/Introduction.html">Introduction</a> - v short overview</li>
+<li><a href="/Challenges/">/Challenges/</a> - a <em>slightly</em> tongue in cheese document for the open days in 2005 based around describing the context of the projects Kamaelia was then being developed around. (times move on)</li>
+</ul>
+<p><strong>Tutorials</strong><br />
+</p>
+<ul>
+<li><a href="/MiniAxon/">/MiniAxon/</a> - I'm a firm believer in showing people how to make their own version of the core of the system.</li>
+<li><a href="http://tinyurl.com/2p9zku" class="uri">http://tinyurl.com/2p9zku</a> - example of how go from concept to component</li>
+</ul>
+<p>See also the <a href="/Cookbook.html">Cookbook</a> &amp; <a href="/Components.html">Components</a> links above!</p>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>

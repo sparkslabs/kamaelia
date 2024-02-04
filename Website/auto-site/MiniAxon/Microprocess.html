@@ -1,0 +1,58 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<p><span id="Microprocess"></span><span style="font-size: 14pt; font-weight: 600;">1. Microprocesses - A Generator with Context</span></p>
+<p>Axon is built on top of generators with some added context. Whilst the most common version of this a user actually uses is called a component, this is a specialisation of the general concept - a generator with context.</p>
+<p><span style="font-weight: 600;">Exercise:</span> Write a class called <span style="font-family: Courier; font-weight: 600;">microprocess</span> (make sure you subclass "object" !) with the following methods:</p>
+<p><span style="font-family: Courier;">__init__(self)</span></p>
+<ul>
+<li>Takes no arguments. (aside from self)</li>
+<li>into this put any initialisation you might need</li>
+</ul>
+<p><span style="font-family: Courier;">main(self)</span></p>
+<ul>
+<li>Takes no arguments. (aside from self)</li>
+<li>This should be a generator that simply yields 1 value - specifically a 1</li>
+</ul>
+<p><strong><a href="/MiniAxon/Microprocess?template=veryplain">Answer Hidden</a></strong></p>
+<p><strong><a href="/MiniAxon/Microprocess?template=veryplain&amp;mat=2">Show Answer</a></strong></p>
+<p><span style="font-weight:600">Answer:</span></p>
+<ul>
+<li>Select from the above tabs to show the answer!</li>
+</ul>
+<p><span style="font-weight: 600;">Discussion:</span></p>
+<p>Clearly we can create a handful of these now:</p>
+<p>Calling their main method results in us being given a generator:</p>
+<p>We can then run these generators in the usual way (though these are fairly boring microprocesses):</p>
+<p>OK, so we have a mechanism for adding context to generators, and we've called that a microprocess. Let's make it simple to set lots of these running.</p>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>

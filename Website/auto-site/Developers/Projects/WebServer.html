@@ -1,0 +1,289 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<h1 id="project-task-page-web-server">Project Task page: Web Server</h1>
+<blockquote>
+<p><strong>PLEASE NOTE THIS PAGE IS CURRENTLY (15/12/2006.</strong> <strong>12:01)</strong> <strong>being filled in!</strong><br />
+<strong>PLEASE NOTE THIS PAGE IS CURRENTLY (15/12/2006. 12:01) being filled in!</strong><br />
+<strong>PLEASE NOTE THIS PAGE IS CURRENTLY (15/12/2006.</strong> <strong>12:01)</strong> <strong>being filled in!</strong><br />
+</p>
+</blockquote>
+<div class="boxright">
+<p><strong>Status:</strong> Running - Code has been integrated with another project providing another usecase<br />
+<strong>Current Developers:</strong> Michael Sparks<br />
+<strong>Current "inflight" dev location:</strong> /Code/Python/Kamaelia/Kamaelia/HTTP<br />
+<strong>Start Date:</strong> Jul 2006<br />
+<strong>Major Milestone date:</strong> Sept 2006 - initial release<br />
+<strong>Expected End Date:</strong> n/a<br />
+<strong>End Date:</strong> n/a<br />
+<strong>Date this page last updated:</strong> 15 December 2006<br />
+<strong>Estimated effort so far:</strong> Original dev+ 0 days<br />
+</p>
+</div>
+<p><strong><br />
+</strong></p>
+<h2 id="description"><strong>Description</strong></h2>
+<p>The aim of this task is to create a complete, pure python, webserver that is designed from the ground up to be suitable for use in Kamaelia systems, and also easy to use/integrate with other python projects.<br />
+<br />
+It should be possible to use the Kamaelia web server to expose a web interface for a Kamaelia system. It should be possible to take an existing python based web application and use Kamaelia as a webserver for that application.<br />
+<br />
+The original development context for this server was during Google Summer of Code. Specifically:<em><br />
+</em></p>
+<ul>
+<li>Ryan wanted to create a webserver to serve IRC logs. (the reasons for this are shrouded by the mists of time).</li>
+<li>Ryan also needed a webserver to upload .torrent files to as part of his summer of code project. This provided a useful test case.<br />
+</li>
+</ul>
+<p>Benefits of creating this set of components:<br />
+</p>
+<ul>
+<li>This enables Kamaelia based systems to gain an interface that many users are now familiar with - specifically using a web interface. However since we're python based, this means that we also have a webserver that can run client side, which is useful for a number of future projects beyond "just" integration with other web frameworks.<br />
+</li>
+</ul>
+<h2 id="inputs">Inputs</h2>
+<p><em>This section is largely about WHO has influenced this task to do WHAT, and where possible WHY. It is also about WHO to contact with regard to this task to influence what's going on.<br />
+</em></p>
+<p><em>Task Sponsor: (can be main developer)</em></p>
+<p><em>Task Owner: (likely to be main developer)<br />
+</em></p>
+<p><em>Developers involved in the task at some point<br />
+</em></p>
+<ul>
+<li>*There is likely to be at least one. One will be the task owner (if the project is not in stasis)<br />
+
+<ul>
+<li></li>
+</ul></li>
+</ul>
+<p><em>Users:</em></p>
+<ul>
+<li><em>Specific concrete users who have provided input</em></li>
+</ul>
+<p><em>Interested third parties</em></p>
+<ul>
+<li><em>This will be specific third parties who have provided input to the project</em></li>
+</ul>
+<p><em>Requirements</em></p>
+<ul>
+<li><em>Each requirement should have who the requirement came from attached to it</em></li>
+<li><em>Each requirement should have an indication of MUST/SHOULD/MAY/WOULD LIKE attached.</em></li>
+</ul>
+<p><em>The people listed here should be real people. Unless you have agreement however, this this should be their initials rather than name.<br />
+<br />
+Relevant Influencing factors:<br />
+</em></p>
+<ul>
+<li><em>eg release of a tool doing the same sort of thing that renders this non-relevant</em></li>
+<li><em>people joining/leaving project</em></li>
+<li><em>change of sponsorship</em></li>
+<li><em>growth in users/thirdparties</em></li>
+<li><em>tool dependency suitablility</em></li>
+<li><em>unexpected complications</em></li>
+</ul>
+<h2 id="outputs">Outputs</h2>
+<p><em>This section is largely about WHAT has been produced, normally by WHO (in order to provide a point of contact)</em><br />
+</p>
+<h3 id="expected">Expected</h3>
+<ul>
+<li><em>There is likely to be at least one thing expected</em><br />
+</li>
+</ul>
+<h3 id="actual">Actual</h3>
+<p><em>This can take many forms<br />
+</em></p>
+<ul>
+<li>*Code - what does it do, where is it?<br />
+
+<ul>
+<li></li>
+</ul></li>
+<li>*Reports - where is it, who wrote it, what was it about, when?<br />
+
+<ul>
+<li></li>
+</ul></li>
+<li>*Presentation - where is it, where was it presented, what was it about, who presented it, when?<br />
+
+<ul>
+<li></li>
+</ul></li>
+<li><em>Events - eg The Brussels open space event</em></li>
+<li>*Other - other actual strands of work arising.<br />
+
+<ul>
+<li></li>
+</ul></li>
+</ul>
+<p><em>Note: Especially with speculative tasks,actual outputs may be substantially different from expected.<br />
+</em></p>
+<h3 id="realistic-possibilities-arising-as-a-result-of-activity-on-this-task">Realistic possibilities arising as a result of activity on this task</h3>
+<p><em>Generally speaking there may or may not be anything here. The reason this is under outputs, is because this really is an output, even if it doesn't look like it at first glance.<br />
+</em></p>
+<h2 id="related-tasks">Related Tasks</h2>
+<h3 id="tasks-that-directly-enable-this-task-dependencies">Tasks that directly enable this task (dependencies)</h3>
+<ul>
+<li><em>example: Multicast transciever, internet subsystem</em></li>
+<li>*This tasks should ideally be links to the project task pages for these other tasks.<br />
+
+<ul>
+<li></li>
+</ul></li>
+</ul>
+<h3 id="sub-tasks">Sub Tasks</h3>
+<ul>
+<li><em>Example: Selector subsystem shutdown</em></li>
+<li><em>Each subtask here should ideally be a link to a project task page for that project</em></li>
+<li><em>It would be</em> <em>nice but not mandatory to note the subtask status</em></li>
+<li>*For small subtasks, it <strong>IS</strong> acceptable to merely have subtasks as bullet points with the sort of information you'd put on a project task page, but for which it seems overkill to create a project task page for. (It can always become a full PTP later on)<br />
+
+<ul>
+<li></li>
+</ul></li>
+</ul>
+<h2 id="task-log">Task Log</h2>
+<p><em>This is a list of time indexed day to day item. There should ideally be an entry here every time you work on this task. Ideally the time taken relating to each entry should be listed as well, preferably in man days, down to 1/4 day granuarity. (ie 2 hours). Sanity is expected to prevail when noting this down. They should be annotated by who made the entry, when, and any status changes.</em><br />
+</p>
+<p><em><strong>When a task is running, then this is where most updates will occur.</strong><br />
+<br />
+Please put <strong>Output</strong> in bold prior to any entries where an output was produced<br />
+Please put <strong>Task status changed</strong> in bold when the entry relates to a task status change.<br />
+Example entries:<br />
+</em></p>
+<ul>
+<li><em>Created the PTP page for the project, and brainstormed how to get started. Michael. November 27th 2006. Time spent 1/4 day</em></li>
+<li><em><strong>Output:</strong> Produced report (added to output list), Michael. November 27th 2006. Time spent 1/4 day.</em></li>
+<li><em>Liased with sponsor (input to task). Michael, Sponsor, November 27th 2006. Time spent 1/2 day.</em></li>
+<li>*Started working of frobbing the bibble, code is being worked in in /Sketches/MPS/Here/...<br />
+<strong>Task status changed</strong> to running.<br />
+Time spent: 1/2 day<br />
+Michael, November 27th 2006<br />
+
+<ul>
+<li></li>
+</ul></li>
+<li><em>Project blocked due to lack of access to kit, Michael, 27th November 2006. Time spent: n/a, <strong>Task status changed</strong> to blocked.</em></li>
+<li><em>Changed sponsor to Jimbo</em></li>
+<li><em>Added developer Matt</em></li>
+<li><em>Removed developer Michael</em></li>
+<li><em>Removed developer Matt</em></li>
+<li><em><strong>Task status changed</strong> to stasis</em></li>
+</ul>
+<p><em>This is however a task log. The format of entries hasn't be decided on yet. However there should ideally be an entry an minimum whenever the state of the task changes - that is new developers, sponsors, inputs from people, outputs from the task, whether the project is completed, finished etc.<br />
+The reason for including times is to assist in future time estimation exercises.<br />
+As a result each entry is likely to have:<br />
+</em></p>
+<ul>
+<li><em>A note of any state change (new person, new input, new output, status change, new work started, completed etc) This can however simply be a note to say what's been done in that amount of time working on the task. eg code refactoring is none of the above, but is work, and is suitable for the task log, as is simply "coding, Michael, November 27th, 1 day", etc</em></li>
+<li><em>Who is making the entry</em></li>
+<li><em>When they are making the entry</em></li>
+<li><em>The amount of time spent in the process of effecting that entry. (eg 1/2 day writing a report, 1/2 writing code, etc)</em></li>
+</ul>
+<p><em>I'd expect much of this text to be deleted.</em><br />
+<br />
+</p>
+<h2 id="discussion">Discussion</h2>
+<p><em>This is where random comments with regard to the project can be added. It's expected this section will be in thread mode rather than document mode, but people should feel able to refactor comments. If they do, these comments become inputs to the project, and the people who have added comments would be added under interested third parties.</em></p>
+<p><em>Anything that doesn't fit above fits in here.</em></p>
+<h4 id="end-note-delete-from-any-actual-ptp">end note (delete from any actual PTP)</h4>
+<p>(10:34:02) <strong>Lawouach:</strong> well<br />
+(10:34:15) <strong>Lawouach:</strong> the handler needs to differentiateHTTP methods<br />
+(10:34:28) <strong>Lawouach:</strong> the example assumes every methods will behave the same ay<br />
+(10:34:29) <strong>Lawouach:</strong> way<br />
+(10:34:38) <strong>Lawouach:</strong> which is perfectly fine for an example<br />
+(10:34:44) <strong>Lawouach:</strong> but didn't suit my requirements<br />
+(10:34:59) <strong>mhrd:</strong> indeed<br />
+(10:35:05) <strong>Lawouach:</strong> in fact<br />
+(10:35:09) <strong>Lawouach:</strong> when you have time<br />
+(10:35:20) <strong>Lawouach:</strong> I'll be happy to tell you where the HTTP protocol could be improved<br />
+(10:35:24) <strong>Lawouach:</strong> for the developer<br />
+(10:35:28) <strong>Lawouach:</strong> not the internal code<br />
+(10:35:35) <strong>Lawouach:</strong> but the public interface<br />
+(10:35:55) <strong>Lawouach:</strong> and of course having support for DELETE and PUT will be a must have :D<br />
+(10:36:09) <strong>MS-:</strong> Please chat away whilst your mind is fresh<br />
+(10:36:11) <strong>***mhrd</strong> crash courses himself in how Ryan's HTTP server protocol is used :)<br />
+(10:37:17) <strong>Lawouach:</strong> well<br />
+(10:37:45) <strong>Lawouach:</strong> take this file<br />
+(10:37:46) <strong>Lawouach:</strong> <a href="http://trac.defuze.org/browser/oss/amplee/amplee/examples/web/demo_wsgi.py" class="uri">http://trac.defuze.org/browser/oss/amplee/amplee/examples/web/demo_wsgi.py</a><br />
+(10:37:52) <strong>Lawouach:</strong> based on a pure WSGI approach<br />
+(10:38:04) <strong>Lawouach:</strong> using the selector WSGI middleware to do the dispatching<br />
+(10:38:17) <strong>Lawouach:</strong> you can see I associate my handlers based on the HTTp methods<br />
+(10:38:36) <strong>Lawouach:</strong> the current interface of the HTTP package coming with K.<br />
+(10:38:50) <strong>Lawouach:</strong> does not help make this an easy task<br />
+(10:38:54) <strong>Lawouach:</strong> and as you've seen<br />
+(10:39:05) <strong>Lawouach:</strong> I had to do a if/else within the handler<br />
+(10:39:15) <strong>MS-:</strong> Yep.<br />
+(10:39:25) <strong>Lawouach:</strong> it's fine but also a bit... hmmm<br />
+(10:39:32) <strong>MS-:</strong> inelegant<br />
+(10:39:36) <strong>Lawouach:</strong> yes<br />
+(10:40:04) <strong>Lawouach:</strong> but I don't blame Ryan's code, I don't think it was a priority :)<br />
+(10:40:10) <strong>Lawouach:</strong> rightly so<br />
+(10:40:30) <strong>Lawouach:</strong> moreover<br />
+(10:40:41) <strong>Lawouach:</strong> the dispatching based on the path of the URI<br />
+(10:40:44) <strong>Lawouach:</strong> is cumbersome<br />
+(10:40:50) <strong>Lawouach:</strong> and will be prone to error<br />
+(10:40:55) <strong>Lawouach:</strong> because it is way to simplistic<br />
+(10:40:59) <strong>Lawouach:</strong> mind you<br />
+(10:41:06) <strong>Lawouach:</strong> this is easily tweakable<br />
+(10:41:12) <strong>Lawouach:</strong> via the createRequestHandler code<br />
+(10:41:37) <strong>Lawouach:</strong> it'd be nice however if K. could have better code in built-in<br />
+(10:41:52) <strong>Lawouach:</strong> something based on Routes/selector for instance would be great<br />
+(10:42:32) <strong>Lawouach:</strong> brb<br />
+(10:42:39) <strong>MS-:</strong> np<br />
+(10:44:03) <strong>Lawouach:</strong> back<br />
+(10:44:26) <strong>Lawouach:</strong> anyway, I think Ryan's code s a very good stab at HTTP/1.1<br />
+(10:44:33) <strong>Lawouach:</strong> it supports many features<br />
+(10:44:39) <strong>Lawouach:</strong> it's just a bit rough around the edges<br />
+(10:44:57) <strong>MS-:</strong> Indeed, I was impressed with what he managed to get written quickly<br />
+(10:45:32) <strong>MS-:</strong> Examples of APIs you like would be useful.<br />
+(10:45:41) <strong>MS-:</strong> In essence this will be an "odd" area<br />
+(10:46:05) <strong>MS-:</strong> because in order to stay useful as a kamaelia component, certain aspects of the API need to stay<br />
+(10:46:14) <strong>MS-:</strong> However it's a component that sits on an edge<br />
+(10:46:19) <strong>MS-:</strong> (an adapter)<br />
+(10:46:24) <strong>MS-:</strong> to other sorts of libraries<br />
+(10:46:33) <strong>Lawouach:</strong> yes<br />
+(10:46:41) <strong>MS-:</strong> So knowing a better API would be useful<br />
+(10:46:57) <strong>Lawouach:</strong> it would not need much<br />
+(10:46:58) <strong>MS-:</strong> (After all providing that API would be best implemented as a component itself)<br />
+(10:49:32) <strong>MS-:</strong> OK, I think I'll create a PTP page for the HTTPServer, and copy this into the discussion area.<br />
+(10:50:35) <strong>MS-:</strong> I think having an adapter component that adapts the framework to provide a WSGI interface would probably be a good step since it then<br />
+(10:50:45) <strong>MS-:</strong> makes the server more generally available<br />
+(10:50:53) <strong>MS-:</strong> Not that I've ever written any WSGI stuff<br />
+(10:51:39) <strong>Lawouach:</strong> but as you said this component lives on the edge, that means, I know my library does not take benefit from K. per se, but instead I use the HTTPServer as an interface between my library and K.<br />
+(10:51:50) <strong>Lawouach:</strong> I expect more of this to happen in the future<br />
+(10:51:58) <strong>MS-:</strong> Yep<br />
+(10:52:20) <strong>MS-:</strong> I've been considering also providing a file like interface to components BTW<br />
+(10:52:24) <strong>Lawouach:</strong> re: WSGI &lt;-- yes indeed!<br />
+<br />
+<br />
+</p>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>

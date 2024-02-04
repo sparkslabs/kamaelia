@@ -1,0 +1,171 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<h1 id="project-task-page-multicast-rtp-mpeg-remultiplexer">Project Task Page: Multicast RTP MPEG Remultiplexer</h1>
+<div class="boxright">
+<p><strong>Status:</strong> Blocked <em>- Awaiting hardware purchase authorisation</em><br />
+<strong>Current Developers:</strong> <em>Matt</em><br />
+<strong>Current "inflight" dev location:</strong> <em>/Sketches/MH/RTP/</em><br />
+<strong>Start Date:</strong> ??<br />
+<strong>Major Milestone date:</strong> n/a<br />
+<strong>Expected End Date:</strong> 22nd December 2006<br />
+<strong>End Date:</strong> <em>tbd</em><br />
+<strong>Date this page last updated:</strong> <em>27th November 2006</em><br />
+<strong>Estimated effort so far:</strong> <em>??</em><br />
+</p>
+</div>
+<h3 id="description">Description</h3>
+<p>A tool to mix MPEG transport streams received over multicast in RTP format; and rebroadcast as a new multicast RTP stream.<br />
+<br />
+Internal work on developing live multicast streaming services needs a way to take data from one stream and mix it into another. The streams are multicast RTP packets containing MPEG Transport Stream data. The tool, when deployed should be able to run 24/7, combining a subset of data from 2 or more streams to generate a new one.<br />
+<br />
+Benefits:<br />
+</p>
+<ul>
+<li>RTP packetising/depacketising components</li>
+<li>Possibly more MPEG components</li>
+<li>Seleector and multicast component optimisations<br />
+</li>
+</ul>
+<p><br />
+</p>
+<h2 id="inputs">Inputs</h2>
+<p>Task Sponsor: BB (BBC internal)<br />
+Task Owner: Matt (MH)<br />
+Developers:<br />
+</p>
+<ul>
+<li>Matt</li>
+</ul>
+<p>Users:<br />
+</p>
+<ul>
+<li>BB</li>
+</ul>
+<p>Interested Third Parties<br />
+</p>
+<ul>
+<li>RB (BBC internal)</li>
+</ul>
+<p>Requirements (non exhaustive):<br />
+</p>
+<p>Receive multicast RTP containing MPEG Transport Stream containing H264 @ ~1Mbit/s (MUST)</p>
+<p>Simulataneously receive a 2nd multicast RTP containing MPEG Transport Stream containing EIT data and MPEG2 video @ ~5Mbit/s (MUST)</p>
+<p>Combine EIT data from 2nd stream with video from the 1st to form a new stream (MUST)<br />
+</p>
+<p>Transmit the new stream as multicast RTP (MUST)</p>
+<p>Adjust stream timestamps (MPEG Transport Stream level, and possibly MPEG Program Elementary Stream level) if needed (WOULD LIKE)</p>
+<ul>
+<li>uncertain of this until able to test with various clients</li>
+<li>Derived from discussions with RB<br />
+</li>
+</ul>
+<h2 id="outputs">Outputs</h2>
+<h3 id="expected">Expected</h3>
+<p>Components to parse and create RTP packets</p>
+<p>Command line tool, as described</p>
+<ul>
+<li>/Sketches/MH/RTP/RTPMux.py</li>
+</ul>
+<p>Webpages describing:</p>
+<ul>
+<li>architecture</li>
+<li>usage<br />
+</li>
+</ul>
+<h3 id="actual">Actual</h3>
+<p>Code</p>
+<p>RTP handling</p>
+<ul>
+<li>/Sketches/MH/RTP/RTPFramer.py</li>
+<li>/Sketches/MH/RTP/RTPDeFramer.py</li>
+</ul>
+<p>Internet components (uprades/modifications)<br />
+</p>
+<ul>
+<li>/Sketches/MH/RTP/Multicast_transceiver.py</li>
+<li>/Sketches/MH/RTP/Selector.py</li>
+<li>/Sketches/MH/RTP/ConnectedSocketAdaptor.py</li>
+</ul>
+<p>DVB/MPEG Transport stream processing</p>
+<ul>
+<li>/Sketches/MH/DVB_Remux/ExtractPCR.py<br />
+</li>
+</ul>
+<p>Realistic possibilities arising as a result of activity on this task</p>
+<p>New/modified components for mainline codebase (RTP, DVB)</p>
+<ul>
+<li>review and merge some or all of the above components</li>
+</ul>
+<h2 id="related-tasks">Related Tasks</h2>
+<h3 id="tasks-that-directly-enable-this-task-dependencies">Tasks that directly enable this task (dependencies)</h3>
+<ul>
+<li>n/a<br />
+</li>
+</ul>
+<h3 id="subtasks">Subtasks</h3>
+<p>Improved throughput of multicast component and Selector in general</p>
+<ul>
+<li>rewrite multicast_transceiver to use Selector</li>
+<li>modified Selector to be instantly woken if a component requests to add a reader/writer/exceptional</li>
+</ul>
+<p>Develop code<br />
+</p>
+<h2 id="task-log">Task Log</h2>
+<ul>
+<li>05 October 2006 - Matt : Added developer Matt. <strong>Task status changed</strong> to Running<br />
+</li>
+<li>11 October 2006 - Matt : development to date: Time spent 5 days. <strong>Task status changed</strong> to stasis<br />
+</li>
+<li>12 November 2006 - Matt : Code modifications: Time spent 1/2 day.</li>
+<li>20 November 2006 - Matt : <strong>Task status changed</strong> to blocked - requested, and awaiting, hardware &amp; info on streams from BB<br />
+</li>
+</ul>
+<h2 id="discussion">Discussion</h2>
+<p>Need to determine, experimentally, if timestamp resynchronisation algorithms will be neededIf resynchronisation algorithms are needed. Technically remultiplexing severely jitters the timestamps on the transport stream packets.<br />
+</p>
+<ul>
+<li>For a traditional Set-top-box style receiver device, these timestamps are used to regenerate the precise bitrate of the original data stream. They do this for the purposes of generating their own timing clocks for video and audio output. (RB)<br />
+</li>
+<li>Computer based video players are probably less likely to use this as they don't have access or control over very accurate clocks, or the precise timing of their local sound and video subsystems. Instead they are more likely to simply buffer data and play it at their own rate. (Matt)</li>
+<li>This may be a substantial piece of work, as MPEG PES packets will need decoding from transport stream packets and an algorithm would have to be identified or devised to calculate the new timestamps. This may be problematic as the original streams appear to be highly variable bitrate.<br />
+</li>
+</ul>
+<p>CPU load is higher than anticipated - handling a single 1-2Mbit/s stream takes 50%+ CPU usage on the Mac Mini currently being used for testing. Faster hardware, and possibly further optimisations, are required.<br />
+<br />
+Selector component has been improved (local copy in the working dir) to increase responsiveness. Specifically, instead of requests to select on file handles queueing up at its inbox until the current select() call timeout fires; a separate filehandle is used to wake it immediately if there are pending requests.<br />
+<br />
+The Multicast components have been optimised (local copy in the working dir) to sleep when inactive, using the Selector component to wake them.<br />
+<br />
+</p>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>

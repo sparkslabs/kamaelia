@@ -1,0 +1,54 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<h1 id="notes-on-using-the-pygame-mixer">Notes on using the pygame mixer</h1>
+<p>In order to use the pygame mixer in a Kamaelia component there are a couple of extra steps you need to take to make it initialize properly. These are necessary so you can use the component in conjuction with the various pygame UI components, which disable the mixer by default to allow other sound sources to take control if they need to. The steps to getting the mixer working are as follows.<br />
+<br />
+</p>
+<h3 id="in-__init__">In __init__()</h3>
+<p>If you call any pygame.mixer methods or objects in your component's __init__() then you initialize the mixer by calling pygame.mixer.init(). Although you would expect this to keep the mixer initialized for the main method in some instances this does not happen, so you also need to make some small changes in your component's main method.<br />
+</p>
+<h3 id="in-main">in main()</h3>
+<p><br />
+If you call any pygame.mixer methods of objects in your component's main() method then you need to initialize the mixer a second (and potentially third) time. This can be done by adding the following code the the loop in your component's main method.<br />
+<br />
+</p>
+<pre><code>def main():
+    while 1: #This is your main loop
+        if not pygame.mixer.get_init():
+         pygame.mixer.init()
+     # You are safe to call pygame.mixer methods here
+        yield 1 </code></pre>
+<p><br />
+</p>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>

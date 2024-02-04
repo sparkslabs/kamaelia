@@ -1,0 +1,177 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<div class="container">
+<h1 id="kamaelia.file.unixprocess2"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.File.html" class="reference">File</a>.<a href="/Components/pydoc/Kamaelia.File.UnixProcess2.html" class="reference">UnixProcess2</a></h1>
+<section>
+<div class="container">
+<ul>
+<li><strong>component <a href="/Components/pydoc/Kamaelia.File.UnixProcess2.UnixProcess2.html" class="reference">UnixProcess2</a></strong></li>
+</ul>
+</div>
+<ul>
+<li><a href="#702" class="reference">Unix sub processes with communication through pipes</a>
+<ul>
+<li><a href="#703" class="reference">How is this different to UnixProcess?</a></li>
+<li><a href="#704" class="reference">Example Usage</a></li>
+<li><a href="#705" class="reference">Behaviour</a></li>
+<li><a href="#706" class="reference">How does it work?</a></li>
+<li><a href="#707" class="reference">XXX Fix Me</a></li>
+</ul></li>
+</ul>
+</section>
+<h1 id="unix-sub-processes-with-communication-through-pipes-702">Unix sub processes with communication through pipes {#702}</h1>
+<p>UnixProcess2 allows you to start a separate process and send data to it and receive data from it using the standard input/output/error pipes and optional additional named pipes.</p>
+<p>This component works on *nix platforms only. It is almost certainly not Windows compatible. Tested only under Linux.</p>
+<h2 id="how-is-this-different-to-unixprocess-703"><span id="how-is-this-different-to-unixprocess">How is this different to UnixProcess?</span> {#703}</h2>
+<p>UnixProcess2 differs from UnixProcess in the following ways:</p>
+<ul>
+<li>UnixProcess2 does not drop data if there is a backlog.</li>
+<li>UnixProcess2 allows you to set up extra named input and output pipes.</li>
+<li>UnixProcess2 supports sending data to size limited inboxes. The subprocess will be blocked if its output is going into an inbox that is full. This enables you to use size limited inboxes to regulate the subprocess.</li>
+<li>UnixProcess2 does not take data from its inboxes until it is able to deliver it to the subprocess. If the inboxes are set to be size limiting, this can therefore be used to limit the rate of execution of upstream components.</li>
+</ul>
+<h2 id="example-usage-704"><span id="example-usage">Example Usage</span> {#704}</h2>
+<p>Using the 'wc' word count GNU util to count the number of lines in some data:</p>
+<pre class="literal-block"><code>Pipeline( RateControlledFileReader(filename, ... ),
+          UnixProcess2(&quot;wc -l&quot;),
+          ConsoleEchoer(),
+        ).run()</code></pre>
+<p>Feeding separate audio and video streams to ffmpeg, and taking the encoded output:</p>
+<pre class="literal-block"><code>Graphline(
+    ENCODER = UnixProcess2( &quot;ffmpeg -i audpipe -i vidpipe -&quot;,
+                           inpipes = { &quot;audpipe&quot;:&quot;audio&quot;,
+                                       &quot;vidpipe&quot;:&quot;video&quot;,
+                                     },
+                           boxsizes = { &quot;audio&quot;:2, &quot;video&quot;:2 }
+                         ),
+    VIDSOURCE = MaxSpeedFileReader(...),
+    AUDSOURCE = MaxSpeFileReader(...),
+    SINK = SimpleFileWriter(&quot;encodedvideo&quot;),
+    linkages = {
+        (&quot;VIDSOURCE&quot;,&quot;outbox&quot;) : (&quot;ENCODER&quot;,&quot;video&quot;),
+        (&quot;AUDSOURCE&quot;,&quot;outbox&quot;) : (&quot;ENCODER&quot;,&quot;audio&quot;),
+        (&quot;ENCODER&quot;,&quot;outbox&quot;) : (&quot;SINK&quot;, &quot;inbox&quot;),
+        }
+    ).run()</code></pre>
+<h2 id="behaviour-705"><span id="behaviour">Behaviour</span> {#705}</h2>
+<p>At initialisation, specify:</p>
+<blockquote>
+<ul>
+<li>the command to invoke the sub process</li>
+<li>the size limit for internal buffers</li>
+<li>additional named input and output pipes</li>
+<li>box size limits for any input pipe's inbox, including "inbox" for STDIN</li>
+</ul>
+</blockquote>
+<p>Named input pipes must all use different inbox names. They must not use "inbox" or "control". Named output pipes may use any outbox name they wish. More than one named ouput pipe can use the same outbox, including "outbox".</p>
+<p>The pipe files needed for named pipes are created automatically at activation and are deleted at termination.</p>
+<p>Activate UnixProcess2 and the sub process will be started. Use the inboxes and outboxes of UnixProcess2 to communicate with the sub process. For example:</p>
+<pre class="literal-block"><code>UnixProcess2( &quot;ffmpeg -i /tmp/inpipe -f wav /tmp/outpipe&quot;,
+             inpipes  = { &quot;/tmp/inpipe&quot; :&quot;in&quot;  },
+             outpipes = { &quot;/tmp/outpipe&quot;:&quot;out&quot; },
+           )
+        ________________________________________________
+       |                UnixProcess2                     |
+       |             _______________________            |
+       |            |   &quot;ffmpeg -i ...&quot;     |           |
+---&gt; &quot;inbox&quot; ---&gt; STDIN                  STDOUT ---&gt; &quot;outbox&quot; ---&gt;
+       |            |                    STDERR ---&gt; &quot;error&quot;  ---&gt;
+       |            |                       |           |
+---&gt; &quot;in&quot;    ---&gt; &quot;/tmp/inpipe&quot;  &quot;/tmp/outpipe&quot; ---&gt; &quot;out&quot;    ---&gt;
+       |            |_______________________|           |
+       |________________________________________________|</code></pre>
+<p>Send binary string data to the "inbox" inbox and it will be sent to STDIN of the proces.</p>
+<p>Binary string data from STDOUT and STDERR is sent out of the "outbox" and "error" outboxes respectively.</p>
+<p>To send to a named pipe, send binary string data to the respective inbox you specified.</p>
+<p>Data written by the sub process to a named output pipe will be sent out of the respective outbox.</p>
+<p>The specified buffering size sets a maximum limit on the amount of data that can be buffered on the inputs and outputs to and from the sub process. It also determines the chunk size in which data coming from the sub process will emerge. Note therefore that data may languish in an output buffer indefinitely until the process terminates. Do not assume that data coming from a sub process will emerge the moment it is generated.</p>
+<p>UnixProcess2 will leave data in its inboxes until it is able to send it to the required pipe. If a destination box is full (noSpaceInBox exception) then UnixProces will wait and retry until it succeeds in sending the data.</p>
+<p>If the sub process closes its pipes (STDIN, STDOUT, STDERR) then UnixProcess2 will close its named input and output pipes too, and will send a producerFinished message out of its "signal" outbox then immediately terminate.</p>
+<p>If a producerFinished message is received on the "control" inbox, UnixProcess2 will finish passing any pending data waiting in inboxes into the sub process and will finish passing on any pending data waiting to come from the sub process onto destination outboxes. Once this is complete, UnixProcess2 will close all pipes and send a producerFinished message out of its "signal" outbox and immediately terminate.</p>
+<p>If a shutdownMicroprocess message is received on the "control" inbox, UnixProcess2 will close all pipes as soon as possible and send the message on out of its "signal" outbox and immediately terminate.</p>
+<h2 id="how-does-it-work-706"><span id="how-does-it-work">How does it work?</span> {#706}</h2>
+<p>The UnixProcess2 component itself is primarily just the initiator of the sub process and a container for other child components that handle the actual I/O with pipes. It uses _ToFileHandle and _FromFileHandle components for each input and output pipe respectively.</p>
+<p>For each specified named pipe, the specified pipe file is created if required (using mkfifo).</p>
+<p>The shutdown signalling boxes of all child components are daisy chained. Shutdown messages sent to the "control" inbox of UnixProcess2 are routed to the "control" inbox of the component handling STDIN. The shutdown message is then propagated to named output pipes and then named input pipes.</p>
+<p>If STDOUT close it causes STDERR to close. If STDERR closes then the shutdown message is propagated to STDIN and then onto named pipes as described above.</p>
+<p>When the process exits, it is assumed the STDIN, STDOUT and STDERR will close by themselves in due course. However an explicit shutdown message is sent to the named pipes.</p>
+<h2 id="xxx-fix-me-707"><span id="xxx-fix-me">XXX Fix Me</span> {#707}</h2>
+<p>If UnixProcess2 is terminated by receiving shutdown messages, it doesn't currently explicitly terminate the sub process.</p>
+<hr />
+<h1 id="kamaelia.file.unixprocess2.unixprocess2"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.File.html" class="reference">File</a>.<a href="/Components/pydoc/Kamaelia.File.UnixProcess2.html" class="reference">UnixProcess2</a>.<a href="/Components/pydoc/Kamaelia.File.UnixProcess2.UnixProcess2.html" class="reference">UnixProcess2</a></h1>
+<h2 id="symbol-UnixProcess2">class UnixProcess2(<a href="/Docs/Axon/Axon.Component.component.html" class="reference">Axon.Component.component</a>)</h2>
+<p>UnixProcess2(command[,buffersize][,outpipes][,inpipes][,boxsizes]) -&gt; new UnixProcess2 component.</p>
+<p>Starts the specified command as a separate process. Data can be sent to stdin and received from stdout. Named pipes can also be created for extra channels to get data to and from the process.</p>
+<p>Keyword arguments:</p>
+<pre class="literal-block"><code>- command     -- command line string that will invoke the subprocess
+- buffersize  -- bytes size of buffers on the pipes to and from the process (default=32768)
+- outpipes    -- dict mapping named-pipe-filenames to outbox names (default={})
+- inpipes     -- dict mapping named-pipe-filenames to inbox names (default={})
+- boxsizes    -- dict mapping inbox names to box sizes (default={})</code></pre>
+<h3 id="inboxes"><span id="symbol-UnixProcess2.Inboxes">Inboxes</span></h3>
+<ul>
+<li><strong>control</strong> : Shutdown signalling</li>
+<li><strong>inbox</strong> : Binary string data to go to STDIN of the process.</li>
+</ul>
+<h3 id="outboxes"><span id="symbol-UnixProcess2.Outboxes">Outboxes</span></h3>
+<ul>
+<li><strong>outbox</strong> : Binary string data from STDOUT of the process</li>
+<li><strong>signal</strong> : Shutdown signalling</li>
+<li><strong>_shutdownPipes</strong> : For shutting down any named pipes used for output</li>
+<li><strong>error</strong> : Binary string data from STDERR of the process</li>
+</ul>
+<h3 id="methods-defined-here">Methods defined here</h3>
+<div class="container">
+<div class="boxright">
+<p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div>
+</div>
+<h4 id="init__self-command-buffersize-outpipes-inpipes-boxsizes"><span id="symbol-UnixProcess2.__init__">__init__(self, command[, buffersize][, outpipes][, inpipes][, boxsizes])</span></h4>
+<p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</p>
+<h4 id="childrendoneself"><span id="symbol-UnixProcess2.childrenDone">childrenDone(self)</span></h4>
+<p>Unplugs any children that have terminated, and returns true if there are no running child components left (ie. their microproceses have finished)</p>
+<h4 id="mainself"><span id="symbol-UnixProcess2.main">main(self)</span></h4>
+<p>main loop</p>
+<h4 id="setupnamedinpipesself-pipeshutdown"><span id="symbol-UnixProcess2.setupNamedInPipes">setupNamedInPipes(self, pipeshutdown)</span></h4>
+<h4 id="setupnamedoutpipesself-pipeshutdown"><span id="symbol-UnixProcess2.setupNamedOutPipes">setupNamedOutPipes(self, pipeshutdown)</span></h4>
+<section>
+
+</section>
+</div>
+<h1 id="feedback">Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer? Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback <a href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701" class="reference">here</a> in reply to the documentation thread in the Kamaelia blog.</p>
+<p><em>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</em></p>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>
