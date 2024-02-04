@@ -1,0 +1,105 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<h1 id="release-progress-0.7.0">Release Progress: 0.7.0</h1>
+<p>This page is for tracking 0.7.0 from planning through to release <strong>Current status:<br />
+<span style="background-color: rgb(51, 255, 51);"> FROZEN</span></strong><br />
+Freeze Target: 2008/11/23<br />
+Release Target: w/e 2008/11/30<br />
+<strong>If you're looking for the current release</strong>, please go to the <a href="GetKamaelia.html">Get Kamaelia</a> page since it always links to the current version</p>
+<h2 id="draft-release-notes">Draft Release Notes</h2>
+<p>SuSE packaging for <a href="http://rpm.pbone.net/index.php3/stat/4/idpl/9272711/com/python-axon-1.5.1-1.1.i586.rpm.html">Axon</a> &amp; <a href="http://rpm.pbone.net/index.php3/stat/4/idpl/9308970/com/python-kamaelia-0.5.0-1.1.i586.rpm.html">Kamaelia</a> in done</p>
+<p>Repackaging for a new release seems relatively simple</p>
+<ul>
+<li>grab the SRPM, do a rpmbuild -bp <em>specfile</em></li>
+<li>copy the new tar ball into the SOURCES directory</li>
+<li>edit the specfile to update it to point at the new tarball, and update the change log<br />
+</li>
+<li>Then rebuild the binary rpm using rpmbuild -bb <em>specfile</em></li>
+<li>Test it, by installing the new binary file</li>
+<li>Assuming you're happy with the results, build a source RPM as well using: rpmbuild -bs <em>specfile</em></li>
+<li>Upload, announce, be happy.</li>
+<li>Tell the nice people at suse that you've done this :-)</li>
+</ul>
+<p>DVB_Multiplex component changed to support multiple adapters (ie not just adapter0)</p>
+<p>DVB/Core.py, DVB/Tuner.py changed to automatically pick up which DVB tuning class. Now supports DVB-C (in holland) as well.<br />
+</p>
+<ul>
+<li>python_dvb3 bindings updates to 0.0.5 - added in a support function.<br />
+</li>
+</ul>
+<p>Extended Kamaelia.Util.Console.ConsoleReader to have clean shutdown</p>
+<p>Tyson's File Append component:</p>
+<ul>
+<li>Merged onto branch private_MPS_FileAppender</li>
+<li>Cleaned up, documentation added, extended slightly</li>
+</ul>
+<p>Implemented better graphline shutdown on branch private_MPS_ImprovedGraphlineShutdown:</p>
+<p>It extended Graphline slightly such that, when a message is received on the Graphline's "control" inbox, that the message is copied to all subcomponents' "control" inbox, as long as they don't already have anything linking there already.</p>
+<p>If a shutdown message is sent to the graphline, the graphline will now terminate normally, after having passed on that message to subcomponents.</p>
+<p>Example of usage here: <a href="http://kamaelia.googlecode.com/svn/branches/private_MPS_ImprovedGraphlineShutdown/Kamaelia/Examples/UsingChassis/Graphline/DemoShutdown.py">DemoShutdown.py</a></p>
+<p>Also now has a decent test suite.</p>
+<ul>
+<li>Worth investigating how to extract and generalise the general test pattern from this.</li>
+</ul>
+<h2 id="work-in-progress---bumped-to-0.8.12">Work in progress - Bumped to 0.8.12</h2>
+<p><strong>Note:</strong> <em>"if not done by"</em> is a means of timing out ownership of an item. It makes no judgement other than that.<br />
+</p>
+<p>Awaiting review/merge</p>
+<ul>
+<li>review/merge <a href="http://groups.google.com/group/kamaelia/browse_frm/thread/599eefa8ee835b5b"><span id="thread_subject_site">private_CL_Topology3DCore</span></a><span id="thread_subject_site">(27/10)</span></li>
+</ul>
+<!-- -->
+<ul>
+<li><span id="thread_subject_site">Reclaimed by Michael 2/11/08. If not merged by 5/11/08, becomes unclaimed again.<br />
+</span></li>
+</ul>
+<h2 id="bumped-to-0.8.12">Bumped to 0.8.12</h2>
+<p>Current outline plans discussed:<br />
+</p>
+<ul>
+<li>Merged of Chong's Google Summer of code project - <a href="/Developers/Projects/3DTopologyVisualiser.html">3D visualisation work</a> (since this is something I actually need sooner rather than later)</li>
+<li>Flesh out http://www.kamaelia.org/Presentations somewhat...<br />
+</li>
+<li>Packaging up of the <a href="http://www.kamaelia.org/t/TN-LinuxFormat-Kamaelia.pdf">whiteboard</a> (pdf) as a standalone app</li>
+<li>Packaging up of the <a href="http://code.google.com/p/kamaelia/source/browse/branches/private_MPS_Participate/Apps/FileProcessor/App/BatchFileProcessor.py">batch file processor</a> (image/video transcoder) as a standalone app (or better packaging than <a href="http://http//www.kamaelia.org/release/Kamaelia-FileProcessor-0.1.0.tar.gz">this</a>)</li>
+<li>A mirror of the Ben's <a href="http://code.google.com/p/kamaelia-aws/">Kamaelia AWS</a> code into Kamaelia.Apps.AWS, if it's at a stage where it's ready. (aside from reviews etc)</li>
+<li>Merge of Jason's google summer of code on on extensions/improvements to the HTTP server code, including a better example of the seaside like functionality. (I think <a href="/Developers/Projects/KamaeliaPublish.html">Kamaelia Publish</a> itself should probably wait until 0.8.12 or 0.9.X) Probably after it gets a clearer name.</li>
+<li>Perhaps initial work on <a href="http://groups.google.com/group/kamaelia/browse_frm/thread/7c9fe6a4202303e5">integration of the STM code into the CAT</a>. (The what? <a href="http://www.slideshare.net/kamaelian/sharing-data-and-services-safely-in-concurrent-systems-using-kamaelia-presentation/">The STM and CAT tools were discussed at pycon uk</a>) Though I suspect this will get started now, and merged in 0.8.12</li>
+<li>2.6 cleanups (probably based on hinting from 2to3), and work started on a 3.0 autoconversion/build system.</li>
+<li>Other stuff I'd like to see includes : work started on rationalising Kamaelia.File, Full review and merge of UDP_ng code in place of current UDP code, basic "connected" UDP server support (perhaps) (ie such that it can be used as a drop in replacement for TCPServer in ServerCore)</li>
+</ul>
+<p>...<br />
+<br />
+</p>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>

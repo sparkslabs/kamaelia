@@ -1,0 +1,65 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<h2 id="kamaelia-publish-open-issues">Kamaelia Publish Open Issues</h2>
+<p>This page is intended to be a big "todo" list for Kamaelia Publish.  It may or may not a lot of items that I would like to get done but may not have time for.  So this page shouldn't be construed as being a part of my GSoC work (but some of it will be).<br />
+<br />
+</p>
+<h3 id="bugs">Bugs</h3>
+<p>The software still needs much more testing, so this really only represents a list of known bugs:<br />
+<br />
+</p>
+<ul>
+<li>When the gateway logs in, sometimes it receives messages indicating which users are online, sometimes it doesn't.  The gateway should check a user's online status with the server before assuming they are offline.<br />
+</li>
+</ul>
+<h3 id="enhancements">Enhancements</h3>
+<p><del>Make static content able to be served.</del></p>
+<ul>
+<li>Static content is now served by the gateway.  The peer is capable of serving such files, but such would be REALLY slow and somewhat more complicated.<br />
+</li>
+</ul>
+<p>Add the capability to look up registered and possibly logged in users in a database.</p>
+<ul>
+<li>Partially completed:  Registered users and whether they are logged in or not can be stored in a SQLite database.</li>
+<li>sub-issue:  Get the gateway able to use more different kinds of databases like MySQL, PostgreSQL, etc.</li>
+<li>sub-issue:  Having to look up whether or not a user is online EVERY time will probably affect performance.  Some kind of caching system should be in place.<br />
+</li>
+</ul>
+<p>Add the capability to send data between the Gateway and serving peer directly.  This can be done by either doing an XMPP file transfer or possibly bypassing XMPP altogether.</p>
+<p>Look into getting the Peer to work on Python 2.2.  Being able to run a webserver on Symbian would be Pretty Damn Cool (tm).</p>
+<ul>
+<li>This is definitely a "would be nifty" idea.  I have no idea if this is even feasible or how much work would be involved in this.<br />
+</li>
+</ul>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>

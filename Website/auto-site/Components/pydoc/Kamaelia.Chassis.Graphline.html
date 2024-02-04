@@ -1,0 +1,220 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<div class="container">
+<h1 id="kamaelia.chassis.graphline"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Chassis.html" class="reference">Chassis</a>.<a href="/Components/pydoc/Kamaelia.Chassis.Graphline.html" class="reference">Graphline</a></h1>
+<section>
+<div class="container">
+<ul>
+<li><strong>component <a href="/Components/pydoc/Kamaelia.Chassis.Graphline.Graphline.html" class="reference">Graphline</a></strong></li>
+</ul>
+</div>
+<ul>
+<li><a href="#283" class="reference">Wiring up components in a topology</a>
+<ul>
+<li><a href="#284" class="reference">Example Usage</a></li>
+<li><a href="#285" class="reference">Shutdown Examples</a></li>
+<li><a href="#286" class="reference">How does it work?</a></li>
+<li><a href="#287" class="reference">Shutdown Handling</a></li>
+</ul></li>
+<li><a href="#288" class="reference">Test documentation</a></li>
+</ul>
+</section>
+<section>
+<h1 id="wiring-up-components-in-a-topology-283">Wiring up components in a topology {#283}</h1>
+<p>The Graphline component wires up a set of components and encapsulates them as a single component. They are wired up to each other using the 'graph' of linkages that you specify.</p>
+<h2 id="example-usage-284"><span id="example-usage">Example Usage</span> {#284}</h2>
+<p>Joining a PromtedFileReader and a rate control component to make a file reader that reads at a given rate:</p>
+<pre class="literal-block"><code>return Graphline(RC  = ByteRate_RequestControl(**rateargs),
+                 RFA = PromptedFileReader(filename, readmode),
+                 linkages = { (&quot;RC&quot;,  &quot;outbox&quot;)  : (&quot;RFA&quot;, &quot;inbox&quot;),
+                             (&quot;RFA&quot;, &quot;outbox&quot;)  : (&quot;self&quot;, &quot;outbox&quot;),
+                             (&quot;RFA&quot;, &quot;signal&quot;)  : (&quot;RC&quot;,  &quot;control&quot;),
+                             (&quot;RC&quot;,  &quot;signal&quot;)  : (&quot;self&quot;, &quot;signal&quot;),
+                             (&quot;self&quot;, &quot;control&quot;) : (&quot;RFA&quot;, &quot;control&quot;)
+                             }</code></pre>
+<p>The references to 'self' create linkages that passes through a named inbox on the graphline to a named inbox of one of the child components. Similarly a child's outbox is pass-through to a named outbox on the graphline.</p>
+<h2 id="shutdown-examples-285"><span id="shutdown-examples">Shutdown Examples</span> {#285}</h2>
+<p>In this example:</p>
+<ul>
+<li>Pinger is a component that sends the messages from "tosend" after with a brief delay between messages. It sends the messages out of the stated outbox.</li>
+<li>Waiter is a component that starts up, and then waits for any message sent to its inbox "control"</li>
+<li>Whinger is a component that complains that it is running periodically, but will shutdown if it receives any message on its inbox "control"</li>
+</ul>
+<p>As a result, this example creates 3 components inside a graphline that wait for shutdown. The Pinger sends a message, which is duplicated to all the subcomponents, at which point in time, they shutdown, causing the system to shutdown:</p>
+<pre class="literal-block"><code>Pipeline(
+    Pinger(tosend=[Axon.Ipc.producerFinished()],box=&quot;signal&quot;),
+    Graphline(
+        TO_SHUTDOWN1 = Waiter(),
+        TO_SHUTDOWN2 = Waiter(),
+        TO_SHUTDOWN3 = Waiter(),
+        linkages = {}
+    ),
+    Whinger(),
+).run()</code></pre>
+<p>Note: the shutdown message propogates all the way through the system to the whinger, which then also shuts down.</p>
+<p>Full code for this is in ./Examples/UsingChassis/Graphline/DemoShutdown.py</p>
+<p>You can also still have shutdown links between components. If you do, then the Graphline doesn't interfere with them:</p>
+<pre class="literal-block"><code>Pipeline(
+    Pinger(tosend=[Axon.Ipc.producerFinished()],box=&quot;signal&quot;),
+    Graphline(
+        TO_SHUTDOWN1 = Waiter(),
+        TO_SHUTDOWN2 = Waiter(),
+        TO_SHUTDOWN3 = Waiter(),
+        linkages = {
+            (&quot;TO_SHUTDOWN1&quot;,&quot;signal&quot;):(&quot;TO_SHUTDOWN2&quot;,&quot;control&quot;),
+            (&quot;TO_SHUTDOWN2&quot;,&quot;signal&quot;):(&quot;TO_SHUTDOWN3&quot;,&quot;control&quot;),
+        }
+    ),
+    Whinger(),
+).run()</code></pre>
+<p>Full code for this is in ./Examples/UsingChassis/Graphline/LinkedShutdown.py</p>
+<h2 id="how-does-it-work-286"><span id="how-does-it-work">How does it work?</span> {#286}</h2>
+<p>A Graphline component gives you a way of wiring up a system of components and then encapsulating th ewhole as a single component, with its own inboxes and outboxes.</p>
+<p>The components you specify are registered as children of the Graphline component. When you activate the component, all the child components are activated, and the linkages you specified are created between them.</p>
+<p>When specifying linkages, the component 'name' is the string version of the argument name you used to refer to the component. In the example above, the components are therefore referred to as "RC" and "RFA".</p>
+<p>If the name you specify is not one of the components you specify, then it is assumed you must be referring to the Graphline component itself. In the above example, "self" is used to make this clear. This gives you a way of passing data in and out of the system of components you have specified.</p>
+<p>In these cases, it is assumed you wish to create a pass-through linkage - you want the Graphline component to forward the named inbox to a child's inbox, or to forward a child's outbox to a named outbox of the Graphline. For example:</p>
+<pre class="literal-block"><code>Graphline( child = MyComponent(...),
+           linkages = { ...
+                        (&quot;self&quot;, &quot;inbox&quot;) : (&quot;child&quot;, &quot;bar&quot;),
+                        ... }
+         )</code></pre>
+<p>... is interpreted as meaning you want to forward the "inbox" inbox of the Graphline to the "bar" inbox of the component referred to as "child". Similarly:</p>
+<pre class="literal-block"><code>Graphline( child = MyComponent(...),
+           linkages = { ...
+                        (&quot;child&quot;, &quot;fwibble&quot;) : (&quot;self&quot;, &quot;outbox&quot;),
+                        ... }
+         )</code></pre>
+<p>...is interpreted as wishing to forward the "fwibble" outbox of the component referred to as "child" to the "outbox" outbox of the Graphline component.</p>
+<p>Any inbox or outbox you name on the Graphline component is created if it does not already exist. For example, you might want the Graphline to have a "video" and an "audio" inbox:</p>
+<pre class="literal-block"><code>Graphline( videoHandler = MyVideoComponent(),
+           audioHandler = MyAudioComponent(),
+           linkages = { ...
+                        (&quot;self&quot;, &quot;video&quot;) : (&quot;videoHandler&quot;, &quot;inbox&quot;),
+                        (&quot;self&quot;, &quot;audio&quot;) : (&quot;audioHandler&quot;, &quot;inbox&quot;),
+                        ...
+                      }
+         )</code></pre>
+<p>The Graphline component will always have inboxes "inbox" and "control" and outboxes "outbox" and "signal", even if you do not specify any linkages to them.</p>
+<p>During runtime, the Graphline component monitors the child components. It will terminate if, and only if, <em>all</em> the child components have also terminated.</p>
+<p>NOTE that if your child components create additional components themselves, the Graphline component will not know about them. It only monitors the components it was originally told about.</p>
+<p>Graphline does not GENERALLY intercept any of its inboxes or outboxes. It ignores whatever traffic flows through them. If you have specified linkages from them to components inside the graphline, then the data automatically flows to/from them as you specified.</p>
+<h2 id="shutdown-handling-287"><span id="shutdown-handling">Shutdown Handling</span> {#287}</h2>
+<p>There is however an exception: shutdown handling, where the difference is light touch, which is this:</p>
+<pre class="literal-block"><code>while not self.childrenDone():
+     always pass on messages from our control to appropriate sub-component&#39;s control
+     if message is shutdown, set shutdown flag
+
+# then after loop
+
+if no component-has-linkage-to-graphline&#39;s signal
+     if shutdown flag set:
+         pass on shutdownMicroprocess
+     else:
+         pass on producerFinished</code></pre>
+<p>If the user has wired up the graphline's control box to pass through to one of their components, then that request is honoured, and the user then becomes wholly responsible for shutdown.</p>
+<h1 id="test-documentation-288">Test documentation {#288}</h1>
+<p>Tests passed:</p>
+<ul>
+<li>Children are activated as soon as the Graphline itself is activated, but no sooner. They get activated even if they have no linkages specified to them.</li>
+<li>Children are activated as soon as the Graphline itself is activated, but no sooner. They get activated even if they have no linkages specified to them.</li>
+<li>If a graphline's "signal" outbox is specified to be wired to a child component, the graphline will send any messages itself out of its "signal" outbox, before or after all children have terminated, even if a shutdownMicroprocess or producerFinished message was sent to its "control" inbox.</li>
+<li>When all children have terminated. If no child is wired to the Graphline's "signal" outbox, the Graphline will send out its own message. The message sent will be a producerFinished message if a child is wired to the Graphline's "control" inbox, or if no shutdownMicroprocess message has been previously received on that inbox.</li>
+<li>When all children have terminated. If no child is wired to the Graphline's "signal" outbox, the Graphline will send out its own message. If no child is wired to the Graphline's "control" inbox and a shutdownMicroprocess message has been previously received on that inbox, then the message sent out will be that shutdownMicroprocess message.</li>
+<li>Instantiating with components as named arguments, and specifying an empty linkages argument succeeds</li>
+<li>Instantiating a graphline, components specified as named arguments, eg. A=component() and B=component() become children of the graphline once activated and run.</li>
+<li>Instantiating with no components as named arguments, and specifying an empty linkages argument succeeds</li>
+<li>Instantiating with components as named arguments, but specifying no linkages argument results in a ValueError exception</li>
+<li>A linkage from "outbox" to "inbox" between two named child components "A" and "B" can be specified by specifying a "linkages" argument containing a dictionary with an entry: ("A","outbox"):("B","inbox"). Data sent to A's "outbox" will reach B's "inbox" and nowhere else.</li>
+<li>If a graphline's "control" inbox and "signal" outbox are both specified to be wired to child components in the graphline, then graphline will not emit its own messages out of its "signal" outbox when it terminates (or at any other time)</li>
+<li>If a graphline's "control" inbox and "signal" outbox are not specified to be wired to a child component in the graphline then, if a shutdownMicroprocess message is sent to the "control" inbox, it will be sent on out of the "signal" outbox once all children have terminated.</li>
+<li>If a graphline's "control" inbox and "signal" outbox are not specified to be wired to a child component in the graphline then, if a any non shutdownMicroprocess message is sent to the "control" inbox, a producerFinished message will be sent on out of the "signal" outbox once all children have terminated.</li>
+<li>If a graphline's "control" inbox is specified to be wired to a child component, but its "signal" outbox is not then, irrespective of what message (eg. shutdownMicroprocess) is sent to the "control" inbox, a producerFinished message will be sent on out of the "signal" outbox once all children have terminated.</li>
+<li>If a graphline's "control" inbox is not specified to be wired to a child component in the graphline, then any message (including shutdown messages) flows to the "control" inbox of all children without linkages going to their "control" inbox only.</li>
+<li>If a graphline's "control" inbox is specified to be wired to a child component in the graphline, then any message (including shutdown messages) flow along that linkage only.</li>
+<li>Several linkages can be specified between components. They will all be created, and messages will be able to flow along them once the graphline is activated and run. Data will only flow along the specified linkages and will not leak anywhere else!</li>
+<li>Instantiating a graphline with no arguments results in a ValueError exception</li>
+<li>If a linkage is specified whose source is (X, "inbox") or (X, "control") where X is not the name given to one of the child components in the graphline, then the linkage created is a passthrough from that named inbox of the graphline to the specified destination child component in the graphline.</li>
+<li>If a linkage is specified whose source is (X, Y) where X is not the name given to one of the child components in the graphline and Y is neither "inbox" nor "control", then an inbox with name Y is created and the linkage created is a passthrough from that named inbox of the graphline to the specified destination child component in the graphline.</li>
+<li>If a linkage is specified whose destination is (X, "outbox") or (X, "signal") where X is not the name given to one of the child components in the graphline, then the linkage created is a passthrough from the specified source child component in the graphline to that named outbox of the graphline.</li>
+<li>If a linkage is specified whose destination is (X, Y) where X is not the name given to one of the child components in the graphline and Y is neither "outbox" nor "signal", then an outbox with name Y is created and the linkage created is a passthrough from the specified source child component in the graphline to that named outbox of the graphline.</li>
+<li>Graphline will terminate when all of its children have terminated, but not before.</li>
+<li>Instantiating a graphline, components specified as named arguments, eg. A=component() and B=component() will not be children of the graphline before it is activated and run</li>
+</ul>
+</section>
+<hr />
+<h1 id="kamaelia.chassis.graphline.graphline"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Chassis.html" class="reference">Chassis</a>.<a href="/Components/pydoc/Kamaelia.Chassis.Graphline.html" class="reference">Graphline</a>.<a href="/Components/pydoc/Kamaelia.Chassis.Graphline.Graphline.html" class="reference">Graphline</a></h1>
+<h2 id="symbol-Graphline">class Graphline(<a href="/Docs/Axon/Axon.Component.component.html" class="reference">Axon.Component.component</a>)</h2>
+<p>Graphline(linkages,**components) -&gt; new Graphline component</p>
+<p>Encapsulates the specified set of components and wires them up with the specified linkages.</p>
+<p>Keyword arguments:</p>
+<ul>
+<li>linkages -- dictionary mapping ("componentname","boxname") to ("componentname","boxname")</li>
+<li>components -- dictionary mapping names to component instances (default is nothing)</li>
+</ul>
+<h3 id="inboxes"><span id="symbol-Graphline.Inboxes">Inboxes</span></h3>
+<ul>
+<li><strong>control</strong> :</li>
+<li><strong>inbox</strong> :</li>
+</ul>
+<h3 id="outboxes"><span id="symbol-Graphline.Outboxes">Outboxes</span></h3>
+<ul>
+<li><strong>outbox</strong> :</li>
+<li><strong>signal</strong> :</li>
+<li><strong>_cs</strong> : For signaling to subcomponents shutdown</li>
+</ul>
+<h3 id="methods-defined-here">Methods defined here</h3>
+<div class="container">
+<div class="boxright">
+<p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div>
+</div>
+<h4 id="init__self-linkages-components"><span id="symbol-Graphline.__init__">__init__(self, linkages, **components)</span></h4>
+<p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</p>
+<h4 id="addexternalpostboxesself"><span id="symbol-Graphline.addExternalPostboxes">addExternalPostboxes(self)</span></h4>
+<p>Adds to self.Inboxes and self.Outboxes any postboxes mentioned in self.layout that don't yet exist</p>
+<h4 id="childrendoneself"><span id="symbol-Graphline.childrenDone">childrenDone(self)</span></h4>
+<p>Unplugs any children that have terminated, and returns true if there are no running child components left (ie. their microproceses have finished)</p>
+<h4 id="mainself"><span id="symbol-Graphline.main">main(self)</span></h4>
+<p>Main loop.</p>
+<section>
+
+</section>
+</div>
+<h1 id="feedback">Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer? Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback <a href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701" class="reference">here</a> in reply to the documentation thread in the Kamaelia blog.</p>
+<p><em>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</em></p>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>

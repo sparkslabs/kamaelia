@@ -1,0 +1,104 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<div class="container">
+<section>
+<h2 id="axon.idgen"><a href="/Docs/Axon/Axon.html" class="reference">Axon</a>.<a href="/Docs/Axon/Axon.idGen.html" class="reference">idGen</a></h2>
+</section>
+<h1 id="unique-id-generation">Unique ID generation</h1>
+<div class="container">
+<ul>
+<li><strong>class <a href="/Docs/Axon/Axon.idGen.idGen.html" class="reference">idGen</a></strong></li>
+</ul>
+</div>
+<ul>
+<li><a href="#70" class="reference">Generating a new unique ID</a></li>
+</ul>
+<section>
+<p>The methods of the idGen class are used to generate unique IDs in various forms (numbers, strings, etc) which are used to give microprocesses and other Axon objects a unique identifier and name.</p>
+<ul>
+<li>Every <a href="/Docs/Axon/Axon.Microprocess.microprocess.html" class="reference">Axon.Microprocess.microprocess</a> gets a unique ID</li>
+<li><a href="/Docs/Axon/Axon.ThreadedComponent.threadedcomponent.html" class="reference">Axon.ThreadedComponent.threadedcomponent</a> uses unique IDs to identify threads</li>
+</ul>
+<h2 id="generating-a-new-unique-id-70"><span id="generating-a-new-unique-id">Generating a new unique ID</span> {#70}</h2>
+<p>Do not use the idGen class defined in this module directly. Instead, use any of these module methods to obtain a unique ID:</p>
+<ul>
+<li><strong>Axon.idGen.newId(thing)</strong> - returns a unique identifier as a string based on the class name of the object provided</li>
+<li><strong>Axon.idGen.strId(thing)</strong> - returns a unique identifier as a string based on the class name of the object provided</li>
+<li><strong>Axon.idGen.numId()</strong> - returns a unique identifier as a number</li>
+<li><strong>Axon.idGen.tupleId(thing)</strong> - returns both the numeric and string versions of a new unique id as a tuple (where the string version is based on the class name of the object provided)</li>
+</ul>
+<p>Calling tupleId(thing) is <em>not</em> equivalent to calling numId() then strId(thing) because doing that would return two different id values!</p>
+<p>Examples:</p>
+<pre class="literal-block"><code>&gt;&gt;&gt; x=Component.component()
+&gt;&gt;&gt; idGen.newId(x)
+&#39;Component.component_4&#39;
+&gt;&gt;&gt; idGen.strId(x)
+&#39;Component.component_5&#39;
+&gt;&gt;&gt; idGen.numId()
+6
+&gt;&gt;&gt; idGen.tupleId(x)
+(7, &#39;Component.component_7&#39;)</code></pre>
+</section>
+<hr />
+<h1 id="axon.idgen.idgen"><a href="/Docs/Axon/Axon.html" class="reference">Axon</a>.<a href="/Docs/Axon/Axon.idGen.html" class="reference">idGen</a>.<a href="/Docs/Axon/Axon.idGen.idGen.html" class="reference">idGen</a></h1>
+<h2 id="symbol-idGen">class idGen(object)</h2>
+<section>
+<p>Unique ID creator.</p>
+<p>Use numId(), strId(), and tupleId() methods to obtain unique IDs.</p>
+</section>
+<h3 id="methods-defined-here">Methods defined here</h3>
+<h4 id="idtostringself-thing-anumid"><span id="symbol-idGen.idToString">idToString(self, thing, aNumId)</span></h4>
+<p><strong>INTERNAL</strong></p>
+<p>Combines the 'str()' of the object's class with the id to form a string id</p>
+<h4 id="nextself"><span id="symbol-idGen.next">next(self)</span></h4>
+<p><strong>INTERNAL</strong></p>
+<p>Returns the next unique id, incrementing the private class variable</p>
+<h4 id="nextidself"><span id="symbol-idGen.nextId">nextId(self)</span></h4>
+<p><strong>INTERNAL</strong></p>
+<p>Returns the next unique id, incrementing the private class variable</p>
+<h4 id="numidself"><span id="symbol-idGen.numId">numId(self)</span></h4>
+<p>Allocates &amp; returns the next available id</p>
+<h4 id="stridself-thing"><span id="symbol-idGen.strId">strId(self, thing)</span></h4>
+<p>Allocates &amp; returns the next available id combined with the object's class name, in string form</p>
+<h4 id="tupleidself-thing"><span id="symbol-idGen.tupleId">tupleId(self, thing)</span></h4>
+<p>Allocates the next available id and returns it both as a tuple (num,str) containing both the numeric version and a string version where it is combined with the object's class name.</p>
+<section>
+
+</section>
+</div>
+<h1 id="feedback">Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer? Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback <a href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701" class="reference">here</a> in reply to the documentation thread in the Kamaelia blog.</p>
+<p><em>-- Automatic documentation generator, 09 Dec 2009 at 04:00:25 UTC/GMT</em></p>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>

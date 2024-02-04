@@ -1,0 +1,71 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<p><span style="font-size:24pt;font-weight:600">Axon Release Notes</span></p>
+<p><span style="font-size:18pt">1.1.2</span></p>
+<p><span style="font-size:18pt;font-weight:600">Summary</span></p>
+<p>Instated use of ctypes to use posix.sched_yield during the main loop. This makes the system a *little* bit more other-system friendly.</p>
+<p>Added in the ability to do, effectively, blocking calls to other components. The best example using this at present in Kamaelia.UI.Pygame.Ticker</p>
+<p>Specifically you can ask the system to run a different microprocess in the place of the running one, and wait until it ends.</p>
+<p>Where self.requestDisplay is a generator with the following behaviour:</p>
+<p>This is experimental support that is likely to evolve with time. This does however allow effectively for a far more co-routine type behaviour than we had in place before - rather than generator type behaviour.</p>
+<p><span style="font-size:18pt;font-weight:600">Detailed Changelog</span></p>
+<p><span style="font-size:14pt">Changed Files:</span></p>
+<p>Axon.Component.component:</p>
+<ul>
+<li>Added introspectable documentation to the purposes of the default inboxes and outboxes. component.Inboxes["inbox"] gives you documentation on that inbox</li>
+</ul>
+<p>Axon.Ipc.py:</p>
+<ul>
+<li>WaitComplete<br />
+New IPC class allowing components to signal to the scheduler that they'd like a generator started, run to completion and then control handed back to the original generator. This is similar, in a way, to call with continuation or similar to nesting yields in a system like greenlets, but having the stacking of frames essentially handled by main system.<br />
+<br />
+This is experimental support initially. This will probably become more generalised with time, but for the moment it's put in place to cover a specific use case - getting a pygame display. This is likely to be useful in a variety of locations however.<br />
+</li>
+<li>reactivate is a sister IPC function to reactivate the original generator (ie main()) when the call is finished.</li>
+</ul>
+<p>Axon/Microprocess.py:</p>
+<ul>
+<li>microprocess class constructor extended to allow a generator object to be be passed in as the __thread of control for the microprocess. This is to support the WaitComplete functionality. This means arbitrary generators can be embdedded into a microprocess and scheduled, without creating a new class for the generator. (This has scope for use outside the core of Kamaelia of course).<br />
+<br />
+It has also been extended to allow the addition of a closeDownValue. This is a value the scheduler can look at when the microprocess finishes and can decide what to do next. An example would be to reactivate a previous thread of control using the new 'IPC' message "reactivate".</li>
+</ul>
+<p>Axon/Scheduler.py:</p>
+<ul>
+<li>A number of changes. The bulk of code change relates to code deletion. Specifically the deletion of debugging code that has not been need in over a year now. Clearly this could be re-instated easily in a targetted fashion, but for now is not needed.</li>
+<li>The addition of code supporting the new experimental WaitComplete functionality. (Experimental in terms of "what can it do", not in terms of "does it work" - it works.)</li>
+<li>The instatement of the use of ctypes (conditional import) to allow the scheduler to periodically make a posix.sched_yield call.</li>
+<li>Change to add in a method for handleMicroprocessShutdownKnockon to handle shutdown of items postmen, and WaitComplete objects.</li>
+<li>self.time added - which means a generator can now find out system time by querying self.scheduler.time. It isn't clear if this is a good or bad idea as yet.</li>
+</ul>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>

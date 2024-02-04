@@ -1,0 +1,148 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<h2 id="kamaelia-jam">Kamaelia Jam</h2>
+<h3 id="what-is-it">What is it?</h3>
+<p>Kamaelia Jam is a music sequencer designed to be used simultaneously by more than one user over a network. It will also act as a toolkit for quickly prototyping networked music applications.</p>
+<h3 id="where-do-i-get-and-install-it">Where do I get and install it?</h3>
+<p><br />
+Barely tested pre-alpha packages (marking the end of GSoC '08) can be downloaded below:<br />
+<br />
+<a href="http://www.box.net/shared/mle3bl31on">Linux</a> - See INSALL instructions in the Docs folder<br />
+<br />
+<a href="http://www.box.net/shared/mpov64vgx0">Windows</a> - Run through the installer<br />
+<br />
+</p>
+<p>The latest version of jam is available from a branch in svn. Instructions for installing the dependencies are available <a href="http://kamaelia.svn.sourceforge.net/viewvc/kamaelia/trunk/Sketches/JT/INSTALL?revision=3916&amp;view=markup">here</a>.<br />
+</p>
+<p><strong>SVN<br />
+</strong></p>
+<ul>
+<li><p><code>svn checkout http://kamaelia.googlecode.com/svn/</code>branches/private_JT_JamDev jam<br />
+</p></li>
+<li><p>cd jam/Apps/Kamaelia-Jam/DistBuild</p></li>
+<li><p>./Jam.build.sh<br />
+</p></li>
+<li><p>cd ../</p></li>
+<li><p>python setup.py install (as root)<br />
+</p></li>
+</ul>
+<h3 id="documentation-for-developers">Documentation for developers</h3>
+<p><a href="KamaeliaJam/GraphlineDiagram">High-level diagram of the major pipe and graphlines within Jam</a><br />
+<br />
+</p>
+<h3 id="planned-schedule">Planned Schedule</h3>
+<p><code>&lt; 6 Jun - Rearrange directory structure, start to look at packaging, sit</code><br />
+<code>exams</code><br />
+<code>Functionality:</code><br />
+<code>Become the proud owner of a degree :)</code><br />
+<br />
+<code>6 ``Jun`` -Improve and test timing code.  Begin to work out details of</code><br />
+<code>extenally controlling components.  Get Matt's modified CSA working with</code><br />
+<code>UDP.</code><br />
+<code>Functionality:</code><br />
+<code>* Basically this week will be mainly setting the groundwork.  The timing</code><br />
+<code>code will let me write components which talk nicely and accurately</code><br />
+<code>(&lt;1ms) in music timing (beats, bars, bpm etc).</code><br />
+<code>* Externally controlling components = getting data from an inbox (the</code><br />
+<code>network eventually) to control UI elements.  I think this will take a</code><br />
+<code>couple of goes to get right, so start to look at it here.</code><br />
+<code>* Modified CSA with UDP.  This will let me receive data over a UDP port</code><br />
+<code>without using 100% CPU.</code><br />
+<br />
+<code>16`` ``Jun`` - Write basic networking code, allowing two users to communicate.</code><br />
+<code>Test out network communication, and make strange twiddly noises with</code><br />
+<code>someone :)</code><br />
+<code>Functionality:</code><br />
+<code>* At the end of the week there should be two people at different</code><br />
+<code>computers controlling XY pads on each others computers.  As you say this</code><br />
+<code>is probably a bit pessimistic timing-wise, but I'm not very hot on</code><br />
+<code>networking, so have given a bit of leeway here for me to get up to</code><br />
+<code>speed.</code></p>
+<h1 id="section"><br />
+</h1>
+<p><br />
+<code>9 ``Jun`` - Various bits of documentation.  Package everything up and test it out.</code><br />
+<code>Functionality:</code><br />
+<code>* Packaging everything - in the week before I should have got to the</code><br />
+<code>point where I have a (albeit unexciting) working networked music app.</code><br />
+<code>Seems like a good point to test out packaging - so I should have a</code><br />
+<code>working distribution of it for the big three, which can be easily</code><br />
+<code>tested.</code><br />
+<br />
+<code>16 ``Jun`` - Get multiple client networking code working - sort out how having</code><br />
+<code>lots of users will work practically.</code><br />
+<code>Functionality:</code><br />
+<code>* Again, maybe a bit pessimistic.  By the end of the week have a system</code><br />
+<code>where multiple users can join in a session and control XY pads.  Again I</code><br />
+<code>think this may take a couple of goes to get right practically.</code><br />
+<br />
+<code>23 Jun - Write the step sequencer</code><br />
+<code>Functionality:</code><br />
+<code>* Working step sequencer which can be used by as many users as you like.</code><br />
+<br />
+30 Jun<code>- Write the piano roll (add/delete functionality)</code><br />
+<code>Functionality:</code><br />
+<code>* Working piano roll, where users can add and delete notes.</code><br />
+<br />
+<code>7 Jul`` - Extend the piano roll (move/resize functionality)</code><br />
+<code>Functionality:</code><br />
+<code>* Users will be able to move and resize notes at will - basically a</code><br />
+<code>complete network enabled step sequencer</code></p>
+<p>14 Jul - Add in various filters to make Jam work with midi out, and make sure midi component is up to scratch and working.</p>
+<p>Functionality:<br />
+* A version of Jam which can switch between MIDI and OSC output for local control<br />
+</p>
+<p><br />
+21 <code>Jul`` - Write "glue" code and fix up details (peer select widget, any</code><br />
+<code>extra UI niceness, port/socket configuration etc.)</code><br />
+<code>Functionality:</code><br />
+<code>* Deliver the above - program should be basically "complete" and ready</code><br />
+<code>for packaging here.</code><br />
+<br />
+28 <code>Jul - Finish off detail, have a look at "extra" components (hopefully)</code><br />
+<code>Functionality:</code><br />
+<code>* Detail = package it up, make sure everything is well tested, prepare</code><br />
+<code>things which need to be merged but haven't, any other stuff which needs</code><br />
+<code>doing and I've overlooked :)</code></p>
+<p>4 Aug - End - Any overrun fits here. Also work on extra components (Arduino, Multitouch etc)<br />
+</p>
+<p>===============================================================<br />
+<code>11`` Aug`` - Code cleanup, write documentation and test cases</code><br />
+<code>Functionality:</code><br />
+<code>* I'll do this as I go along - put this in because Google recommend it</code><br />
+<code>as your "pens down" date.  I guess this week can work as a bit of a</code><br />
+<code>buffer for overrun, or to sort out any of my extras stuff a bit more.</code></p>
+<p><br />
+</p>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>

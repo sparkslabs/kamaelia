@@ -1,0 +1,368 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<h1 data-align="left" id="cookbook-recording-named-programmes-from-a-dvb-broadcast">Cookbook : Recording named programmes from a DVB broadcast</h1>
+<p>Find the code for this here:<br />
+<a href="http://svn.sourceforge.net/viewvc/kamaelia/trunk/Code/Python/Kamaelia/Examples/DVB_Systems/PersonalVideoRecorder.py?view=markup">/Code/Python/Kamaelia/Examples/DVB_Systems/PersonalVideoRecorder.py</a><br />
+</p>
+<p>So we can record a <a href="../../../Cookbook/DVB/TransportStreamCapture">whole broadcast</a>, or a single channel <a href="../../../Cookbook/DVB/RecordNamedChannel">determined by its name</a>; but what about recording individual programmes?<br />
+</p>
+<h2 id="recordforme-component"><span id="recordForMe"></span> recordForMe component</h2>
+<p>We can create a component to handle each recording we want to make.The <em>recordForMe</em> component takes a channel name, programme name, and filename and will record anything broadcast on that channel with that name:</p>
+<blockquote>
+<pre><code>programmes_to_record = [
+       #  Channel     programme   filename
+       ( &quot;BBC ONE&quot;, &quot;Neighbours&quot;, &quot;/data/neighbours.ts&quot; ),
+       ( &quot;BBC TWO&quot;, &quot;Newsnight&quot;,  &quot;/data/Newsnight.ts&quot; ),
+    ]
+
+...
+
+for (channel, programme,filename) in programmes_to_record:
+    recordForMe(channel,programme,filename).activate()
+
+...
+
+scheduler.run.runThreads()</code></pre>
+</blockquote>
+<p>What does <em>recordForMe</em> need to do:</p>
+<ul>
+<li>work out when the programme starts and stops (programme junctions)</li>
+<li>work out what packet IDs contain the audio and video for the named channel</li>
+<li>ask to be sent packets with those IDs</li>
+<li>write the packets to a file<br />
+</li>
+</ul>
+<p>The <em>recordForMe</em> component is therefore a simple pipeline:</p>
+<blockquote>
+<pre><code>def recordForMe(channel, programme, filename):
+    return \
+        Pipeline( SubscribeTo(&quot;nowEvents&quot;),
+                  ProgrammeDetector( channel_name=channel, programme_name=programme,
+                                     fromChannelLookup=&quot;LookupChannelName&quot;),
+                  ControllableRecorder( channel_name=channel,
+                                        fromDemuxer=&quot;DEMUXER&quot;,
+                                        fromPSI=&quot;PSI_Tables&quot;,
+                                        fromChannelLookup=&quot;LookupChannelName&quot;),
+                  SimpleFileWriter(filename),
+        )</code></pre>
+</blockquote>
+<p>It does the following:<br />
+</p>
+<ol type="1">
+<li>It subscribes to a source of events that happen at junctions, when one programme finishes and another begins;</li>
+<li><em><a href="#ProgrammeDetector">ProgrammeDetector</a></em> examines the events to see whether it indicates the start or end of the programme and sends out "START" and "STOP" messages;</li>
+<li><a href="#ControllableRecorder"><em>ControllableRecorder</em></a> works out what packet IDs contain the audio and video for the channel so it can request them from the demuxer. It can then respond to the "START" and "STOP" by requesting the audio and video packets and sending them on;</li>
+<li><em>SimpleFileWriter</em> simply dumps the packets it receives to a file.</li>
+</ol>
+<p>Already we can see that each <em>recordForMe</em> instance will need to share access to the received DVB broadcast - specifically to do the following:<br />
+</p>
+<ul>
+<li>Get programme junction events information (<a href="#nowEvents">"nowEvents"</a> named service)</li>
+<li>Convert channel names to service IDs (<a href="#LookupChannelName">"LookupChannelName"</a> named service)</li>
+<li>Ask to be sent audio and video packets (<a href="#DEMUXER">"DEMUXER"</a> named service)</li>
+<li>Possibly reconstruct other broadcast data tables (<a href="#PSI_Tables">"PSI_Tables"</a> named service)<br />
+</li>
+</ul>
+<h2 id="supporting-services-demuxer-psi-tables-channel-names">Supporting services: demuxer, PSI tables, &amp; channel names</h2>
+<p>The supporting services are implemented as named services that components can talk to.</p>
+<h3 id="demuxing-packets-from-the-broadcast"><span id="DEMUXER"></span> Demuxing packets from the broadcast</h3>
+<p>The most basic service needed is the ability to request to be sent packets (with specific IDs) that have been received from the broadcast stream:</p>
+<blockquote>
+<pre><code>import dvb3.frontend
+
+FREQUENCY = 505833330/1000000.0
+FE_PARAMS = { &quot;inversion&quot; : dvb3.frontend.INVERSION_AUTO,
+              &quot;constellation&quot; : dvb3.frontend.QAM_16,
+              &quot;coderate_HP&quot; : dvb3.frontend.FEC_3_4,
+              &quot;coderate_LP&quot; : dvb3.frontend.FEC_3_4,
+            }
+...
+
+from Kamaelia.Device.DVB.Receiver import Receiver
+
+...
+
+RegisterService( Receiver( FREQUENCY, FE_PARAMS, 0 ),
+                 {&quot;DEMUXER&quot;:&quot;inbox&quot;},
+               ).activate()</code></pre>
+</blockquote>
+<p>The <em>Receiver</em> component is a combined tuner and demulipliexer service, capable of handling requests from multiple client components asking to be sent packets. Its "inbox" inbox is registered as a named service for clients to access it by.<br />
+</p>
+<p>Note that this system is hard wired to tune to a single broadcast multiplex. If the programmes you want to record are on a different channel, then its tough luck!<br />
+</p>
+<h3 id="reconstruction-of-program-specific-information-psi-tables"><span id="PSI_Tables"></span> Reconstruction of Program Specific Information (PSI) tables</h3>
+<p>PSI tables, containing information about the broadcast stream, will be needed by several parts of the system. The <em>ReassemblePSITablesService</em> component can provide this as a service that other components can subscribe to:<br />
+</p>
+<blockquote>
+<pre><code>from Kamaelia.Device.DVB.Parse.ReassemblePSITables import ReassemblePSITablesService
+
+RegisterService( \
+     Graphline( PSI     = ReassemblePSITablesService(),
+                DEMUXER = ToService(&quot;DEMUXER&quot;),
+                linkages = {(&quot;PSI&quot;, &quot;pid_request&quot;) : (&quot;DEMUXER&quot;, &quot;inbox&quot;),
+                            (&quot;&quot;,    &quot;request&quot;)     : (&quot;PSI&quot;,     &quot;request&quot;),
+                }
+              ),
+     {&quot;PSI_Tables&quot;:&quot;request&quot;}
+).activate()</code></pre>
+</blockquote>
+<p>The component is linked to the "DEMUXER" service so it can request packets as it needs them to be able to service requests for tables from clients. Its "request" inbox is then registered as a named service for clients to access it by.<br />
+</p>
+<h3 id="now-event-information"><span id="nowEvents"></span> 'Now' event information</h3>
+<p>We are now in a position to extract and parse the Event Information Tables (EIT), process it down to individual events for when programmes start, and make them available on a "nowEvent" Backplane:<br />
+</p>
+<blockquote>
+<pre><code>Pipeline( Subscribe(&quot;PSI_Tables&quot;, [EIT_PID]),
+          ParseEventInformationTable_Subset( True, False, False, False),
+          FilterOutNotCurrent(),
+          SimplifyEIT(),
+          NowNextProgrammeJunctionDetect(),
+          PublishTo(&quot;nowEvents&quot;),
+        ).activate()
+
+Backplane(&quot;nowEvents&quot;).activate()</code></pre>
+</blockquote>
+<p>The steps involved, above, are:</p>
+<ol type="1">
+<li>Requesting to be sent Event Information Tables<br />
+</li>
+<li>Parsing them (only those containing 'now &amp; next' information for all services - channels - on <span class="underline">this</span> multiplex)</li>
+<li>Ignoring any tables that are not currently applicable</li>
+<li>Simplifying the tables down to messages containing individual events</li>
+<li>Filtering down to only those events that indicate the start of a new programme (a programme junction)</li>
+<li>Making the events available to other components via a Backplane<br />
+</li>
+</ol>
+<h3 id="looking-up-channel-names"><span id="LookupChannelName"></span> Looking up channel names</h3>
+<p>The final service needed is one for mapping a channel name to its numeric service ID. Again, this is implemented as a named service:<br />
+</p>
+<blockquote>
+<pre><code>RegisterService( \
+    Graphline( TABLE_SOURCE = Subscribe(&quot;PSI_Tables&quot;, [SDT_PID]),
+               PARSING =ParseServiceDescriptionTable_ActualTS(),
+               LOOKUP = ChannelNameLookupService(),
+               linkages = {
+                   (&quot;&quot;,&quot;inbox&quot;)               : (&quot;LOOKUP&quot;, &quot;request&quot;),
+                   (&quot;TABLE_SOURCE&quot;, &quot;outbox&quot;) : (&quot;PARSING&quot;, &quot;inbox&quot;),
+                   (&quot;PARSING&quot;, &quot;outbox&quot;)      : (&quot;LOOKUP&quot;, &quot;inbox&quot;),
+               }
+             ),
+    {&quot;LookupChannelName&quot; : &quot;inbox&quot;}
+).activate()</code></pre>
+</blockquote>
+<p>The mappings needed are in the Service Description Table, so that table is requested from the "PSI_Tables" reconstruction service and is parsed by an <em>ParseServiceDescriptionTable_ActualTS</em> component.</p>
+<p><em>ChannelNameLookupService</em> component is fed the parsed tables, and keeps a note of the most recent, so it can perform lookups when requested by clients.</p>
+<p>The key aspects of the ChannelNameLookupService component is its main loop, for handling requests and receiving new tables:</p>
+<pre><code>    def main(self):
+        self.sdt_table = None
+        
+        while not self.shutdown():
+            
+            while self.dataReady(&quot;request&quot;):
+                self.handleSubscribeUnsubscribe(self.recv(&quot;request&quot;))
+                    
+            while self.dataReady(&quot;inbox&quot;):
+                self.sdt_table = self.recv(&quot;inbox&quot;)
+                
+                for channelname in self.destinations.keys():
+                    lookup = self.lookup(channelname)
+                    if lookup:
+                        for boxname in self.destinations[channelname]:
+                            self.send(lookup,boxname)
+
+            self.pause()
+            yield 1</code></pre>
+<p>... and how it resolves the channel name to its corresponding service ID and transport stream ID:</p>
+<pre><code>    def lookup(self, channelname):
+        if self.sdt_table == None:
+            return None
+        
+        # enumerate all channels
+        for (sid,service) in self.sdt_table[&#39;services&#39;].items():
+            for (dtype,descriptor) in service[&#39;descriptors&#39;]:
+                if descriptor[&#39;type&#39;] == &quot;service&quot;:
+                    if descriptor[&#39;service_name&#39;] == channelname:
+                        service_id = sid
+                        transport_stream_id = self.sdt_table[&#39;transport_stream_id&#39;]
+                        return (channelname, service_id, transport_stream_id)</code></pre>
+<p><br />
+</p>
+<p>The rest of the code for this component handles adding and removing subscribers. Client subscribe, rather than issue a single-shot request, because it is always possible the mappings may change during the broadcast.<br />
+</p>
+<h2 id="programmedetector-component"><span id="ProgrammeDetector"></span> ProgrammeDetector component</h2>
+<p>Needed by <a href="#recordForMe"><em>recordForMe</em></a>, this component examines the programme junction events it is sent, and determines when to start and stop recording.</p>
+<p>It looks up the channel name it has been given using the <a href="#LookupChannelName">channel name lookup service</a>, so it can know which events to watch for:<br />
+</p>
+<pre><code>    def main(self):
+
+        ...
+        
+        channelLookup = Subscribe(self.fromChannelLookup, [self.channel_name]).activate()
+        self.link( (channelLookup,&quot;outbox&quot;), (self, &quot;_fromChannelLookup&quot;) )
+        while not self.dataReady(&quot;_fromChannelLookup&quot;):
+            self.pause()
+            yield 1
+        
+        channel_name, service_id, ts_id = self.recv(&quot;_fromChannelLookup&quot;)</code></pre>
+<p>It can then go into a loop, waiting until it sees an event for the start of a programme with the right programme name and service ID. It can then send on a message to instruct the recorder to start:<br />
+</p>
+<pre><code>        while 1:
+            
+            recording=False
+            while not recording:
+                if self.dataReady(&quot;inbox&quot;):
+                    newNowEvent = self.recv(&quot;inbox&quot;)
+                    if newNowEvent[&#39;service&#39;] == service_id:
+                        recording = newNowEvent[&#39;name&#39;].lower().strip() == self.programme_name
+                else:
+                    self.pause()
+                yield 1
+                    
+            # start recording
+            service_id = newNowEvent[&#39;service&#39;]
+            self.send(&quot;START&quot;, &quot;outbox&quot;)</code></pre>
+<p>The component then waits for an event signalling the start of another programme with the same service ID but a different programme name. It can then signal the recorder to stop:<br />
+</p>
+<pre><code>            while recording:
+                if self.dataReady(&quot;inbox&quot;):
+                    newNowEvent = self.recv(&quot;inbox&quot;)
+                    if newNowEvent[&#39;service&#39;] == service_id:
+                        recording = newNowEvent[&#39;name&#39;].lower().strip() == self.programme_name
+                else:
+                    self.pause()
+                yield 1
+            
+            # stop recording
+            self.send(&quot;STOP&quot;, &quot;outbox&quot;)</code></pre>
+<h2 id="controllablerecorder-component"><span id="ControllableRecorder"></span> ControllableRecorder component</h2>
+<p>Needed by <a href="richtextframe.html#recordForMe"><em>recordForMe</em></a>, this component works out what packet IDs contain the audio and video data for the channel, then waits to be instructed to start or stop. It requests the audio and video packets from the demuxer whilst it is supposed to be recording.<br />
+</p>
+<p>First it looks up the channel name it has been given using the <a href="richtextframe.html#LookupChannelName">channel name lookup service</a>:</p>
+<pre><code>    def main(self):
+        ...
+
+        channelLookup = Subscribe(self.fromChannelLookup, [self.channel_name]).activate()
+        self.link( (channelLookup,&quot;outbox&quot;), (self, &quot;_fromChannelLookup&quot;) )
+        while not self.dataReady(&quot;_fromChannelLookup&quot;):
+            self.pause()
+            yield 1
+        
+        channel_name, service_id, ts_id = self.recv(&quot;_fromChannelLookup&quot;)</code></pre>
+<p>Armed with the service ID, it can then look in the Program Association Table (PAT) to find the packet ID for the corresponding Program Map Table (PMT). The PMT lists what packet IDs contain the audio and video data.<br />
+</p>
+<p>A ParseProgramAssociationTable component is fed the table from the <a href="#PSI_Tables">"PSI_Tables"</a> service, to parse it: (the service name is in <em>self.fromPSI</em>)<br />
+</p>
+<pre><code>        pat_parser = Pipeline( Subscribe(self.fromPSI, [PAT_PID]),
+                               ParseProgramAssociationTable()
+                             ).activate()
+        
+        fromPAT_linkage = self.link( (pat_parser,&quot;outbox&quot;),(self,&quot;_fromPAT&quot;) )</code></pre>
+<p>The parsed table is collected, then searched for the packet ID of the PMT for the given service ID:<br />
+</p>
+<pre><code>        # wait until we get data back from the PAT
+        PMT_PID = None
+        while PMT_PID == None:
+            while not self.dataReady(&quot;_fromPAT&quot;):
+                self.pause()
+                yield 1
+        
+            pat_table = self.recv(&quot;_fromPAT&quot;)
+            
+            for transport_stream_id in pat_table[&#39;transport_streams&#39;]:
+                ts_services = pat_table[&#39;transport_streams&#39;[]transport_stream_id]
+                if service_id in ts_services:
+                    PMT_PID = ts_services[service_id]
+                    break</code></pre>
+<p>It then sets up another parser component to parse the right PMT:</p>
+<pre><code>        pmt_parser = Pipeline( Subscribe(self.fromPSI, [PMT_PID]),
+                               ParseProgramMapTable()
+                             ).activate()
+        
+        fromPMT_linkage = self.link( (pmt_parser,&quot;outbox&quot;),(self,&quot;_fromPMT&quot;) )
+
+        print &quot;Found PMT PID for this service:&quot;,PMT_PID</code></pre>
+<p>The parsed table is collected, then searched for the packet IDs for the audio and video:<br />
+</p>
+<pre><code>        audio_pid = None
+        video_pid = None
+        while audio_pid == None and video_pid == None:
+            while not self.dataReady(&quot;_fromPMT&quot;):
+                self.pause()
+                yield 1
+
+            pmt_table = self.recv(&quot;_fromPMT&quot;)
+            if service_id in pmt_table[&#39;services&#39;]:
+                service = pmt_table[&#39;services&#39;][service_id]
+                for stream in service[&#39;streams&#39;]:
+                    if   stream[&#39;type&#39;] in [3,4] and not audio_pid:
+                        audio_pid = stream[&#39;pid&#39;]
+                    elif stream[&#39;type&#39;] in [1,2] and not video_pid:
+                        video_pid = stream[&#39;pid&#39;]
+
+        print &quot;Found audio PID:&quot;,audio_pid
+        print &quot;Found video PID:&quot;,video_pid</code></pre>
+<p><em>ControllableRecorder</em> is now ready, so it links up to the <a href="#DEMUXER">"DEMUXER" service</a>, and waits to receive the "START" order:</p>
+<pre><code>        # get the demuxer service
+        cat = CAT.getcat()
+        service = cat.retrieveService(self.fromDemuxer)
+        self.link((self,&quot;_toDemuxer&quot;),service)
+        
+        while 1:
+            # now wait for the go signal
+            recording = False
+            while not recording:
+                if self.dataReady(&quot;inbox&quot;):
+                    recording = self.recv(&quot;inbox&quot;) == &quot;START&quot;
+                else:
+                    self.pause()
+                yield 1</code></pre>
+<p>To start recording, it sends a request to the demultiplexer, asking to be sent the audio and video packets for the service:</p>
+<pre><code>            # request audio and video data
+            self.send( (&quot;ADD&quot;,[audio_pid,video_pid], (self,&quot;_av_packets&quot;)), &quot;_toDemuxer&quot;)</code></pre>
+<p>And forwards them out of its "outbox" outbox until it receives the "STOP" command:</p>
+<pre><code>            while recording:
+                while self.dataReady(&quot;_av_packets&quot;):
+                    packet = self.recv(&quot;_av_packets&quot;)
+                    self.send(packet,&quot;outbox&quot;)
+                    
+                while self.dataReady(&quot;inbox&quot;):
+                    recording = not ( self.recv(&quot;inbox&quot;) == &quot;STOP&quot; )
+                    
+                if recording:
+                    self.pause()
+                yield 1</code></pre>
+<p>Once it has been told to stop, it sends another request to the demultiplexer, asking to stop being sent audio and video packets:</p>
+<pre><code>            self.send( (&quot;REMOVE&quot;, [audio_pid,video_pid], (self,&quot;_av_packets&quot;)), &quot;_toDemuxer&quot;)</code></pre>
+<p>This is quite a long example, but demonstrates that you can build quite complex systems, like a PVR in quite a modular fashion.</p>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<div class="container">
+<h1 id="kamaelia.visualisation.physicsgraph.gridrenderer"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Visualisation.html" class="reference">Visualisation</a>.<a href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph.html" class="reference">PhysicsGraph</a>.<a href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph.GridRenderer.html" class="reference">GridRenderer</a></h1>
+<section>
+<div class="container">
+
+</div>
+<ul>
+<li><a href="#432" class="reference">Grid Renderer</a>
+<ul>
+<li><a href="#433" class="reference">Example Usage</a></li>
+<li><a href="#434" class="reference">How does it work?</a></li>
+</ul></li>
+</ul>
+</section>
+<h1 id="grid-renderer-432">Grid Renderer {#432}</h1>
+<p>Renderer for the topology viewer framework that renders horizontal and vertical gridlines on pass -1.</p>
+<h2 id="example-usage-433"><span id="example-usage">Example Usage</span> {#433}</h2>
+<p>Already used by <a href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph.TopologyViewer.html" class="reference">Kamaelia.Visualisation.PhysicsGraph.TopologyViewer</a>.</p>
+<p>Rendering a grid in light grey with grid cell size of 100x100:</p>
+<pre class="literal-block"><code>grid = GridRenderer(size=100, colour=(200,200,200))
+renderer = grid.render( &lt;pygame surface&gt; )
+for rendering_pass in renderer:
+  print &quot;Rendering for pass &quot;, rendering_pass</code></pre>
+<h2 id="how-does-it-work-434"><span id="how-does-it-work">How does it work?</span> {#434}</h2>
+<p>Instances of this class provide a render() generator that renders horizontal and vertical grid lines to conver the specified pygame surface. The colour and spacing of the grid lines are specified at initialisation.</p>
+<p>Rendering is performed by the generator, returned when the render() method is called. Its behaviour is that needed for the framework for multi-pass rendering that is used by TopologyViewer.</p>
+<p>The generator yields the number of the rendering pass it wishes to be next on next. Each time it is subsequently called, it performs the rendering required for that pass. It then yields the number of the next required pass or completes if there is no more rendering required.</p>
+<p>A setOffset() method is also implemented to allow the rendering position to be offset. This therefore makes it possible to scroll the grid around the display surface.</p>
+<p>See TopologyViewer for more details.</p>
+<hr />
+<section>
+
+</section>
+</div>
+<h1 id="feedback">Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer? Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback <a href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701" class="reference">here</a> in reply to the documentation thread in the Kamaelia blog.</p>
+<p><em>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</em></p>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>

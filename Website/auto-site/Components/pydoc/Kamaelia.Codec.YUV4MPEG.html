@@ -1,0 +1,189 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<div class="container">
+<h1 id="kamaelia.codec.yuv4mpeg"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Codec.html" class="reference">Codec</a>.<a href="/Components/pydoc/Kamaelia.Codec.YUV4MPEG.html" class="reference">YUV4MPEG</a></h1>
+<section>
+<div class="container">
+<ul>
+<li><strong>component <a href="/Components/pydoc/Kamaelia.Codec.YUV4MPEG.FrameToYUV4MPEG.html" class="reference">FrameToYUV4MPEG</a></strong></li>
+<li><strong>component <a href="/Components/pydoc/Kamaelia.Codec.YUV4MPEG.YUV4MPEGToFrame.html" class="reference">YUV4MPEGToFrame</a></strong></li>
+</ul>
+</div>
+<ul>
+<li><a href="#96" class="reference">Parsing and Creation of YUV4MPEG format files</a>
+<ul>
+<li><a href="#97" class="reference">Example Usage</a></li>
+<li><a href="#98" class="reference">YUV4MPEGToFrame Behaviour</a></li>
+<li><a href="#99" class="reference">FrameToYUV4MPEG Behaviour</a></li>
+</ul></li>
+<li><a href="#100" class="reference">UNCOMPRESSED FRAME FORMAT</a></li>
+</ul>
+</section>
+<section>
+<h2 id="parsing-and-creation-of-yuv4mpeg-format-files-96"><span id="parsing-and-creation-of-yuv4mpeg-format-files">Parsing and Creation of YUV4MPEG format files</span> {#96}</h2>
+<p>YUV4MPEGToFrame parses YUV4MPEG format data sent to its "inbox" inbox and sends video fram data structures to its "outbox" outbox.</p>
+<p>FrameToYUV4MPEG does the reverse - taking frame data structures sent to its "inbox" inbox and outputting YUV4MPEG format data to its "outbox" outbox."</p>
+<p>The YUV4MPEG file format is supported by many tools, such as mjpegtools, mplayer/mencoder, and ffmpeg.</p>
+<h3 id="example-usage-97"><span id="example-usage">Example Usage</span> {#97}</h3>
+<p>Playback a YUV4MPEG format file:</p>
+<pre class="literal-block"><code>Pipeline( RateControlledFileReader(&quot;video.yuv4mpeg&quot;,readmode=&quot;bytes&quot;, ...),
+          YUV4MPEGToFrame(),
+          VideoOverlay()
+        ).run()</code></pre>
+<p>Decode a dirac encoded video file to a YUV4MPEG format file:</p>
+<pre class="literal-block"><code>Pipeline( RateControlledFileReader(&quot;video.dirac&quot;,readmode=&quot;bytes&quot;, ...),
+          DiracDecoder(),
+          FrameToYUV4MPEG(),
+          SimpleFileWriter(&quot;output.yuv4mpeg&quot;)
+        ).run()</code></pre>
+<h3 id="yuv4mpegtoframe-behaviour-98"><span id="yuv4mpegtoframe-behaviour">YUV4MPEGToFrame Behaviour</span> {#98}</h3>
+<p>Send binary data as strings containing YUV4MPEG format data to the "inbox" inbox and frame data structures will be sent out of the "outbox" outbox as soon as they are parsed.</p>
+<p>See below for a description of the uncompressed frame data structure format.</p>
+<p>This component supports sending data out of its outbox to a size limited inbox. If the size limited inbox is full, this component will pause until it is able to send out the data. Data will not be consumed from the inbox if this component is waiting to send to the outbox.</p>
+<p>If a producerFinished message is received on the "control" inbox, this component will complete parsing any data pending in its inbox, and finish sending any resulting data to its outbox. It will then send the producerFinished message on out of its "signal" outbox and terminate.</p>
+<p>If a shutdownMicroprocess message is received on the "control" inbox, this component will immediately send it on out of its "signal" outbox and immediately terminate. It will not complete processing, or sending on any pending data.</p>
+<h3 id="frametoyuv4mpeg-behaviour-99"><span id="frametoyuv4mpeg-behaviour">FrameToYUV4MPEG Behaviour</span> {#99}</h3>
+<p>Send frame data structures to the "inbox" inbox of this component. YUV4MPEG format binary string data will be sent out of the "outbox" outbox.</p>
+<p>See below for a description of the uncompressed frame data structure format.</p>
+<p>The header data for the YUV4MPEG file is determined from the first frame.</p>
+<p>All frames sent to this component must therefore be in the same pixel format and size, otherwise the output data will not be valid YUV4MPEG.</p>
+<p>This component supports sending data out of its outbox to a size limited inbox. If the size limited inbox is full, this component will pause until it is able to send out the data. Data will not be consumed from the inbox if this component is waiting to send to the outbox.</p>
+<p>If a producerFinished message is received on the "control" inbox, this component will complete parsing any data pending in its inbox, and finish sending any resulting data to its outbox. It will then send the producerFinished message on out of its "signal" outbox and terminate.</p>
+<p>If a shutdownMicroprocess message is received on the "control" inbox, this component will immediately send it on out of its "signal" outbox and immediately terminate. It will not complete processing, or sending on any pending data.</p>
+<h2 id="uncompressed-frame-format-100"><span id="uncompressed-frame-format">UNCOMPRESSED FRAME FORMAT</span> {#100}</h2>
+<p>A frame is a dictionary data structure. It must, at minimum contain the first 3 ("yuv", "size" and "pixformat"):</p>
+<pre class="literal-block"><code>{
+  &quot;yuv&quot; : (y_data, u_data, v_data)  # a tuple of strings
+  &quot;size&quot; : (width, height)          # in pixels
+  &quot;pixformat&quot; :  pixelformat        # format of raw video data
+  &quot;frame_rate&quot; : fps                # frames per second
+  &quot;interlaced&quot; : 0 or not 0         # non-zero if the frame is two interlaced fields
+  &quot;topfieldfirst&quot; : 0 or not 0      # non-zero the first field comes first in the data
+  &quot;pixel_aspect&quot; : fraction         # aspect ratio of pixels
+  &quot;sequence_meta&quot; : metadata        # string containing extended metadata
+                                    # (no whitespace or control characters)
+}</code></pre>
+<p>All other fields are optional when providing frames to FrameToYUV4MPEG.</p>
+<p>YUV4MPEGToFrame only guarantees to fill inthe YUV data itself. All other fields will be filled in if the relevant header data is detected in the file.</p>
+<p>The pixel formats recognised (and therefore supported) are:</p>
+<pre class="literal-block"><code>&quot;YUV420_planar&quot;
+&quot;YUV411_planar&quot;
+&quot;YUV422_planar&quot;
+&quot;YUV444_planar&quot;
+&quot;YUV4444_planar&quot;
+&quot;Y_planar&quot;</code></pre>
+</section>
+<hr />
+<section>
+<h1 id="kamaelia.codec.yuv4mpeg.frametoyuv4mpeg"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Codec.html" class="reference">Codec</a>.<a href="/Components/pydoc/Kamaelia.Codec.YUV4MPEG.html" class="reference">YUV4MPEG</a>.<a href="/Components/pydoc/Kamaelia.Codec.YUV4MPEG.FrameToYUV4MPEG.html" class="reference">FrameToYUV4MPEG</a></h1>
+<h2 id="symbol-FrameToYUV4MPEG">class FrameToYUV4MPEG(<a href="/Docs/Axon/Axon.Component.component.html" class="reference">Axon.Component.component</a>)</h2>
+<p>FrameToYUV4MPEG() -&gt; new FrameToYUV4MPEG component.</p>
+<p>Parses uncompressed video frame data structures sent to its "inbox" inbox and writes YUV4MPEG format binary data as strings to its "outbox" outbox.</p>
+<h3 id="inboxes"><span id="symbol-FrameToYUV4MPEG.Inboxes">Inboxes</span></h3>
+<h3 id="outboxes"><span id="symbol-FrameToYUV4MPEG.Outboxes">Outboxes</span></h3>
+<h3 id="methods-defined-here">Methods defined here</h3>
+<div class="container">
+<div class="boxright">
+<p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div>
+</div>
+<h4 id="canshutdownself"><span id="symbol-FrameToYUV4MPEG.canShutdown">canShutdown(self)</span></h4>
+<p>Returns true if the component should terminate when it has finished processing any pending data.</p>
+<h4 id="checkshutdownself"><span id="symbol-FrameToYUV4MPEG.checkShutdown">checkShutdown(self)</span></h4>
+<p>Collects any new shutdown messages arriving at the "control" inbox, and ensures self.shutdownMsg contains the highest priority one encountered so far.</p>
+<h4 id="mainself"><span id="symbol-FrameToYUV4MPEG.main">main(self)</span></h4>
+<p>Main loop</p>
+<h4 id="mustshutdownself"><span id="symbol-FrameToYUV4MPEG.mustShutdown">mustShutdown(self)</span></h4>
+<p>Returns true if the component should terminate immediately.</p>
+<h4 id="sendoutboxself-data"><span id="symbol-FrameToYUV4MPEG.sendoutbox">sendoutbox(self, data)</span></h4>
+<p>Generator.</p>
+<p>Sends data out of the "outbox" outbox. If the destination is full (noSpaceInBox exception) then it waits until there is space. It keeps retrying until it succeeds.</p>
+<p>If the component is ordered to immediately terminate then "STOP" is raised as an exception.</p>
+<h4 id="write_frameself-frame"><span id="symbol-FrameToYUV4MPEG.write_frame">write_frame(self, frame)</span></h4>
+<p>Generator.</p>
+<p>Writes out YUV4MPEG format frame marker and data.</p>
+<h4 id="write_headerself-frame"><span id="symbol-FrameToYUV4MPEG.write_header">write_header(self, frame)</span></h4>
+<p>Generator.</p>
+<p>Sends the YUV4MPEG format header to the "outbox" outbox, based on attributes of the supplied frame data structure.</p>
+<section>
+
+</section>
+<h1 id="kamaelia.codec.yuv4mpeg.yuv4mpegtoframe"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Codec.html" class="reference">Codec</a>.<a href="/Components/pydoc/Kamaelia.Codec.YUV4MPEG.html" class="reference">YUV4MPEG</a>.<a href="/Components/pydoc/Kamaelia.Codec.YUV4MPEG.YUV4MPEGToFrame.html" class="reference">YUV4MPEGToFrame</a></h1>
+<h2 id="symbol-YUV4MPEGToFrame">class YUV4MPEGToFrame(<a href="/Docs/Axon/Axon.Component.component.html" class="reference">Axon.Component.component</a>)</h2>
+<p>YUV4MPEGToFrame() -&gt; new YUV4MPEGToFrame component.</p>
+<p>Parses YUV4MPEG format binarydata, sent as strings to its "inbox" inbox and outputs uncompressed video frame data structures to its "outbox" outbox.</p>
+<h3 id="inboxes-1"><span id="symbol-YUV4MPEGToFrame.Inboxes">Inboxes</span></h3>
+<h3 id="outboxes-1"><span id="symbol-YUV4MPEGToFrame.Outboxes">Outboxes</span></h3>
+<h3 id="methods-defined-here-1">Methods defined here</h3>
+<div class="container">
+<div class="boxright">
+<p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div>
+</div>
+<h4 id="init__self"><span id="symbol-YUV4MPEGToFrame.__init__">__init__(self)</span></h4>
+<p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</p>
+<h4 id="checkshutdownself-1"><span id="symbol-YUV4MPEGToFrame.checkShutdown">checkShutdown(self)</span></h4>
+<p>Collects any new shutdown messages arriving at the "control" inbox, and returns "NOW" if immediate shutdown is required, or "WHENEVER" if the component can shutdown when it has finished processing pending data.</p>
+<h4 id="mainself-1"><span id="symbol-YUV4MPEGToFrame.main">main(self)</span></h4>
+<p>Main loop</p>
+<h4 id="readbytesself-size"><span id="symbol-YUV4MPEGToFrame.readbytes">readbytes(self, size)</span></h4>
+<p>Generator.</p>
+<p>Read the specified number of bytes from the stream of chunks of binary string data arriving at the "inbox" inbox.</p>
+<p>Any excess data is placed into self.remainder ready for the next call to self.readline or self.readbytes.</p>
+<p>Data is only read from the inbox when required. It is not preemptively fetched.</p>
+<p>The read data is placed into self.bytesread</p>
+<p>If a shutdown is detected, self.bytesread is set to "" and this generator immediately returns.</p>
+<h4 id="readlineself"><span id="symbol-YUV4MPEGToFrame.readline">readline(self)</span></h4>
+<p>Generator.</p>
+<p>Read up to the next newline char from the stream of chunks of binary string data arriving at the "inbox" inbox.</p>
+<p>Any excess data is placed into self.remainder ready for the next call to self.readline or self.readbytes.</p>
+<p>Data is only read from the inbox when required. It is not preemptively fetched.</p>
+<p>The read data is placed into self.bytesread</p>
+<p>If a shutdown is detected, self.bytesread is set to "" and this generator immediately returns.</p>
+<h4 id="safesendself-data-boxname"><span id="symbol-YUV4MPEGToFrame.safesend">safesend(self, data, boxname)</span></h4>
+<p>Generator.</p>
+<p>Sends data out of the named outbox. If the destination is full (noSpaceInBox exception) then it waits until there is space and retries until it succeeds.</p>
+<p>If a shutdownMicroprocess message is received, returns early.</p>
+<section>
+
+</section>
+</section>
+</div>
+<h1 id="feedback">Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer? Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback <a href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701" class="reference">here</a> in reply to the documentation thread in the Kamaelia blog.</p>
+<p><em>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</em></p>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>

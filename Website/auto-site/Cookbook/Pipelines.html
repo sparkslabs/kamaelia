@@ -1,0 +1,159 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<h1 id="cookbook-pipelines">Cookbook : Pipelines</h1>
+<p>Pipelines are one of the simplest ways to wire components together. A Pipeline wires components together in a long chain.<br />
+<br />
+Here's a simple pipeline we want to build that sends a file over multicast, using a simple protocol to ensure reliable transmission:<br />
+<br />
+</p>
+<div data-align="center">
+<figure>
+<img src="/images/pipeline1_idea.gif" alt="" /><figcaption>We want to wire a set of components together in a long chain (a pipeline)</figcaption>
+</figure>
+</div>
+<p><br />
+We could build this by writing a new component with a whole bunch of self.link() calls to link each outbox to the next inbox. But that is a lot of code to write and rather tedious! ... surely there must be an easier way?<br />
+<br />
+... And so the Pipeline component comes to the rescue! No need to write a whole new component, simply use a Pipeline component like this:<br />
+</p>
+<blockquote>
+<pre><code>from Kamaelia.Chassis.Pipeline import Pipeline
+
+from Kamaelia.Internet.Multicast_transceiver import Multicast_transceiver
+from Kamaelia.Protocol.SimpleReliableMulticast import Annotator
+from Kamaelia.Protocol.SimpleReliableMulticast import _Framer
+from Kamaelia.Protocol.SimpleReliableMulticast import _DataChunker
+from Kamaelia.Protocol.Packetise import MaxSizePacketiser
+from Kamaelia.File.Reading import RateControlledFileReader
+
+Pipeline( RateControlledFileReader(&quot;myaudio.mp3&quot;,readmode=&quot;bytes&quot;,rate=128000/8),
+          Annotator(),
+          _Framer(),
+          _DataChunker(),
+          MaxSizePacketiser(),
+          Multicast_transceiver(&quot;0.0.0.0&quot;, 0, &quot;224.168.2.9&quot;, 1600),
+        ).run()</code></pre>
+</blockquote>
+<p>You can find this code in <code>Kamaelia/Examples/Multicast/SimpleReliableMulticast</code><br />
+</p>
+<p>So what did Pipeline actually do?</p>
+<figure>
+<img src="/images/pipeline1_intention.gif" alt="" /><figcaption>Pipeline component does this for us</figcaption>
+</figure>
+<p>It wires the components into a chain inside itself - linking outboxes to inboxes. When we call the run() method, the Kamaelia system starts, and the pipeline component is activated. It in turn, activates all the components inside.<br />
+</p>
+<h3 id="how-are-the-components-linked-together">How are the components linked together?</h3>
+<div class="boxright">
+<p><strong>Just like unix pipes</strong><br />
+"inbox" and "outbox" are a lot like standard-input and standard-output for command line programs. When you pipe programs together on a unix shell, the standard-output of one program gets sent to the standard-input of the next.<br />
+<br />
+"control" and "signal" are analogous to standard-error. In practice Kamaelia components use it to signal when they are finished.<br />
+</p>
+</div>
+<p><br />
+More specifically, Pipeline links one component to the next in the chain. It links the "outbox" and "signal" outboxes of one component to the "inbox" and "control" inboxes on the next one:<br />
+</p>
+<ul>
+<li>The "inbox" and "outbox" boxes are the ones most components use to take in and send out data. So for example, whatever the RateControlledFileReader component reads gets sent to the Annotator component.<br />
+<br />
+</li>
+<li>The "control" and "signal" boxes are used to send the shutdown message when a component has finished, and wants to tell the next.</li>
+</ul>
+<p>So, if we look at precisely what linkages are made, we see something like this:<br />
+<br />
+</p>
+<div data-align="center">
+<figure>
+<img src="/images/pipeline1_inside.gif" alt="" /><figcaption>Pipeline component links</figcaption>
+</figure>
+</div>
+<p><br />
+</p>
+<h3 id="pipeline-is-a-component-too-...-time-to-go-modular">Pipeline is a component too ... time to go modular!</h3>
+<p>The Pipeline also links its own inboxes and outboxes to the start and the end (respectively) of the chain. Pipeline is, after all, a component too, so it makes sense to be able to send and receive messages to/from the pipeline of components within using its inboxes and outboxes. Think of it as a kind of container.<br />
+<br />
+You can therefore use a Pipeline as a way to wrap up a useful pipelined set of components into a single bundle that you can then reuse elsewhere.<br />
+<br />
+For example, we could separate the components that make the multicast reliability protocol into another Pipeline, and simply include it like another component:<br />
+</p>
+<blockquote>
+<pre><code>Pipeline( RateControlledFileReader(&quot;myaudio.mp3&quot;,readmode=&quot;bytes&quot;,rate=128000/8),
+          Pipeline( Annotator(),
+                     _Framer(),
+                     _DataChunker(),
+                   ),
+          MaxSizePacketiser(),
+          Multicast_transceiver(&quot;0.0.0.0&quot;, 0, &quot;224.168.2.9&quot;, 1600),
+        ).run()</code></pre>
+</blockquote>
+<p>We don't have to call the run() or activate() method of the inner pipeline since, just like the other components, they'll all be activated by the main pipeline when it starts.<br />
+<br />
+In fact, we could actually move that into a completely separate function, that simply returns the pipeline:<br />
+</p>
+<blockquote>
+<pre><code>def SRM_Sender():
+   return Pipeline( Annotator(),
+                    _Framer(),
+                    _DataChunker(),
+                  )</code></pre>
+</blockquote>
+<p>Now we can call that function to put the sub pipeline into the chain:<br />
+</p>
+<blockquote>
+<pre><code>Pipeline( RateControlledFileReader(&quot;myaudio.mp3&quot;,readmode=&quot;bytes&quot;,rate=128000/8),
+          SRM_Sender(),
+          MaxSizePacketiser(),
+          Multicast_transceiver(&quot;0.0.0.0&quot;, 0, &quot;224.168.2.9&quot;, 1600),
+        ).run()</code></pre>
+</blockquote>
+<p>We can now, for the most part, use SRM_Sender just like any other component.<br />
+<br />
+This hopefully makes the design of the system more modular and clearer, and also give us a re-usable component for applying our multicast reliability protocol - which we previously didn't have. In fact, this has already been done so you can simply import it and use it:<br />
+</p>
+<blockquote>
+<pre><code>from Kamaelia.Protocol.SimpleReliableMulticast import SRM_Sender
+
+Pipeline( RateControlledFileReader(&quot;myaudio.mp3&quot;,readmode=&quot;bytes&quot;,rate=128000/8),
+          SRM_Sender(),
+          MaxSizePacketiser(),
+          Multicast_transceiver(&quot;0.0.0.0&quot;, 0, &quot;224.168.2.9&quot;, 1600),
+        ).run()</code></pre>
+</blockquote>
+<h3 id="need-more-flexibility">Need more flexibility?</h3>
+<p>Pipelines are not the only quick and easy way to link up components. Perhaps you need to make different links? Try a <a href="/Cookbook/Graphlines%20">Graphline</a> instead.<br />
+<br />
+-- 18 Dec 2006 - Matt Hammond<br />
+<br />
+</p>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>

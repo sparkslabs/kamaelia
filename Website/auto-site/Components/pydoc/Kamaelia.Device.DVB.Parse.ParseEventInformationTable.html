@@ -1,0 +1,293 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<div class="container">
+<h1 id="kamaelia.device.dvb.parse.parseeventinformationtable"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Device.html" class="reference">Device</a>.<a href="/Components/pydoc/Kamaelia.Device.DVB.html" class="reference">DVB</a>.<a href="/Components/pydoc/Kamaelia.Device.DVB.Parse.html" class="reference">Parse</a>.<a href="/Components/pydoc/Kamaelia.Device.DVB.Parse.ParseEventInformationTable.html" class="reference">ParseEventInformationTable</a></h1>
+<section>
+<div class="container">
+<ul>
+<li><strong>component <a href="/Components/pydoc/Kamaelia.Device.DVB.Parse.ParseEventInformationTable.ParseEventInformationTable.html" class="reference">ParseEventInformationTable</a></strong></li>
+<li><strong>prefab <a href="/Components/pydoc/Kamaelia.Device.DVB.Parse.ParseEventInformationTable.ParseEventInformationTable_Subset.html" class="reference">ParseEventInformationTable_Subset</a></strong></li>
+<li><strong>component <a href="/Components/pydoc/Kamaelia.Device.DVB.Parse.ParseEventInformationTable.SimplifyEIT.html" class="reference">SimplifyEIT</a></strong></li>
+</ul>
+</div>
+<ul>
+<li><a href="#494" class="reference">Parsing Event Information Tables in DVB streams</a>
+<ul>
+<li><a href="#495" class="reference">Example Usage</a></li>
+<li><a href="#496" class="reference">ParseEventInformationTable / ParseEventInformationTable_Subset</a>
+<ul>
+<li><a href="#497" class="reference">Behaviour</a></li>
+</ul></li>
+<li><a href="#498" class="reference">SimplifyEIT</a>
+<ul>
+<li><a href="#499" class="reference">Behaviour</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<h1 id="parsing-event-information-tables-in-dvb-streams-494">Parsing Event Information Tables in DVB streams {#494}</h1>
+<p>ParseEventInformationTable parses a reconstructed PSI table from a DVB MPEG Transport Stream, and outputs a dictionary containing the data in the table.</p>
+<p>The Event Information Table carries data about the programmes being broadcast both now (present-following data) and in the future (schedule data) and is typically used to drive Electronic Progamme Guides, scheduled recording and "now and next" information displays.</p>
+<p>The purpose of the EIT and details of the fields within in are defined in the DVB SI specification:</p>
+<ul>
+<li>ETSI EN 300 468 "Digital Video Broadcasting (DVB); Specification for Service Information (SI) in DVB systems" ETSI / EBU (DVB group)</li>
+</ul>
+<p>See <a href="/Components/pydoc/Kamaelia.Support.DVB.Descriptors.html" class="reference">Kamaelia.Support.DVB.Descriptors</a> for information on how they are parsed.</p>
+<h2 id="example-usage-495"><span id="example-usage">Example Usage</span> {#495}</h2>
+<p>A simple pipeline to receive, parse and display the "now and next" information for programmes in the current multiplex, from the Event Information Table:</p>
+<pre class="literal-block"><code>FREQUENCY = 505.833330
+feparams = {
+    &quot;inversion&quot; : dvb3.frontend.INVERSION_AUTO,
+    &quot;constellation&quot; : dvb3.frontend.QAM_16,
+    &quot;code_rate_HP&quot; : dvb3.frontend.FEC_3_4,
+    &quot;code_rate_LP&quot; : dvb3.frontend.FEC_3_4,
+}
+
+EIT_PID = 0x12
+
+Pipeline( DVB_Multiplex(FREQUENCY, [NIT_PID], feparams),
+          DVB_Demuxer({ NIT_PID:[&quot;outbox&quot;]}),
+          ReassemblePSITables(),
+          ParseEventInformationTable_Subset(actual_presentFollowing=True),
+          PrettifyEventInformationTable(),
+          ConsoleEchoer(),
+        ).run()</code></pre>
+<p>A slight modification to the pipeline, to convert the parsed tables into a stream of inidividual events:</p>
+<pre class="literal-block"><code>Pipeline( DVB_Multiplex(FREQUENCY, [NIT_PID], feparams),
+          DVB_Demuxer({ NIT_PID:[&quot;outbox&quot;]}),
+          ReassemblePSITables(),
+          ParseEventInformationTable_Subset(actual_presentFollowing=True),
+          SimplifyEIT(),
+          ConsoleEchoer(),
+        ).run()</code></pre>
+<h2 id="parseeventinformationtable-parseeventinformationtable_subset-496"><span id="parseeventinformationtable-parseeventinformationtable-subset">ParseEventInformationTable / ParseEventInformationTable_Subset</span> {#496}</h2>
+<h3 id="behaviour-497"><span id="behaviour">Behaviour</span> {#497}</h3>
+<p>At initialisation, specify what sub tables you want ParseEventInformationTable to process (others will be ignored). Event information is grouped into sub tables according to where it is:</p>
+<ul>
+<li>'Actual' data describes programmes broadcast in the same actual multiplex as this data</li>
+<li>'Other' data describes programmes being broadcast in other multiplexes</li>
+</ul>
+<p>...and what timeframe it relates to:</p>
+<ul>
+<li>'present following' data describes the now showing (present) and next (following) programme to be shown</li>
+<li>'schedule' data describes programmes being shown later, typically over the next 7 or 8 days.</li>
+</ul>
+<p>Initialise ParseEventInformationTable by providing a dictionary mapping table ids, to be accepted, to (label, is-present-following-flag) pairs. For example, to accept tables of present-following data for this and other multiplexes:</p>
+<pre class="literal-block"><code>ParseEventInformationTable(acceptTables = { 0x4e : (&quot;ACTUAL&quot;, True),
+                                            0x4f : (&quot;OTHER&quot;, False),
+                                          }</code></pre>
+<p>However it is much simpler to use the ParseEventInformationTable_Subset helper funciton to create it for you. For example, the same effect as above can be achieved with:</p>
+<pre class="literal-block"><code>ParseEventInformationTable_Subset( actual_presentFollowing = True,
+                                   other_presentFollowing  = True,
+                                   actual_schedule         = False,
+                                   other_schedule          = False,
+                                 )</code></pre>
+<p>Send reconstructed PSI table 'sections' to the "inbox" inbox. When all sections of the table have arrived, ParseNetworkInformationTable will parse the table and send it out of its "outbox" outbox.</p>
+<p>If the table is unchanged since last time it was parsed, then it will not be sent out. Parsed tables are only sent out when they are new or have just changed.</p>
+<p>Note that an EIT table is likely to arrive, and be parsed in lots of separate fragments. Because of the way the data format is defined, it is impossible for ParseEventInformationTable to know for certain when it has received everything!</p>
+<p>The parsed table is sent out as a dictionary data structure, like this (list of event descriptors abridged for brevity):</p>
+<pre class="literal-block"><code>{
+    &#39;table_id&#39;            : 78,
+    &#39;table_type&#39;          : &#39;EIT&#39;,
+    &#39;current&#39;             : 1,
+    &#39;actual_other&#39;        : &#39;ACTUAL&#39;,
+    &#39;is_present_following&#39;: True,
+    &#39;transport_stream_id&#39; : 4100,
+    &#39;original_network_id&#39; : 9018,
+    &#39;events&#39;: [
+        { &#39;event_id&#39;      : 8735,
+          &#39;running_status&#39;: 1,
+          &#39;free_CA_mode&#39;  : 0,
+          &#39;starttime&#39;     : [2006, 12, 22, 11, 0, 0],
+          &#39;duration&#39;      : (0, 30, 0),
+          &#39;service_id&#39;    : 4164
+          &#39;descriptors&#39;: [
+              (77, {&#39;type&#39;: &#39;short_event&#39;, &#39;name&#39;: &#39;To Buy or Not to Buy&#39;, &#39;text&#39;: &#39;Series that gives buyers the chance to test-drive a property before they buy it. Sarah Walker and Simon Rimmer are in Birmingham, helping a pair of property professionals. [S]&#39;, &#39;language_code&#39;: &#39;eng&#39;}),
+              (80, {&#39;type&#39;: &#39;component&#39;, &#39;stream_content&#39;: 1, &#39;component_type&#39;: 3, &#39;text&#39;: &#39;Video 1&#39;, &#39;component_tag&#39;: 1, &#39;content,type&#39;: (&#39;video&#39;, &#39;16:9 aspect ratio without pan vectors, 25 Hz&#39;), &#39;language_code&#39;: &#39;   &#39;}),
+              (80, {&#39;type&#39;: &#39;component&#39;, &#39;stream_content&#39;: 2, &#39;component_type&#39;: 3, &#39;text&#39;: &#39;Audio 2&#39;, &#39;component_tag&#39;: 2, &#39;content,type&#39;: (&#39;audio&#39;, &#39;stereo (2 channel)&#39;), &#39;language_code&#39;: &#39;eng&#39;}),
+              (80, {&#39;type&#39;: &#39;component&#39;, &#39;stream_content&#39;: 3, &#39;component_type&#39;: 16, &#39;text&#39;: &#39;Subtitling 5&#39;, &#39;component_tag&#39;: 5, &#39;content,type&#39;: (&#39;DVB subtitles (normal)&#39;, &#39;with no monitor aspect ratio criticality&#39;), &#39;language_code&#39;: &#39;   &#39;}),
+              (80, {&#39;type&#39;: &#39;component&#39;, &#39;stream_content&#39;: 4, &#39;component_type&#39;: 1, &#39;text&#39;: &#39;Data 6&#39;, &#39;component_tag&#39;: 6, &#39;content,type&#39;: (4, 1), &#39;language_code&#39;: &#39;   &#39;}),
+
+              .....
+
+              (84, {&#39;type&#39;: &#39;content&#39;, &#39;contents&#39;: &#39;  &#39;})
+          ],
+        }
+    ]
+}</code></pre>
+<p>The above example is an event for the service BBC ONE, broadcast at 10:06 GMT on 22nd December 2006. It describes a 'present-following' event that doesn't start until 11:00 GMT. It is therefore describing the 'next' programme that will be on the channel/service.</p>
+<p>If this data is sent on through a PrettifyEventInformationTable component, then the equivalent output is a string containing this (again, abridged for brevity):</p>
+<pre class="literal-block"><code>EIT received:
+    Table ID                      : 78
+    Table is valid for            : CURRENT (valid)
+    Actual or Other n/w           : ACTUAL
+    Present-Following or Schedule : Present-Following
+    Transport stream id           : 4100
+    Original network id           : 9018
+    Events:
+        Service id : 4164
+            Running status         : 1 (NOT RUNNING)
+            Start datetime (UTC)   : 2006-12-22 11:00:00
+            Duration               : 00:30:00 (hh:mm:ss)
+            Scrambled?             : NO
+            Event descriptors:
+                Descriptor 0x4d : short_event
+                    language_code : &#39;eng&#39;
+                    name : &#39;To Buy or Not to Buy&#39;
+                    text : &#39;Series that gives buyers the chance to test-drive a property before they buy it. Sarah Walker and Simon Rimmer are in Birmingham, helping a pair of property professionals. [S]&#39;
+                Descriptor 0x50 : component
+                    component_tag : 1
+                    component_type : 3
+                    content,type : (&#39;video&#39;, &#39;16:9 aspect ratio without pan vectors, 25 Hz&#39;)
+                    language_code : &#39;   &#39;
+                    stream_content : 1
+                    text : &#39;Video 1&#39;
+                Descriptor 0x50 : component
+                    component_tag : 2
+                    component_type : 3
+                    content,type : (&#39;audio&#39;, &#39;stereo (2 channel)&#39;)
+                    language_code : &#39;eng&#39;
+                    stream_content : 2
+                    text : &#39;Audio 2&#39;
+                Descriptor 0x50 : component
+                    component_tag : 5
+                    component_type : 16
+                    content,type : (&#39;DVB subtitles (normal)&#39;, &#39;with no monitor aspect ratio criticality&#39;)
+                    language_code : &#39;   &#39;
+                    stream_content : 3
+                    text : &#39;Subtitling 5&#39;
+                Descriptor 0x50 : component
+                    component_tag : 6
+                    component_type : 1
+                    content,type : (4, 1)
+                    language_code : &#39;   &#39;
+                    stream_content : 4
+                    text : &#39;Data 6&#39;
+
+                .....
+
+                Descriptor 0x54 : content
+                    contents : &#39;  &#39;</code></pre>
+<p>ParseEventInformationTable can collect the sections of, and then parse the various types of EIT table simultaneously.</p>
+<p>If a shutdownMicroprocess or producerFinished message is received on the "control" inbox, then it will immediately be sent on out of the "signal" outbox and the component will then immediately terminate.</p>
+<h2 id="simplifyeit-498"><span id="simplifyeit">SimplifyEIT</span> {#498}</h2>
+<h3 id="behaviour-499"><span id="id1">Behaviour</span> {#499}</h3>
+<p>Send parsed event information data to the "inbox" inbox, and individual events, in a simplified form, will be sent out the "outbox" outbox one at a time. For example:</p>
+<pre class="literal-block"><code>{
+    &#39;event_id&#39;       : 8735,
+    &#39;when&#39;           : &#39;NEXT&#39;,
+    &#39;startdate&#39;      : [2006, 12, 22],
+    &#39;starttime&#39;      : [11, 0, 0],
+    &#39;duration&#39;       : (0, 30, 0),
+    &#39;service&#39;        : 4164,
+    &#39;transportstream&#39;: 4100,
+    &#39;language_code&#39;  : &#39;eng&#39;,
+    &#39;name&#39;           : &#39;To Buy or Not to Buy&#39;,
+    &#39;description&#39;    : &#39;Series that gives buyers the chance to test-drive a property before they buy it. Sarah Walker and Simon Rimmer are in Birmingham, helping a pair of property professionals. [S]&#39;
+}</code></pre>
+<p>The possible values of the 'when' field are:</p>
+<ul>
+<li>"NOW" -- describes a programme that is happening NOW</li>
+<li>"NEXT" -- describes a programme that follows the one happening now</li>
+<li>"SCHEDULED" -- part of a schedule describing programmes happening over the next few days</li>
+</ul>
+<p>If a shutdownMicroprocess or producerFinished message is received on the "control" inbox, then it will immediately be sent on out of the "signal" outbox and the component will then immediately terminate.</p>
+<hr />
+<section>
+<h1 id="kamaelia.device.dvb.parse.parseeventinformationtable.parseeventinformationtable"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Device.html" class="reference">Device</a>.<a href="/Components/pydoc/Kamaelia.Device.DVB.html" class="reference">DVB</a>.<a href="/Components/pydoc/Kamaelia.Device.DVB.Parse.html" class="reference">Parse</a>.<a href="/Components/pydoc/Kamaelia.Device.DVB.Parse.ParseEventInformationTable.html" class="reference">ParseEventInformationTable</a>.<a href="/Components/pydoc/Kamaelia.Device.DVB.Parse.ParseEventInformationTable.ParseEventInformationTable.html" class="reference">ParseEventInformationTable</a></h1>
+<h2 id="symbol-ParseEventInformationTable">class ParseEventInformationTable(<a href="/Docs/Axon/Axon.Component.component.html" class="reference">Axon.Component.component</a>)</h2>
+<p>ParseEventInformationTable([acceptTables]) -&gt; new ParseEventInformationTable component.</p>
+<p>Send reconstructed PSI table sections to the "inbox" inbox. When a complete table is assembled and parsed, the result is sent out of the "outbox" outbox as a dictionary.</p>
+<p>Doesn't emit anything again until the version number of the table changes.</p>
+<p>Use ParseEventInformationTable_Subset for simpler initialisation with convenient presets.</p>
+<p>Keyword arguments:</p>
+<pre class="literal-block"><code>- acceptTables  - dict of (table_id,string_description) mappings for tables to be accepted (default={0x4e:(&quot;ACTUAL&quot;,True)})</code></pre>
+<h3 id="inboxes"><span id="symbol-ParseEventInformationTable.Inboxes">Inboxes</span></h3>
+<ul>
+<li><strong>control</strong> : Shutdown signalling</li>
+<li><strong>inbox</strong> : DVB PSI Packets from a single PID containing EIT table sections</li>
+</ul>
+<h3 id="outboxes"><span id="symbol-ParseEventInformationTable.Outboxes">Outboxes</span></h3>
+<ul>
+<li><strong>outbox</strong> : Parsed EIT table (only when it changes)</li>
+<li><strong>signal</strong> : Shutdown signalling</li>
+</ul>
+<h3 id="methods-defined-here">Methods defined here</h3>
+<div class="container">
+<div class="boxright">
+<p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div>
+</div>
+<h4 id="init__self-accepttables"><span id="symbol-ParseEventInformationTable.__init__">__init__(self[, acceptTables])</span></h4>
+<h4 id="mainself"><span id="symbol-ParseEventInformationTable.main">main(self)</span></h4>
+<h4 id="parsetablesectionself-index-section"><span id="symbol-ParseEventInformationTable.parseTableSection">parseTableSection(self, index, section)</span></h4>
+<h4 id="shutdownself"><span id="symbol-ParseEventInformationTable.shutdown">shutdown(self)</span></h4>
+<section>
+
+</section>
+<h1 id="kamaelia.device.dvb.parse.parseeventinformationtable.parseeventinformationtable_subset"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Device.html" class="reference">Device</a>.<a href="/Components/pydoc/Kamaelia.Device.DVB.html" class="reference">DVB</a>.<a href="/Components/pydoc/Kamaelia.Device.DVB.Parse.html" class="reference">Parse</a>.<a href="/Components/pydoc/Kamaelia.Device.DVB.Parse.ParseEventInformationTable.html" class="reference">ParseEventInformationTable</a>.<a href="/Components/pydoc/Kamaelia.Device.DVB.Parse.ParseEventInformationTable.ParseEventInformationTable_Subset.html" class="reference">ParseEventInformationTable_Subset</a></h1>
+<h2 id="symbol-ParseEventInformationTable_Subset">prefab: ParseEventInformationTable_Subset</h2>
+<p>ParseEventInformationTable_Subset([actual_presentFollowing][,other_presentFollowing][,actual_schedule][,other_schedule] ) -&gt; new ParseEventInformationTable component</p>
+<p>Returns a ParseEventInformationTable component, configured to parse the table types specified, and ignore all others.</p>
+<p>Keyword arguments:</p>
+<pre class="literal-block"><code>- actual_presentFollowing  -- If True, parse &#39;present-following&#39; data for this multiplex (default=True)
+- other_presentFollowing   -- If True, parse &#39;present-following&#39; data for other multiplexes (default=False)
+- actual_schedule          -- If True, parse &#39;schedule&#39; data for this multiplex (default=False)
+- other_schedule           -- If True, parse &#39;schedule&#39; data for other multiplexes (default=False)</code></pre>
+<h1 id="kamaelia.device.dvb.parse.parseeventinformationtable.simplifyeit"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Device.html" class="reference">Device</a>.<a href="/Components/pydoc/Kamaelia.Device.DVB.html" class="reference">DVB</a>.<a href="/Components/pydoc/Kamaelia.Device.DVB.Parse.html" class="reference">Parse</a>.<a href="/Components/pydoc/Kamaelia.Device.DVB.Parse.ParseEventInformationTable.html" class="reference">ParseEventInformationTable</a>.<a href="/Components/pydoc/Kamaelia.Device.DVB.Parse.ParseEventInformationTable.SimplifyEIT.html" class="reference">SimplifyEIT</a></h1>
+<h2 id="symbol-SimplifyEIT">class SimplifyEIT(<a href="/Docs/Axon/Axon.Component.component.html" class="reference">Axon.Component.component</a>)</h2>
+<p>SimplifyEIT() -&gt; new SimplifyEIT component.</p>
+<p>Send parsed EIT messages to the "inbox" inbox, and individual, simplified events will be sent out the "outbox" outbox.</p>
+<h3 id="inboxes-1"><span id="symbol-SimplifyEIT.Inboxes">Inboxes</span></h3>
+<h3 id="outboxes-1"><span id="symbol-SimplifyEIT.Outboxes">Outboxes</span></h3>
+<h3 id="methods-defined-here-1">Methods defined here</h3>
+<div class="container">
+<div class="boxright">
+<p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div>
+</div>
+<h4 id="mainself-1"><span id="symbol-SimplifyEIT.main">main(self)</span></h4>
+<h4 id="shutdownself-1"><span id="symbol-SimplifyEIT.shutdown">shutdown(self)</span></h4>
+<section>
+
+</section>
+</section>
+</div>
+<h1 id="feedback">Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer? Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback <a href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701" class="reference">here</a> in reply to the documentation thread in the Kamaelia blog.</p>
+<p><em>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</em></p>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>

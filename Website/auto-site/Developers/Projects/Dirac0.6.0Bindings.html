@@ -1,0 +1,137 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<h2 id="project-task-page-dirac-0.6.0-bindings">Project Task Page: Dirac 0.6.0 Bindings</h2>
+<div class="boxright">
+<p><strong>Status:</strong> Completed<br />
+<strong>Current Developers:</strong> <em>MH</em>, MS<br />
+<strong>Current "inflight" dev location:</strong> /branches/private_MH_20070425_dirac0.6.0bindings<br />
+<strong>Start Date:</strong> 11 October 2006<br />
+<strong>Expected End Date:</strong> 30 April 2007<br />
+<strong>End Date:</strong> 27 April 2007<br />
+<strong>Date this page last updated:</strong> <em>25 April 2007</em><br />
+<strong>Estimated effort so far:</strong> 5<br />
+</p>
+</div>
+<p><strong><br />
+</strong></p>
+<h2 id="description"><strong>Description</strong></h2>
+<p>Dirac python bindings are for dirac version 0.5.4. Dirac has moved onto 0.6.0 and there have been API changes which make the bindings incompatible (<a href="http://koala.ilog.fr/twikiirc/bin/irclogger_log/kamaelia?date=2006-10-11,Wed&amp;sel=31#l27">see IRC logs</a>)</p>
+<p>Update the bindings for compatibility with 0.6.0. If possible find a way to maintain compatibility with 0.5.4.<br />
+</p>
+<h2 id="inputs">Inputs</h2>
+<p>Task Sponsor: MH</p>
+<p>Task Owner: MH<br />
+</p>
+<p>Developers: MH, MS<br />
+</p>
+<p>Users: lawouach (IRC handle)<br />
+</p>
+<p>Interested third parties: MS, lawouach (IRC handle)</p>
+<p>Requirements</p>
+<ul>
+<li>MUST provide compability with Dirac 0.6.0 release<br />
+</li>
+<li>WOULD LIKE to maintain the option of still working with Dirac 0.5.4<br />
+</li>
+</ul>
+<h2 id="outputs">Outputs</h2>
+<h3 id="expected">Expected</h3>
+<p>New/updated bindings in<br />
+</p>
+<ul>
+<li>/Code/Python/Bindings/Dirac<br />
+</li>
+</ul>
+<h3 id="actual">Actual</h3>
+<p>Branch /branches/private_MH_20070425_dirac0.6.0bindings/</p>
+<p>...containing modifications to:</p>
+<ul>
+<li>/Code/Python/Bindings/Dirac ( renamed to /Code/Python/Bindings/Dirac-0.5.4 )<br />
+</li>
+<li>/Code/Python/Bindings/Dirac-0.6.0 (added)</li>
+<li>/Code/Python/Kamaelia/Kamaelia/Codecs/Dirac.py</li>
+<li>/Code/Python/Kamaelia/Examples/VideoCodecs/Dirac/SimpleDiracPlayer.py</li>
+<li>/Code/Python/Kamaelia/Examples/VideoCodecs/Dirac/snowboard-jum-352x288x75.dirac.drc ( renamed to Dirac/snowboard-jump-352x288x75.0.5.4.drc )</li>
+<li>/Code/Python/Kamaelia/Examples/VideoCodecs/Dirac/snowboard-jum-352x288x75.0.6.0.drc</li>
+</ul>
+<p>Modifications merged into /trunk<br />
+</p>
+<h3 id="realistic-possibilities-arising-as-a-result-of-activity-on-this-task">Realistic possibilities arising as a result of activity on this task</h3>
+<ul>
+<li>/trunk/Sketches/MH/dirac still contains yet another set of bidings reflecting even more recent changes currently in dirac cvs (but not yet in a release) ... when this release is made, a new set of bindings should be issued.<br />
+</li>
+</ul>
+<h2 id="related-tasks">Related Tasks</h2>
+<h3 id="tasks-that-directly-enable-this-task-dependencies">Tasks that directly enable this task (dependencies)</h3>
+<p>none<br />
+</p>
+<h3 id="sub-tasks">Sub Tasks</h3>
+<ul>
+<li>Development and testing of new bindings</li>
+<li>Branch containing modifications</li>
+<li>Merge of branch</li>
+</ul>
+<h2 id="task-log">Task Log</h2>
+<ul>
+<li>2006 10 11 : <strong>Task status changed</strong> to running<br />
+</li>
+<li>2007 10 11 : Added developer MH</li>
+<li>2007 10 17 : Tested and checked new bindings into /Sketches/MH/dirac/</li>
+<li>2007 04 25 : Time spent 4 days</li>
+<li>2007 10 18 : <strong>Task status changed</strong> to stasis<br />
+</li>
+<li>2007 04 25 : <strong>Task status changed</strong> to running<br />
+</li>
+<li>2007 04 25 : Created branch /branches/private_MH_20070425_dirac0.6.0bindings/</li>
+<li>2007 04 25 : Ready for merging into /trunk<br />
+</li>
+<li>2007 04 25 : Time spent 0.5 days</li>
+<li>2007 04 27 : Removed developer MH</li>
+<li>2007 04 27 : Added developer MS</li>
+<li>2007 04 27 : Merge complete</li>
+<li>2007 04 27 : Time spend 0.5 days</li>
+<li>2007 04 27 : <strong>Task status changed</strong> to completed<br />
+</li>
+</ul>
+<h2 id="discussion">Discussion</h2>
+<p>Discovered it was possible to simply keep two sets of bindings - for 0.5.4 and 0.6.0. Pyrex does not yet support conditional compilation, so two sets of bindings is an alternative simple solution.<br />
+<br />
+Added a version number attribute to 0.6.0 which the component now tests for so it knows how to behave differently depending on which bindings it has available.<br />
+</p>
+<p>Note that there was a change in bitsam syntax between 0.6.0 and 0.5.4 so files compressed with one cannot be played back by the other.</p>
+<p>Modified examples so there are two example compressed files - one for 0.5.4 and one for 0.6.0. 'simple playback' example program modified to take a command line argument to specify which.<br />
+</p>
+<p>-- Matt, 25 April 2007<br />
+</p>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<div class="container">
+<h1 id="kamaelia.support.particles.spatialindexer"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Support.html" class="reference">Support</a>.<a href="/Components/pydoc/Kamaelia.Support.Particles.html" class="reference">Particles</a>.<a href="/Components/pydoc/Kamaelia.Support.Particles.SpatialIndexer.html" class="reference">SpatialIndexer</a></h1>
+<section>
+<div class="container">
+
+</div>
+<ul>
+<li><a href="#13" class="reference">Fast spatial indexing of entities</a>
+<ul>
+<li><a href="#14" class="reference">Example Usage</a></li>
+<li><a href="#15" class="reference">How does it work?</a></li>
+</ul></li>
+</ul>
+</section>
+<h1 id="fast-spatial-indexing-of-entities-13">Fast spatial indexing of entities {#13}</h1>
+<p>A SpatialIndexer object is an index of entities that provides fast lookups of entities whose coordinates are within a specified radius of a specified point. You can have as many, or few, spatial dimensions as you like.</p>
+<p>This is particularly useful for computationally intensive tasks such as calculating interactions between particles as performed, for example, by the Particle and ParticleSystem classes.</p>
+<h2 id="example-usage-14"><span id="example-usage">Example Usage</span> {#14}</h2>
+<p>Creating and index and registering two entities with it at (1,2) and (12,34). We also tell the SpatialIndexer that the 'usual' radius we'll be searching over is 5 units:</p>
+<pre class="literal-block"><code>&gt;&gt;&gt; class Entity:
+...   def __init__(self, coords):
+...     self.coords = coords
+...   def getLoc(self):
+...     return self.coords
+...
+&gt;&gt;&gt; index = SpatialIndexer(proxDist=5.0)
+&gt;&gt;&gt; a = Entity((1.0, 2.0))
+&gt;&gt;&gt; b = Entity((12.0, 34.0))
+&gt;&gt;&gt; index.add(a,b)</code></pre>
+<p>Only 'a' is within 10 units of (0,0):</p>
+<pre class="literal-block"><code>&gt;&gt;&gt; index.withinRadius((0,0), 10.0) == [(a,5.0)]
+True</code></pre>
+<p>The returned tuples are of the form: (entity, distance-squared)</p>
+<p>Neither point is within 1 unit of (0,0):</p>
+<pre class="literal-block"><code>&gt;&gt;&gt; index.withinRadius((0,0), 1.0)
+[]</code></pre>
+<p>Both 'a' and 'b' are within 50 units of (0,0):</p>
+<pre class="literal-block"><code>&gt;&gt;&gt; index.withinRadius((0,0), 50.0) == [(a,5.0), (b,1300)]
+True</code></pre>
+<p>We can ask the same, but request that 'a' be excluded:</p>
+<pre class="literal-block"><code>&gt;&gt;&gt; filter = lambda particle : particle != a
+&gt;&gt;&gt; index.withinRadius((0,0), 50.0, filter) == [(b,1300)]
+True</code></pre>
+<p>If we remove 'a' then only 'b' will be found:</p>
+<pre class="literal-block"><code>&gt;&gt;&gt; index.remove(a)
+&gt;&gt;&gt; index.withinRadius((0,0), 50.0) == [(b, 1300.0)]
+True</code></pre>
+<p>If we change the position of b we must <em>notify</em> the SpatialIndexer:</p>
+<pre class="literal-block"><code>&gt;&gt;&gt; index.withinRadius((0,0), 10.0) == []
+True
+&gt;&gt;&gt; b.coords=(5.0,6.0)
+&gt;&gt;&gt; index.withinRadius((0,0), 10.0) == [(b, 61.0)]
+False
+&gt;&gt;&gt; index.updateLoc(b)
+&gt;&gt;&gt; index.withinRadius((0,0), 10.0) == [(b, 61.0)]
+True</code></pre>
+<h2 id="how-does-it-work-15"><span id="how-does-it-work">How does it work?</span> {#15}</h2>
+<p>SpatialIndexer stores entities in an associative data structure, indexed by their spatial location. Simply put, it breaks space into a grid of cells. The coordinates of that cell index into a dictionary. All particles that fall within a given cell are stored in a list in that dictionary entry.</p>
+<p>It can then rapidly search for cells overlapping the area we want to search and return those entities that fall within that area.</p>
+<p>The size of the cells is specified during initialisation. Choose a size roughly equal to the radius you'll most often be searching over. Too small a value will case SpatialIndexer to spend too long enumerating through cells. To big a cell size and far more entities will be searched that necessary.</p>
+<p>Entities must provide a getLoc() method that returns a tuple of the coordinates of that entity.</p>
+<p>Use the add(...) and remove(...) methods to register and deregister entities from the spatial index.</p>
+<p>If you change the coordinates of an entity, the SpatialIndexer must be notified by calling its updateLoc(...) method.</p>
+<hr />
+<section>
+
+</section>
+</div>
+<h1 id="feedback">Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer? Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback <a href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701" class="reference">here</a> in reply to the documentation thread in the Kamaelia blog.</p>
+<p><em>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</em></p>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>

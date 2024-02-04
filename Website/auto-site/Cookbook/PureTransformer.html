@@ -1,0 +1,123 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<h1 id="cookbook-puretransformer">Cookbook: PureTransformer</h1>
+<p>A number of components have a common format - specifically they take every piece of data they receive, transform it somehow, and pass the data on. Take for example this exampe from the <a href="../../../Cookbook/HTTPClient">HTTPClient page</a>:</p>
+<blockquote>
+<pre><code>import feedparser
+import pprint
+import Axon
+from Kamaelia.Chassis.Pipeline import Pipeline
+from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
+from Kamaelia.Protocol.HTTP.HTTPClient import SimpleHTTPClient
+
+class Feedparser(Axon.Component.component):
+    def main(self):
+        while 1:
+            while self.dataReady(&quot;inbox&quot;):
+                data = self.recv(&quot;inbox&quot;)
+                parseddata = feedparser.parse(data)
+                self.send(parseddata, &quot;outbox&quot;)
+            if not self.anyReady():
+                self.pause()
+            yield 1
+
+class PrettyPrinter(Axon.Component.component):
+    def main(self):
+        while 1:
+            while self.dataReady(&quot;inbox&quot;):
+                data = self.recv(&quot;inbox&quot;)
+                prettified = pprint.pformat(data)
+                self.send(prettified, &quot;outbox&quot;)
+            if not self.anyReady():
+                self.pause()
+            yield 1
+
+Pipeline(
+    ConsoleReader(eol=&quot;&quot;),
+    SimpleHTTPClient(),
+    Feedparser(),
+    PrettyPrinter(),
+    ConsoleEchoer(),
+).run()</code></pre>
+</blockquote>
+<p>In the example above, the important part of the example is highlighted <strong>red</strong> the common parts of the components are highlight in <em>green</em>. Clearly this amount of boiler plate code actually hides what's actually going on here. As a result the PureTransformer component exists.<br />
+</p>
+<p>To show how this works, we'll leave the important part of the above example red, but show the shorter version here:</p>
+<blockquote>
+<pre><code>import feedparser
+import pprint
+import Axon
+from Kamaelia.Chassis.Pipeline import Pipeline
+from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
+from Kamaelia.Protocol.HTTP.HTTPClient import SimpleHTTPClient
+from Kamaelia.Util.PureTransformer import PureTransformer
+
+Pipeline(
+    ConsoleReader(eol=&quot;&quot;),
+    SimpleHTTPClient(),
+    PureTransformer(feedparser.parse), # Feedparser
+    PureTransformer(pprint.pformat),   # PrettyPrinter
+    ConsoleEchoer(),
+).run()</code></pre>
+</blockquote>
+<p>The biggest downside of the PureTransformer is that you sometimes lose the <em>intent</em> behind a component due to the reused name. As a result, creating a prefab is sometimes a nice idea. What's a prefab? It's simply a function !<br />
+<br />
+</p>
+<h2 id="using-a-prefab-to-show-intent">Using a Prefab to show Intent</h2>
+<blockquote>
+<pre><code>import feedparser
+import pprint
+import Axon
+from Kamaelia.Chassis.Pipeline import Pipeline
+from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
+from Kamaelia.Protocol.HTTP.HTTPClient import SimpleHTTPClient
+from Kamaelia.Util.PureTransformer import PureTransformer
+
+def Feedparser(): return PureTransformer(feedparser.parse)
+def PrettyPrinter(): return PureTransformer(pprint.pformat)
+ 
+Pipeline(
+    ConsoleReader(eol=&quot;&quot;),
+    SimpleHTTPClient(),
+    Feedparser(),
+    PrettyPrinter(),
+    ConsoleEchoer(),
+).run()</code></pre>
+</blockquote>
+<p>The nice thing here is we now have the best of both worlds - the code in the pipeline shows the intent, whereas the code performing the transforms now doesn't contain any repetition. The other nice thing about doing things this way is that you gain correct shutdown handling for free at the same time! :-)<br />
+</p>
+<p>-- Michael Sparks, December 2006<br />
+<br />
+</p>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>

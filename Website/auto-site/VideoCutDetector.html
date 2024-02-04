@@ -1,0 +1,125 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<h1 id="video-cut-detector">Video Cut Detector</h1>
+<div class="boxright">
+<p>For development/status information, see the <a href="/Developers/Projects/VideoCutDetector.html">project task page</a></p>
+</div>
+<p>This is a simple command line tool to analyse a video file and output a list of (probable) locations of cuts (shot-changes) in the video.<br />
+<br />
+This can serve as useful input data to user controlled video manipulation/editing applications where it is useful to be able to precisely identify where shot changes take place.</p>
+<h2 id="getting-started">Getting Started</h2>
+<p>You can find the cut detector itself in <code>/Sketches/MH/Video/CutDetector</code> in the trunk of the subversion repository.<br />
+</p>
+<h3 id="pre-requisites">Pre-requisites</h3>
+<ol type="1">
+<li>You must install Axon from the <code>private_MH_outboxwakeups</code> branch in the subversion repository. The cut detector requires the new features in this branch to enable it to self rate limit without exploding memory usage!<br />
+<br />
+Install it the usual way using the command line:<br />
+<code>python setup.py install</code><br />
+<br />
+</li>
+<li>You must have an installed copy of the command line ffmpeg tool, which can be obtained from <a href="http://ffmpeg.mplayerhq.hu/">here.</a> Make sure you have all the codecs you need of course!<br />
+<br />
+</li>
+<li>You must run <code>make</code> in the Cut Detector's directory to build the c support library used to perform the image processing needed. This requires pyrex ( <a href="http://www.cosc.canterbury.ac.nz/greg.ewing/python/Pyrex/">get it here</a> ).<br />
+</li>
+</ol>
+<h3 id="running-cutdetector.py">Running CutDetector.py</h3>
+<p>Run ShotChangeDetector.py from the command line and you'll get usage information:<br />
+</p>
+<blockquote>
+<pre><code>&gt; ./ShotChangeDetector.py
+
+Usage:
+
+    ./ShotChangeDetector.py [--show] [threshold] videofile
+
+* threshold is a floating point value greater than zero (default=0.9)</code></pre>
+</blockquote>
+<p>So for example, if you run it with the following command line:</p>
+<pre style="margin-left: 40px;"><code>&gt; ./ShotChangeDetector.py myvideofile.avi</code></pre>
+<p>Then as the cut detector runs, XML listing the frame numbers of where probably cuts (shot changes) have been detected will be sent to standard output, for example:<br />
+</p>
+<blockquote>
+<pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;
+
+&lt;detected_cuts xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+                  xsi:noNamespaceSchemaLocation=&quot;DetectedCuts.xsd&quot;&gt;
+    &lt;cut frame=&quot;39&quot; confidence=&quot;0.9469&quot; /&gt;
+    &lt;cut frame=&quot;49&quot; confidence=&quot;0.9820&quot; /&gt;
+    &lt;cut frame=&quot;76&quot; confidence=&quot;0.9009&quot; /&gt;
+    &lt;cut frame=&quot;78&quot; confidence=&quot;1.0142&quot; /&gt;
+    &lt;cut frame=&quot;103&quot; confidence=&quot;1.0033&quot; /&gt;
+    &lt;cut frame=&quot;110&quot; confidence=&quot;0.9777&quot; /&gt;
+    &lt;cut frame=&quot;135&quot; confidence=&quot;0.9613&quot; /&gt;
+    &lt;cut frame=&quot;147&quot; confidence=&quot;0.9953&quot; /&gt;</code></pre>
+<blockquote>
+<blockquote>
+<p><em>.… cut down for succinctness! ...</em></p>
+</blockquote>
+</blockquote>
+<pre><code>    &lt;cut frame=&quot;45167&quot; confidence=&quot;0.9209&quot; /&gt;
+    &lt;cut frame=&quot;45168&quot; confidence=&quot;0.9209&quot; /&gt;
+    &lt;cut frame=&quot;45169&quot; confidence=&quot;0.9209&quot; /&gt;
+    &lt;cut frame=&quot;45170&quot; confidence=&quot;0.9210&quot; /&gt;
+    &lt;cut frame=&quot;45171&quot; confidence=&quot;1.0389&quot; /&gt;
+&lt;/detected_cuts&gt;</code></pre>
+</blockquote>
+<p>The cuts are listed by frame number, starting from zero for the first frame.<br />
+</p>
+<p>The 'confidence' value is the confidence the algorithm has that what was detected actually is a shot change. It is basically a measure of how much the picture suddenly changed. The higher the value, the more likely it is to be a cut.<br />
+</p>
+<h1 id="options">Options</h1>
+<h2 id="sensitivity-threshold">Sensitivity Threshold</h2>
+<p>You can specify the threshold value used for shot change detection. The default is 0.9, meaning that any possible cuts with a confidence value of less than 0.9 are not output. Sensible values are probably about 0.75 or greater. The cut detector will not accept values less than or equal to zero.<br />
+<br />
+Specify the threshold as a floating point value immediately before the video filename, for example:<br />
+</p>
+<pre style="margin-left: 40px;"><code>&gt; ./ShotChangeDetector.py 0.85 myvideofile.avi</code></pre>
+<p>The best choice of threshold value will vary depending of the type of video content. The best way to choose is to experiment. Using 0.9 as the starting point for this is probably a good idea.<br />
+</p>
+<h2 id="displaying-the-video">Displaying the video</h2>
+<p>You can optionally ask to be shown the video live (without sound unfortunately!) as the cut detection takes place. Use the <code>--show</code> command line option to do this. For example:<br />
+</p>
+<pre style="margin-left: 40px;"><code>&gt; ./ShotChangeDetector.py --show myvideofile.avi</code></pre>
+<p>The video will be rate limited to 25fps, irrespective of the actual frame rate of the video. Detected cuts will be sent to standard output as usual.<br />
+<br />
+Bear in mind that becuase the detection algorithm needs to compare multiple frames, the detected cuts will be output several frames after they were detected - do not expect them to be displayed the moment the shot change happens in the displayed video!<br />
+<br />
+<br />
+</p>
+<p>-- Matt, April 2007</p>
+<p><br />
+</p>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>

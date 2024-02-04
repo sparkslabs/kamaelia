@@ -1,0 +1,129 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<p><span style="font-size:24pt">Axon.</span><span style="font-size:24pt;font-weight:600">Ipc.py</span></p>
+<p>Version: Axon 1.0</p>
+<p>...</p>
+<p><span style="font-size:14pt;font-weight:600">Pydoc Style Documentation</span></p>
+<p>Class hierarchy</p>
+<p><span style="font-family:Courier 10 Pitch">__builtin__.object</span></p>
+<p><span style="font-family:Courier 10 Pitch">ipc</span> - Message base class</p>
+<p><span style="font-family:Courier 10 Pitch">errorInformation</span> - A message to indicate that a non fatal error has occured in the component. It may skip processing errored data but should respond correctly to future messages.</p>
+<ul>
+<li>__init__(self, caller, exception=None, message=None)</li>
+</ul>
+<p><span style="font-family:Courier 10 Pitch">newComponent</span> - Message used to inform the scheduler of a new component that needs a thread of control and activating</p>
+<ul>
+<li>__init__(self, *components)</li>
+<li>components(self)</li>
+</ul>
+<p><span style="font-family:Courier 10 Pitch">notify</span> - Message used to notify the system of an event</p>
+<ul>
+<li>__init__(self, caller, payload)</li>
+</ul>
+<p><span style="font-family:Courier 10 Pitch">producerFinished</span> - Message to indicate that the producer has completed its work and will produce no more output.</p>
+<ul>
+<li>__init__(self, caller=None, message=None)</li>
+</ul>
+<p><span style="font-family:Courier 10 Pitch">shutdownMicroprocess</span> -</p>
+<ul>
+<li>__init__(self, *microprocesses)</li>
+<li>microprocesses(self)</li>
+</ul>
+<p><span style="font-family:Courier 10 Pitch">status</span> - General Status message</p>
+<ul>
+<li>__init__(self, status)</li>
+<li>status(self)</li>
+</ul>
+<p><span style="font-family:Courier 10 Pitch">wouldblock</span> - Message used to indicate to the scheduler that the system is likely to block now, why, and reasons to awaken the system</p>
+<ul>
+<li>__init__(self, caller)</li>
+</ul>
+<p><span style="font-size:14pt;font-weight:600">Testdoc Documentation</span></p>
+<p><span style="font-weight:600">errorInformation.__init__</span></p>
+<ul>
+<li>An exception &amp; message (any object) in addition to the caller to provide a more meaningful errorInformation message where appropriate. ttbw</li>
+<li>Called without arguments fails - must include caller.</li>
+<li>Takes the supplied caller, and creates an errorInformation object. Checks errorInformation object is an instance of ipc.</li>
+</ul>
+<p><span style="font-weight:600">ipc</span></p>
+<ul>
+<li>Should be derived from object.</li>
+</ul>
+<p><span style="font-weight:600">newComponent.__init__</span></p>
+<ul>
+<li>Groups all the arguments as a tuple of components that need to be activated/added to the run queue. Order is unimportant, scheduler doesn't care.</li>
+<li>Should work without problems.</li>
+</ul>
+<p><span style="font-weight:600">newComponent.components</span></p>
+<ul>
+<li>Returns a tuple of components that need to be added to the run queue/activated. Same test as for __init__ as they are counterparts.</li>
+</ul>
+<p><span style="font-weight:600">notify.__init__</span></p>
+<ul>
+<li>Called without arguments fails.</li>
+<li>Creates a message from a specific caller with some data payload to notify part of the system of an event.</li>
+</ul>
+<p><span style="font-weight:600">producerFinished.__init__</span></p>
+<ul>
+<li>Called without arguments defaults to a caller of None, message of None. Checks producerFinished is a subclass of ipc</li>
+</ul>
+<p><span style="font-weight:600">shutdownMicroprocess.__init__</span></p>
+<ul>
+<li>Should work without problems.</li>
+<li>Treats all the arguments as a tuple of microprocesses that need to be shutdown. &lt;br&gt;</li>
+</ul>
+<p><span style="font-weight:600">shutdownMicroprocess.microprocesses</span></p>
+<ul>
+<li>Returns the list of microprocesses that need to be shutdown. This is essentially the counterpart to the __init__ test.</li>
+</ul>
+<p><span style="font-weight:600">status.__init__</span></p>
+<ul>
+<li>Called without arguments fails.</li>
+<li>Stores the status message - for extraction by the recipient of the message. Checks object is instance of ipc.</li>
+</ul>
+<p><span style="font-weight:600">status.status</span></p>
+<ul>
+<li>Returns the status message stored inside the status object. Counterpart to __init__ test.</li>
+</ul>
+<p><span style="font-weight:600">test_SmokeTest.__init__</span></p>
+<ul>
+<li>Creates a producerFinished message with specified caller &amp; shutdown 'last' message.</li>
+</ul>
+<p><span style="font-weight:600">wouldblock.__init__</span></p>
+<ul>
+<li>Called without arguments fails.</li>
+<li>Stores the caller in the wouldblock message. Allows the scheduler to make a decision. Checks wouldblock is a subclass of ipc.</li>
+</ul>
+<p>Michael, December 2004</p>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>

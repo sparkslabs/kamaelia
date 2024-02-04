@@ -1,0 +1,111 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<div class="container">
+<h1 id="kamaelia.video.detectshotchanges"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Video.html" class="reference">Video</a>.<a href="/Components/pydoc/Kamaelia.Video.DetectShotChanges.html" class="reference">DetectShotChanges</a></h1>
+<section>
+<div class="container">
+<ul>
+<li><strong>component <a href="/Components/pydoc/Kamaelia.Video.DetectShotChanges.DetectShotChanges.html" class="reference">DetectShotChanges</a></strong></li>
+</ul>
+</div>
+<ul>
+<li><a href="#667" class="reference">Detecting cuts/shot changes in video</a>
+<ul>
+<li><a href="#668" class="reference">Example Usage</a></li>
+<li><a href="#669" class="reference">More detail</a></li>
+<li><a href="#670" class="reference">Implementation details</a></li>
+</ul></li>
+<li><a href="#671" class="reference">UNCOMPRESSED FRAME FORMAT</a></li>
+</ul>
+</section>
+<section>
+<h2 id="detecting-cutsshot-changes-in-video-667"><span id="detecting-cuts-shot-changes-in-video">Detecting cuts/shot changes in video</span> {#667}</h2>
+<p>DetectShotChanges takes in (framenumber, videoframe) tuples on its "inbox" inbox and attempts to detect where shot changes have probably occurred in the sequence. When it thinks one has ocurred, a (framenumber, confidencevalue) tuple is sent out of the "outbox" outbox.</p>
+<h3 id="example-usage-668"><span id="example-usage">Example Usage</span> {#668}</h3>
+<p>Reading in a video in uncompressed YUV4MPEG file format, and outputting the frame numbers (and confidence values) where cuts probably occur:</p>
+<pre class="literal-block"><code>Pipeline( RateControlledFileReader(..)
+          YUV4MPEGToFrame(),
+          TagWithSequenceNumber(),      # pair up frames with a frame number
+          DetectShotChanges(threshold=0.85),
+          ConsoleEchoer(),
+        ).run()</code></pre>
+<p>Expect output like this:</p>
+<pre class="literal-block"><code>(17, 0.885)(18, 0.912)(56, 0.91922)(212, 0.818)(213, 0.825)(214, 0.904) ...</code></pre>
+<h3 id="more-detail-669"><span id="more-detail">More detail</span> {#669}</h3>
+<p>Send (frame-number, video-frame) tuples to this component's "inbox" inbox and (frame-number, confidence-value) tuples will be sent out of the "outbox" outbox whenever it thinks a cut has occurred.</p>
+<p>Frames must be in a YUV format. See below for details. Frame numbers need not necessarily be sequential; but they must be unique! If they are not, then it is your own fault when you can't match up detected shot changes to actual video frames!</p>
+<p>Internally, the cut detector calculates a 'confidence' value representing how likely that a shot change has occurred. At initialisation you set a threshold value - if the confidence value reaches or exceeds this threshold, then a cut is deemed to have taken place, and output will be generated.</p>
+<p>How do you choose a threshold? It is a rather inexact science (as is the subjective decision of whether something consitutes a shot change!) - you really need to get a feel for it experimentally. As a rough guide, values between 0.8 and 0.9 are usually reasonable, depending on the type of video material.</p>
+<p>Because of the necessary signal processing, this component has a delay of several frames of data through it before you will get output. It therefore will not necessarily detect cuts in the first 15 frames or so of a sequence sent to it. Neither will it generate any output for the last 15 frames or so - they will never make it through the internal signal processing.</p>
+<p>Send a producerFinished() or shutdownMicroprocess() message to this component's "control" inbox and it will immediately terminate. It will also forward on the message out of its "signal" outbox.</p>
+<h3 id="implementation-details-670"><span id="implementation-details">Implementation details</span> {#670}</h3>
+<p>The algorithm used is based on a simple "mean absolute difference" between pixels of one frame and the next; with some signal processing on the resulting stream of frame-to-frame difference values, to detect a spike possibly indicating a shot change.</p>
+<p>The algorithm is courtesy of Jim Easterbrook of BBC Research. It is also available in its own right as an independent open source library <a href="http://sourceforge.net/projects/shot-change" class="reference">here.</a></p>
+<p>As signal processing is done on the confidence values internally to emphasise spikes - which are likely to indicate a sudden increase in the level of change from one frame to the next - a conseuqence is that this component internally buffers inter-frame difference values for several frames, resulting in a delay of about 15 frames through this component. This is the reason why it is necessary to pair up video frames with a frame number, otherwise you cannot guarantee being able to match up the resulting detected cuts with the actual frame where they took place!</p>
+<p>The change detection algorithm only looks at the Y (luminance) data in the video frame.</p>
+<h2 id="uncompressed-frame-format-671"><span id="uncompressed-frame-format">UNCOMPRESSED FRAME FORMAT</span> {#671}</h2>
+<p>A frame is a dictionary data structure. It must, for this component, at minimum contain a key "yuv" that returns a tuple containing (y_data, u_data, v_data).</p>
+<p>Any other entries are ignored.</p>
+</section>
+<hr />
+<h1 id="kamaelia.video.detectshotchanges.detectshotchanges"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Video.html" class="reference">Video</a>.<a href="/Components/pydoc/Kamaelia.Video.DetectShotChanges.html" class="reference">DetectShotChanges</a>.<a href="/Components/pydoc/Kamaelia.Video.DetectShotChanges.DetectShotChanges.html" class="reference">DetectShotChanges</a></h1>
+<h2 id="symbol-DetectShotChanges">class DetectShotChanges(<a href="/Docs/Axon/Axon.Component.component.html" class="reference">Axon.Component.component</a>)</h2>
+<p>DetectShotChanges([threshold]) -&gt; new DetectShotChanges component.</p>
+<p>Send (framenumber, videoframe) tuples to the "inbox" inbox. Sends out (framenumber, confidence) to its "outbox" outbox when a cut has probably occurred in the video sequence.</p>
+<p>Keyword arguments:</p>
+<ul>
+<li>threshold -- threshold for the confidence value, above which a cut is detected (default=0.9)</li>
+</ul>
+<h3 id="inboxes"><span id="symbol-DetectShotChanges.Inboxes">Inboxes</span></h3>
+<h3 id="outboxes"><span id="symbol-DetectShotChanges.Outboxes">Outboxes</span></h3>
+<h3 id="methods-defined-here">Methods defined here</h3>
+<div class="container">
+<div class="boxright">
+<p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div>
+</div>
+<h4 id="init__self-threshold"><span id="symbol-DetectShotChanges.__init__">__init__(self[, threshold])</span></h4>
+<h4 id="detectcutself-framenum-ydata"><span id="symbol-DetectShotChanges.detectCut">detectCut(self, framenum, ydata)</span></h4>
+<h4 id="mainself"><span id="symbol-DetectShotChanges.main">main(self)</span></h4>
+<p>Main loop</p>
+<section>
+
+</section>
+</div>
+<h1 id="feedback">Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer? Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback <a href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701" class="reference">here</a> in reply to the documentation thread in the Kamaelia blog.</p>
+<p><em>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</em></p>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>

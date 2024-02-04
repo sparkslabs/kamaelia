@@ -1,0 +1,150 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<h2 id="project-task-page-axon-box-delivery-optimisations">Project Task Page: Axon Box Delivery Optimisations</h2>
+<div class="boxright">
+<p><strong>Status:</strong> Completed<br />
+<strong>Current Developers:</strong> <em>MH</em><br />
+<strong>Current "inflight" dev location:</strong> <em>/branches/</em>private_MH_axon_optimisations<br />
+<strong>Start Date:</strong> <em>March 2006</em><br />
+<strong>Expected End Date:</strong> n/a<br />
+<strong>End Date:</strong> <em>April 2006</em><br />
+<strong>Date this page last updated:</strong> <em>22 February 2007</em><br />
+<strong>Estimated effort so far:</strong> <em>20 days</em><br />
+</p>
+</div>
+<p><br />
+<br />
+</p>
+<h2 id="description"><strong>Description</strong></h2>
+<p>Modifying axon to optimise delivery of messages along linkages - especially chains of linkages - by delivering a message immediately and directly to the final destination inbox as soon as it is sent to an outbox. This would remove the need for a separate "postman" microprocess to transfer the message along each linkage, from outbox to inbox.<br />
+<br />
+This will substantially improve responsiveness and performance of Axon systems - there will be less microprocesses in a running system; and where components are nested delivery take a single hop rather than as many hops as there are linkages in the chain.<br />
+<br />
+Needed to make practical high data throughput Kamaelia systems, such as <a href="/Developers/Projects/KamaeliaMacro">KamaeliaMacro</a>.<br />
+</p>
+<h2 id="inputs">Inputs</h2>
+<p>Task Sponsor: Michael (MS)<br />
+</p>
+<p>Task Owner: Michael, Matt (MH)<br />
+</p>
+<p>Developers: Michael (initial experiments &amp; final merge), Matt (final code)<br />
+</p>
+<p>Users: Michael, Matt<br />
+</p>
+<p>Interested third parties: none<br />
+</p>
+<p>Requirements</p>
+<ul>
+<li>MUST improve rate of message delivery along linkages</li>
+<li>MUST deliver messages in a single hop along a chain (2 or more joined) linkages</li>
+<li>SHOULD not cause substantive perormance decreases elsewhere in the system</li>
+<li>SHOULD pass the existing Axon test suite<br />
+</li>
+</ul>
+<p>Relevant Influencing factors:<br />
+</p>
+<ul>
+<li><em>Needed for Kamaelia Macro</em></li>
+<li><em>Preferable to temporarily drop Axon's ability to 'wake up' producer components when message delivery occurs if this is necessary to implement these performance improvements</em></li>
+</ul>
+<p><br />
+</p>
+<h2 id="outputs">Outputs</h2>
+<h3 id="expected">Expected</h3>
+<ul>
+<li>Modifications to Axon (initially in branch, then merged into mainline code)</li>
+<li>Modifications and additions to Axon test suite</li>
+<li>Improved performance<br />
+</li>
+</ul>
+<h3 id="actual">Actual</h3>
+<p>Code:</p>
+<p>CVS branch: private_MH_axon_optimisations</p>
+<p>Mainline code: /Code/Python/Axon/Axon/</p>
+<ul>
+<li>Modified: most/all source files<br />
+</li>
+<li>Added: Box.py</li>
+<li>Removed: Postman.py</li>
+</ul>
+<p>Mainline code: /Code/Python/Axon/Axon/Tests</p>
+<ul>
+<li>Tests removed that were now inapplicable</li>
+<li>New tests added</li>
+</ul>
+<p>Updated components in mainline:<br />
+</p>
+<ul>
+<li>/Code/Python/Kamaelia/Kamaelia/Chassis/Carousel.py</li>
+<li>/Code/Python/Kamaelia/Kamaelia/Internet/Selector.py</li>
+<li>/Code/Python/Kamaelia/Kamaelia/Util/Splitter.py</li>
+<li>/Sketches/MH/ircShakespeare.py</li>
+</ul>
+<h3 id="realistic-possibilities-arising-as-a-result-of-activity-on-this-task">Realistic possibilities arising as a result of activity on this task</h3>
+<p>Axon's support for the following was removed; and needed to be added back in again:<br />
+</p>
+<ul>
+<li>limited "pipewidths" - linkages that could only carry a limited number of items data before becoming 'full' - (a rate limiting mechanism)<br />
+</li>
+<li>waking a component when a message leaves on of its outboxes (free space to send to)</li>
+</ul>
+<h2 id="task-log">Task Log</h2>
+<ul>
+<li>February 2006 : Added developer Michael</li>
+<li>March 2006 : <strong>Task status changed</strong> to running.</li>
+<li>March 2006 : Michael : worked on inital sketches<br />
+</li>
+<li>March 2006 : Added developer Matt</li>
+<li>March 2006 : Matt : worked on private_MH_axon_optimisations branch for Axon</li>
+<li>12 April 2006 : Matt : completed development</li>
+<li>18 April 2006 : Michael : Allocated to merge branch into mainline</li>
+<li>27 April 2006 : Michael : Merge completed</li>
+<li>27 April 2006 : <strong>Task status changed</strong> to completed<br />
+</li>
+<li>28 April 2006 : Removed developers, Michael, Matt</li>
+<li>28 April 2006 : Minor updates to components to match API change<br />
+</li>
+<li>21 February 2007 : Matt : Project Task Page created<br />
+</li>
+</ul>
+<h2 id="discussion">Discussion</h2>
+<p>These optimisations led to a massive performance improvement; but at the price of Axon losing some functionality (namely the ability to wake components when message deliveries take place).<br />
+<br />
+The modifications and additions to the axon testsuite were not initially merged when the main code was merged from the branch to the mainline codebase. This was because the decision was taken to move the tests from /Code/Python/Axon/Axon/test to /Tests/Python/Axon/. They were later merged when other optimisations were merged later in Summer 2006.<br />
+<br />
+A minor Axon API change was made (other that the removal of support for waking due to deliveries) to make things more uniform for component writers - a new unlink() method superceeds deRegisterLinkage() - this mirrors the existing link() method.<br />
+<br />
+-- Matt Hammond, 22 February 2007<br />
+</p>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>

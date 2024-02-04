@@ -1,0 +1,71 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<h1 id="developersprinciples">Developers/Principles</h1>
+<p>Don't take this too seriously, except for the bit in bold.<br />
+</p>
+<p>Spend time on making your metaphors and interfaces clear.<br />
+<br />
+</p>
+<p>Descriptions of things optimised for the 80% of programmers are preferable to those with only the top 20% will understand. If this seems "dumbing down", consider that it is often harder to describe something complex simply, than to describe something simple in a complex fashion.<br />
+<br />
+</p>
+<p>Try to make decisions that <em>can</em> work in other languages. Kamaelia is only implemented right now in python, but the principles <strong><em>must</em></strong> be portable.<br />
+<br />
+</p>
+<p><strong><em>Remember that a key aim is to make life easier for the bulk of programmers, with a recognition that its worth optimising for maintenance.</em></strong><br />
+<br />
+</p>
+<p>Fun descriptions, ideas and code tend to win arguments :-)<br />
+<br />
+</p>
+<p>You're going to get it wrong. Whether you like it or not, something you do will go wrong and be very wrong. We'd like to aim for a very high hit rate of "good" decisions, but often the only way to find out what the "right" answer is to actually try something and find out. Please don't be afraid of pointing out the emperor has new clothes. We might be embarrassed (possibly even upset) for a while, but we'd rather be told and know when we've got something wrong. We're human too after all :-) For a good discourse on why it's worth taking this risk, read Paul Arden's excellent (and brief!) read "Whatever you think, think opposite".<br />
+</p>
+<ul>
+<li>A corrollary of this is that it might make sense occasionally to do sketches and branches of ideas that you think are really bad ideas and see how they pan out!<br />
+<br />
+</li>
+</ul>
+<p>Implementations change, but interfaces stay the same. If the interfaces change, you've written something new. ie you may add new inboxes and outboxes to components, but if you change behaviours of existing in-/out-boxes you should consider whether you're actually writing something new. If in doubt, talk to the team.<br />
+<br />
+</p>
+<p>Quick, simple, clear, justified decisions (But not hasty).<br />
+<br />
+</p>
+<p>All rules have exceptions.<br />
+<br />
+</p>
+<p><span style="font-family: Courier; font-weight: 600;">import this</span> :-) (and <strong>that</strong> and <strong>theother</strong>)<br />
+<br />
+</p>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>

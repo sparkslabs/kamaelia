@@ -1,0 +1,139 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<h1 id="releasejune2008-checklist">ReleaseJune2008: Checklist</h1>
+<p>Stuff specifically checked and any actions/decisions result.</p>
+<p><strong>Release tool:</strong> - pulls in all major dependencies</p>
+<p><strong>Tools</strong></p>
+<p>Show.py</p>
+<ul>
+<li>Minor issue in MultiClick - fixed</li>
+</ul>
+<p>VideoPlayer.py - passed</p>
+<ul>
+<li>Confirmed working</li>
+</ul>
+<p>AxonVisualiser.py - passed</p>
+<ul>
+<li>Confirmed working</li>
+</ul>
+<p>kamaelia_logo.png</p>
+<ul>
+<li>New version of logo in place</li>
+</ul>
+<p>axonshell.py - passed</p>
+<ul>
+<li>Probably to be deprecated in favour of likefile, but works</li>
+</ul>
+<p>VideoShotChangeDetector - passed</p>
+<ul>
+<li>Works with random video file :-)</li>
+</ul>
+<p>Whiteboard.py - passed (speex issue dealt with by Tools branch)<br />
+</p>
+<p>Compose.py</p>
+<p><strong>Breaks in this release</strong></p>
+<p><strong>Will remove from this release, but put out as a separate release</strong></p>
+<ul>
+<li>Ala Kamaelia-ERModeller.</li>
+<li>Makes tool still usable/useful.</li>
+</ul>
+<p>Only major problem in the release at present - and the fact that it actually causes a C stack trace rather than python would tend to imply it's not actually a Kamaelia issue, but rather a dependency.<br />
+</p>
+<p>Examples</p>
+<p>Axon</p>
+<p><strong>likefile</strong> - passed BUT <strong>Rewritten and renamed "Handle" as per numerous discussions - passed<br />
+</strong></p>
+<p>Simple -<br />
+</p>
+<ul>
+<li>all.py - passed</li>
+<li>README.py - passed</li>
+</ul>
+<p>SynchronousLinks</p>
+<ul>
+<li>basic_syncLinksAcceptanceTest.py - passed</li>
+</ul>
+<p>DVB_Systems</p>
+<ul>
+<li>all - passed</li>
+</ul>
+<p>GraphVisualisation</p>
+<ul>
+<li>BasicGraphVisualisation.py - passed</li>
+<li>TopologyVisualiser.py - passed</li>
+</ul>
+<p>Introspection - all passed ( kamaelia_logo.png issue resolved )<br />
+</p>
+<p>Likefile</p>
+<ul>
+<li>./LikeTicker.py -passed<br />
+</li>
+<li>mediumtcpclient.py - passed</li>
+<li>./simplehttpclient.py - passed</li>
+<li>./simpleoggdecoder.py - passed (used supported version)<br />
+</li>
+<li>./simplemp3encoder.py - <strong>removed</strong><br />
+</li>
+<li>./simpleoggradioplayer.py - checked ok (relies on a service not always available)<br />
+</li>
+<li>./simpletcpclient.py - passed</li>
+<li>simpletorrentclient.py - assumed OK (requires Bit Torrent installed)</li>
+</ul>
+<p>multicast - passed<br />
+</p>
+<p>SimpleGraphicalApps -passed (BouncingCatGame pictures replaced with "better" ones)<br />
+</p>
+<p>SoC2006</p>
+<p>RJL</p>
+<ul>
+<li>Not tested - no change from last release - assumed OK</li>
+</ul>
+<p>THF</p>
+<ul>
+<li>passed</li>
+</ul>
+<p>TCP_Systems - passes<br />
+</p>
+<p>UDP_Systems - passes<br />
+</p>
+<p>Chassis - passe</p>
+<p>Dirac</p>
+<ul>
+<li>Would help if I'd installed dirac(!)</li>
+</ul>
+<p><strong>Otherwise OK :-)<br />
+</strong></p>
+<p><br />
+</p>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>

@@ -1,0 +1,181 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<div class="container">
+<h1 id="kamaelia.util.chooser"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Util.html" class="reference">Util</a>.<a href="/Components/pydoc/Kamaelia.Util.Chooser.html" class="reference">Chooser</a></h1>
+<section>
+<div class="container">
+<ul>
+<li><strong>component <a href="/Components/pydoc/Kamaelia.Util.Chooser.Chooser.html" class="reference">Chooser</a></strong></li>
+<li><strong>component <a href="/Components/pydoc/Kamaelia.Util.Chooser.ForwardIteratingChooser.html" class="reference">ForwardIteratingChooser</a></strong></li>
+</ul>
+</div>
+<ul>
+<li><a href="#156" class="reference">Iterating Over A Predefined List</a>
+<ul>
+<li><a href="#157" class="reference">Example Usage</a></li>
+<li><a href="#158" class="reference">How does it work?</a></li>
+</ul></li>
+</ul>
+</section>
+<h1 id="iterating-over-a-predefined-list-156">Iterating Over A Predefined List {#156}</h1>
+<p>The Chooser component iterates (steps) forwards and backwards through a list of items. Request the next or previous item and Chooser will return it.</p>
+<p>The ForwardIteratingChooser component only steps forwards, but can therefore handle more than just lists - for example: infinite sequences.</p>
+<h2 id="example-usage-157"><span id="example-usage">Example Usage</span> {#157}</h2>
+<p>A simple slideshow:</p>
+<pre class="literal-block"><code>items=[ &quot;image1.png&quot;, &quot;image2.png&quot;, &quot;image3.png&quot;, ... ]
+
+Graphline( CHOOSER  = Chooser(items=imagefiles),
+           FORWARD  = Button(position=(300,16), msg=&quot;NEXT&quot;, caption=&quot;Next&quot;),
+           BACKWARD = Button(position=(16,16),  msg=&quot;PREV&quot;, caption=&quot;Previous&quot;),
+           DISPLAY  = Image(position=(16,64), size=(640,480)),
+           linkages = { (&quot;FORWARD&quot; ,&quot;outbox&quot;) : (&quot;CHOOSER&quot;,&quot;inbox&quot;),
+                        (&quot;BACKWARD&quot;,&quot;outbox&quot;) : (&quot;CHOOSER&quot;,&quot;inbox&quot;),
+                        (&quot;CHOOSER&quot; ,&quot;outbox&quot;) : (&quot;DISPLAY&quot;,&quot;inbox&quot;),
+                      }
+         ).run()</code></pre>
+<p>The chooser is driven by the 'next' and 'previous' Button components. Chooser then sends filenames to an Image component to display them.</p>
+<p>Another example: a forever looping carousel of files, read at 1MBit/s:</p>
+<pre class="literal-block"><code>def filenames():
+    while 1:
+        yield &quot;file 1&quot;
+        yield &quot;file 2&quot;
+        yield &quot;file 3&quot;
+
+JoinChooserToCarousel( chooser = InfiniteChooser(items=filenames),
+                       carousel = FixedRateControlledReusableFilereader(&quot;byte&quot;,rate=131072,chunksize=1024),
+                     )</code></pre>
+<h2 id="how-does-it-work-158"><span id="how-does-it-work">How does it work?</span> {#158}</h2>
+<p>When creating it, pass the component a set of items for it to iterate over.</p>
+<p>Chooser will only accept finite length datasets. InfiniteChooser will accept any interable sequence, even one that never ends from a generator.</p>
+<p>Once activated, the component will emit the first item from the list from its "outbox" outbox.</p>
+<p>If the list/sequence is empty, then nothing is emitted, even in response to messages sent to the "inbox" inbox described now.</p>
+<p>Send commands to the "inbox" inbox to move onto another item of data and cause it to be emitted. This behaviour is very much like a database cursor or file pointer - you are issuing commands to step through a dataset.</p>
+<p>Send "SAME" and the component will emit the same item of data that was last emitted last time. Both Chooser and InfiniteChooser respond to this request.</p>
+<p>Send "NEXT" and the component will emit the next item from the list or sequence. If there is no 'next' item (becuase we are already at the end of the list/sequence) then nothing is emitted. Both Chooser and InfiniteChooser respond to this request.</p>
+<p>With InfiniteChooser, if there is not 'next' item then, additionally, a producerFinished message will be sent out of its "signal" outbox to signal that the end of the sequence has been reached. The component will then terminate.</p>
+<p>All requests described from now are only supported by the Chooser component. InfiniteChooser will ignore them.</p>
+<p>Send "PREV" and the previous item from the list or sequence will be emitted. If there is no previous item (because we are already at the front of the list/sequence) then nothing is emitted.</p>
+<p>Send "FIRST" or "LAST" and the first or last item from the list or sequence will be emitted, respectively. The item will be emitted even if we are already at the first/last item.</p>
+<p>If Chooser or InfiniteChooser receive a shutdownMicroprocess message on the "control" inbox, they will pass it on out of the "signal" outbox. The component will then terminate.</p>
+<hr />
+<section>
+<h1 id="kamaelia.util.chooser.chooser"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Util.html" class="reference">Util</a>.<a href="/Components/pydoc/Kamaelia.Util.Chooser.html" class="reference">Chooser</a>.<a href="/Components/pydoc/Kamaelia.Util.Chooser.Chooser.html" class="reference">Chooser</a></h1>
+<h2 id="symbol-Chooser">class Chooser(<a href="/Docs/Axon/Axon.Component.component.html" class="reference">Axon.Component.component</a>)</h2>
+<p>Chooser([items]) -&gt; new Chooser component.</p>
+<p>Iterates through a finite list of items. Step by sending "NEXT", "PREV", "FIRST" or "LAST" messages to its "inbox" inbox.</p>
+<p>Keyword arguments:</p>
+<ul>
+<li>items -- list of items to be chosen from, must be type 'list' (default=[])</li>
+</ul>
+<h3 id="inboxes"><span id="symbol-Chooser.Inboxes">Inboxes</span></h3>
+<ul>
+<li><strong>control</strong> : shutdown messages</li>
+<li><strong>inbox</strong> : receive commands</li>
+</ul>
+<h3 id="outboxes"><span id="symbol-Chooser.Outboxes">Outboxes</span></h3>
+<ul>
+<li><strong>outbox</strong> : emits chosen items</li>
+<li><strong>signal</strong> : shutdown messages</li>
+</ul>
+<h3 id="methods-defined-here">Methods defined here</h3>
+<div class="container">
+<div class="boxright">
+<p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div>
+</div>
+<h4 id="init__self-items"><span id="symbol-Chooser.__init__">__init__(self[, items])</span></h4>
+<p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</p>
+<h4 id="getcurrentchoiceself"><span id="symbol-Chooser.getCurrentChoice">getCurrentChoice(self)</span></h4>
+<p>Return the current choice to the outbox</p>
+<h4 id="gotofirstself"><span id="symbol-Chooser.gotoFirst">gotoFirst(self)</span></h4>
+<p>Goto the first item in the set. Returns True.</p>
+<h4 id="gotolastself"><span id="symbol-Chooser.gotoLast">gotoLast(self)</span></h4>
+<p>Goto the last item in the set. Returns True.</p>
+<h4 id="gotonextself"><span id="symbol-Chooser.gotoNext">gotoNext(self)</span></h4>
+<p>Advance the choice forwards one.</p>
+<p>Returns True if successful or False if unable to (eg. already at end).</p>
+<h4 id="gotoprevself"><span id="symbol-Chooser.gotoPrev">gotoPrev(self)</span></h4>
+<p>Backstep the choice backwards one.</p>
+<p>Returns True if successful or False if unable to (eg. already at start).</p>
+<h4 id="mainself"><span id="symbol-Chooser.main">main(self)</span></h4>
+<p>Main loop.</p>
+<h4 id="shutdownself"><span id="symbol-Chooser.shutdown">shutdown(self)</span></h4>
+<p>Returns True if a shutdownMicroprocess message was received.</p>
+<section>
+
+</section>
+<h1 id="kamaelia.util.chooser.forwarditeratingchooser"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Util.html" class="reference">Util</a>.<a href="/Components/pydoc/Kamaelia.Util.Chooser.html" class="reference">Chooser</a>.<a href="/Components/pydoc/Kamaelia.Util.Chooser.ForwardIteratingChooser.html" class="reference">ForwardIteratingChooser</a></h1>
+<h2 id="symbol-ForwardIteratingChooser">class ForwardIteratingChooser(<a href="/Docs/Axon/Axon.Component.component.html" class="reference">Axon.Component.component</a>)</h2>
+<p>Chooser([items]) -&gt; new Chooser component.</p>
+<p>Iterates through an iterable set of items. Step by sending "NEXT" messages to its "inbox" inbox.</p>
+<p>Keyword arguments: - items -- iterable source of items to be chosen from (default=[])</p>
+<h3 id="inboxes-1"><span id="symbol-ForwardIteratingChooser.Inboxes">Inboxes</span></h3>
+<ul>
+<li><strong>control</strong> : shutdown messages</li>
+<li><strong>inbox</strong> : receive commands</li>
+</ul>
+<h3 id="outboxes-1"><span id="symbol-ForwardIteratingChooser.Outboxes">Outboxes</span></h3>
+<ul>
+<li><strong>outbox</strong> : emits chosen items</li>
+<li><strong>signal</strong> : shutdown messages</li>
+</ul>
+<h3 id="methods-defined-here-1">Methods defined here</h3>
+<div class="container">
+<div class="boxright">
+<p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div>
+</div>
+<h4 id="init__self-items-1"><span id="symbol-ForwardIteratingChooser.__init__">__init__(self[, items])</span></h4>
+<p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</p>
+<h4 id="getcurrentchoiceself-1"><span id="symbol-ForwardIteratingChooser.getCurrentChoice">getCurrentChoice(self)</span></h4>
+<p>Return the current choice</p>
+<h4 id="gotonextself-1"><span id="symbol-ForwardIteratingChooser.gotoNext">gotoNext(self)</span></h4>
+<p>Advance the choice forwards one.</p>
+<p>Returns True if successful or False if unable to (eg. already at end).</p>
+<h4 id="mainself-1"><span id="symbol-ForwardIteratingChooser.main">main(self)</span></h4>
+<p>Main loop.</p>
+<h4 id="shutdownself-1"><span id="symbol-ForwardIteratingChooser.shutdown">shutdown(self)</span></h4>
+<p>Returns True if a shutdownMicroprocess message was received.</p>
+<section>
+
+</section>
+</section>
+</div>
+<h1 id="feedback">Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer? Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback <a href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701" class="reference">here</a> in reply to the documentation thread in the Kamaelia blog.</p>
+<p><em>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</em></p>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>

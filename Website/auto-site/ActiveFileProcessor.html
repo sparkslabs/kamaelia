@@ -1,0 +1,146 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<h1 id="active-file-processor">Active File Processor</h1>
+<p>(Full Documentation for this will be written shortly.)<br />
+</p>
+<h3 id="what-is-it">What is it?</h3>
+<p>It's designed to sit on the backend of a website that accepts images and videos from users, and transodes them to sizes suitable for the web, and to flash video.<br />
+<br />
+The code is however more general, and could in fact be used for anything that needs to watch a bunch of directories and do interesting things (hence the name of this page).<br />
+</p>
+<h3 id="what-does-it-do-right-now"><strong>What does it do right now?</strong></h3>
+<p>At present, the code does this:<br />
+</p>
+<ul>
+<li>Has directory watchers</li>
+<li>When a file is added to the source directory, the first processor splits it off into different directories based on file type</li>
+<li>Another does image size conversion, cropping etc,</li>
+<li>Another does video conversion to flash video.</li>
+<li>The result is images &amp; videos placed into a directory for moderation.</li>
+</ul>
+<p>It's designed to run as a backend system that sits in the background running continuously.<br />
+<br />
+</p>
+<h1 id="draft-installation-instructions">Draft Installation Instructions</h1>
+<p>Install Image Magick as normal.<br />
+</p>
+<h3 id="download-and-install-libamr"><strong>Download and install libamr</strong></h3>
+<p>This is to support transcoding of video from mobile phones.<br />
+<br />
+Originally from <a href="http://www.penguin.cz/%7Eutx/amr">http://www.penguin.cz/~utx/amr</a></p>
+<blockquote>
+<pre><code>curl -O http://ftp.penguin.cz/pub/users/utx/amr/amrnb-7.0.0.2.tar.bz2
+tar jxvf amrnb-7.0.0.2.tar.bz2
+cd amrnb-7.0.0.2/
+./configure --libdir /usr/lib/
+make  #   -- requires wget to build
+sudo su
+make install
+ldconfig</code></pre>
+</blockquote>
+<h3 id="download-and-install-ffmpeg"><strong>Download and install ffmpeg</strong></h3>
+<p>This is used by the transcode engine to transcode videos. You can however plug something in its place relatively easily.<br />
+</p>
+<blockquote>
+<pre><code>svn co svn://svn.mplayerhq.hu/ffmpeg/trunk ffmpeg-trunk
+cd ffmpeg-trunk/
+./configure --enable-nonfree --enable-libamr-nb
+make
+sudo su
+make install
+ldconfig</code></pre>
+</blockquote>
+<h3 id="download-install-and-configure-the-transcode-engine."><strong>Download, install and configure the transcode engine.</strong></h3>
+<p>Grab the code and install it<br />
+</p>
+<blockquote>
+<pre><code>curl -O http://www.kamaelia.org/release/Kamaelia-FileProcessor-0.1.0.tar.gz
+tar zxvf Kamaelia-FileProcessor-0.1.0.tar.gz
+cd Kamaelia-FileProcessor-0.1.0
+sudo python setup.py install</code></pre>
+</blockquote>
+<p><strong>Create uploads and moderation directories for transcode/moderation pipeline</strong><br />
+</p>
+<blockquote>
+<pre><code>cd /tmp # or whereever you prefer - you&#39;ll need to change a config option no matter what :-)
+mkdir incoming
+mkdir -p uploads/images uploads/videos
+mkdir -p moderate/images moderate/videos</code></pre>
+</blockquote>
+<p>Make everything writeable by the webuser.<br />
+<br />
+<strong>Configure it</strong><br />
+Copy the default config to one you want to edit<br />
+</p>
+<blockquote>
+<pre><code>cp /etc/batch_converter.conf.dist /etc/batch_converter.conf</code></pre>
+</blockquote>
+<p>Then edit <strong>/etc/batch_converter.conf</strong> such that the following lines/config options ...<br />
+</p>
+<blockquote>
+<pre><code># main_incoming_queue /tmp/uploads
+# image_queue /tmp/uploads/images 
+# video_queue /tmp/uploads/videos 
+# image_moderation_queue /tmp/moderate/images
+# video_moderation_queue /tmp/moderate/videos</code></pre>
+</blockquote>
+<p>... get changed to:<br />
+</p>
+<blockquote>
+<pre><code># main_incoming_queue /tmp/incoming
+# image_queue /tmp/uploads/images 
+# video_queue /tmp/uploads/videos 
+# image_moderation_queue /tmp/moderate/images
+# video_moderation_queue /tmp/moderate/video</code></pre>
+</blockquote>
+<p>... or whatever you changed it to...<br />
+<br />
+<strong>Grab and install PIL ("python imaging library")</strong><br />
+Download from<br />
+</p>
+<blockquote>
+<p><a href="http://effbot.org/downloads/Imaging-1.1.6.tar.gz" class="uri">http://effbot.org/downloads/Imaging-1.1.6.tar.gz</a><br />
+</p>
+</blockquote>
+<p>Unpack and install<br />
+</p>
+<blockquote>
+<pre><code>tar zxvf Imaging-1.1.6.tar.gz
+cd Imaging-1.1.6/
+sudo python setup.py install --force</code></pre>
+</blockquote>
+<p>Note: PIL requires the ability to build tcl/tk apps for odd reasons. You may find you need to install that dependency before PIL will build. Hence the recommendation to use am .rpm or .deb file if you can.<br />
+<br />
+</p>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<div class="container">
+<h1 id="kamaelia.protocol.http.httpserver"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Protocol.html" class="reference">Protocol</a>.<a href="/Components/pydoc/Kamaelia.Protocol.HTTP.html" class="reference">HTTP</a>.<a href="/Components/pydoc/Kamaelia.Protocol.HTTP.HTTPServer.html" class="reference">HTTPServer</a></h1>
+<section>
+<div class="container">
+<ul>
+<li><strong>prefab <a href="/Components/pydoc/Kamaelia.Protocol.HTTP.HTTPServer.HTTPServer.html" class="reference">HTTPServer</a></strong></li>
+</ul>
+</div>
+<ul>
+<li><a href="#578" class="reference">HTTP Server</a>
+<ul>
+<li><a href="#579" class="reference">Example Usage</a></li>
+<li><a href="#580" class="reference">How does it work?</a></li>
+</ul></li>
+<li><a href="#581" class="reference">HTTP Request Handler</a>
+<ul>
+<li><a href="#582" class="reference">How does it work?</a></li>
+<li><a href="#583" class="reference">What does it support?</a></li>
+</ul></li>
+</ul>
+</section>
+<section>
+<h2 id="http-server-578"><span id="http-server">HTTP Server</span> {#578}</h2>
+<p>The fundamental parts of a webserver - an HTTP request parser and a request handler/response generator. One instance of this component can handle one TCP connection. Use a SimpleServer or similar component to allow several concurrent HTTP connections to the server.</p>
+<h3 id="example-usage-579"><span id="example-usage">Example Usage</span> {#579}</h3>
+<blockquote>
+<dl>
+<dt>def createhttpserver():</dt>
+<dd>return HTTPServer(HTTPResourceGlue.createRequestHandler)
+</dd>
+</dl>
+<p>SimpleServer(protocol=createhttpserver, port=80).run()</p>
+</blockquote>
+<p>This defines a function which creates a HTTPServer instance with HTTPResourceGlue.createRequestHandler as the request handler component creator function. This function is then called by SimpleServer for every new TCP connection.</p>
+<h3 id="how-does-it-work-580"><span id="how-does-it-work">How does it work?</span> {#580}</h3>
+<p>HTTPServer creates and links to a HTTPParser and HTTPRequestHandler component. Data received over TCP is forwarded to the HTTPParser and the output of HTTPRequestHandler forwarded to the TCP component's inbox for sending.</p>
+<p>See HTTPParser (in HTTPParser.py) and HTTPRequestHandler (below) for details of how these components work.</p>
+<p>HTTPServer accepts a single parameter - a request handler function which is passed onto and used by HTTPRequestHandler to generate request handler components. This allows different HTTP server setups to run on different ports serving completely different content.</p>
+<h2 id="http-request-handler-581"><span id="http-request-handler">HTTP Request Handler</span> {#581}</h2>
+<p>HTTPRequestHandler accepts parsed HTTP requests (from HTTPParser) and outputs appropriate responses to those requests.</p>
+<h3 id="how-does-it-work-582"><span id="id1">How does it work?</span> {#582}</h3>
+<p>HTTPServer creates 2 subcomponents - HTTPParser and HTTPRequestHandler which handle the processing of requests and the creation of responses respectively.</p>
+<p>Both requests and responses are handled in a stepwise manner (as opposed to processing a whole request or response in one go) to reduce latency and cope well with bottlenecks.</p>
+<p>One request handler (self.handler) component is used per request - the particular component instance (including parameters, component state) is picked by a function called createRequestHandler - a function specified by the user. A suitable definition of this function is available in HTTPResourceGlue.py.</p>
+<p>Generally you will have a handler spawned for each new request, terminating after completing the sending of the response. However, it is also possible to use a 'persistent' component if you do the required jiggery-pokery to make sure that at any one time this component is not servicing more than one request simultaenously ('cause it wouldn't work).</p>
+<h3 id="what-does-it-support-583"><span id="what-does-it-support">What does it support?</span> {#583}</h3>
+<p>Components as request handlers (hurrah!).</p>
+<p>3 different ways in which the response data (body) can be terminated:</p>
+<h4 id="chunked-transfer-encoding"><span id="chunked-transfer-encoding">Chunked transfer encoding</span></h4>
+<p>This is the most complex of the 3 ways and was introduced in HTTP/1.1. Its performance is slightly worse that the other 2 as multiple length-lines have to be added to the data stream. It is recommended for responses whose size is not known in advance as it allows keep-alive connections (more than one HTTP request per TCP connection).</p>
+<h4 id="explicit-length"><span id="explicit-length">Explicit length</span></h4>
+<p>This is the easiest of the 3 ways but requires the length of the response to be known before it is sent. It uses a header 'Content-Length' to indicate this value. This method is prefered for any response whose length is known in advance.</p>
+<h4 id="connection-close"><span id="connection-close">Connection: close</span></h4>
+<p>This method closes (or half-closes) the TCP connection when the response is complete. This is highly inefficient when the client wishes to download several resources as a new TCP connection must be created and destroyed for each resource. This method is retained for HTTP/1.0 compatibility. It is however preferred for responses that do not have a true end, e.g. a continuous stream over HTTP as the alternative, chunked transfer encoding, has poorer performance.</p>
+<p>The choice of these three methods is determined at runtime by the characteristics of the first response part produced by the request handler and the version of HTTP that the client supports (chunked requires 1.1 or higher).</p>
+<h5 id="what-may-need-work"><span id="what-may-need-work">What may need work?</span></h5>
+<ul>
+<li><p>HTTP standards-compliance (e.g. handling of version numbers for a start)</p></li>
+<li><dl>
+<dt>Requests for byte ranges, cache control (though these may be better implemented</dt>
+<dd><p>in each request handler)</p>
+</dd>
+</dl></li>
+<li><p>Performance tuning (also in HTTPParser)</p></li>
+<li><dl>
+<dt>Prevent many MBs of data being queued up because TCPClient finds it has a slow</dt>
+<dd><p>upload to the remote host</p>
+</dd>
+</dl></li>
+</ul>
+</section>
+<hr />
+<h1 id="kamaelia.protocol.http.httpserver.httpserver"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Protocol.html" class="reference">Protocol</a>.<a href="/Components/pydoc/Kamaelia.Protocol.HTTP.html" class="reference">HTTP</a>.<a href="/Components/pydoc/Kamaelia.Protocol.HTTP.HTTPServer.html" class="reference">HTTPServer</a>.<a href="/Components/pydoc/Kamaelia.Protocol.HTTP.HTTPServer.HTTPServer.html" class="reference">HTTPServer</a></h1>
+<h2 id="symbol-HTTPServer">prefab: HTTPServer</h2>
+<p>HTTPServer() -&gt; new HTTPServer component capable of handling a single connection</p>
+<dl>
+<dt>Arguments:</dt>
+<dd><dl>
+<dt>-- createRequestHandler - a function required by HTTPRequestHandler that</dt>
+<dd>creates the appropriate request-handler component for each request, see HTTPResourceGlue
+</dd>
+</dl>
+</dd>
+</dl>
+</div>
+<h1 id="feedback">Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer? Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback <a href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701" class="reference">here</a> in reply to the documentation thread in the Kamaelia blog.</p>
+<p><em>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</em></p>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>

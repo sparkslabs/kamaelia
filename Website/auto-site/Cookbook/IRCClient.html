@@ -1,0 +1,159 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<h1 id="cookbook-ircclient">Cookbook: IRCClient</h1>
+<h2 id="the-interface">The Interface</h2>
+<p>The IRCClient module provides an inbox/outbox interface to IRC. Call SimpleIRCClientPrefab to obtain a connection to an IRC server.<br />
+<br />
+</p>
+<h2 id="sending-messages">Sending messages</h2>
+<p>Send tuples in the form *(cmd, [arg1] [,arg2] [,arg3...])* to SimpleIRCClientPrefab's "inbox". *cmd* should be an IRC command specified in RFC 1459 or RFC 2812. The first parameter specified by the RFCs should be *arg1*, the second should be *arg2*, and so on. Example messages to "inbox"::<br />
+<br />
+</p>
+<ul>
+<li>('NICK', 'Zorknpals')</li>
+<li>('USER', 'jlei', 'nohost', 'noserver', 'Kamaelia IRC Client')</li>
+<li>('JOIN', '#kamaelia')</li>
+<li>('PRIVMSG', '#kamtest', 'hey, how's it going?')</li>
+<li>('TOPIC', '#cheese', "Mozzerella vs. Parmesan")</li>
+<li>('QUIT')</li>
+<li>('QUIT', "Konversation terminated!")</li>
+<li>('BERSERKER', "Lvl. 10")</li>
+</ul>
+<p><br />
+Note that "BERSERKER" is not a recognized IRC command. IRC_Client will not<br />
+complain about this, as it treats commands uniformly, but you might get<br />
+an error 421, "ERR_UNKNOWNCOMMAND" back from the server.<br />
+<br />
+<br />
+</p>
+<h3 id="sending-ctcp-commands">Sending CTCP commands</h3>
+<p>IRC_Client also handles a few CTCP commands:<br />
+<br />
+:ACTION:<br />
+("ME", channel-or-user, the-action-that-you-do).<br />
+:MSG:<br />
+If you use the outformat function defined here, 'MSG' commands are<br />
+treated as 'PRIVMSGs'.<br />
+<br />
+No other CTCP commands are implemented.<br />
+<br />
+<br />
+</p>
+<h2 id="a-simple-client-that-logs-in">A simple client that logs in</h2>
+<p>...and spams the channel #kamtest with 10 "Hello world" messages. (It's okay because no one else is ever on this channel)<br />
+<br />
+</p>
+<blockquote>
+<pre><code>class Spammer(component):
+    def main(self):
+        &quot;&quot;&quot;spams channel #kamtest&quot;&quot;&quot;
+        self.send((&quot;NICK&quot;, &quot;TheKamaeliaBot&quot;))
+        self.send((&quot;USER&quot;, &quot;KamaeliaIRC&quot;, &quot;stuff&quot;, &quot;stuff&quot;, &quot;Kamaelia IRC tester&quot;))
+        self.send((&quot;JOIN&quot;, &quot;#kamtest&quot;))
+    for _ in range(10):
+        self.send((&quot;PRIVMSG&quot;, &quot;#kamtest&quot;, &quot;Hello world&quot;))
+        yield 1
+
+Pipeline(Spammer(), SimpleIRCClientPrefab()).run()</code></pre>
+</blockquote>
+<p><br />
+Now you will want to receive messages too, so your client isn't doomed to be a spammer. Lucky for you, SimpleIRCClientPrefab transmits IRC messages it receives in the form (cmd, sender, receiver, anything else). Simply link your component up to its "outbox" to receive these messages.<br />
+<br />
+<br />
+<br />
+</p>
+<h2 id="logger">Logger</h2>
+<p>Logs in to a channel and writes all IRC traffic it hears to a text file.<br />
+</p>
+<pre><code>from Kamaelia.File.Writing import SimpleFileWriter
+from Kamaelia.Chassis.Graphline import Graphline
+from Axon.Component import component
+import IRCClient
+
+class BasicLogger(component):
+
+    Outboxes = {&quot;irc&quot; : &quot;to IRC, for user responses and login&quot;,
+                &quot;outbox&quot; : &quot;What we&#39;re interested in, the traffic over the channel&quot;,
+                &quot;signal&quot; : &quot;Shutdown handling in the future&quot;,
+                }
+
+    def __init__(self, channel, name, formatter=IRCClient.outformat):
+        super(BasicLogger, self).__init__()
+        self.channel = channel
+        self.format = formatter 
+        self.name = name
+        
+    def login(self):
+        &quot;&quot;&quot;registers with the IRC server&quot;&quot;&quot;
+        self.send((&quot;NICK&quot;, self.name), &quot;irc&quot;)
+        self.send((&quot;USER&quot;, self.name, self.name, self.name, self.name), &quot;irc&quot;)
+        self.send((&quot;JOIN&quot;, self.channel), &quot;irc&quot;)
+        
+    def main(self):
+        &quot;Main loop&quot;
+        self.login()
+        while True:
+            yield 1 
+            while self.dataReady(&quot;inbox&quot;):
+                data = self.recv(&quot;inbox&quot;)
+                formatted_data = self.format(data)
+                if formatted_data:
+                    self.send(formatted_data, &quot;outbox&quot;)
+                    self.respondToPings(data) 
+
+    def respondToPings(self, msg):
+        if msg[0] == &#39;PING&#39;:
+            self.send((&#39;PONG&#39;, msg[1]), &#39;irc&#39;)
+            self.send(&quot;Sent PONG to %s \n&quot; % msg[1], &quot;outbox&quot;)
+
+
+#now define a prefab to wire everything up
+
+def Logger(channel, name, server=&#39;irc.freenode.net&#39;):
+    return Graphline(irc = IRCClient.SimpleIRCClientPrefab(server),
+                     logger = BasicLogger(channel, name),
+                     log = SimpleFileWriter(&quot;%s_log.txt&quot; % channel.lstrip(&#39;#&#39;)),
+                     linkages = {(&quot;logger&quot;, &quot;irc&quot;) : (&quot;irc&quot;, &quot;inbox&quot;),
+                                 (&quot;irc&quot;, &quot;outbox&quot;) : (&quot;logger&quot;, &quot;inbox&quot;),
+                                 (&quot;logger&quot;, &quot;outbox&quot;) : (&quot;log&quot;, &quot;inbox&quot;),
+                                 }
+
+                     )
+
+Logger(&#39;#test&#39;, &#39;coolLoggerDude&#39;).run() #we&#39;re assuming that no other user has this nickname! There&#39;s no error checking otherwise. </code></pre>
+<p><br />
+That's all there is! Have fun using the IRC components!<br />
+<br />
+</p>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>

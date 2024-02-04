@@ -1,0 +1,81 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<h1 id="kamaelia-publish-and-webserve-config-file">Kamaelia Publish and WebServe config file</h1>
+<p>Both the Kamaelia Publish Peer and Kamaelia WebServe use the same format for a config file.  The files were designed so that you may use one config file for both applications (albeit possibly with minor modifications).  This is a breakdown of what goes in each individual section and what the keys mean.  Note that case isn't important in setting the keys up (so ignore any inconsistencies you see in case here and in the file in the repository).<br />
+<br />
+<br />
+</p>
+<h2 id="server">SERVER</h2>
+<p>This section holds most of the data required to configure the server in general.<br />
+<br />
+</p>
+<ul>
+<li><strong>Port</strong> - This is the port that Kamaelia WebServe will listen on for HTTP requests.  Note that using port 80 (typically used for HTTP) will require elevated privileges on most *NIX systems.  <strong>It is not recommended that you use port 80 currently as this is a potential security problem since Kamaelia WebServe does not de-escalate privileges.</strong></li>
+<li><strong>pypath_append</strong> - This is a list of entries to add to the python path, separated by colons (:).  Entries added here will be added to the end of the python path.  This is useful if you would like to put WSGI applications somewhere where the system can get to them.</li>
+<li><strong>pypath_prepend</strong> - This is a list of entries to be added to the front of the python path, separated by colons.  You probably don't need to use this except for testing and debugging purposes.</li>
+<li><strong>log</strong> - This is the location where the log will go.  Note that you may get errors if this file does not already exist.</li>
+</ul>
+<h2 id="static">STATIC</h2>
+<p>This section holds the data necessary to configure server to handle static content (javascript, images, HTML, etc).  <strong>NOTE:  This is likely to either be changed or moved elsewhere (likely the urls file) to simplify URL routing.</strong><br />
+<br />
+</p>
+<ul>
+<li><strong>url</strong> - The url prefix that will handle static content (set to '/static' by default).</li>
+<li><strong>indexfilename</strong> - If no filename is specified in the URI, this is what to assume (set to 'index.html' by default).</li>
+<li><strong>homedirectory</strong> - The directory to look in for static content in.  The "root" of the static handler's "file system."</li>
+</ul>
+<h2 id="wsgi">WSGI</h2>
+<p>This section holds the configuration data for the WSGI handler.  Most of the keys are self explanitory, but are explained here for completeness's sake.<br />
+<br />
+</p>
+<ul>
+<li><strong>SERVER_SOFTWARE</strong> - Currently set to 'Kamaelia WSGI Server v 0.0.1'</li>
+<li><strong>SERVER_ADMIN</strong> - The person who runs the server.</li>
+<li><strong>WSGI_VER</strong> - You want to leave this at 1.0 unless you have a really, really good reason for changing it.</li>
+<li><strong>URL_LIST</strong> - The URLs file to use to route URLs.  For more info on URLs files, see <a href="../../../Developers/Projects/KamaeliaPublish/UrlsFile">http://www.kamaelia.org/Developers/Projects/KamaeliaPublish/UrlsFile</a></li>
+</ul>
+<h2 id="xmpp">XMPP</h2>
+<p>This section is relevant only in the Kamaelia Publish Peer.  For this section, we'll assume that we're using the JID kamaelia_user@jabber.org.<br />
+</p>
+<ul>
+<li><strong>username</strong> - This is your username (the part of your JID before the @ symbol).  For kamaelia_user@jabber.org, you would put kamaelia_user.</li>
+<li><strong>domain</strong> - This is the domain of your JID (the part after the @, but before the / if there is one).  For the above example, this would be jabber.org.</li>
+<li><strong>server</strong> - This depends on which server you're using.  For the above example, it will be jabber.org:5222.<br />
+</li>
+<li><strong>resource</strong> - This key is optional.  It represents the resource in your jid (the part after the /).  This is typically used to indicate the instant messenging program you're using and is useful if you want to be logged into the same jabber account on two different computers or programs.</li>
+<li><strong>password</strong> - You should know this one already.  :) </li>
+<li><strong>usetls</strong> - This will also be dependent on the server.  This is a boolean value, so it doesn't matter what you set it to.  If it's present and the value is anything but a blank key, it will evaluate to True.<br />
+</li>
+</ul>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>

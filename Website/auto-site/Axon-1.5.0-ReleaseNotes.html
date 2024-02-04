@@ -1,0 +1,181 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<p><span style="font-size:28pt;font-weight:600">Axon Release Notes</span></p>
+<p><span style="font-size:21pt">1.5</span></p>
+<p><span style="font-size:21pt;font-weight:600">Summary</span></p>
+<p>Axon 1.5 is a major performance related release for Kamaelia's core component system. There have been a number of core changes, some highlights:</p>
+<p>Zero copy delivery of data from producers to consumers</p>
+<p>The system scheduler is now reactive to threaded components, meaning the system can truly sleep when there is nothing to do.</p>
+<p>This means self.pause() REALLY pauses the microprocess, and may result in the component not receiving data. (If you call self.pause, you should really mean it). Generally this is only used at an optimisation stage.</p>
+<p>Threaded components are now fully supported with the following caveats:</p>
+<ul>
+<li>They should not use the shared environment provided the co-ordinating assistant tracker (they're not expected to need to do so, but this is useful to make explicit)</li>
+<li>They should not expect to be able to interact with synchronous boxes (boxes with a maximum size)</li>
+</ul>
+<div>
+<p>Aside from these caveats, creating and using a threaded component is the same as a normal generator based one, except you simply don't have yield statements. You obviously use a different base class.</p>
+</div>
+<p>The use of the "ipc" message Axon.Ipc.newComponent for child component startup has been deprecated in favour of the simpler API:</p>
+<p>Despite all these changes, components written for earlier versions of Axon will continue to work as before.</p>
+<p>Documentation has also generally improved,and is included in the the code files for access via pydoc/help.</p>
+<p><span style="font-size:21pt;font-weight:600">Changelog</span></p>
+<p>Major subsystem changes aimed at performance enhancements</p>
+<p><span style="font-weight:600">Message Passing and Delivery Optimisation Changes</span></p>
+<ul>
+<li>Boxes are now discrete objects. This change has occured to enable the use of direct (effectively "zero copy" delivery).</li>
+<li>This has meant the postman has been deleted - components no longer have a postman associated with them. This also dramatically frees up CPU cycles for components rather than the communications system.</li>
+<li>To replace the structural tracking, a "postoffice" class has been created instead. This, however, is passive rather than active.</li>
+<li>Because the death of a component no longer also means the death of a postman, microprocess has been simplified to remove the concept of activity creator. This removes the knock on complexity in both the scheduler and inside Component.</li>
+<li>Despite these changes components running on top of Axon (ie existing Kamaelia components) operate largely unchanged. (A few that assumed the existance of a postman etc have changed)</li>
+</ul>
+<p><span style="font-weight:600">Flow Control Inversion</span></p>
+<ul>
+<li>The Scheduler therefore now dynamically builds its runqueue to only include unpaused (active) microprocesses.</li>
+<li>If there are no active microprocesses, the scheduler can now sleep. Reducing CPU usage to zero, until some kind of event causes something to wake up. Flow of control is therefore effectively inverted as Axon systems can now be reactive.</li>
+<li>Pausing state is now managed by the scheduler on behalf of microprocesses (they used to manage it themselves). Requests to wake and pause microprocesses get routed to the Scheduler.</li>
+<li>The APIs for Component and Microprocess are, for the most part, unchanged. Existing components will continue to work as before. If they self pause they will benefit from reduced CPU usage. If all components in a system behave in this way, then Axon will cease to busy-wait when idle.</li>
+</ul>
+<p><span style="font-weight:600">Threading Support</span></p>
+<ul>
+<li>The threaded component has had its API fixed to match the rest of Axon (with the obvious exception of removing the yields).</li>
+<li>Threaded 'adaptive' component is new.</li>
+</ul>
+<p><span style="font-weight:600">Other</span></p>
+<ul>
+<li>Bug fix to make Wait* work cleaner</li>
+</ul>
+<p>Axon.Component.Component</p>
+<ul>
+<li>Default documentation for Component class in/out- boxes added</li>
+<li>anyReady() added. Returns true if any has data in it.</li>
+</ul>
+<p>Axon.Microprocess.Microprocess</p>
+<ul>
+<li>Can activate an arbitrary thread of control from a generator (The thing you normally call .next() on)</li>
+<li>Can pass on a closeDownValue</li>
+<li>Can be set as an activity creator</li>
+<li>Now conditionally starts the thread. Actually helps with re-entrant calls inside a single active microprocess.</li>
+</ul>
+<p>Axon.Scheduler.Scheduler</p>
+<ul>
+<li>Now handles shutdown knockons more gracefully</li>
+<li>Removal of lots of debugging code no longer needed (hasn't been needed in a long while)</li>
+<li>Code cleanup</li>
+</ul>
+<p>Axon.Ipc</p>
+<ul>
+<li>Added the shutdown message. This can be used to request that an Axon component should simply shutdown. This does not force the component to shutdown, merely requests it.</li>
+</ul>
+<p><span style="font-weight:600">Synchronous Links &amp; Link Tracing API</span></p>
+<p>As part of the changes to box optimisations, there has been a change to the API for synchronous links. This is currently our best guess as to what we think makes sense, but should be considered experimental until Axon 2.0 (We'll endevour to keep the current API however for as long as it makes sense).</p>
+<p>When a synchronous link reaches maximum capacity, attempting to send data to the synchronous link results in an exception being thrown. This includes the current size of the pipe, and it's maximum capacity. The exception thrown is as follows:</p>
+<p><span style="font-size:21pt;font-weight:600">Detailed Changes to files</span></p>
+<p>Changes to Component class:</p>
+<ul>
+<li>Number of changes to support the newstyle boxes. (send now results in direct delivery)</li>
+<li>_collect method removed.</li>
+<li>_deliver method deprecated (except for tests and debugging)</li>
+<li>anyReady method added to check to see if any inbox has data ready.</li>
+<li>Implementation detail of _activity creator removed -- no longer needed.</li>
+<li>Removal of synchronisedSend method.</li>
+</ul>
+<p>Misc:</p>
+<ul>
+<li>An arbitrary generator can now be scheduled (using a wrapped call).</li>
+<li>Subclasses of microprocesses can now have a different named "main" method.</li>
+<li>Axon/__init__.py - added ThreadedComponent module initialisation</li>
+</ul>
+<p>Adaptive inboxes changed into a mixin class:</p>
+<ul>
+<li>Reused in both Axon/AdaptiveCommsComponent.py and Axon/ThreadedComponent.py</li>
+<li>to provide adaptive inboxes for both generator based and thread based components.</li>
+</ul>
+<p>New Axon/Ipc.py Messages:</p>
+<ul>
+<li>ipc</li>
+<li>reactivate FIXME: is this used now?</li>
+<li>WaitComplete FIXME: example of usage.</li>
+</ul>
+<p>Changes to allow scheduling to be reactive to threaded components:</p>
+<ul>
+<li>Axon/Scheduler.py</li>
+<li>Axon/Microprocess.py</li>
+</ul>
+<p>Largely Rewritten or initial release:</p>
+<ul>
+<li>Axon/ThreadedComponent.py (cleanup of external API and implementation)</li>
+<li>Axon/Linkage.py (due to changes to message delivery, much simplified)</li>
+<li>Axon/Box.py</li>
+<li>Axon/Postoffice.py</li>
+</ul>
+<p>Improved documentation:</p>
+<ul>
+<li>Axon/AdaptiveCommsComponent.py</li>
+<li>Axon/Component.py</li>
+<li>Axon/Ipc.py</li>
+<li>Axon/Linkage.py</li>
+<li>Axon/ThreadedComponent.py</li>
+<li>Axon/Scheduler.py</li>
+</ul>
+<p>Test suite moved out into separate tree. (being inside the installation area doesn't seem to make sense)</p>
+<ul>
+<li>Axon/test/test_util.py</li>
+<li>Axon/test/test_idGen.py</li>
+<li>Axon/test/test_debugConfigFile.py</li>
+<li>Axon/test/test_debug.py</li>
+<li>Axon/test/test___str__.py</li>
+<li>Axon/test/test_Scheduler.py</li>
+<li>Axon/test/test_Microprocess.py</li>
+<li>Axon/test/test_Linkage.py</li>
+<li>Axon/test/test_Ipc.py</li>
+<li>Axon/test/test_CoordinatingAssistantTracker.py</li>
+<li>Axon/test/test_Component.py</li>
+<li>Axon/test/test_Axon.py</li>
+<li>Axon/test/test_AdaptiveCommsComponent.py</li>
+<li>Axon/test/debug.conf</li>
+<li>Axon/test/TemplateTestModule.py</li>
+<li>Axon/test/AxonTest.py</li>
+</ul>
+<p>Obsolete, due to box optimisations:</p>
+<ul>
+<li>Axon/test/test_Postman.py</li>
+<li>Axon/Postman.py</li>
+</ul>
+<p>Changed due to removal of the Postman:</p>
+<ul>
+<li>Axon/__init__.py (import postoffice instead of postman)</li>
+<li>Axon/Component.py</li>
+</ul>
+<p>Michael, June 2006</p>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>

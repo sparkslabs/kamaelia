@@ -1,0 +1,74 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<h1 id="kamaelia.internet.selector.selector"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Internet.html" class="reference">Internet</a>.<a href="/Components/pydoc/Kamaelia.Internet.Selector.html" class="reference">Selector</a>.<a href="/Components/pydoc/Kamaelia.Internet.Selector.Selector.html" class="reference">Selector</a></h1>
+<p>For examples and more explanations, see the <a href="/Components/pydoc/Kamaelia.Internet.Selector.html" class="reference">module level docs.</a></p>
+<hr />
+<h2 id="symbol-Selector">class Selector(<a href="/Docs/Axon/Axon.ThreadedComponent.threadedadaptivecommscomponent.html" class="reference">Axon.ThreadedComponent.threadedadaptivecommscomponent</a>)</h2>
+<p>Selector() -&gt; new Selector component</p>
+<p>Use Selector.getSelectorService(...) in preference as it returns an existing instance, or automatically creates a new one.</p>
+<h3 id="inboxes"><span id="symbol-Selector.Inboxes">Inboxes</span></h3>
+<ul>
+<li><strong>control</strong> : Recieving a <a href="/Docs/Axon/Axon.Ipc.shutdown.html" class="reference">Axon.Ipc.shutdown</a>() message here causes shutdown</li>
+<li><strong>inbox</strong> : Not used at present</li>
+<li><strong>notify</strong> : Used to be notified about things to select</li>
+</ul>
+<h3 id="outboxes"><span id="symbol-Selector.Outboxes">Outboxes</span></h3>
+<h3 id="methods-defined-here">Methods defined here</h3>
+<div class="container">
+<div class="boxright">
+<p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div>
+</div>
+<h4 id="init__self"><span id="symbol-Selector.__init__">__init__(self)</span></h4>
+<h4 id="addlinksself-replyservice-selectable-meta-selectables-boxbase"><span id="symbol-Selector.addLinks">addLinks(self, replyService, selectable, meta, selectables, boxBase)</span></h4>
+<p>Adds a file descriptor (selectable).</p>
+<p>Creates a corresponding outbox, with name based on boxBase; links it to the component that wants to be notified; adds the file descriptor to the set of selectables; and records the box and linkage info in meta.</p>
+<h4 id="handlenotifyself-meta-readers-writers-exceptionals"><span id="symbol-Selector.handleNotify">handleNotify(self, meta, readers, writers, exceptionals)</span></h4>
+<p>Process requests to add and remove file descriptors (selectables) that arrive at the "notify" inbox.</p>
+<h4 id="mainself"><span id="symbol-Selector.main">main(self)</span></h4>
+<p>Main loop</p>
+<h4 id="removelinksself-selectable-meta-selectables"><span id="symbol-Selector.removeLinks">removeLinks(self, selectable, meta, selectables)</span></h4>
+<p>Removes a file descriptor (selectable).</p>
+<p>Removes the corresponding entry from meta and selectables; unlinks from the component to be notified; and deletes the corresponding outbox.</p>
+<h4 id="stopself"><span id="symbol-Selector.stop">stop(self)</span></h4>
+<h4 id="trackedbyself-tracker"><span id="symbol-Selector.trackedBy">trackedBy(self, tracker)</span></h4>
+<section>
+
+</section>
+<h1 id="feedback">Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer? Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback <a href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701" class="reference">here</a> in reply to the documentation thread in the Kamaelia blog.</p>
+<p><em>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</em></p>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>

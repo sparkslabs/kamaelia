@@ -1,0 +1,179 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<h2 id="project-task-page-axon-waking-producers-bugfix">Project Task Page: Axon Waking Producers Bugfix</h2>
+<div class="boxright">
+<p><strong>Status:</strong> Running<br />
+<strong>Current Developers:</strong> <em>MH</em><br />
+<strong>Current "inflight" dev location:</strong> /branches/private_MH_axon_outboxwakeups<br />
+<strong>Start Date:</strong> 20 October 2006<br />
+<strong>Expected End Date:</strong> <em>31 November 2006</em><br />
+<strong>End Date:</strong> <em>???</em><br />
+<strong>Date this page last updated:</strong> <em>23 February 2007</em><br />
+<strong>Estimated effort so far:</strong> 5 days<br />
+</p>
+</div>
+<p><strong><br />
+</strong></p>
+<h2 id="description"><strong>Description</strong></h2>
+<p>To get Axon to wake up producer components when a message they have sent out is consumed. This used to be a feature of axon, but was removed when <a href="/Developers/Projects/AxonBoxDeliveryOptimisations">Axon box delivery optimisations</a> were implemented. This is therefore effectively a bugfix.<br />
+<br />
+This allows producers to sleep if an inbox they are trying to send to becomes full (because it is size limited) and then be woken when it becomes non-full.<br />
+<br />
+Needed by the <a href="/Developers/Projects/MobileReframer">Mobile reframer</a>.<br />
+<br />
+Benefits:<br />
+</p>
+<ul>
+<li>Reintroducing feature that was removed during earlier optimisations</li>
+<li>Axon systems can self rate limit when a consumer runs slower than a producer<br />
+</li>
+</ul>
+<h2 id="inputs">Inputs</h2>
+<p>This section is largely about WHO has influenced this task to do WHAT, and where possible WHY. It is also about WHO to contact with regard to this task to influence what's going on.<br />
+</p>
+<p>Task Sponsor: MH, MS<br />
+</p>
+<p>Task Owner: MH<br />
+</p>
+<p>Developers involved: MH (development), MS (merge)<br />
+</p>
+<p>Users: MH, MS</p>
+<p>Interested third parties: MH, MS, SJ (bbc internal)<br />
+</p>
+<p>Requirements</p>
+<ul>
+<li>MUST wake producer component when a message it sent is consumed</li>
+<li>MUST wake producer component<br />
+</li>
+<li>SHOULD not require API or behaviour changes (components should not need to be rewritten)</li>
+<li>MUST have some test suite coverage<br />
+</li>
+</ul>
+<p><br />
+Relevant Influencing factors:<br />
+</p>
+<ul>
+<li>Need for rate limiting in Mobile Reframer</li>
+<li>Status as an outstanding bug<br />
+</li>
+</ul>
+<h2 id="outputs">Outputs</h2>
+<h3 id="expected">Expected</h3>
+<ul>
+<li>Modifications to Axon (initially in branch then merged into mainline code)</li>
+<li>...including modifications and additions to the Axon test suite<br />
+</li>
+</ul>
+<h3 id="actual">Actual</h3>
+<p>Code:</p>
+<p>CVS branch: private_MH_axon_threads</p>
+<p>Mainline code: /Code/Python/Axon/Axon/</p>
+<ul>
+<li>Modified: Microprocess, Component and Scheduler<br />
+</li>
+<li>Added: threadedadaptivecommscomponent to ThreadedComponent.py<br />
+</li>
+</ul>
+<p>Mainline code: /Code/Python/Axon/Axon/Tests</p>
+<ul>
+<li>Tests removed that were now inapplicable</li>
+<li>New tests added</li>
+</ul>
+<h3 id="realistic-possibilities-arising-as-a-result-of-activity-on-this-task">Realistic possibilities arising as a result of activity on this task</h3>
+<p>none<br />
+</p>
+<h2 id="related-tasks">Related Tasks</h2>
+<h3 id="tasks-that-directly-enable-this-task-dependencies">Tasks that directly enable this task (dependencies)</h3>
+<ul>
+<li>none<br />
+</li>
+</ul>
+<h3 id="sub-tasks">Sub Tasks</h3>
+<ul>
+<li>Development</li>
+<li>Testing</li>
+<li>Test suite additions<br />
+</li>
+</ul>
+<h2 id="task-log">Task Log</h2>
+<ul>
+<li>20 October 2006 : Added developer Matt</li>
+<li>20 October 2006 : <strong>Task status changed</strong> to running.</li>
+<li>20 October 2006 : Matt : working on private_MH_axon_outboxwakeups branch</li>
+<li>24 October 2006 : Matt : bulk of development and tests complete. Days spent: 5. Work switches back to <a href="/Developers/Projects/MobileReframer">Mobile reframer</a> to adapt components to use these facilities.</li>
+<li>Added developer Michael</li>
+<li>December 2006 : Michael : Allocated to merge branch into mainline</li>
+<li>21 February 2006 : Matt : takes over responsibility for merge<br />
+</li>
+</ul>
+<p><br />
+</p>
+<h2 id="discussion">Discussion</h2>
+<p>This bug-fix brings Axon up to equivalent, but not semantically identical, functionality to the original capabilities of Axon 1.0.<br />
+<br />
+</p>
+<h4 id="changes-to-behavioursemantics">Changes to behaviour/semantics</h4>
+<p>The original semantics worked for a model where both inbox <em>and</em> outbox sizes could be limited, and a postman microprocess would transfer data along linkages from outboxes to inboxes. In that model:<br />
+</p>
+<ul>
+<li>a consumer is woken when the postman delivers</li>
+<li>a producer is woken when the postman collects</li>
+</ul>
+<p>However, the <a href="/Developers/Projects/AxonBoxDeliveryOptimisations">box delivery optimisations</a> removed the concept of messages being left in an outbox and a postman to carry them. Instead they are immediately and directly put into the final destination inbox.<br />
+<br />
+The differences can therefore be summarised as:<br />
+</p>
+<ul>
+<li>only inboxes can be size limited</li>
+<li>all producers linked to an inbox are woken whenever a message is consumed from that inbox</li>
+</ul>
+<p>In practical terms, this means that from the perspective of a component developer, behaviour has changed in the following way:<br />
+</p>
+<ul>
+<li>a producer may be woken only to find the destination it is trying to send to is still full (because another producer send a message there)</li>
+</ul>
+<p>It was not deemed practical to perfectly replicate the old behaviour (without reverting to a postman style model) because of the lack of a concept of messages waiting for dispatch in the outbox.<br />
+</p>
+<h4 id="performance-issues">Performance issues</h4>
+<p>It could be argued that this strategy of waking <em>all</em> producers may cause a significant performance hit to some Axon based systems as all producers linked to a consumer will be woken every time the consumer collects from that inbox.</p>
+<p>An alternative would be to only wake producers when the inbox transitions from being full to becoming not-full. Alternatively, producers could only be woken if they explicitly request it.<br />
+</p>
+<p>However these ideas constitue a more fundamental change in behaviour that component developers would have to take into account, rather than being a simple bug-fix.</p>
+<p><br />
+</p>
+<p>-- Matt Hammond, 23 February 2007<br />
+</p>
+<p><br />
+</p>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>

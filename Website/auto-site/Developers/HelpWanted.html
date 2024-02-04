@@ -1,0 +1,211 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<p><br />
+</p>
+<h1 id="help-neededwanted">Help Needed/Wanted</h1>
+<p><strong>Stuff that would be useful</strong><br />
+</p>
+<ul>
+<li>Update the <a href="../../../GettingStarted">Getting Started</a> page</li>
+<li><a href="http://sourceforge.net/mailarchive/forum.php?thread_id=30966325&amp;forum_id=43377">Optimisation bug with WaitComplete implementation<br />
+</a></li>
+<li><a href="http://sourceforge.net/mailarchive/forum.php?thread_id=30706615&amp;forum_id=43377">Axon Change Proposal Summary: Inheritance of Inboxes/Outboxes making default in/out-boxes mandatory</a> (unresolved)</li>
+<li><a href="http://kamaelia.sourceforge.net/cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1155124531">Proposal: Change default component behaviour</a></li>
+<li><a href="http://kamaelia.sourceforge.net/cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1143036671">Destroying inboxes and outboxes</a></li>
+<li><a href="http://kamaelia.sourceforge.net/cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1141992386">Race Hazard in Visual Ordering of Widgets</a></li>
+<li><a href="http://koala.ilog.fr/twikiirc/bin/irclogger_log/kamaelia?date=2006-09-15,Fri&amp;sel=600#l596">Kamaelia.Util.Splitter.PlugSplitter needs simplifying</a></li>
+<li>Decide what to do with Kamaelia.Experimental.Services</li>
+<li>Upgrade existing components to handle 'noSpaceInBox' exceptions (pending merge of private_MH_axon_outboxwakeups)</li>
+<li><a href="http://sourceforge.net/mailarchive/message.php?msg_id=37273092">Fix Graphline and other components to not modify klass.Inboxes and klass.Outboxes</a><br />
+</li>
+</ul>
+<p>next part included from <a href="/Developers/Tasks">Developers/Tasks</a><br />
+</p>
+<h1 id="project-tasks">Project Tasks</h1>
+<p>Specific things that would be useful. If you want to work on these, please start a /Developers/Projects/ProjectTaskPage with a basic outline of what, why, how, when, who, where, etc. The key things out of those really are the who, what, where.<br />
+</p>
+<h3 id="tcp-server-improvements">TCP Server improvements</h3>
+<p>Shutdown:<br />
+</p>
+<p><del>* Calling stop on the scheduler causes it to call stop on all the scheduled microprocesses</del></p>
+<ul>
+<li>DONE - now sitting on Michael's branch. Needs merge.<br />
+</li>
+</ul>
+<p><del>* The stop on TCP Server &amp; CSA causes respective sockets to be shutdown cleanly</del></p>
+<ul>
+<li>INITIAL PASS DONE - Needs testing. Likely to need to catch situation where sockets are closed multiple times. (Since the internet subsystem is going to prefer to attempt to close too many times rather than not enough times!!)</li>
+<li>Need to write test examples showing usage.</li>
+<li>Needs to also catch keyboardInterrupt and allow that to be a general case which can kill the system via a .stop()<br />
+</li>
+</ul>
+<p><br />
+Throttling<br />
+</p>
+<p><del>* CSA needs to respect the fact that when it forwards data it make get a NoSpaceInbox</del></p>
+<ul>
+<li>DONE - now sitting on Michael's branch. Needs merge.</li>
+</ul>
+<p>Interesting thought:</p>
+<ul>
+<li>A later version of the CSA &amp; TCPServer could have an option to make it such that when a client (or protocol) tries to _send_ data to a socket that it fails if there's no capacity As a configurable option. (Most protocol handlers won't be expecting it) That should be doable by setting the max inbox size to zero</li>
+</ul>
+<h3 id="platform-compatibility-windows-mac">Platform compatibility (Windows, Mac):</h3>
+<p>Windows<br />
+</p>
+<ul>
+<li>Check windows, find out what works, what doesn't</li>
+<li>Windows specific megabundle</li>
+<li>Package up whiteboard for windows users</li>
+<li>Something similar to the selector for files for windows, preferably transparent so the developer doesn't have to choose different components for different platforms</li>
+<li>Get speex working for windows users</li>
+</ul>
+<p>Mac<br />
+</p>
+<ul>
+<li>Package up whiteboard for mac users</li>
+<li>Audio capture component for macs</li>
+<li>Get speex working for macs</li>
+<li>Resolve (likely) arising endian issues.</li>
+</ul>
+<p>General<br />
+</p>
+<ul>
+<li>Test on Python 2.5</li>
+</ul>
+<h3 id="axon-core">Axon core:</h3>
+<p>Improve box destruction to handle when a box is still linked to another</p>
+<ul>
+<li>linkages are not properly broken at the moment</li>
+</ul>
+<p>Fix WaitComplete microprocess closures so the substitute microprocess self.pause() actually pauses<br />
+</p>
+<p>Make CAT fully threadsafe<br />
+</p>
+<h3 id="tidying-up-and-quick-wins">Tidying-up and Quick wins:</h3>
+<ul>
+<li>Tidy and simplify the Plug &amp; PlugSplitter components</li>
+<li>Have SimpleServer tell the source IP, source port, dest IP, dest port</li>
+</ul>
+<h3 id="topology-visualiser-introspection">Topology visualiser &amp; Introspection:</h3>
+<p>Change topology visualiser to support "on demand" screen update rather than continuous</p>
+<p>Support "no render" layout update (has to an extent already).</p>
+<p>Change topology visualiser to support hierarchical display/etc</p>
+<p>Rewrite topology viewer to abstract from rendering mechanism (so rendering components could be plugged in for opengl, pygame etc)</p>
+<p>Rewrite topology physics in pyrex for serious speed boost :-) (thereby making it practical for visualising 'real' systems, eg. whiteboard, which contains 61 components when running stand alone)</p>
+<ul>
+<li>Ryan expressed doubt that the slowness was all due to python and offered to investigate how it could be rewritten to be faster. Matt gratefully accepted</li>
+</ul>
+<p><br />
+</p>
+<h3 id="whiteboard-ideas">Whiteboard ideas:</h3>
+<ul>
+<li>Try whiteboard in 3D</li>
+<li>Try an automated "scatter onto a concave hemisphere with me the me middle layout for auto layout of pictures. Allow links to be drawn between said pictures positioned in 3D, potentially integrate with topology visualiser subsystem (simply different rule set?).</li>
+<li>Ability to edit the different pages of the same "shared pad" in whiteboard session, rather than forced to be on the same page</li>
+<li>A whiteboard in 3d with multiple sheets etc.</li>
+<li><br />
+</li>
+</ul>
+<h3 id="protocols-codecs-integration">Protocols, codecs, integration:</h3>
+<p>User authentication modules</p>
+<p>Clean integration with twisted for reuse of twisted.protocols</p>
+<p>DNS client (would be useful in several places)</p>
+<p>Gstreamer integration</p>
+<p>A better way to do his (Ryan's) HTML parser in Kamaelia:</p>
+<ul>
+<li>"I ended up doing my HTML parser as a state machine and a stack - if I did it as a standard unix program (like a filter) it would have been much simpler using function calls and blocking."</li>
+</ul>
+<!-- -->
+<ul>
+<li>Michael commented that he had some ideas on this issue</li>
+</ul>
+<h3 id="aim-support">AIM Support</h3>
+<ul>
+<li>Remove from x import * statements from Protocol/AIM/ChatManager.</li>
+<li>Provide a set of pre-defined SNAC constants (or possibly even classes) such that it is possible to write self.sendSnac(MESSAGE_TO_USER, data) instead of self.sendSnac(04, 07, data).</li>
+<li>Remove the block of code at the end of AIMHarness's main method that keeps it running.  After that code is run, AIMHarness serves only to pass messages between ChatManager and OSCARClient.  It could probably be refactored such that those two components link directly to each other rather than keeping the AIMHarness around.</li>
+<li>The LoginHandler code can be a tad confusing with several different levels of WaitCompletes.  It could probably be refactored to simplify things.<br />
+</li>
+</ul>
+<h3 id="graphics-framework-support-pygame-opengl-etc">Graphics framework support (pygame, OpenGL, etc):</h3>
+<p>Integrate PGU (Phil's pyGame Utils)</p>
+<p>Use integrated PGU for buttons drop down lists, etc</p>
+<ul>
+<li>in Whiteboard</li>
+</ul>
+<!-- -->
+<ul>
+<li>Inside Compose, (simplifying use on Macs)</li>
+</ul>
+<p>Simple window manager support components -</p>
+<ul>
+<li>Add policies to display locations and management for xxDisplays (providing layering, z positioning, reposition for pygame &amp; opengl surfaces, opengl code has this to an extent),</li>
+</ul>
+<p>Styleable HTML layout engine for the window manager</p>
+<p>Flesh out pygame related tools (perhaps independently of PGU)</p>
+<p>Resolve MH.PygameApp issues,</p>
+<p>Create joined spaces (2D and 3D) using Pygame &amp; OpenGL code</p>
+<p>Adding visual ordering of components to pygame: eg. a component specifies a "layer number" to appear on</p>
+<p>Adding better event routing for pygame &amp; opengl - eg. only top-most component receives a click event</p>
+<h3 id="random-project-ideas">Random project ideas</h3>
+<p>Write 3D game using Kamaelia</p>
+<p>Automate release process.</p>
+<p>A major python web framework, (eg turbogears or django) with a kamaelia based web server and sample bi-directional "ajax" chat application</p>
+<ul>
+<li>Michael mentioned that Simon Willison of Django queried the possibility of integrating Kamaelia at Euro OSCON</li>
+</ul>
+<p>RTP client and server implementation - potential internal bbc requirement</p>
+<ul>
+<li>Matt has developed nascent RTP packeting/depacketing components<br />
+</li>
+</ul>
+<h3 id="dvb-pvrs-timeshifting-etc">DVB, PVRs timeshifting, etc:</h3>
+<ul>
+<li>Write a graphical EPG for DVB</li>
+<li>Build a more complete PVR application</li>
+<li>An interactive introspector/visualiser that only displays 'neighbourhood' of a component (eg. those connected to a particular component) ... allowing you to explore by moving through a system</li>
+<li>Implementation of ssh protocol</li>
+</ul>
+<h3 id="relevant-to-http-smtp-systems">Relevant to HTTP, SMTP systems:</h3>
+<ul>
+<li>Half-close support in TCP client and server components (e.g. by sending messages via the signal outbox, or accepting a half-close command via the control inbox)</li>
+<li>Better flow control (i.e. pausing components when what they've already processed is setting in a big backlog of the next component, or that the component way down the chain has limited bandwidth)</li>
+<li>DNS client component</li>
+</ul>
+<p><br />
+<br />
+<br />
+</p>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>

@@ -1,0 +1,310 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<h2 id="project-task-page-mobilereframer">Project Task Page: MobileReframer</h2>
+<h2 id="description">Description</h2>
+<div class="boxright">
+<p><strong>Status:</strong> Blocked - awaiting demonstration server to install onto<strong><br />
+Current Developers:</strong> <em>Matt</em><strong><br />
+Current "inflight" dev location:</strong> <em>/Sketches/MH/MobileReframe</em><strong><br />
+Start Date:</strong> <em>12 October 2006</em><strong><br />
+Major Milestone date:</strong> --<strong><br />
+Expected End Date:</strong> 5 December 2006<strong><br />
+End Date:</strong> <em>---</em><strong><br />
+Date this page last updated:</strong> <em>30 November 2006</em><strong><br />
+Estimated effort so far:</strong> <em>21</em>.25<br />
+</p>
+</div>
+<p>The aim is to create a back-end tool that decodes a video clip; applies edit decisisions (cutting, cropping and scaling); and re-encodes it. The idea is to cut and crop video to make it suitable for playback on a small screen mobile device.<br />
+</p>
+<p>This will slot in as a back-end for a web based video reframing internal BBC demonstrator. A flash based web front end will be used to generate the edit decision list as XML data. This reframer tool will then be run by the server to apply those edit decisions to a video clip. A user will be able to upload a video; reframe it using the front end; then download the reframed video.<br />
+<br />
+Benefits include:<br />
+<br />
+</p>
+<ul>
+<li>A good test for the Axon bugfix of enabling components to be woken when data is consumed at a destination's inbox.</li>
+<li>Creation of video and audio file parsing and writing components</li>
+<li>Creation of video processing components (cropping and scaling)</li>
+</ul>
+<h2 id="inputs">Inputs</h2>
+<p>Task Sponsor: SJ (BBC internal)<br />
+Task Owner: Matt (MH)<br />
+Developers:<br />
+</p>
+<ul>
+<li>Matt</li>
+</ul>
+<p>Users:<br />
+</p>
+<ul>
+<li>SJ (BBC internal)<br />
+</li>
+</ul>
+<p>Interested Third Parties:<br />
+</p>
+<ul>
+<li>n/a</li>
+</ul>
+<p>Requirements (non exhaustive):<br />
+</p>
+<ul>
+<li>MUST be launchable from the command line (MUST)<br />
+</li>
+<li>accept edit decisions as an XML file matching a defined schema (MUST)<br />
+</li>
+<li>Edit decisions may include only a subset of the original clip (MUST)<br />
+</li>
+<li>Edit decisions may sequence clips in a different order to that of the riginal video (WOULD LIKE)<br />
+</li>
+<li>Self rate limiting (so CPU and memory usage are held in check) (MUST)<br />
+</li>
+<li>Use ffmpeg/mencoder to decode and encode video (SHOULD)</li>
+</ul>
+<p>Relevant Influencing factors:<br />
+</p>
+<ul>
+<li><em>eg release of a tool doing the same sort of thing that renders this non-relevant</em></li>
+<li><em>people joining/leaving project</em></li>
+<li><em>change of sponsorship</em></li>
+<li><em>growth in users/thirdparties</em></li>
+<li><em>tool dependency suitablility</em></li>
+<li><em>unexpected complications</em></li>
+</ul>
+<h2 id="outputs">Outputs</h2>
+<h3 id="expected">Expected</h3>
+<p>Code in /Sketches<br />
+</p>
+<p>New Video processing components</p>
+<p>New Video and Audio file parsing and writing components</p>
+<p>New XML parsing components<br />
+</p>
+<p>Experimental modifications to existing components to handle noSpaceInBox exceptions</p>
+<ul>
+<li>Pipeline, Graphline, Carousel, etc...</li>
+</ul>
+<p>Webpages describing:</p>
+<ul>
+<li>architecture</li>
+<li>how to use</li>
+</ul>
+<p>Feature in presentation to Mobile SIG (BBC internal)<br />
+</p>
+<h3 id="actual">Actual</h3>
+<p>Code</p>
+<p>Mobile reframer specific:<br />
+</p>
+<p>/Sketches/MH/MobileReframe/MobileReframer.py</p>
+<ul>
+<li>The mobile reframer application itself<br />
+</li>
+</ul>
+<!-- -->
+<ul>
+<li>/Sketches/MH/MobileReframe/EDL.py</li>
+</ul>
+<!-- -->
+<ul>
+<li>Parsing of tokenised XML containing the Edit Decision List<br />
+</li>
+</ul>
+<p>Video components</p>
+<p>/Sketches/MH/Video/YUV4MPEG.py</p>
+<ul>
+<li>YUV4MPEG file format parsing/generation<br />
+</li>
+</ul>
+<p>/Sketches/MH/Video/CropAndScale.py</p>
+<ul>
+<li>Cropping and scaling of video frames<br />
+</li>
+</ul>
+<p>Audio components:</p>
+<p>/Sketches/MH/audio/WAV.py</p>
+<ul>
+<li>WAV file format parsing<br />
+</li>
+</ul>
+<p>/Sketches/MH/audio/ToWAV.py</p>
+<ul>
+<li>WAV file format generation<br />
+</li>
+</ul>
+<p>General purpose components:</p>
+<p>/Sketches/MH/MobileReframe/TagWithSequenceNumber.py<br />
+</p>
+<ul>
+<li>Tagging data with sequence numbers<br />
+</li>
+</ul>
+<p>/Sketches/MH/MobileReframe/OneShot.py<br />
+</p>
+<ul>
+<li>Sending one-off messages<br />
+</li>
+</ul>
+<p>/Sketches/MH/MobileReframe/PromptedTurnstile.py<br />
+</p>
+<ul>
+<li>Buffering of data until needed<br />
+</li>
+</ul>
+<p>/Sketches/MH/MobileReframe/FirstOnly.py<br />
+</p>
+<ul>
+<li>Extracting the first item of data<br />
+</li>
+</ul>
+<p>/Sketches/MH/MobileReframe/Chunk.py<br />
+</p>
+<ul>
+<li>chunking of data to match a required chunkrate<br />
+</li>
+</ul>
+<p>/Sketches/MH/MobileReframe/Sync.py<br />
+</p>
+<ul>
+<li>waiting for 'n' items before continuing<br />
+</li>
+</ul>
+<p>/Sketches/MH/MobileReframe/Collate.py<br />
+</p>
+<ul>
+<li>collate all data together<br />
+</li>
+</ul>
+<p>/Sketches/MH/MobileReframe/RangeFilter.py<br />
+</p>
+<ul>
+<li>filter items not within specified ranges<br />
+</li>
+</ul>
+<p>/Sketches/MH/MobileReframe/Max.py</p>
+<ul>
+<li>select the maximum value from a list<br />
+</li>
+</ul>
+<p>Chassis-style components:</p>
+<p>/Sketches/MH/MobileReframe/InboxControlledCarousel.py<br />
+</p>
+<ul>
+<li>Variation of Carousel component<br />
+</li>
+</ul>
+<p>/Sketches/MH/MobileReframe/Chassis.py<br />
+</p>
+<ul>
+<li>box size limit setting versions of Carousel,Pipeline,Graphline<br />
+</li>
+</ul>
+<p>/Sketches/MH/MobileReframe/Seq.py<br />
+</p>
+<ul>
+<li>runs one component then the next, then the next...<br />
+</li>
+</ul>
+<p>Process components:</p>
+<p>/Sketches/MH/MobileReframe/UnixProcess.py<br />
+</p>
+<ul>
+<li>Variant of UnixProcess component with multiple I/O pipes and noSpaceInBox handling</li>
+</ul>
+<p>XML components:</p>
+<p>/Sketches/MH/MobileReframe/SAXPromptedParser.py</p>
+<ul>
+<li>Parsing of a stream of XML data using SAX, outputting only when prompted for more data</li>
+</ul>
+<p>Webpages</p>
+<ul>
+<li><a href="/MobileReframer%20">Explanation of how to use the mobile reframer</a><br />
+</li>
+</ul>
+<h3 id="realistic-possibilities-arising-as-a-result-of-activity-on-this-task">Realistic possibilities arising as a result of activity on this task</h3>
+<p>New components for the mainline codebase</p>
+<ul>
+<li>review and merge some or all of the above components</li>
+</ul>
+<p>Writing a video player able to play anything that ffmpeg/mencoder/other tools can play<br />
+</p>
+<h2 id="related-tasks">Related Tasks</h2>
+<h3 id="tasks-that-directly-enable-this-task-dependencies">Tasks that directly enable this task (dependencies)</h3>
+<ul>
+<li><a href="/Developers/Projects/AxonWakingProducersBugfix">Axon bugfix</a> to re-introduce the waking of components if they have an outbox linked to an inbox from which an item has just been consumed.</li>
+<li>Conversion of YUV to RGB pixel data (VideoSurface component)<br />
+</li>
+</ul>
+<h3 id="sub-tasks">Sub Tasks</h3>
+<p>Modifying/rewriting UnixProcess to:</p>
+<p>not throw away data</p>
+<p>support named pipes for input and output<br />
+</p>
+<p>to allow rate limiting by boxes becoming full</p>
+<ul>
+<li>leave data in inbox(es) until the process can accept it</li>
+<li>not accept data until the destination outbox is not full</li>
+</ul>
+<p>Writing components</p>
+<p>Deployment onto demonstration server<br />
+</p>
+<p><br />
+</p>
+<h2 id="task-log">Task Log</h2>
+<ul>
+<li>12 October 2006 - Added developer Matt<br />
+</li>
+<li>20 October 2006 - Matt : development to date: Time spent 5 days. <strong>Task status changed</strong> to blocked - need to complete <a href="/Developers/Projects/AxonWakingProducersBugfix">Axon bugfix</a> (development begins in branch private_MH_axon_outboxwakeups)<br />
+</li>
+<li>26 October 2006 - Matt : <strong>Task status changed</strong> to running - resumed development</li>
+<li>10 November 2006 - Matt : Time spent 11 days. <strong>Task status changed</strong> to stasis - secondment for BBC internal project</li>
+<li>20 November 2006 - Matt : <strong>Task status changed</strong> to running - resumed development<br />
+</li>
+<li>27 November 2006 - Matt : development complete. Most code documented Time spent 4 days. <strong>Task status changed</strong> to blocked - awaiting demonstration server to install onto</li>
+<li>29 November 2006 - Matt : Minor bugs come to attention and are fixed. Adding to documentation. Time spend 1/2 day</li>
+<li>15 December 2006 - Matt : Added <a href="/MobileReframer%20">webpage describing how to use it</a> . Time spent 1/4 day.<br />
+</li>
+</ul>
+<h2 id="discussion">Discussion</h2>
+<p>Coping with size limited boxes:<br />
+</p>
+<ul>
+<li>Creation of components that cope sensibly with noSpaceInBox exceptions and still can shutdown as soon as appropriate, without deadlocking/livelocking, has proved much harder than anticipated.</li>
+<li>Similarly, parsing stream data from inboxes, whilst only taking from the inbox when actually needed was non trivial to code too.</li>
+<li>In particular developing and debugging the revised UnixProcess component took much longer than expected.<br />
+</li>
+<li>The least unpleasant approach developed can be seen in components such as <em>YUV4MPEGToFrame</em> and <em>MaxSpeedFileReader</em>.</li>
+<li>Either further approaches need trying out, or perhaps the existing approaches might be worth wrapping into a mixin. Either way, further review and discussion is required.<br />
+</li>
+</ul>
+<p><br />
+</p>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>

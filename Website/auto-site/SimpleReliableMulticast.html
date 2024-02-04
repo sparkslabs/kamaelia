@@ -1,0 +1,178 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<p><span style="font-size:24pt;font-weight:600">Protocol: Simple Reliable Multicast</span></p>
+<p>This page describes a simple protocol overlaid on top of multicast to give a thin layer of reliability. It is <span style="font-weight:600">not</span>intended to replace existing reliable multicast protocols, but to show how they can be developed and integrated into a Kamaelia based system. For the basis of this discussion it is referred to here generally as SRM - simply short for "Simple Reliable Multicast".</p>
+<p><span style="font-weight:600">Background</span></p>
+<p>Multicast is an unreliable protocol. It is also rarely implemented over the wide area internet, despite its age and only slightly more often inside company networks. However where it is available - such as the BBC's trial multicast peering system used for the 2004 Olympics and others - it provides the benefit that broadcast television can be made available over the internet. (Note: multicast is <span style="font-style:italic">not</span> broadcast - the "multi" part denotes that <span style="font-style:italic">anyone</span> may send and receive, not just one source)</p>
+<p>As well as a lack of deployment multicast has a number of specific characteristics that cause problems for any protocol you wish to send over multicast:</p>
+<ul>
+<li>It does not guarantee delivery. Indeed due to it's nature it <span style="font-style:italic">may</span> be considered to have a lesser likelihood of delivery than plain UDP. Why? Because if I send you a UDP packet there is a good chance, unless you're behind a NAT'ing firewall, and possibly even then, that you will receive it. If however I send you a multicast packet, there are many more obstacles along the way to stop a packet reaching you.</li>
+<li>It does not guarantee order of delivery.</li>
+<li>We do not generally speaking have the ability to say "please resend" (which we can manually do with plain UDP, and TCP does automatically). If we try, we risk something called a "NAK implosion". That is a very large number of "<span style="font-weight:600">N</span>egative <span style="font-weight:600">A</span>c<span style="font-weight:600">K</span>nowldgements" coming in at once. It's essentially like broadcasting BBC1, having a momentary power glitch and the entire audience of 10 million people phoning in to say "there was a glitch" - it's an approach that simply doesn't scale.</li>
+</ul>
+<p>As a result we need a system that can essentially perform a "as good as it can" attempt at cleaning up the resulting "mess" we are left with. This might seem strong words, but even over a wireless link inside the home sending multicast data from one room to another can result in all 3 of these issues interfering heavily with any higher level protocol.</p>
+<p><span style="font-weight:600">Example Setup</span></p>
+<p>Take Example 4 - a simple multicast system for example. This contains a system version with the following two pipelines:</p>
+<p>Server:</p>
+<div>
+<p><span style="font-family:Courier">pipeline(</span></p>
+</div>
+<div>
+<p><span style="font-family:Courier">)</span></p>
+</div>
+<p>Client:</p>
+<div>
+<p><span style="font-family:Courier">pipeline(</span></p>
+</div>
+<div>
+<p><span style="font-family:Courier">)</span></p>
+</div>
+<p>(I've removed the calls to these pipelines' .activate() and .run() methods)</p>
+<p>Running these together on a single host (eg via the <span style="font-style:italic">MulticastStreamingSystem.py</span> script provided) results in the single file being transmitted, and recieved and played back. However if we split this across two scripts, run one on a server machine, one on a client and place an unreliable network in between (such as an 802.11b network), then we instantly hit audio problems due to out of order delivery and data loss.</p>
+<p><span style="font-weight:600">Protocol Design</span></p>
+<p>The protocol does the following:</p>
+<ul>
+<li>Attempt to detect and skip data loss.</li>
+<li>Be able to inform of data loss</li>
+<li>Aim to be able to resync to any framing the application chooses.</li>
+<li>Aim to be able to perform out of order delivery correction within a limited window of correction</li>
+<li>Assume that the data it is sending is non-terminating</li>
+</ul>
+<p>The protocol will <span style="font-weight:600">not do</span>the following:</p>
+<ul>
+<li>Aim to correct data</li>
+<li>Aim to fill in missing data</li>
+<li>Provide a mechanism for indicating "end of stream". This is up to a higher layer to decide.</li>
+</ul>
+<p><span style="font-weight:600">Usage</span></p>
+<p>The directory containing Example 4 now also contains an SRM based version called <span style="font-style:italic">MulticastStreamingSystem_SRM.py</span>. The client and server pipelines now looks like this: (additions in <span style="font-family:Courier;font-weight:600;color:#0000cc">bold blue</span>)</p>
+<p>Client:</p>
+<div>
+<p><span style="font-family:Courier">pipeline(</span></p>
+</div>
+<div>
+<p><span style="font-family:Courier">)</span></p>
+</div>
+<p>Server:</p>
+<div>
+<p><span style="font-family:Courier">pipeline(</span></p>
+</div>
+<div>
+<p><span style="font-family:Courier">)</span></p>
+</div>
+<p><span style="font-weight:600">Underlying Approach</span></p>
+<p>The underlying appraoch is as follows:</p>
+<p>On the way out from the server:</p>
+<p>Annotate the chunks of data to send with a sequence number</p>
+<p>Create frames containing the data, sequence numbers and lengths</p>
+<p>Provide a means of resynchronising<span style="font-weight:600"></span>the data stream by adding in restart markers. The data between these markers generally form chunks.</p>
+<ul>
+<li>For this to work, the data inside the chunks is escaped such that joining chunks cannot create spurious markers, and to preserve the existance of the marker in the original transferred data</li>
+</ul>
+<p>Limit the resulting data's size<span style="font-weight:600"></span>in terms of actual data blocks sent, to reduce the likelihood that they will get thrown away by the multicast layer <span style="font-style:italic">(this is done outside the actual SRM components because the SRM components don't know where the data they create is being sent).</span></p>
+<p>On the way into the client:</p>
+<ul>
+<li>Join the recieved blocks of data forming chunks detected based on restart markers.</li>
+<li>Decode these chunks to frames.</li>
+<li>Parse the frames to a tuple containing sequence numbers and data</li>
+<li>Append the tuple onto the end of a buffer</li>
+<li>When the buffer is full have a one-in, one-out basis for retrieving tuples - always choosing the tuple with the lowest sequence number.</li>
+</ul>
+<p><span style="font-weight:600">Details</span></p>
+<p>Unsuprisingly this all maps to a collection of components, and it's simplest to show the 2 pipelines from the code:</p>
+<p>Sending:</p>
+<div dir="ltr">
+<p><span style="font-family:Courier">def SRM_Sender():</span></p>
+</div>
+<div dir="ltr">
+<p><span style="font-family:Courier">return pipeline(</span></p>
+</div>
+<div dir="ltr">
+<p><span style="font-family:Courier">)</span></p>
+</div>
+<p>Receiving:</p>
+<div dir="ltr">
+<p><span style="font-family:Courier">def SRM_Receiver():</span></p>
+</div>
+<div dir="ltr">
+<p><span style="font-family:Courier">return pipeline(</span></p>
+</div>
+<div dir="ltr">
+<p><span style="font-family:Courier">)</span></p>
+</div>
+<p>For those interested a full test suite for framing and data chunking can be found in <span style="font-style:italic">Kamaelia.Protocol.test</span> , and also Kamaelia.Data.Escape (along with tests). A frame is created as follows:</p>
+<p>Note that this allows for a variable length header terminated by a carriage return, with the header consisting of two numbers - one is a sequence number, the other is a length. Both are expressed as strings and are expected to be parsed. The data is passed through unchanged by the Framer.</p>
+<p>Chunking is essentially the same process. The chunker simply takes data (usually frames, but it doesn't not require frames), does the following:</p>
+<p>Inserts a restart marker - defaulting to "XXXXXXXXXXXXXXXXXXXXXXXX" (24 'X' characters) into the data stream. The marker is considered to precede a data chunk, hence for a specific data stream it will start with this marker, but not terminate with it.</p>
+<p>The contents of chunks (ie the original data stream) is escaped such that the restart marker cannot exist accidentally. The approach taken is as follows:</p>
+<p>Escape any % charcter as %25 before performing any other escaping</p>
+<p>For every character in the restart marker</p>
+<ul>
+<li>Ensure that every occurance of that character is replaced by a hexademical representation of the ordinal value of that character, preceded by a % character. For example, "hello" would be represent as %68%65%6c%6c%6f</li>
+</ul>
+<p>Unescaping follows the same approach, but in reverse order.</p>
+<p><span style="font-weight:600">Implementation</span></p>
+<p>Initial implementation was by <a href="mailto:apexmerridian@users.sourceforge.net">Tom Gibson</a>, a vacation trainee at BBC R&amp;D during the Summer of 2005. The robustness of the algorithm was subsequently increased by <a href="mailto:ms_@users.sourceforge.net">Michael</a>, up to the limits described above.</p>
+<p>The implementation can be found in the following files &amp; components:</p>
+<p>Kamaelia.Protocol.SimpleReliableMulticast:</p>
+<p>Annotator</p>
+<p>RecoverOrder</p>
+<p>Two component factories:</p>
+<ul>
+<li>SRM_Sender</li>
+<li>SRM_Receiver</li>
+</ul>
+<p>Kamaelia.Protocol.Framing:</p>
+<ul>
+<li>Framer</li>
+<li>DeFramer</li>
+<li>DataChunker</li>
+<li>DataDeChunker</li>
+<li>Also : SimpleFrame, though this will probably move to Kamaelia.Data due to being data used in the system, but not being a component</li>
+</ul>
+<p>Kamaelia.Data.Escape - contains two functions used by DataChunker&amp; DataDeChunker:</p>
+<ul>
+<li>escape(message,substring = None) (substring is the restart message from the DataChunker's perspective)</li>
+<li>unescape(message,substring = None)</li>
+</ul>
+<p><span style="font-weight:600">Boundary Issues</span></p>
+<ul>
+<li>Do not try and make the restart marker or sync message include a % symbol. This is untested, and will probably break, eventually if not immediately</li>
+<li>The DeChunker maintains a buffer, which can be flushed</li>
+<li>The Re-Ordering code maintains a buffer which can be flushed</li>
+<li>Since the SRM_Reciever wrapper does not provide access to these, you will need to build your own version of the SRM Reciever pipeline if you need this functionality. (But as can be seen from above this should be simple to do)</li>
+</ul>
+<p><span style="font-weight:600">Relationship to Other Reliable Multicast Work</span></p>
+<p>Making multicast reliable is not a new idea. This protocol is simply designed to be "the simplest thing that can possibly work", and that's it. Essentially it's provided to allow a basis for testing other reliable multicast delivery systems, and to show how they can be layered into existing pipelines with relative ease. It is of course immediately useful in it's own right.</p>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>

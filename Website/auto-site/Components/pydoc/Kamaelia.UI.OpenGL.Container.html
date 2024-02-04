@@ -1,0 +1,139 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<div class="container">
+<h1 id="kamaelia.ui.opengl.container"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.UI.html" class="reference">UI</a>.<a href="/Components/pydoc/Kamaelia.UI.OpenGL.html" class="reference">OpenGL</a>.<a href="/Components/pydoc/Kamaelia.UI.OpenGL.Container.html" class="reference">Container</a></h1>
+<section>
+<div class="container">
+<ul>
+<li><strong>component <a href="/Components/pydoc/Kamaelia.UI.OpenGL.Container.Container.html" class="reference">Container</a></strong></li>
+</ul>
+</div>
+<ul>
+<li><a href="#294" class="reference">Container component</a>
+<ul>
+<li><a href="#295" class="reference">Example Usage</a></li>
+<li><a href="#296" class="reference">How does it work?</a></li>
+</ul></li>
+</ul>
+</section>
+<h1 id="container-component-294">Container component {#294}</h1>
+<p>A container to control several OpenGLComponents.</p>
+<h2 id="example-usage-295"><span id="example-usage">Example Usage</span> {#295}</h2>
+<p>In the following example, three components are put into a container and get moved by a SimpleMover and rotated around the Y axis by a SimpleRotator:</p>
+<pre class="literal-block"><code>o1 = SimpleButton(size=(1,1,1)).activate()
+o2 = SimpleCube(size=(1,1,1)).activate()
+o3 = ArrowButton(size=(1,1,1)).activate()
+
+containercontents = {
+    o1: {&quot;position&quot;:(0,1,0)},
+    o2: {&quot;position&quot;:(1,-1,0)},
+    o3: {&quot;position&quot;:(-1,-1,0)},
+}
+
+Graphline(
+    OBJ1=o1,
+    OBJ2=o2,
+    OBJ3=o3,
+    CONTAINER=Container(contents=containercontents, position=(0,0,-10)),
+    MOVER=SimpleMover(amount=(0.01,0.02,0.03)),
+    ROTATOR=SimpleRotator(amount=(0,0.1,0)),
+    linkages = {
+        (&quot;MOVER&quot;, &quot;outbox&quot;) : (&quot;CONTAINER&quot;,&quot;position&quot;),
+        (&quot;ROTATOR&quot;, &quot;outbox&quot;) : (&quot;CONTAINER&quot;,&quot;rel_rotation&quot;)
+    }
+).run()</code></pre>
+<h2 id="how-does-it-work-296"><span id="how-does-it-work">How does it work?</span> {#296}</h2>
+<p>The Container component provides the same inboxes for absolute and relative movement as a OpenGLComponent. These are "position", "rotation", "scaling", "rel_position", "rel_rotation", "rel_scaling", their names are self explanatory. When the container receives a tuple in one of those inboxes, it does update its own transform and uses it to translate the movement to its content components. This is done in the method rearangeContents(). Currently only translation and scaling is supported. This means though components change their position with respect to the rotation of the container and their relative position, the components rotation does not change.</p>
+<p>The contents have to be provided as constructor keyword in form of a nested dictionary of the following form:</p>
+<pre class="literal-block"><code>{
+    component1 : { &quot;position&quot;:(x,y,z), &quot;rotation&quot;:(x,y,z), &quot;scaling&quot;:(x,y,z) },
+    component2 : { &quot;position&quot;:(x,y,z), &quot;rotation&quot;:(x,y,z), &quot;scaling&quot;:(x,y,z) },
+    ...
+}</code></pre>
+<p>Each of the "position", "rotation" and "scaling" arguments specify the amount relative to the container. They are all optional. As stated earlier, rotation is not supported yet so setting the rotation has no effect.</p>
+<p>Container components terminate if a producerFinished or shutdownMicroprocess message is received on their "control" inbox. The received message is also forwarded to the "signal" outbox. Upon termination, this component does <em>not</em> unbind itself from the OpenGLDisplay service and does not free any requested resources.</p>
+<hr />
+<h1 id="kamaelia.ui.opengl.container.container"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.UI.html" class="reference">UI</a>.<a href="/Components/pydoc/Kamaelia.UI.OpenGL.html" class="reference">OpenGL</a>.<a href="/Components/pydoc/Kamaelia.UI.OpenGL.Container.html" class="reference">Container</a>.<a href="/Components/pydoc/Kamaelia.UI.OpenGL.Container.Container.html" class="reference">Container</a></h1>
+<h2 id="symbol-Container">class Container(<a href="/Docs/Axon/Axon.AdaptiveCommsComponent.AdaptiveCommsComponent.html" class="reference">Axon.AdaptiveCommsComponent.AdaptiveCommsComponent</a>)</h2>
+<p>Container(...) -&gt; A new Container component.</p>
+<p>A container to control several OpenGLComponents.</p>
+<p>Keyword arguments:</p>
+<ul>
+<li>position -- Initial container position (default=(0,0,0)).</li>
+<li>rotation -- Initial container rotation (default=(0,0,0)).</li>
+<li>scaling -- Initial container scaling (default=(1,1,1)).</li>
+<li>contents -- Nested dictionary of contained components.</li>
+</ul>
+<h3 id="inboxes"><span id="symbol-Container.Inboxes">Inboxes</span></h3>
+<ul>
+<li><strong>control</strong> : For shutdown messages</li>
+<li><strong>scaling</strong> : receive scaling triple (x,y,z)</li>
+<li><strong>inbox</strong> :</li>
+<li><strong>position</strong> : receive position triple (x,y,z)</li>
+<li><strong>rotation</strong> : receive rotation triple (x,y,z)</li>
+<li><strong>rel_scaling</strong> : receive scaling triple (x,y,z)</li>
+<li><strong>rel_position</strong> : receive position triple (x,y,z)</li>
+<li><strong>rel_rotation</strong> : receive rotation triple (x,y,z)</li>
+</ul>
+<h3 id="outboxes"><span id="symbol-Container.Outboxes">Outboxes</span></h3>
+<ul>
+<li><strong>outbox</strong> :</li>
+<li><strong>signal</strong> : For shutdown messages</li>
+</ul>
+<h3 id="methods-defined-here">Methods defined here</h3>
+<div class="container">
+<div class="boxright">
+<p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div>
+</div>
+<h4 id="init__self-argd"><span id="symbol-Container.__init__">__init__(self, **argd)</span></h4>
+<p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</p>
+<h4 id="addelementself-comp-position-rotation-scaling"><span id="symbol-Container.addElement">addElement(self, comp[, position][, rotation][, scaling])</span></h4>
+<h4 id="applytransformsself"><span id="symbol-Container.applyTransforms">applyTransforms(self)</span></h4>
+<p>Use the objects translation/rotation/scaling values to generate a new transformation Matrix if changes have happened.</p>
+<h4 id="handlemovementself"><span id="symbol-Container.handleMovement">handleMovement(self)</span></h4>
+<p>Handle movement commands received by corresponding inboxes.</p>
+<h4 id="mainself"><span id="symbol-Container.main">main(self)</span></h4>
+<h4 id="rearangecontentsself"><span id="symbol-Container.rearangeContents">rearangeContents(self)</span></h4>
+<h4 id="removeelementself-comp"><span id="symbol-Container.removeElement">removeElement(self, comp)</span></h4>
+<section>
+
+</section>
+</div>
+<h1 id="feedback">Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer? Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback <a href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701" class="reference">here</a> in reply to the documentation thread in the Kamaelia blog.</p>
+<p><em>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</em></p>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<div class="container">
+<h1 id="kamaelia.internet.tcpclient"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Internet.html" class="reference">Internet</a>.<a href="/Components/pydoc/Kamaelia.Internet.TCPClient.html" class="reference">TCPClient</a></h1>
+<section>
+<div class="container">
+<ul>
+<li><strong>component <a href="/Components/pydoc/Kamaelia.Internet.TCPClient.TCPClient.html" class="reference">TCPClient</a></strong></li>
+</ul>
+</div>
+<ul>
+<li><a href="#104" class="reference">Simple TCP Client</a>
+<ul>
+<li><a href="#105" class="reference">Example Usage</a></li>
+<li><a href="#106" class="reference">Example Usage - SSL</a></li>
+<li><a href="#107" class="reference">How does it work?</a></li>
+</ul></li>
+</ul>
+</section>
+<h1 id="simple-tcp-client-104">Simple TCP Client {#104}</h1>
+<p>This component is for making a TCP connection to a server. Send to its "inbox" inbox to send data to the server. Pick up data received from the server on its "outbox" outbox.</p>
+<h2 id="example-usage-105"><span id="example-usage">Example Usage</span> {#105}</h2>
+<p>Sending the contents of a file to a server at address 1.2.3.4 on port 1000:</p>
+<pre class="literal-block"><code>Pipeline( RateControlledFileReader(&quot;myfile&quot;, rate=100000),
+          TCPClient(&quot;1.2.3.4&quot;, 1000),
+        ).activate()</code></pre>
+<h2 id="example-usage---ssl-106"><span id="example-usage-ssl">Example Usage - SSL</span> {#106}</h2>
+<p>It is also possible to cause the TCPClient to switch into SSL mode. To do this you send it a message on its "makessl" inbox. It is necessary for a number of protocols to be able to switch between non-ssl and ssl, hence this approach rather than simply saying "ssl client" or "non-ssl client":</p>
+<pre class="literal-block"><code>Graphline(
+       MAKESSL = OneShot(&quot; make ssl &quot;),
+       CONSOLE = ConsoleReader(),
+       ECHO = ConsoleEchoer(),
+       CONNECTION = TCPClient(&quot;kamaelia.svn.sourceforge.net&quot;, 443),
+       linkages = {
+           (&quot;MAKESSL&quot;, &quot;outbox&quot;): (&quot;CONNECTION&quot;, &quot;makessl&quot;),
+           (&quot;CONSOLE&quot;, &quot;outbox&quot;): (&quot;CONNECTION&quot;, &quot;inbox&quot;),
+           (&quot;CONNECTION&quot;, &quot;outbox&quot;): (&quot;ECHO&quot;, &quot;inbox&quot;),
+       }
+)</code></pre>
+<h2 id="how-does-it-work-107"><span id="how-does-it-work">How does it work?</span> {#107}</h2>
+<p>TCPClient opens a socket connection to the specified server on the specified port. Data received over the connection appears at the component's "outbox" outbox as strings. Data can be sent as strings by sending it to the "inbox" inbox.</p>
+<p>An optional delay (between component activation and attempting to connect) can be specified. The default is no delay.</p>
+<p>It creates a ConnectedSocketAdapter (CSA) to handle the socket connection and registers it with a selectorComponent so it is notified of incoming data. The selectorComponent is obtained by calling selectorComponent.getSelectorService(...) to look it up with the local Coordinating Assistant Tracker (CAT).</p>
+<p>TCPClient wires itself to the "CreatorFeedback" outbox of the CSA. It also wires its "inbox" inbox to pass data straight through to the CSA's "inbox" inbox, and its "outbox" outbox to pass through data from the CSA's "outbox" outbox.</p>
+<p>Socket errors (after the connection has been successfully established) may be sent to the "signal" outbox.</p>
+<p>This component will terminate if the CSA sends a socketShutdown message to its "CreatorFeedback" outbox.</p>
+<p>This component will terminate if a shutdownMicroprocess or producerFinished message is sent to its "control" inbox. This message is forwarded onto the CSA. TCPClient will then wait for the CSA to terminate. It then sends its own shutdownMicroprocess message out of the "signal" outbox.</p>
+<hr />
+<h1 id="kamaelia.internet.tcpclient.tcpclient"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Internet.html" class="reference">Internet</a>.<a href="/Components/pydoc/Kamaelia.Internet.TCPClient.html" class="reference">TCPClient</a>.<a href="/Components/pydoc/Kamaelia.Internet.TCPClient.TCPClient.html" class="reference">TCPClient</a></h1>
+<h2 id="symbol-TCPClient">class TCPClient(<a href="/Docs/Axon/Axon.Component.component.html" class="reference">Axon.Component.component</a>)</h2>
+<p>TCPClient(host,port[,delay]) -&gt; component with a TCP connection to a server.</p>
+<p>Establishes a TCP connection to the specified server.</p>
+<p>Keyword arguments:</p>
+<ul>
+<li>host -- address of the server to connect to (string)</li>
+<li>port -- port number to connect on</li>
+<li>delay -- delay (seconds) after activation before connecting (default=0)</li>
+</ul>
+<h3 id="inboxes"><span id="symbol-TCPClient.Inboxes">Inboxes</span></h3>
+<ul>
+<li><strong>control</strong> : Shutdown signalling</li>
+<li><strong>makessl</strong> : Notifications to the ConnectedSocketAdapter that we want to negotiate SSL</li>
+<li><strong>inbox</strong> : data to send to the socket</li>
+<li><strong>_socketFeedback</strong> : notifications from the ConnectedSocketAdapter</li>
+</ul>
+<h3 id="outboxes"><span id="symbol-TCPClient.Outboxes">Outboxes</span></h3>
+<ul>
+<li><strong>outbox</strong> : data received from the socket</li>
+<li><strong>signal</strong> : socket errors</li>
+<li><strong>sslready</strong> : SSL negotiated successfully</li>
+<li><strong>_selectorSignal</strong> : For registering and deregistering ConnectedSocketAdapter components with a selector service</li>
+</ul>
+<h3 id="methods-defined-here">Methods defined here</h3>
+<div class="container">
+<div class="boxright">
+<p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div>
+</div>
+<h4 id="init__self-host-port-delay-connect_timeout"><span id="symbol-TCPClient.__init__">__init__(self, host, port[, delay][, connect_timeout])</span></h4>
+<p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</p>
+<h4 id="mainself"><span id="symbol-TCPClient.main">main(self)</span></h4>
+<p>Main loop.</p>
+<h4 id="runclientself-sock"><span id="symbol-TCPClient.runClient">runClient(self[, sock])</span></h4>
+<h4 id="safeconnectself-sock-sockargslist"><span id="symbol-TCPClient.safeConnect">safeConnect(self, sock, *sockArgsList)</span></h4>
+<p>Connect to socket and handle possible errors that may occur.</p>
+<p>Returns True if successful, or False on failure. Unhandled errors are raised as exceptions.</p>
+<h4 id="setupcsaself-sock"><span id="symbol-TCPClient.setupCSA">setupCSA(self, sock)</span></h4>
+<p>setupCSA(sock) -&gt; new ConnectedSocketAdapter component</p>
+<p>Creates a ConnectedSocketAdapter component for the socket, and wires up to it. Also sends the CSA to the "selector" service.</p>
+<h4 id="shutdownself"><span id="symbol-TCPClient.shutdown">shutdown(self)</span></h4>
+<h4 id="stopself"><span id="symbol-TCPClient.stop">stop(self)</span></h4>
+<p>Stop method provided to allow the scheduler to kill TCPClient connections cleanly if necessary. (Only rarely, if ever, needed - you are not expected to call this yourself)</p>
+<h4 id="waitcsacloseself"><span id="symbol-TCPClient.waitCSAClose">waitCSAClose(self)</span></h4>
+<p>Returns True if a socketShutdown message is received on "_socketFeedback" inbox.</p>
+<section>
+
+</section>
+</div>
+<h1 id="feedback">Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer? Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback <a href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701" class="reference">here</a> in reply to the documentation thread in the Kamaelia blog.</p>
+<p><em>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</em></p>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>

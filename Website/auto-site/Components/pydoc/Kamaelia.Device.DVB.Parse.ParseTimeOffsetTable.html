@@ -1,0 +1,133 @@
+<html>
+<head>
+<title> index </title>
+<link rel=stylesheet type="text/css" href="/site-resources/base.css">
+<link rel=stylesheet type="text/css" href="/site-resources/pandoc.css">
+</head>
+<body>
+<div class="banner">
+<P> <a href="/Home.html">Home</a> | <a href="/About.html">About</a> | <a href="/Developers.html">Developers</a>
+</div>
+<div class="pagecontainer">
+<div class="pagesection">
+<div id="pagenote">
+<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+</div>
+<div class="container">
+<h1 id="kamaelia.device.dvb.parse.parsetimeoffsettable"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Device.html" class="reference">Device</a>.<a href="/Components/pydoc/Kamaelia.Device.DVB.html" class="reference">DVB</a>.<a href="/Components/pydoc/Kamaelia.Device.DVB.Parse.html" class="reference">Parse</a>.<a href="/Components/pydoc/Kamaelia.Device.DVB.Parse.ParseTimeOffsetTable.html" class="reference">ParseTimeOffsetTable</a></h1>
+<section>
+<div class="container">
+<ul>
+<li><strong>component <a href="/Components/pydoc/Kamaelia.Device.DVB.Parse.ParseTimeOffsetTable.ParseTimeOffsetTable.html" class="reference">ParseTimeOffsetTable</a></strong></li>
+</ul>
+</div>
+<ul>
+<li><a href="#515" class="reference">Parsing Time Offset Tables in DVB streams</a>
+<ul>
+<li><a href="#516" class="reference">Example Usage</a></li>
+<li><a href="#517" class="reference">Behaviour</a></li>
+</ul></li>
+</ul>
+</section>
+<h1 id="parsing-time-offset-tables-in-dvb-streams-515">Parsing Time Offset Tables in DVB streams {#515}</h1>
+<p>ParseTimeOffsetTable parses a reconstructed PSI table from a DVB MPEG Transport Stream, and outputs the current time and date in UTC (GMT) aswell as the current time offset, and when the next change will be (due to daylight saving).</p>
+<p>The purpose of the TOT and details of the fields within in are defined in the DVB SI specification, including the possible 'descriptor' fields that feature in the table:</p>
+<ul>
+<li>ETSI EN 300 468 "Digital Video Broadcasting (DVB); Specification for Service Information (SI) in DVB systems" ETSI / EBU (DVB group)</li>
+</ul>
+<h2 id="example-usage-516"><span id="example-usage">Example Usage</span> {#516}</h2>
+<p>A simple pipeline to receive, parse and display the Time Offset Table:</p>
+<pre class="literal-block"><code>FREQUENCY = 505.833330
+feparams = {
+    &quot;inversion&quot; : dvb3.frontend.INVERSION_AUTO,
+    &quot;constellation&quot; : dvb3.frontend.QAM_16,
+    &quot;code_rate_HP&quot; : dvb3.frontend.FEC_3_4,
+    &quot;code_rate_LP&quot; : dvb3.frontend.FEC_3_4,
+}
+
+TOT_PID = 0x14
+
+Pipeline( DVB_Multiplex(FREQUENCY, [TOT_PID], feparams),
+          DVB_Demuxer({ TOT_PID:[&quot;outbox&quot;]}),
+          ReassemblePSITables(),
+          ParseTimeOffsetDateTable(),
+          PrettifyTimeOffsetDateTable(),
+          ConsoleEchoer(),
+        ).run()</code></pre>
+<h2 id="behaviour-517"><span id="behaviour">Behaviour</span> {#517}</h2>
+<p>Send reconstructed PSI table 'sections' to the "inbox" inbox. When all sections of the table have arrived, ParseTimeOffsetTable will parse the table and send it out of its "outbox" outbox.</p>
+<p>The table is output every time it is received. In practice a multiplex is likely to transmit about 1 instance of this table per second, giving a reasonably accurate measure of the current time.</p>
+<p>The parsed table is sent out as a dictionary data structure, similar to this:</p>
+<pre class="literal-block"><code>{
+    &#39;table_type&#39; : &#39;TOT&#39;,
+    &#39;country&#39;    : &#39;GBR&#39;
+    &#39;region&#39;     : 0,
+    &#39;offset&#39;     : (0, 0),
+    &#39;next&#39;       : { &#39;when&#39;  : [2007, 3, 25, 1, 0, 0],
+                     &#39;offset&#39;: (1, 0)
+                   },
+    &#39;UTC_now&#39;    : [2006, 12, 21, 16, 16, 8],
+}</code></pre>
+<p>If this data is sent on through a PrettifyTimeOffsetTable component, then the equivalent output is a string of the following form:</p>
+<pre class="literal-block"><code>TOT received:
+   DateTime now (UTC)         : 2006-12-21 16:16:08
+   Current local offset (h,m) : 00:00
+   Country &amp; region in it     : GBR (0)
+   Next change of offset:
+       Changes to             : 01:00
+       Changes on (y,m,d)     : 2007-03-25 01:00:00</code></pre>
+<p>Note that this not only includes the current date, time, location and offset from UTC (GMT), but it also tells you when the next change of offset will happen (due to Daylight Saving time) and what that new offset will be.</p>
+<p>The above example output shows that it is currently 21st December 2006 16:16:08 GMT but that at 1am on 25th March 2007 it will change to GMT+0100.</p>
+<p>If a shutdownMicroprocess or producerFinished message is received on the "control" inbox, then it will immediately be sent on out of the "signal" outbox and the component will then immediately terminate.</p>
+<hr />
+<h1 id="kamaelia.device.dvb.parse.parsetimeoffsettable.parsetimeoffsettable"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Device.html" class="reference">Device</a>.<a href="/Components/pydoc/Kamaelia.Device.DVB.html" class="reference">DVB</a>.<a href="/Components/pydoc/Kamaelia.Device.DVB.Parse.html" class="reference">Parse</a>.<a href="/Components/pydoc/Kamaelia.Device.DVB.Parse.ParseTimeOffsetTable.html" class="reference">ParseTimeOffsetTable</a>.<a href="/Components/pydoc/Kamaelia.Device.DVB.Parse.ParseTimeOffsetTable.ParseTimeOffsetTable.html" class="reference">ParseTimeOffsetTable</a></h1>
+<h2 id="symbol-ParseTimeOffsetTable">class ParseTimeOffsetTable(<a href="/Docs/Axon/Axon.Component.component.html" class="reference">Axon.Component.component</a>)</h2>
+<p>Parses a TOT table.</p>
+<p>Receives table sections from PSI packets. Outputs the current time and date (UTC) and time zone offset.</p>
+<h3 id="inboxes"><span id="symbol-ParseTimeOffsetTable.Inboxes">Inboxes</span></h3>
+<ul>
+<li><strong>control</strong> : Shutdown signalling</li>
+<li><strong>inbox</strong> : DVB PSI Packets from a single PID containing a TOT table</li>
+</ul>
+<h3 id="outboxes"><span id="symbol-ParseTimeOffsetTable.Outboxes">Outboxes</span></h3>
+<ul>
+<li><strong>outbox</strong> : Current date and time (UTC) and time zone offset</li>
+<li><strong>signal</strong> : Shutdown signalling</li>
+</ul>
+<h3 id="methods-defined-here">Methods defined here</h3>
+<div class="container">
+<div class="boxright">
+<p><strong>Warning!</strong></p>
+<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+</div>
+</div>
+<h4 id="init__self"><span id="symbol-ParseTimeOffsetTable.__init__">__init__(self)</span></h4>
+<h4 id="mainself"><span id="symbol-ParseTimeOffsetTable.main">main(self)</span></h4>
+<h4 id="shutdownself"><span id="symbol-ParseTimeOffsetTable.shutdown">shutdown(self)</span></h4>
+<section>
+
+</section>
+</div>
+<h1 id="feedback">Feedback</h1>
+<p>Got a problem with the documentation? Something unclear that could be clearer? Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback <a href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701" class="reference">here</a> in reply to the documentation thread in the Kamaelia blog.</p>
+<p><em>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</em></p>
+
+</div> <!-- end section -->
+</div> <!-- end page container -->
+
+<div class="banner">
+<a href="https://www.bbc.co.uk/rd"><img src="/site-resources/BBCRD_Logo.jpg"></a>
+<P id="mini">  Kamaelia is an open source project originated from and guided
+by <a href="https://www.bbc.co.uk/rd">BBC Research.</a> For more information
+browse the site or get in contact.
+<br>This is an ongoing community based development site.  As a result the
+contents of this page is the opinions of the contributors of the pages
+involved not the organisations involved.  Specificially, this page may
+contain personal views which are not the views of the BBC.
+
+<br>(C) Copyright 2004-2024 Kamaelia Contributors, including the British
+Broadcasting Corporation, All Rights Reserved.
+</div>
+</body>
+</html>
