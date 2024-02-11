@@ -186,7 +186,7 @@ There is a [BBC R&D Whitepaper on Kamaelia](https://www.bbc.co.uk/rd/publication
 The project grew significantly after this whitepaper was written, but it\'s
 useful to give the original context:
 
-**WHP 113: Kamelia: highly concurrent and network systems tamed (2005)**
+**[WHP 113: Kamaelia: highly concurrent and network systems tamed (2005)](https://www.bbc.co.uk/rd/publications/whitepaper113)**
 
 *Kamaelia is a project aimed at building large scale online media delivery
 systems for the long term.  \[\.\.\.\] A key aim of Kamaelia is to enable even
