@@ -1,5 +1,5 @@
 ---
-pagename: Developers (Documentation)
+pagename: Documentation
 last-modified-date: 2024/02/11
 page-template: default
 page-type: text/markdown
@@ -25,12 +25,11 @@ In this section, you\'ll find:
 ::: {.pagesection}
 ## Kamaelia Documentation
 
-The developers section of this site is being retargeted at developers using
-Kamaelia rather than developers of Kamaelia - which is now the Community
-section.  This is probably a long overview change.
+Documentation is a core asset in Kamaelia. As of Jan 2024, this is now
+being significantly updated.
 
-Additionally, documentation is a core asset in Kamaelia.  As of Jan 2024,
-this is now being significantly updated and made more accessible.
+While this is done you are invited to look at the [Component Reference](/Components.html) for an indication of the scope of
+components, and the [Cookbook](/Cookbook.html) for small examples.
 
 ## Quick Overview
 
@@ -55,11 +54,6 @@ Two major pieces of Kamaelia documentation are booksized PDFs:
   rough around the edges!)
 
 
-## [Tutorials](/Tutorials.html)
-
--   Dive into [Kamaelia tutorials from a variety of perspectives](/Tutorials.html)
--   See the [presentations given publicly](/Presentations.html)
-
 
 ## [Cookbook](/Cookbook.html)
 
@@ -80,6 +74,11 @@ of different types of Kamaelia systems. Sections include:
 * [Full component Reference](/Components.html)
 * [Full reference for Axon - the core of Kamaelia](/Docs/Axon/Axon.html)
 
+
+## [Tutorials](/Tutorials.html)
+
+-   Dive into [Kamaelia tutorials from a variety of perspectives](/Tutorials.html)
+-   See the [presentations given publicly](/Presentations.html)
 
 ## Kamaelia based systems
 
