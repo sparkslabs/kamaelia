@@ -22,7 +22,7 @@
 from distutils.core import setup
 
 setup(name = "kamaelia",
-      version = "1.12.0", # Collapsed version number
+      version = "1.13.31", # Semver update
       description = "Kamaelia - Multimedia & Server Development Kit",
 
       author = "Michael Sparks (sparkslabs)",
