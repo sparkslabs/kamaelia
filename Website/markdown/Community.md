@@ -1,12 +1,15 @@
 ---
-pagename: Developers
+pagename: Community
 last-modified-date: 2008-09-20
 page-template: default
 page-type: text/markdown
-page-status: current|legacy|needsupdate|deprecated|recommended
+page-status: needsupdate
 ---
-Kamaelia Development Console
-============================
+***Note: this set of pages needs updating to match current status of project development***
+***This is one of the major updates referred to in the banner above***
+
+Community Console
+=================
 
 This page serves as a console for the development of the Kamaelia
 project itself, starting point, todo list, [ideas](Tasks.html),
@@ -56,17 +59,14 @@ Notes:\
 
 -   [Platform specific hints](/Developers/PlatformSpecificHints.html)\
 
-**Ethos and Approach**[]{style="font-weight: 600;"} [**Project Direction, Goals, and Mission**](Direction.html)\
+**Ethos and Approach**
 
-\
-**[Get Release](../../../GetKamaelia.html)** **[Next
-Release](../../../ReleaseProgress070.html)**
-[**Roadmap**](../../../Developers/Roadmap.html)
-**[Subversion](../../../Repository.html)**\
-**Release Notes** **[detailed](../../../ReleaseNotes060.html) ,
-[summary](../../../ReleaseAnnouncement060.html)**\
-\
+* [**Project Direction, Goals, and Mission**](Direction.html)
 
-\
+* **[Get Release](/GetKamaelia.html)**
+* **[Next Release](/ReleaseProgress070.html)**
+* [**Roadmap**](/Developers/Roadmap.html)
+* **[Subversion](/Repository.html)**
+* **Release Notes** **[detailed](/ReleaseNotes060.html)
+* [summary](/ReleaseAnnouncement060.html)**
 
-\

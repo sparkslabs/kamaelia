@@ -54,11 +54,6 @@ Two major pieces of Kamaelia documentation are booksized PDFs:
   rough around the edges!)
 
 
-## [Tutorials](/Tutorials.html)
-
--   Dive into [Kamaelia tutorials from a variety of perspectives](/Tutorials.html)
--   See the [presentations given publicly](/Presentations.html)
-
 
 ## [Cookbook](/Cookbook.html)
 
@@ -79,6 +74,11 @@ of different types of Kamaelia systems. Sections include:
 * [Full component Reference](/Components.html)
 * [Full reference for Axon - the core of Kamaelia](/Docs/Axon/Axon.html)
 
+
+## [Tutorials](/Tutorials.html)
+
+-   Dive into [Kamaelia tutorials from a variety of perspectives](/Tutorials.html)
+-   See the [presentations given publicly](/Presentations.html)
 
 ## Kamaelia based systems
 
