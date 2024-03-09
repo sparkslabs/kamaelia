@@ -58,7 +58,7 @@ if __name__ == "__main__":
     from Kamaelia.Chassis.Pipeline import pipeline
     from Kamaelia.Protocol.HTTP.HTTPClient import SimpleHTTPClient
     
-    postscript = raw_input("Post Script URL: ") # e.g. "http://www.example.com/upload.php"
+    postscript = input("Post Script URL: ") # e.g. "http://www.example.com/upload.php"
     
     pipeline(
         ConsoleReader(eol=""),

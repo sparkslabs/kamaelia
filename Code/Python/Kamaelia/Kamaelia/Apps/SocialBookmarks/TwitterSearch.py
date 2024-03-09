@@ -122,8 +122,8 @@ class PeopleSearch(component):
                 accepted = 'n'
                 # Wait until the user has confirmed authorisation
                 while accepted.lower() == 'n':
-                    accepted = raw_input('Have you authorized me? (y/n) ')
-                oauth_verifier = raw_input('What is the PIN? ')
+                    accepted = input('Have you authorized me? (y/n) ')
+                oauth_verifier = input('What is the PIN? ')
 
                 token = oauth.Token(request_token['oauth_token'],
                     request_token['oauth_token_secret'])

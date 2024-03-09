@@ -248,7 +248,7 @@ if __name__ == '__main__':
 
     # Save a SHOUTcast/Icecast stream to disk
     # (you can then use an MP3 player program to listen to it while it downloads).
-    streamurl = raw_input("Stream URL: ") # e.g. "http://a.stream.url.example.com:1234/"
+    streamurl = input("Stream URL: ") # e.g. "http://a.stream.url.example.com:1234/"
     pipeline(
         IcecastClient(streamurl),
         IcecastDemux(),

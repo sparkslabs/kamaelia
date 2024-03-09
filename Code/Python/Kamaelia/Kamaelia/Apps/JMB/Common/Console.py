@@ -37,7 +37,7 @@ def prompt_yesno(text):
     Just a generic function to determine if the user wants to continue or not.
     Will repeat if input is unrecognizable.
     """
-    user_input = raw_input(text)
+    user_input = input(text)
     
     if user_input[0] == 'y' or user_input[0] == 'Y':
         return True
