@@ -61,14 +61,14 @@ ticker3 = Handle(Pipeline(
                    )
           ).activate()
 
-for line in file("Ulysses", 'r+b'):
+for line in open("Ulysses", 'r'):
     line = line.rstrip() # kill the newlines - printing them in reverse order messes with the ticker.
     ticker1.put(line[::-1], "inbox")
     ticker2.put(line, "inbox")
 
 time.sleep(5)
 
-for line in file("Ulysses", 'r+b'):
+for line in open("Ulysses", 'r+b'):
     ticker3.put(line, "inbox")
 
 time.sleep(10)
