@@ -93,8 +93,8 @@ class DVB_TuneToChannel(AdaptiveCommsComponent):
                             service_id = sid
                             break
         
-        print "Found service id:",service_id
-        print "Its in transport stream id:",transport_stream_id
+        print( "Found service id:",service_id)
+        print( "Its in transport stream id:",transport_stream_id)
             
             
         # stage 2, find out which PID contains the PMT for the service,
@@ -120,7 +120,7 @@ class DVB_TuneToChannel(AdaptiveCommsComponent):
                 PMT_PID = ts_services[service_id]
                 break
             
-        print "Found PMT PID for this service:",PMT_PID
+        print( "Found PMT PID for this service:",PMT_PID)
             
         # stage 3, find out which PIDs contain AV data, so we'll query this
         # service's PMT
@@ -148,8 +148,8 @@ class DVB_TuneToChannel(AdaptiveCommsComponent):
                     elif stream['type'] in [1,2] and not video_pid:
                         video_pid = stream['pid']
 
-        print "Found audio PID:",audio_pid
-        print "Found video PID:",video_pid
+        print( "Found audio PID:",audio_pid)
+        print( "Found video PID:",video_pid)
         
         yield 1
         # now set up to receive those pids and forward them on for all eternity

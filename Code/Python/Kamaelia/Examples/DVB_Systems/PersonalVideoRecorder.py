@@ -339,7 +339,7 @@ class ControllableRecorder(component):
                     PMT_PID = ts_services[service_id]
                     break
             
-        print "Found PMT PID for this service:",PMT_PID
+        print( "Found PMT PID for this service:",PMT_PID)
             
         # stage 3, find out which PIDs contain AV data, so we'll query this
         # service's PMT
@@ -366,9 +366,9 @@ class ControllableRecorder(component):
                     elif stream['type'] in [1,2] and not video_pid:
                         video_pid = stream['pid']
 
-        print "Found audio PID:",audio_pid
-        print "Found video PID:",video_pid
-        print "Waiting to start recording..."
+        print( "Found audio PID:",audio_pid)
+        print( "Found video PID:",video_pid)
+        print( "Waiting to start recording...")
         
         yield 1
         
@@ -390,7 +390,7 @@ class ControllableRecorder(component):
         
             # request audio and video data
             self.send( ("ADD",[audio_pid,video_pid], (self,"_av_packets")), "_toDemuxer")
-            print time.asctime(), "Recording ",audio_pid,video_pid
+            print( time.asctime(), "Recording ",audio_pid,video_pid)
             
             while recording:
                 while self.dataReady("_av_packets"):
@@ -405,7 +405,7 @@ class ControllableRecorder(component):
                 yield 1
                 
             self.send( ("REMOVE", [audio_pid,video_pid], (self,"_av_packets")), "_toDemuxer")
-            print time.asctime(), "Stopped",audio_pid,video_pid
+            print( time.asctime(), "Stopped",audio_pid,video_pid)
 
 
 # ==============================================================================

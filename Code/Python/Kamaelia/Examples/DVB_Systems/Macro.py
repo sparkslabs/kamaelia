@@ -80,9 +80,9 @@ class ProgrammeTranscoder(Axon.Component.component):
         finishedfile = "/data/finished"+self.dir_prefix+"/"+uid+".avi"
         finishedEIT  = "/data/finished"+self.dir_prefix+"/"+uid+".eit"
         
-        print uid,"Starting transcoding into: "+encodingfile
+        print( uid,"Starting transcoding into: "+encodingfile )
         transcoder = UnixProcess("mencoder -o "+encodingfile+" "+self.mencoder_options)
-        print uid,"Transcoder pipethough =",transcoder.name
+        print( uid,"Transcoder pipethough =",transcoder.name )
         
         data_linkage = self.link( (self,"inbox"), (transcoder,"inbox"), passthrough=1 )
         ctrl_linkage = self.link( (self,"_stop"), (transcoder,"control"))
@@ -103,34 +103,34 @@ class ProgrammeTranscoder(Axon.Component.component):
             self.pause()
             yield 1
             
-        print uid,"shutdown received"
+        print( uid,"shutdown received" )
         while self.dataReady("control"):
             self.recv("control")                 # flush out shutdown messages
             
         # tell transcoder to stop
-        print uid,"Transcoding must now stop..."
+        print( uid,"Transcoding must now stop..." )
         self.send(producerFinished(), "_stop")
         
-        print uid,"waiting for transcoder to finish"
+        print( uid,"waiting for transcoder to finish" )
         while not self.dataReady("_transcodingcomplete"):
             self.pause()
             yield 1
-        print uid,"transcoder has finished"
+        print( uid,"transcoder has finished")
         while self.dataReady("_transcodingcomplete"):
             self.recv("_transcodingcomplete")
         
         # move the transcoded file and eit data to final destination
-        print uid,"Moving finished files"
+        print( uid,"Moving finished files")
         os.rename(encodingfile, finishedfile)
         os.rename(waitingEIT, finishedEIT)
 
-        print uid,"Unlinking transcoder"
+        print( uid,"Unlinking transcoder")
         self.unlink(data_linkage)
         self.unlink(ctrl_linkage)
         self.unlink(done_linkage)
 #        self.unlink(log_linkage)
 
-        print uid,"Sending done signal"
+        print( uid,"Sending done signal")
         self.send(producerFinished(), "signal")
         
 #         # HACK HACK HACK
@@ -153,7 +153,7 @@ def EITParsing(*service_ids):
 
 def ChannelTranscoder(service_id, mencoder_options, dir_prefix): # BBC ONE
     def transcoder_factory(eit):
-        print "transcoder factory called with eit:\n"+str(eit)+"\n"
+        print( "transcoder factory called with eit:\n"+str(eit)+"\n")
         return ProgrammeTranscoder(eit, mencoder_options, dir_prefix)
     
     return Graphline(
@@ -214,7 +214,7 @@ service_ids = { "BBC ONE": 4164,
                 "CBBC":4671,
               }
 
-print "-----STARTING MACRO----- time =",time.time()
+print( "-----STARTING MACRO----- time =",time.time())
 
 def repeatingFile():
     def rfa_factory(_):
