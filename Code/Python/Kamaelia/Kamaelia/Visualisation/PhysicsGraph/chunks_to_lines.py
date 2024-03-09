@@ -85,6 +85,7 @@ class chunks_to_lines(component):
          
          while self.dataReady("inbox"):
             chunk = self.recv("inbox")
+            chunk = chunk.decode("utf8")
             try:
                 chunk = chunk.replace("\r", "")
             except:
