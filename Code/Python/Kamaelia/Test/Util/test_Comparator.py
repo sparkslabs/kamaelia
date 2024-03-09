@@ -53,7 +53,7 @@ class Comparator_test2(unittest.TestCase):
     
 
     def runtestsystem(self):
-        for i in xrange(5):
+        for i in range(5):
             self.Comparator.next()
             self.pm.domessagedelivery()
             
@@ -66,7 +66,7 @@ class Comparator_test2(unittest.TestCase):
         
     def test_equality2(self):
         """mainBody - Checks equal inputs on inA and inB produce a true value on output.  Repeated many times."""
-        for i in xrange(100):
+        for i in range(100):
             self.testerA.send(i)
             self.testerB.send(i)
             self.runtestsystem()
@@ -74,11 +74,11 @@ class Comparator_test2(unittest.TestCase):
             
     def test_equality3(self):
         """mainBody - Checks equal inputs on inA and inB produce a true value on output.  Repeated many times.  Also messages on one input arrive earlier than the other (but in the same order)."""
-        for i in xrange(100):
+        for i in range(100):
             self.testerA.send(i)
             self.runtestsystem()
             self.failIf(self.testerA.dataReady())
-        for i in xrange(100):
+        for i in range(100):
             self.testerB.send(i)
             self.runtestsystem()
             self.failUnless(self.testerA.recv())
@@ -92,7 +92,7 @@ class Comparator_test2(unittest.TestCase):
         
     def test_inequality2(self):
         """mainBody - Checks different inputs on inA and inB produce a false value on output.  Repeated many times."""
-        for i in xrange(100):
+        for i in range(100):
             self.testerA.send(i)
             self.testerB.send(i+1)
             self.runtestsystem()
@@ -100,11 +100,11 @@ class Comparator_test2(unittest.TestCase):
 
     def test_inequality3(self):
         """mainBody - Checks different inputs on inA and inB produce a false value on output.  Repeated many times.  Also messages on one input arrive earlier than the other."""
-        for i in xrange(100):
+        for i in range(100):
             self.testerA.send(i)
             self.runtestsystem()
             self.failIf(self.testerA.dataReady())
-        for i in xrange(100):
+        for i in range(100):
             self.testerB.send(i+1)
             self.runtestsystem()
             self.failIf(self.testerA.recv())

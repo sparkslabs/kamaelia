@@ -230,7 +230,7 @@ def addPIDS(pids):
     in "/dev/dvb/adapter0/dvr0"
     """
     demuxers = [dvb3.dmx.Demux(0, blocking = 0) for _ in pids]
-    for p in xrange(len(pids)):
+    for p in range(len(pids)):
         demuxers[p].set_pes_filter(pids[p],
                                    dvb3.dmx.DMX_IN_FRONTEND,
                                    dvb3.dmx.DMX_OUT_TS_TAP,

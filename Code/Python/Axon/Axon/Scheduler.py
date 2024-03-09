@@ -280,7 +280,7 @@ from Axon.Ipc import ipc, WaitComplete, reactivate, newComponent, shutdownMicrop
 
 try:
     import Queue as queue
-    vrange = xrange
+    vrange = range
 except ImportError:
     import queue
     vrange = range

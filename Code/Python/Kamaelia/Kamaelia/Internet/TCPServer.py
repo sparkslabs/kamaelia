@@ -298,7 +298,7 @@ class TCPServer(Axon.Component.component):
                self.pause()
                yield 1
            if self.anyClosedSockets():
-               for i in xrange(10):
+               for i in range(10):
                   yield 1
            self.handleNewConnection() # Data ready means that we have a connection waiting.
            if self.dataReady("control"):

@@ -732,7 +732,7 @@ class TopologyViewer3D(Axon.Component.component):
             if dlevel < 0: # Go to the last dlevel level
                 self.previousParentParticleID = self.currentParentParticleID
                 items = self.currentParentParticleID.split(':')
-                for _ in xrange(-dlevel):
+                for _ in range(-dlevel):
                     items.pop()
                 self.currentParentParticleID = ':'.join(items)
                 isValid = True

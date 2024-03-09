@@ -31,7 +31,7 @@ try:
     import Queue
     def next(g):   # Not built into python 2
         return g.next()
-    vrange = xrange
+    vrange = range
     apply = apply
 except: # Built into python 3
     next = next

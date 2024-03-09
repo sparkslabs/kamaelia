@@ -66,7 +66,7 @@ if __name__=="__main__":
     dictArgs, remargs, junk = parseArgs(sys.argv[1:])
     
     if "help" in dictArgs:
-        print dictArgs["help"]
+        print( dictArgs["help"])
         
     else:
         TopologyViewerServer(**dictArgs).run()

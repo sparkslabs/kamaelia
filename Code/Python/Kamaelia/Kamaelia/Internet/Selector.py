@@ -297,7 +297,7 @@ class Selector(threadedadaptivecommscomponent): #Axon.AdaptiveCommsComponent.Ada
 #                    print "RWE", readers, writers, exceptionals
                     numberOfFailedSelectsDueToBadFileDescriptor  = 0
 
-                    for i in xrange(3):
+                    for i in range(3):
                         for selectable in read_write_except[i]:
 #                            try:
                                 replyService, outbox, linkage = meta[i][selectable]

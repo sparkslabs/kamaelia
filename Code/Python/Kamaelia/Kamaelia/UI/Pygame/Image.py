@@ -189,7 +189,7 @@ class Image(Axon.Component.component):
             if self.display is None:
                self.display = self.recv("callback")
                change = True
-               for x in xrange(15): yield 1
+               for x in range(15): yield 1
                message = { "ADDLISTENEVENT" : pygame.KEYDOWN,
                            "surface" : self.display}
                self.send(message, "display_signal")

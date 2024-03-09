@@ -75,11 +75,11 @@ class BounceRange(Axon.Component.component):
                 message = self.recv("inbox")
                 if message == "TOGGLE":
                     last = None
-                    for level in xrange(self.start, self.stop, self.step):
+                    for level in range(self.start, self.stop, self.step):
                         self.send(level, "outbox")
                         last = level
                         yield 1
-                    if last != self.stop: # xrange can finish before reaching the end of the range.
+                    if last != self.stop: # range can finish before reaching the end of the range.
                        self.send(self.stop, "outbox")
                        yield 1
                     self.start, self.stop, self.step = self.stop, self.start, -self.step

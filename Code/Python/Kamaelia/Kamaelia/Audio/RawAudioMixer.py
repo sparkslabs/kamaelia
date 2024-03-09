@@ -363,7 +363,7 @@ class RawAudioMixer(threadedcomponent):
     
     def mix_S16_LE(self,sources, amount):
         output = []
-        for i in xrange(0,amount,2):
+        for i in range(0,amount,2):
             sum=0
             for src in sources:
                 value = ord(src[i]) + (ord(src[i+1]) << 8)

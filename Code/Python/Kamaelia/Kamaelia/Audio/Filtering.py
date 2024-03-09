@@ -73,7 +73,7 @@ class LPF(component):
 
 def convert(data):
     converted = []
-    for i in xrange(0,len(data),2):
+    for i in range(0,len(data),2):
         value = ord(data[i]) + (ord(data[i+1]) << 8)
         if value & 0x8000:
             value -= 65536

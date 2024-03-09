@@ -130,7 +130,7 @@ class PComponent(BaseParticle):
         self.shortname = abbreviate(newname)
         acro = acronym(newname)
         oldhue = []
-        for i in xrange(len(acro)):
+        for i in range(len(acro)):
             factor = acro[:i+1]
             print (factor)
             hue = list(colours [ factor.__hash__() % len(colours)])

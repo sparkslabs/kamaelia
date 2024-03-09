@@ -377,7 +377,7 @@ class PromptedFileReader(component):
         return.
         """
         data = ""
-        for i in xrange(0,n):
+        for i in range(0,n):
             data += self.file.readline()
         if not data:
             raise EOF( "EOF" )
