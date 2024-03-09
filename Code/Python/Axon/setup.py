@@ -48,7 +48,7 @@ if len(sys.argv) >= 2:
             pass
 
 setup(name = "axon",
-      version = "1.7.1",
+      version = "1.13.31",
       description = "Axon - Asynchronous Isolated Generator Component System",
       author = "Michael Sparks (sparkslabs)",
       author_email = "sparks.m@gmail.com",

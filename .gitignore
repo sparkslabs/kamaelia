@@ -1,3 +1,6 @@
+Website/auto-site/
+Website/to-deploy/
+
 *.py[co]
 
 # Packages
