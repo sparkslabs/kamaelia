@@ -1,7 +1,7 @@
 PYTHON=`which python`
 DESTDIR=/
 PROJECT=axon
-VERSION=1.7.1
+VERSION=1.13.31
 all:
 	@echo "make source - Create source package"
 	@echo "make install - Install on local system (only during development)"
@@ -35,10 +35,10 @@ ppadeb:
 	cd dist && py2dsc $(PROJECT)-* && cd deb_dist/$(PROJECT)-$(VERSION) && debuild -S && cd .. && dput ppa:sparkslabs/packages $(PROJECT)_*_source.changes
 
 use:
-	sudo dpkg -i dist/deb_dist/python-$(PROJECT)*deb
+	sudo dpkg -i dist/deb_dist/python3-$(PROJECT)*deb
 
 purge:
-	sudo apt-get purge python-$(PROJECT)
+	sudo apt-get purge python3-$(PROJECT)
 
 clean:
 	$(PYTHON) setup.py clean
