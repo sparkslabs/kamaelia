@@ -41,6 +41,8 @@ purge:
 	sudo apt-get purge python3-$(PROJECT)
 
 clean:
+	rm -f COPYING
+	rm -f AUTHORS
 	$(PYTHON) setup.py clean
 	rm -rf build/ MANIFEST  
 	find . -name '*.pyc' -delete
