@@ -47,7 +47,7 @@ if len(sys.argv) >= 2:
             # Axon wasn't installed beforehand, so there won't be a problem
             pass
 
-setup(name = "axon",
+setup(name = "kamaelia-axon",
       version = "1.13.31",
       description = "Axon - Asynchronous Isolated Generator Component System",
       author = "Michael Sparks (sparkslabs)",

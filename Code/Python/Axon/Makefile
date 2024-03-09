@@ -34,6 +34,10 @@ ppadeb:
 	python setup.py sdist
 	cd dist && py2dsc $(PROJECT)-* && cd deb_dist/$(PROJECT)-$(VERSION) && debuild -S && cd .. && dput ppa:sparkslabs/packages $(PROJECT)_*_source.changes
 
+pypi:
+	$(PYTHON) setup.py sdist
+	twine upload dist/*
+
 use:
 	sudo dpkg -i dist/deb_dist/python3-$(PROJECT)*deb
 
