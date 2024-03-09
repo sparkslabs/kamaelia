@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.3
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
 # Copyright 2010 British Broadcasting Corporation and Kamaelia Contributors(1)
