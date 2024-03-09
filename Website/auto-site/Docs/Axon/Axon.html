@@ -15,130 +15,198 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
 <div class="container">
 <section>
-<h2 id="axon"><a href="/Docs/Axon/Axon.html" class="reference">Axon</a></h2>
+<h2 id="axon"><a href="/Docs/Axon/Axon.html"
+class="reference">Axon</a></h2>
 </section>
-<h1 id="axon---the-core-concurrency-system-for-kamaelia">Axon - the core concurrency system for Kamaelia</h1>
+<h1 id="axon---the-core-concurrency-system-for-kamaelia">Axon - the core
+concurrency system for Kamaelia</h1>
 <div class="container">
 
 </div>
 <ul>
-<li><a href="#0" class="reference">Base classes for building your own components</a></li>
-<li><a href="#1" class="reference">Underlying concurrency system</a></li>
-<li><a href="#2" class="reference">Services, statistics, Instrospection</a></li>
-<li><a href="#3" class="reference">Exceptions, Messages and Misc</a></li>
-<li><a href="#4" class="reference">Integration with other systems</a></li>
-<li><a href="#5" class="reference">Internals for implementing inboxes, outboxes and linkages</a></li>
+<li><a href="#0" class="reference">Base classes for building your own
+components</a></li>
+<li><a href="#1" class="reference">Underlying concurrency
+system</a></li>
+<li><a href="#2" class="reference">Services, statistics,
+Instrospection</a></li>
+<li><a href="#3" class="reference">Exceptions, Messages and
+Misc</a></li>
+<li><a href="#4" class="reference">Integration with other
+systems</a></li>
+<li><a href="#5" class="reference">Internals for implementing inboxes,
+outboxes and linkages</a></li>
 <li><a href="#6" class="reference">Debugging support</a></li>
 </ul>
 <section>
-<p>Axon is a component concurrency framework. With it you can create software "components" that can run concurrently with each other. Components have "inboxes" and "outboxes" through with they communicate with other components.</p>
-<p>A component may send a message to one of its outboxes. If a linkage has been created from that outbox to another component's inbox; then that message will arrive in the inbox of the other component. In this way, components can send and receive data - allowing you to create systems by linking many components together.</p>
-<p>Each component is a microprocess - rather like a thread of execution. A scheduler takes care of making sure all microprocesses (and therefore all components) get regularly executed. It also looks after putting microprocesses to sleep (when they ask to be) and waking them up (for example, when something arrives in one of their inboxes).</p>
-<h2 id="base-classes-for-building-your-own-components-0"><span id="base-classes-for-building-your-own-components">Base classes for building your own components</span> {#0}</h2>
+<p>Axon is a component concurrency framework. With it you can create
+software "components" that can run concurrently with each other.
+Components have "inboxes" and "outboxes" through with they communicate
+with other components.</p>
+<p>A component may send a message to one of its outboxes. If a linkage
+has been created from that outbox to another component's inbox; then
+that message will arrive in the inbox of the other component. In this
+way, components can send and receive data - allowing you to create
+systems by linking many components together.</p>
+<p>Each component is a microprocess - rather like a thread of execution.
+A scheduler takes care of making sure all microprocesses (and therefore
+all components) get regularly executed. It also looks after putting
+microprocesses to sleep (when they ask to be) and waking them up (for
+example, when something arrives in one of their inboxes).</p>
+<h2 id="0"><span id="base-classes-for-building-your-own-components">Base
+classes for building your own components</span></h2>
 <ul>
-<li><strong><a href="/Docs/Axon/Axon.Component.html" class="reference">Axon.Component</a></strong>
+<li><strong><a href="/Docs/Axon/Axon.Component.html"
+class="reference">Axon.Component</a></strong>
 <ul>
-<li>defines the basic component. Subclass it to write your own components.</li>
+<li>defines the basic component. Subclass it to write your own
+components.</li>
 </ul></li>
-<li><strong><a href="/Docs/Axon/Axon.AdaptiveCommsComponent.html" class="reference">Axon.AdaptiveCommsComponent</a></strong>
+<li><strong><a href="/Docs/Axon/Axon.AdaptiveCommsComponent.html"
+class="reference">Axon.AdaptiveCommsComponent</a></strong>
 <ul>
-<li>like a basic component but with facilties to let you add and remove inboxes and outboxes during runtime.</li>
+<li>like a basic component but with facilties to let you add and remove
+inboxes and outboxes during runtime.</li>
 </ul></li>
-<li><strong><a href="/Docs/Axon/Axon.ThreadedComponent.html" class="reference">Axon.ThreadedComponent</a></strong>
+<li><strong><a href="/Docs/Axon/Axon.ThreadedComponent.html"
+class="reference">Axon.ThreadedComponent</a></strong>
 <ul>
-<li>like ordinary components, but which truly run in a separate thread - meaning they can perform blocking tasks (since they don't have to yield control to the scheduler for other components to continue executing)</li>
-</ul></li>
-</ul>
-<h2 id="underlying-concurrency-system-1"><span id="underlying-concurrency-system">Underlying concurrency system</span> {#1}</h2>
-<ul>
-<li><strong><a href="/Docs/Axon/Axon.Microprocess.html" class="reference">Axon.Microprocess</a></strong>
-<ul>
-<li>Turns a python generator into a schedulable microprocess - something that can be started, paused, reawoken and stopped. Subclass it to make your own.</li>
-</ul></li>
-<li><strong><a href="/Docs/Axon/Axon.Scheduler.html" class="reference">Axon.Scheduler</a></strong>
-<ul>
-<li>Runs the microprocesses. Manages the starting, stopping, pausing and waking of them. Is also a microprocess itself!</li>
-</ul></li>
-</ul>
-<h2 id="services-statistics-instrospection-2"><span id="services-statistics-instrospection">Services, statistics, Instrospection</span> {#2}</h2>
-<ul>
-<li><strong><a href="/Docs/Axon/Axon.CoordinatingAssistantTracker.html" class="reference">Axon.CoordinatingAssistantTracker</a></strong>
-<ul>
-<li>provides mechanisms for components to advertising and discover services they can provide for each other.</li>
-<li>acts as a repository for collecting statistics from components in the system</li>
-</ul></li>
-<li><strong><a href="/Docs/Axon/Axon.Introspector.html" class="reference">Axon.Introspector</a></strong>
-<ul>
-<li>outputs live topology data describing what components there are in a running axon system and how they are linked together.</li>
+<li>like ordinary components, but which truly run in a separate thread -
+meaning they can perform blocking tasks (since they don't have to yield
+control to the scheduler for other components to continue
+executing)</li>
 </ul></li>
 </ul>
-<h2 id="exceptions-messages-and-misc-3"><span id="exceptions-messages-and-misc">Exceptions, Messages and Misc</span> {#3}</h2>
+<h2 id="1"><span id="underlying-concurrency-system">Underlying
+concurrency system</span></h2>
 <ul>
-<li><strong><a href="/Docs/Axon/Axon.Axon.html" class="reference">Axon.Axon</a></strong>
+<li><strong><a href="/Docs/Axon/Axon.Microprocess.html"
+class="reference">Axon.Microprocess</a></strong>
+<ul>
+<li>Turns a python generator into a schedulable microprocess - something
+that can be started, paused, reawoken and stopped. Subclass it to make
+your own.</li>
+</ul></li>
+<li><strong><a href="/Docs/Axon/Axon.Scheduler.html"
+class="reference">Axon.Scheduler</a></strong>
+<ul>
+<li>Runs the microprocesses. Manages the starting, stopping, pausing and
+waking of them. Is also a microprocess itself!</li>
+</ul></li>
+</ul>
+<h2 id="2"><span id="services-statistics-instrospection">Services,
+statistics, Instrospection</span></h2>
+<ul>
+<li><strong><a href="/Docs/Axon/Axon.CoordinatingAssistantTracker.html"
+class="reference">Axon.CoordinatingAssistantTracker</a></strong>
+<ul>
+<li>provides mechanisms for components to advertising and discover
+services they can provide for each other.</li>
+<li>acts as a repository for collecting statistics from components in
+the system</li>
+</ul></li>
+<li><strong><a href="/Docs/Axon/Axon.Introspector.html"
+class="reference">Axon.Introspector</a></strong>
+<ul>
+<li>outputs live topology data describing what components there are in a
+running axon system and how they are linked together.</li>
+</ul></li>
+</ul>
+<h2 id="3"><span id="exceptions-messages-and-misc">Exceptions, Messages
+and Misc</span></h2>
+<ul>
+<li><strong><a href="/Docs/Axon/Axon.Axon.html"
+class="reference">Axon.Axon</a></strong>
 <ul>
 <li>base metaclass for key Axon classes</li>
 </ul></li>
-<li><strong><a href="/Docs/Axon/Axon.AxonExceptions.html" class="reference">Axon.AxonExceptions</a></strong>
+<li><strong><a href="/Docs/Axon/Axon.AxonExceptions.html"
+class="reference">Axon.AxonExceptions</a></strong>
 <ul>
 <li>classes defining various exceptions in Axon.</li>
 </ul></li>
-<li><strong><a href="/Docs/Axon/Axon.Ipc.html" class="reference">Axon.Ipc</a></strong>
+<li><strong><a href="/Docs/Axon/Axon.Ipc.html"
+class="reference">Axon.Ipc</a></strong>
 <ul>
-<li>classes defining various IPC messages in Axon used for signalling shutdown, errors, notifications, etc...</li>
+<li>classes defining various IPC messages in Axon used for signalling
+shutdown, errors, notifications, etc...</li>
 </ul></li>
-<li><strong><a href="/Docs/Axon/Axon.idGen.html" class="reference">Axon.idGen</a></strong>
+<li><strong><a href="/Docs/Axon/Axon.idGen.html"
+class="reference">Axon.idGen</a></strong>
 <ul>
 <li>unique id value generation</li>
 </ul></li>
-<li><strong><a href="/Docs/Axon/Axon.util.html" class="reference">Axon.util</a></strong>
+<li><strong><a href="/Docs/Axon/Axon.util.html"
+class="reference">Axon.util</a></strong>
 <ul>
 <li>various miscellaneous support utility methods</li>
 </ul></li>
 </ul>
-<h2 id="integration-with-other-systems-4"><span id="integration-with-other-systems">Integration with other systems</span> {#4}</h2>
+<h2 id="4"><span id="integration-with-other-systems">Integration with
+other systems</span></h2>
 <ul>
-<li><strong><a href="/Docs/Axon/Axon.background.html" class="reference">Axon.background</a></strong>
+<li><strong><a href="/Docs/Axon/Axon.background.html"
+class="reference">Axon.background</a></strong>
 <ul>
-<li>use Axon components within other python programs by wrapping them in a scheduler running in a separate thread</li>
+<li>use Axon components within other python programs by wrapping them in
+a scheduler running in a separate thread</li>
 </ul></li>
-<li><strong><a href="/Docs/Axon/Axon.Handle.html" class="reference">Axon.Handle</a></strong>
+<li><strong><a href="/Docs/Axon/Axon.Handle.html"
+class="reference">Axon.Handle</a></strong>
 <ul>
-<li>a Handle for getting data into and out of the standard inboxes and outboxes of a component from a non Axon based piece of code. Useful in combination with <a href="/Docs/Axon/Axon.background.html" class="reference">Axon.background</a></li>
+<li>a Handle for getting data into and out of the standard inboxes and
+outboxes of a component from a non Axon based piece of code. Useful in
+combination with <a href="/Docs/Axon/Axon.background.html"
+class="reference">Axon.background</a></li>
 </ul></li>
 </ul>
-<h2 id="internals-for-implementing-inboxes-outboxes-and-linkages-5"><span id="internals-for-implementing-inboxes-outboxes-and-linkages">Internals for implementing inboxes, outboxes and linkages</span> {#5}</h2>
+<h2 id="5"><span
+id="internals-for-implementing-inboxes-outboxes-and-linkages">Internals
+for implementing inboxes, outboxes and linkages</span></h2>
 <ul>
-<li><strong><a href="/Docs/Axon/Axon.Box.html" class="reference">Axon.Box</a></strong>
+<li><strong><a href="/Docs/Axon/Axon.Box.html"
+class="reference">Axon.Box</a></strong>
 <ul>
 <li>The base implementation of inboxes and outboxes.</li>
 </ul></li>
-<li><strong><a href="/Docs/Axon/Axon.Postoffice.html" class="reference">Axon.Postoffice</a></strong>
+<li><strong><a href="/Docs/Axon/Axon.Postoffice.html"
+class="reference">Axon.Postoffice</a></strong>
 <ul>
-<li>All components have one of these for creating, destroying and tracking linkages.</li>
+<li>All components have one of these for creating, destroying and
+tracking linkages.</li>
 </ul></li>
-<li><strong><a href="/Docs/Axon/Axon.Linkage.html" class="reference">Axon.Linkage</a></strong>
+<li><strong><a href="/Docs/Axon/Axon.Linkage.html"
+class="reference">Axon.Linkage</a></strong>
 <ul>
 <li>handles used to describe linkages from one postbox to another</li>
 </ul></li>
 </ul>
-<p>What, no Postman? Optimisations made to Axon have dropped the Postman. Inboxes and outboxes handle the delivery of messages themselves now.</p>
-<h2 id="debugging-support-6"><span id="debugging-support">Debugging support</span> {#6}</h2>
+<p>What, no Postman? Optimisations made to Axon have dropped the
+Postman. Inboxes and outboxes handle the delivery of messages themselves
+now.</p>
+<h2 id="6"><span id="debugging-support">Debugging support</span></h2>
 <ul>
-<li><strong><a href="/Docs/Axon/Axon.debug.html" class="reference">Axon.debug</a></strong>
+<li><strong><a href="/Docs/Axon/Axon.debug.html"
+class="reference">Axon.debug</a></strong>
 <ul>
 <li>defines a debugging output object.</li>
 </ul></li>
-<li><strong><a href="/Docs/Axon/Axon.debugConfigFile.html" class="reference">Axon.debugConfigFile</a></strong>
+<li><strong><a href="/Docs/Axon/Axon.debugConfigFile.html"
+class="reference">Axon.debugConfigFile</a></strong>
 <ul>
-<li>defines a method for loading a debugging configuration file that determines what debugging output gets displayed and what gets filtered out.</li>
+<li>defines a method for loading a debugging configuration file that
+determines what debugging output gets displayed and what gets filtered
+out.</li>
 </ul></li>
-<li><strong><a href="/Docs/Axon/Axon.debugConfigDefaults.html" class="reference">Axon.debugConfigDefaults</a></strong>
+<li><strong><a href="/Docs/Axon/Axon.debugConfigDefaults.html"
+class="reference">Axon.debugConfigDefaults</a></strong>
 <ul>
-<li>defines a method that supplies a default debugging configuration.</li>
+<li>defines a method that supplies a default debugging
+configuration.</li>
 </ul></li>
 </ul>
 </section>
@@ -148,9 +216,15 @@
 </section>
 </div>
 <h1 id="feedback">Feedback</h1>
-<p>Got a problem with the documentation? Something unclear that could be clearer? Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
-<p>Please leave you feedback <a href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701" class="reference">here</a> in reply to the documentation thread in the Kamaelia blog.</p>
-<p><em>-- Automatic documentation generator, 09 Dec 2009 at 04:00:25 UTC/GMT</em></p>
+<p>Got a problem with the documentation? Something unclear that could be
+clearer? Want to help improve it? Constructive criticism is very welcome
+- especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback <a
+href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701"
+class="reference">here</a> in reply to the documentation thread in the
+Kamaelia blog.</p>
+<p><em>-- Automatic documentation generator, 09 Dec 2009 at 04:00:25
+UTC/GMT</em></p>
 
 </div> <!-- end section -->
 </div> <!-- end page container -->

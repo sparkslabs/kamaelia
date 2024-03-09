@@ -15,15 +15,24 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
 <div class="container">
-<h1 id="kamaelia.util.console"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Util.html" class="reference">Util</a>.<a href="/Components/pydoc/Kamaelia.Util.Console.html" class="reference">Console</a></h1>
+<h1 id="kamaelia.util.console"><a href="/Components/pydoc/Kamaelia.html"
+class="reference">Kamaelia</a>.<a
+href="/Components/pydoc/Kamaelia.Util.html"
+class="reference">Util</a>.<a
+href="/Components/pydoc/Kamaelia.Util.Console.html"
+class="reference">Console</a></h1>
 <section>
 <div class="container">
 <ul>
-<li><strong>component <a href="/Components/pydoc/Kamaelia.Util.Console.ConsoleEchoer.html" class="reference">ConsoleEchoer</a></strong></li>
-<li><strong>component <a href="/Components/pydoc/Kamaelia.Util.Console.ConsoleReader.html" class="reference">ConsoleReader</a></strong></li>
+<li><strong>component <a
+href="/Components/pydoc/Kamaelia.Util.Console.ConsoleEchoer.html"
+class="reference">ConsoleEchoer</a></strong></li>
+<li><strong>component <a
+href="/Components/pydoc/Kamaelia.Util.Console.ConsoleReader.html"
+class="reference">ConsoleReader</a></strong></li>
 </ul>
 </div>
 <ul>
@@ -34,74 +43,126 @@
 </ul></li>
 </ul>
 </section>
-<h1 id="console-inputoutput-149">Console Input/Output {#149}</h1>
-<p>The ConsoleEchoer component outputs whatever it receives to the console.</p>
-<p>The ConsoleReader component outputs whatever is typed at the console, a line at a time.</p>
-<h2 id="example-usage-150"><span id="example-usage">Example Usage</span> {#150}</h2>
+<h1 id="149">Console Input/Output</h1>
+<p>The ConsoleEchoer component outputs whatever it receives to the
+console.</p>
+<p>The ConsoleReader component outputs whatever is typed at the console,
+a line at a time.</p>
+<h2 id="150"><span id="example-usage">Example Usage</span></h2>
 <p>Whatever it typed is echoed back, a line at a time:</p>
 <pre class="literal-block"><code>Pipeline( ConsoleReader(),
           ConsoleEchoer()
         ).run()</code></pre>
-<h2 id="how-does-it-work-151"><span id="how-does-it-work">How does it work?</span> {#151}</h2>
-<p>ConsoleReader is a threaded component. It provides a 'prompt' at which you can type. Your input is taken, a line a a time, and output to its "outbox" outbox, with the specified end-of-line character(s) suffixed onto it.</p>
-<p>The ConsoleReader component ignores any input on its "inbox" and "control" inboxes. It does not output anything from its "signal" outbox.</p>
+<h2 id="151"><span id="how-does-it-work">How does it work?</span></h2>
+<p>ConsoleReader is a threaded component. It provides a 'prompt' at
+which you can type. Your input is taken, a line a a time, and output to
+its "outbox" outbox, with the specified end-of-line character(s)
+suffixed onto it.</p>
+<p>The ConsoleReader component ignores any input on its "inbox" and
+"control" inboxes. It does not output anything from its "signal"
+outbox.</p>
 <p>The ConsoleReader component does not terminate.</p>
-<p>The ConsoleEchoer component receives data on its "inbox" inbox. Anything it receives this way is displayed on standard output. All items are passed through the str() builtin function to convert them to strings suitable for display.</p>
-<p>However, if the 'use_repr' argument is set to True during initialization, then repr() will be used instead of str(). Similarly if a "tag" is provided it's prepended before the data.</p>
-<p>If the 'forwarder' argument is set to True during initialisation, then whatever is received is not only displayed, but also set on to the "outbox" outbox (unchanged).</p>
-<p>If a producerFinished or shutdownMicroprocess message is received on the ConsoleEchoer component's "control" inbox, then it is sent on to the "signal" outbox and the component then terminates.</p>
+<p>The ConsoleEchoer component receives data on its "inbox" inbox.
+Anything it receives this way is displayed on standard output. All items
+are passed through the str() builtin function to convert them to strings
+suitable for display.</p>
+<p>However, if the 'use_repr' argument is set to True during
+initialization, then repr() will be used instead of str(). Similarly if
+a "tag" is provided it's prepended before the data.</p>
+<p>If the 'forwarder' argument is set to True during initialisation,
+then whatever is received is not only displayed, but also set on to the
+"outbox" outbox (unchanged).</p>
+<p>If a producerFinished or shutdownMicroprocess message is received on
+the ConsoleEchoer component's "control" inbox, then it is sent on to the
+"signal" outbox and the component then terminates.</p>
 <hr />
 <section>
-<h1 id="kamaelia.util.console.consoleechoer"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Util.html" class="reference">Util</a>.<a href="/Components/pydoc/Kamaelia.Util.Console.html" class="reference">Console</a>.<a href="/Components/pydoc/Kamaelia.Util.Console.ConsoleEchoer.html" class="reference">ConsoleEchoer</a></h1>
-<h2 id="symbol-ConsoleEchoer">class ConsoleEchoer(<a href="/Docs/Axon/Axon.Component.component.html" class="reference">Axon.Component.component</a>)</h2>
-<p>ConsoleEchoer([forwarder][,use_repr][,tag]) -&gt; new ConsoleEchoer component.</p>
-<p>A component that outputs anything it is sent to standard output (the console).</p>
+<h1 id="kamaelia.util.console.consoleechoer"><a
+href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a
+href="/Components/pydoc/Kamaelia.Util.html"
+class="reference">Util</a>.<a
+href="/Components/pydoc/Kamaelia.Util.Console.html"
+class="reference">Console</a>.<a
+href="/Components/pydoc/Kamaelia.Util.Console.ConsoleEchoer.html"
+class="reference">ConsoleEchoer</a></h1>
+<h2 id="symbol-ConsoleEchoer">class ConsoleEchoer(<a
+href="/Docs/Axon/Axon.Component.component.html"
+class="reference">Axon.Component.component</a>)</h2>
+<p>ConsoleEchoer([forwarder][,use_repr][,tag]) -&gt; new ConsoleEchoer
+component.</p>
+<p>A component that outputs anything it is sent to standard output (the
+console).</p>
 <p>Keyword arguments:</p>
 <ul>
-<li>forwarder -- incoming data is also forwarded to "outbox" outbox if True (default=False)</li>
+<li>forwarder -- incoming data is also forwarded to "outbox" outbox if
+True (default=False)</li>
 <li>use_repr -- use repr() instead of str() if True (default=False)</li>
 <li>tag -- Pre-pend this text tag before the data to emit</li>
 </ul>
-<h3 id="inboxes"><span id="symbol-ConsoleEchoer.Inboxes">Inboxes</span></h3>
+<h3 id="inboxes"><span
+id="symbol-ConsoleEchoer.Inboxes">Inboxes</span></h3>
 <ul>
 <li><strong>control</strong> : Shutdown signalling</li>
-<li><strong>inbox</strong> : Stuff that will be echoed to standard output</li>
+<li><strong>inbox</strong> : Stuff that will be echoed to standard
+output</li>
 </ul>
-<h3 id="outboxes"><span id="symbol-ConsoleEchoer.Outboxes">Outboxes</span></h3>
+<h3 id="outboxes"><span
+id="symbol-ConsoleEchoer.Outboxes">Outboxes</span></h3>
 <ul>
-<li><strong>outbox</strong> : Stuff forwarded from 'inbox' inbox (if enabled)</li>
+<li><strong>outbox</strong> : Stuff forwarded from 'inbox' inbox (if
+enabled)</li>
 <li><strong>signal</strong> : Shutdown signalling</li>
 </ul>
 <h3 id="methods-defined-here">Methods defined here</h3>
 <div class="container">
 <div class="boxright">
 <p><strong>Warning!</strong></p>
-<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+<p>You should be using the inbox/outbox interface, not these methods
+(except construction). This documentation is designed as a roadmap as to
+their functionalilty for maintainers and new component developers.</p>
 </div>
 </div>
-<h4 id="init__self-forwarder-use_repr-tag"><span id="symbol-ConsoleEchoer.__init__">__init__(self[, forwarder][, use_repr][, tag])</span></h4>
-<p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</p>
-<h4 id="mainself"><span id="symbol-ConsoleEchoer.main">main(self)</span></h4>
+<h4 id="init__self-forwarder-use_repr-tag"><span
+id="symbol-ConsoleEchoer.__init__">__init__(self[, forwarder][,
+use_repr][, tag])</span></h4>
+<p>x.__init__(...) initializes x; see x.__class__.__doc__ for
+signature</p>
+<h4 id="mainself"><span
+id="symbol-ConsoleEchoer.main">main(self)</span></h4>
 <p>Main loop body.</p>
-<h4 id="shutdownself"><span id="symbol-ConsoleEchoer.shutdown">shutdown(self)</span></h4>
+<h4 id="shutdownself"><span
+id="symbol-ConsoleEchoer.shutdown">shutdown(self)</span></h4>
 <section>
 
 </section>
-<h1 id="kamaelia.util.console.consolereader"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Util.html" class="reference">Util</a>.<a href="/Components/pydoc/Kamaelia.Util.Console.html" class="reference">Console</a>.<a href="/Components/pydoc/Kamaelia.Util.Console.ConsoleReader.html" class="reference">ConsoleReader</a></h1>
-<h2 id="symbol-ConsoleReader">class ConsoleReader(<a href="/Docs/Axon/Axon.ThreadedComponent.threadedcomponent.html" class="reference">Axon.ThreadedComponent.threadedcomponent</a>)</h2>
+<h1 id="kamaelia.util.console.consolereader"><a
+href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a
+href="/Components/pydoc/Kamaelia.Util.html"
+class="reference">Util</a>.<a
+href="/Components/pydoc/Kamaelia.Util.Console.html"
+class="reference">Console</a>.<a
+href="/Components/pydoc/Kamaelia.Util.Console.ConsoleReader.html"
+class="reference">ConsoleReader</a></h1>
+<h2 id="symbol-ConsoleReader">class ConsoleReader(<a
+href="/Docs/Axon/Axon.ThreadedComponent.threadedcomponent.html"
+class="reference">Axon.ThreadedComponent.threadedcomponent</a>)</h2>
 <p>ConsoleReader([prompt][,eol]) -&gt; new ConsoleReader component.</p>
-<p>Component that provides a console for typing in stuff. Each line is output from the "outbox" outbox one at a time.</p>
+<p>Component that provides a console for typing in stuff. Each line is
+output from the "outbox" outbox one at a time.</p>
 <p>Keyword arguments:</p>
 <ul>
 <li>prompt -- Command prompt (default="&gt;&gt;&gt; ")</li>
-<li>eol -- End of line character(s) to put on end of every line outputted (default is newline)</li>
+<li>eol -- End of line character(s) to put on end of every line
+outputted (default is newline)</li>
 </ul>
-<h3 id="inboxes-1"><span id="symbol-ConsoleReader.Inboxes">Inboxes</span></h3>
+<h3 id="inboxes-1"><span
+id="symbol-ConsoleReader.Inboxes">Inboxes</span></h3>
 <ul>
 <li><strong>control</strong> : NOT USED</li>
 <li><strong>inbox</strong> : NOT USED</li>
 </ul>
-<h3 id="outboxes-1"><span id="symbol-ConsoleReader.Outboxes">Outboxes</span></h3>
+<h3 id="outboxes-1"><span
+id="symbol-ConsoleReader.Outboxes">Outboxes</span></h3>
 <ul>
 <li><strong>outbox</strong> : Lines that were typed at the console</li>
 <li><strong>signal</strong> : NOT USED</li>
@@ -110,23 +171,36 @@
 <div class="container">
 <div class="boxright">
 <p><strong>Warning!</strong></p>
-<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+<p>You should be using the inbox/outbox interface, not these methods
+(except construction). This documentation is designed as a roadmap as to
+their functionalilty for maintainers and new component developers.</p>
 </div>
 </div>
-<h4 id="init__self-prompt-eol"><span id="symbol-ConsoleReader.__init__">__init__(self[, prompt][, eol])</span></h4>
-<p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</p>
-<h4 id="mainself-1"><span id="symbol-ConsoleReader.main">main(self)</span></h4>
+<h4 id="init__self-prompt-eol"><span
+id="symbol-ConsoleReader.__init__">__init__(self[, prompt][,
+eol])</span></h4>
+<p>x.__init__(...) initializes x; see x.__class__.__doc__ for
+signature</p>
+<h4 id="mainself-1"><span
+id="symbol-ConsoleReader.main">main(self)</span></h4>
 <p>Main thread loop.</p>
-<h4 id="shutdownself-1"><span id="symbol-ConsoleReader.shutdown">shutdown(self)</span></h4>
+<h4 id="shutdownself-1"><span
+id="symbol-ConsoleReader.shutdown">shutdown(self)</span></h4>
 <section>
 
 </section>
 </section>
 </div>
 <h1 id="feedback">Feedback</h1>
-<p>Got a problem with the documentation? Something unclear that could be clearer? Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
-<p>Please leave you feedback <a href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701" class="reference">here</a> in reply to the documentation thread in the Kamaelia blog.</p>
-<p><em>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</em></p>
+<p>Got a problem with the documentation? Something unclear that could be
+clearer? Want to help improve it? Constructive criticism is very welcome
+- especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback <a
+href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701"
+class="reference">here</a> in reply to the documentation thread in the
+Kamaelia blog.</p>
+<p><em>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38
+UTC/GMT</em></p>
 
 </div> <!-- end section -->
 </div> <!-- end page container -->

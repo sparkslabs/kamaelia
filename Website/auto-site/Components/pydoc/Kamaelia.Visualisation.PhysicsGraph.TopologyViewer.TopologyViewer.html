@@ -15,105 +15,200 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
-<h1 id="kamaelia.visualisation.physicsgraph.topologyviewer.topologyviewer"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Visualisation.html" class="reference">Visualisation</a>.<a href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph.html" class="reference">PhysicsGraph</a>.<a href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph.TopologyViewer.html" class="reference">TopologyViewer</a>.<a href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph.TopologyViewer.TopologyViewer.html" class="reference">TopologyViewer</a></h1>
-<p>For examples and more explanations, see the <a href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph.TopologyViewer.html" class="reference">module level docs.</a></p>
+<h1
+id="kamaelia.visualisation.physicsgraph.topologyviewer.topologyviewer"><a
+href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a
+href="/Components/pydoc/Kamaelia.Visualisation.html"
+class="reference">Visualisation</a>.<a
+href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph.html"
+class="reference">PhysicsGraph</a>.<a
+href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph.TopologyViewer.html"
+class="reference">TopologyViewer</a>.<a
+href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph.TopologyViewer.TopologyViewer.html"
+class="reference">TopologyViewer</a></h1>
+<p>For examples and more explanations, see the <a
+href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph.TopologyViewer.html"
+class="reference">module level docs.</a></p>
 <hr />
-<h2 id="symbol-TopologyViewer">class TopologyViewer(<a href="/Components/pydoc/Kamaelia.UI.MH.PyGameApp.html" class="reference">Kamaelia.UI.MH.PyGameApp</a>, <a href="/Docs/Axon/Axon.Component.component.html" class="reference">Axon.Component.component</a>)</h2>
+<h2 id="symbol-TopologyViewer">class TopologyViewer(<a
+href="/Components/pydoc/Kamaelia.UI.MH.PyGameApp.html"
+class="reference">Kamaelia.UI.MH.PyGameApp</a>, <a
+href="/Docs/Axon/Axon.Component.component.html"
+class="reference">Axon.Component.component</a>)</h2>
 <p>TopologyViewer(...) -&gt; new TopologyViewer component.</p>
-<p>A component that takes incoming topology (change) data and displays it live using pygame. A simple physics model assists with visual layout. Particle types, appearance and physics interactions can be customised.</p>
+<p>A component that takes incoming topology (change) data and displays
+it live using pygame. A simple physics model assists with visual layout.
+Particle types, appearance and physics interactions can be
+customised.</p>
 <p>Keyword arguments (in order):</p>
 <ul>
-<li>screensize -- (width,height) of the display area (default = (800,600))</li>
-<li>fullscreen -- True to start up in fullscreen mode (default = False)</li>
-<li>caption -- Caption for the pygame window (default = "Topology Viewer")</li>
-<li>particleTypes -- dict("type" -&gt; klass) mapping types of particle to classes used to render them (default = {"-":RenderingParticle})</li>
-<li>initialTopology -- (nodes,bonds) where bonds=list((src,dst)) starting state for the topology (default=([],[]))</li>
-<li>laws -- Physics laws to apply between particles (default = SimpleLaws(bondlength=100))</li>
-<li>simCyclesPerRedraw -- number of physics sim cycles to run between each redraw (default=1)</li>
-<li>border -- Minimum distance from edge of display area that new particles appear (default=100)</li>
-<li>extraDrawing -- Optional extra object to be rendered (default=None)</li>
+<li>screensize -- (width,height) of the display area (default =
+(800,600))</li>
+<li>fullscreen -- True to start up in fullscreen mode (default =
+False)</li>
+<li>caption -- Caption for the pygame window (default = "Topology
+Viewer")</li>
+<li>particleTypes -- dict("type" -&gt; klass) mapping types of particle
+to classes used to render them (default = {"-":RenderingParticle})</li>
+<li>initialTopology -- (nodes,bonds) where bonds=list((src,dst))
+starting state for the topology (default=([],[]))</li>
+<li>laws -- Physics laws to apply between particles (default =
+SimpleLaws(bondlength=100))</li>
+<li>simCyclesPerRedraw -- number of physics sim cycles to run between
+each redraw (default=1)</li>
+<li>border -- Minimum distance from edge of display area that new
+particles appear (default=100)</li>
+<li>extraDrawing -- Optional extra object to be rendered
+(default=None)</li>
 <li>showGrid -- False, or True to show gridlines (default=True)</li>
 <li>transparency -- None, or (r,g,b) colour to make transparent</li>
-<li>position -- None, or (left,top) position for surface within pygame window</li>
+<li>position -- None, or (left,top) position for surface within pygame
+window</li>
 </ul>
-<h3 id="inboxes"><span id="symbol-TopologyViewer.Inboxes">Inboxes</span></h3>
+<h3 id="inboxes"><span
+id="symbol-TopologyViewer.Inboxes">Inboxes</span></h3>
 <ul>
 <li><strong>control</strong> : Shutdown signalling</li>
-<li><strong>events</strong> : Place where we recieve events from the outside world</li>
-<li><strong>displaycontrol</strong> : Replies from Pygame Display service</li>
-<li><strong>inbox</strong> : Topology (change) data describing an <a href="/Docs/Axon/Axon.html" class="reference">Axon</a> system</li>
-<li><strong>alphacontrol</strong> : Alpha (transparency) of the image (value 0..255)</li>
+<li><strong>events</strong> : Place where we recieve events from the
+outside world</li>
+<li><strong>displaycontrol</strong> : Replies from Pygame Display
+service</li>
+<li><strong>inbox</strong> : Topology (change) data describing an <a
+href="/Docs/Axon/Axon.html" class="reference">Axon</a> system</li>
+<li><strong>alphacontrol</strong> : Alpha (transparency) of the image
+(value 0..255)</li>
 </ul>
-<h3 id="outboxes"><span id="symbol-TopologyViewer.Outboxes">Outboxes</span></h3>
+<h3 id="outboxes"><span
+id="symbol-TopologyViewer.Outboxes">Outboxes</span></h3>
 <ul>
 <li><strong>outbox</strong> : Notification and topology output</li>
 <li><strong>signal</strong> : NOT USED</li>
-<li><strong>displaysignal</strong> : Requests to Pygame Display service</li>
+<li><strong>displaysignal</strong> : Requests to Pygame Display
+service</li>
 </ul>
 <h3 id="methods-defined-here">Methods defined here</h3>
 <div class="container">
 <div class="boxright">
 <p><strong>Warning!</strong></p>
-<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+<p>You should be using the inbox/outbox interface, not these methods
+(except construction). This documentation is designed as a roadmap as to
+their functionalilty for maintainers and new component developers.</p>
 </div>
 </div>
-<h4 id="init__self-screensize-fullscreen-caption-particletypes-initialtopology-laws-simcyclesperredraw-border-extradrawing-showgrid-transparency-position"><span id="symbol-TopologyViewer.__init__">__init__(self[, screensize][, fullscreen][, caption][, particleTypes][, initialTopology][, laws][, simCyclesPerRedraw][, border][, extraDrawing][, showGrid][, transparency][, position])</span></h4>
-<p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</p>
-<h4 id="generatexyself-posspec"><span id="symbol-TopologyViewer._generateXY">_generateXY(self, posSpec)</span></h4>
+<h4
+id="init__self-screensize-fullscreen-caption-particletypes-initialtopology-laws-simcyclesperredraw-border-extradrawing-showgrid-transparency-position"><span
+id="symbol-TopologyViewer.__init__">__init__(self[, screensize][,
+fullscreen][, caption][, particleTypes][, initialTopology][, laws][,
+simCyclesPerRedraw][, border][, extraDrawing][, showGrid][,
+transparency][, position])</span></h4>
+<p>x.__init__(...) initializes x; see x.__class__.__doc__ for
+signature</p>
+<h4 id="generatexyself-posspec"><span
+id="symbol-TopologyViewer._generateXY">_generateXY(self,
+posSpec)</span></h4>
 <p>generateXY(posSpec) -&gt; (x,y) or raises ValueError</p>
-<p>posSpec == "randompos" or "auto" -&gt; random (x,y) within the surface (specified border distance in from the edege) posSpec == "(XXX,YYY)" -&gt; specified x,y (positive or negative integers)</p>
-<h4 id="addparticleself-particles"><span id="symbol-TopologyViewer.addParticle">addParticle(self, *particles)</span></h4>
+<p>posSpec == "randompos" or "auto" -&gt; random (x,y) within the
+surface (specified border distance in from the edege) posSpec ==
+"(XXX,YYY)" -&gt; specified x,y (positive or negative integers)</p>
+<h4 id="addparticleself-particles"><span
+id="symbol-TopologyViewer.addParticle">addParticle(self,
+*particles)</span></h4>
 <p>Add particles to the system</p>
-<h4 id="breakbondself-source-dest"><span id="symbol-TopologyViewer.breakBond">breakBond(self, source, dest)</span></h4>
-<p>Break a bond from source to destination particle, specified by IDs</p>
-<h4 id="docommandself-msg"><span id="symbol-TopologyViewer.doCommand">doCommand(self, msg)</span></h4>
-<p>Proceses a topology command tuple: [ "ADD", "NODE", &lt;id&gt;, &lt;name&gt;, &lt;positionSpec&gt;, &lt;particle type&gt; ] [ "DEL", "NODE", &lt;id&gt; ] [ "ADD", "LINK", &lt;id from&gt;, &lt;id to&gt; ] [ "DEL", "LINK", &lt;id from&gt;, &lt;id to&gt; ] [ "DEL", "ALL" ] [ "GET", "ALL" ]</p>
-<h4 id="freezeallself"><span id="symbol-TopologyViewer.freezeAll">freezeAll(self)</span></h4>
-<h4 id="getparticlelabelself-node_id"><span id="symbol-TopologyViewer.getParticleLabel">getParticleLabel(self, node_id)</span></h4>
+<h4 id="breakbondself-source-dest"><span
+id="symbol-TopologyViewer.breakBond">breakBond(self, source,
+dest)</span></h4>
+<p>Break a bond from source to destination particle, specified by
+IDs</p>
+<h4 id="docommandself-msg"><span
+id="symbol-TopologyViewer.doCommand">doCommand(self, msg)</span></h4>
+<p>Proceses a topology command tuple: [ "ADD", "NODE", &lt;id&gt;,
+&lt;name&gt;, &lt;positionSpec&gt;, &lt;particle type&gt; ] [ "DEL",
+"NODE", &lt;id&gt; ] [ "ADD", "LINK", &lt;id from&gt;, &lt;id to&gt; ] [
+"DEL", "LINK", &lt;id from&gt;, &lt;id to&gt; ] [ "DEL", "ALL" ] [
+"GET", "ALL" ]</p>
+<h4 id="freezeallself"><span
+id="symbol-TopologyViewer.freezeAll">freezeAll(self)</span></h4>
+<h4 id="getparticlelabelself-node_id"><span
+id="symbol-TopologyViewer.getParticleLabel">getParticleLabel(self,
+node_id)</span></h4>
 <p>getParticleLabel(node_id) -&gt; particle's name</p>
 <p>Returns the name/label of the specified particle.</p>
-<h4 id="gettopologyself"><span id="symbol-TopologyViewer.getTopology">getTopology(self)</span></h4>
-<p>getTopology() -&gt; list of command tuples that would build the current topology</p>
-<h4 id="initialisecomponentself"><span id="symbol-TopologyViewer.initialiseComponent">initialiseComponent(self)</span></h4>
+<h4 id="gettopologyself"><span
+id="symbol-TopologyViewer.getTopology">getTopology(self)</span></h4>
+<p>getTopology() -&gt; list of command tuples that would build the
+current topology</p>
+<h4 id="initialisecomponentself"><span
+id="symbol-TopologyViewer.initialiseComponent">initialiseComponent(self)</span></h4>
 <p>Initialises.</p>
-<h4 id="keydownhandlerself-event"><span id="symbol-TopologyViewer.keyDownHandler">keyDownHandler(self, event)</span></h4>
+<h4 id="keydownhandlerself-event"><span
+id="symbol-TopologyViewer.keyDownHandler">keyDownHandler(self,
+event)</span></h4>
 <dl>
-<dt>Handle keypresses: ESCAPE, Q : quits F : toggles fullscreen mode arrows</dt>
-<dd>scroll the view
+<dt>Handle keypresses: ESCAPE, Q : quits F : toggles fullscreen mode
+arrows</dt>
+<dd>
+scroll the view
 </dd>
 </dl>
-<h4 id="keyuphandlerself-event"><span id="symbol-TopologyViewer.keyUpHandler">keyUpHandler(self, event)</span></h4>
+<h4 id="keyuphandlerself-event"><span
+id="symbol-TopologyViewer.keyUpHandler">keyUpHandler(self,
+event)</span></h4>
 <p>Handle releases of keys</p>
-<h4 id="mainloopself"><span id="symbol-TopologyViewer.mainLoop">mainLoop(self)</span></h4>
+<h4 id="mainloopself"><span
+id="symbol-TopologyViewer.mainLoop">mainLoop(self)</span></h4>
 <p>Main loop.</p>
-<p>Proceses commands from "inbox" inbox, runs physics simulation, then renders display</p>
-<p>FIXME: This is massively broken, this component overrides initialiseComponent, and also has a main <em>AND</em> has a mainLoop.</p>
-<h4 id="makebondself-source-dest"><span id="symbol-TopologyViewer.makeBond">makeBond(self, source, dest)</span></h4>
+<p>Proceses commands from "inbox" inbox, runs physics simulation, then
+renders display</p>
+<p>FIXME: This is massively broken, this component overrides
+initialiseComponent, and also has a main <em>AND</em> has a
+mainLoop.</p>
+<h4 id="makebondself-source-dest"><span
+id="symbol-TopologyViewer.makeBond">makeBond(self, source,
+dest)</span></h4>
 <p>Make a bond from source to destination particle, specified by IDs</p>
-<h4 id="quitself-event"><span id="symbol-TopologyViewer.quit">quit(self[, event])</span></h4>
+<h4 id="quitself-event"><span
+id="symbol-TopologyViewer.quit">quit(self[, event])</span></h4>
 <p>Cause termination.</p>
-<h4 id="removeparticleself-ids"><span id="symbol-TopologyViewer.removeParticle">removeParticle(self, *ids)</span></h4>
+<h4 id="removeparticleself-ids"><span
+id="symbol-TopologyViewer.removeParticle">removeParticle(self,
+*ids)</span></h4>
 <p>Remove particle(s) specified by their ids.</p>
 <p>Also breaks any bonds to/from that particle.</p>
-<h4 id="renderself"><span id="symbol-TopologyViewer.render">render(self)</span></h4>
+<h4 id="renderself"><span
+id="symbol-TopologyViewer.render">render(self)</span></h4>
 <p>Render elements to self.screen</p>
-<h4 id="scrollself-dx-dy"><span id="symbol-TopologyViewer.scroll">scroll(self, ('dx', 'dy'))</span></h4>
-<p>Scroll the contents being displayed on the surface by (dx,dy) left and up.</p>
-<h4 id="selectparticleself-particle"><span id="symbol-TopologyViewer.selectParticle">selectParticle(self, particle)</span></h4>
+<h4 id="scrollself-dx-dy"><span
+id="symbol-TopologyViewer.scroll">scroll(self, ('dx', 'dy'))</span></h4>
+<p>Scroll the contents being displayed on the surface by (dx,dy) left
+and up.</p>
+<h4 id="selectparticleself-particle"><span
+id="symbol-TopologyViewer.selectParticle">selectParticle(self,
+particle)</span></h4>
 <p>Select the specified particle.</p>
-<h4 id="unfreezeallself"><span id="symbol-TopologyViewer.unFreezeAll">unFreezeAll(self)</span></h4>
-<h4 id="updateparticlelabelself-node_id-new_name"><span id="symbol-TopologyViewer.updateParticleLabel">updateParticleLabel(self, node_id, new_name)</span></h4>
-<p>updateParticleLabel(node_id, new_name) -&gt; updates the given nodes name &amp; visual label if it exists</p>
-<p>node_id - an id for an already existing node new_name - a string (may include spaces) defining the new node name</p>
+<h4 id="unfreezeallself"><span
+id="symbol-TopologyViewer.unFreezeAll">unFreezeAll(self)</span></h4>
+<h4 id="updateparticlelabelself-node_id-new_name"><span
+id="symbol-TopologyViewer.updateParticleLabel">updateParticleLabel(self,
+node_id, new_name)</span></h4>
+<p>updateParticleLabel(node_id, new_name) -&gt; updates the given nodes
+name &amp; visual label if it exists</p>
+<p>node_id - an id for an already existing node new_name - a string (may
+include spaces) defining the new node name</p>
 <section>
 
 </section>
 <h1 id="feedback">Feedback</h1>
-<p>Got a problem with the documentation? Something unclear that could be clearer? Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
-<p>Please leave you feedback <a href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701" class="reference">here</a> in reply to the documentation thread in the Kamaelia blog.</p>
-<p><em>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</em></p>
+<p>Got a problem with the documentation? Something unclear that could be
+clearer? Want to help improve it? Constructive criticism is very welcome
+- especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback <a
+href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701"
+class="reference">here</a> in reply to the documentation thread in the
+Kamaelia blog.</p>
+<p><em>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38
+UTC/GMT</em></p>
 
 </div> <!-- end section -->
 </div> <!-- end page container -->

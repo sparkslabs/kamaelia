@@ -15,22 +15,36 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
-<h1 id="hack-for-mashed-speak-and-write">Hack for Mashed: Speak And Write</h1>
+<h1 id="hack-for-mashed-speak-and-write">Hack for Mashed: Speak And
+Write</h1>
 <div class="boxright">
-<p><strong>NOTE:</strong> This doesn't replace actually teaching - but it makes a lovely toy, in the style of a speak and spell from years ago...</p>
+<p><strong>NOTE:</strong> This doesn't replace actually teaching - but
+it makes a lovely toy, in the style of a speak and spell from years
+ago...</p>
 </div>
-<p>This hack is a "toy" for a small child to assist them to learn to read and write. They are asked to write specific words - both textually and also using speech synthesis. What they write is then read out to them. This version is by no means "complete", but it works.<br />
+<p>This hack is a "toy" for a small child to assist them to learn to
+read and write. They are asked to write specific words - both textually
+and also using speech synthesis. What they write is then read out to
+them. This version is by no means "complete", but it works.<br />
 </p>
-<p>The vocabulary it teaches (currently) is from sheet one of the DFES <a href="http://www.standards.dfes.gov.uk/primary/publications/literacy/nls_framework/485701/">Reception Term, Reception Year word cards</a> for literacy in reading/writing.<br />
+<p>The vocabulary it teaches (currently) is from sheet one of the DFES
+<a
+href="http://www.standards.dfes.gov.uk/primary/publications/literacy/nls_framework/485701/">Reception
+Term, Reception Year word cards</a> for literacy in
+reading/writing.<br />
 </p>
-<p><img src="../../../images/SpeakNLearn-1.png" width="623" height="400" /></p>
+<p><img src="../../../images/SpeakNLearn-1.png" width="623"
+height="400" /></p>
 <h2 id="where-to-get-it">Where to Get it:</h2>
-<p>First initial version here: (name reflects what I was calling it then)<br />
+<p>First initial version here: (name reflects what I was calling it
+then)<br />
 </p>
 <ul>
-<li><a href="../../../release/Kamaelia%20Speak%20N%20Learn-0.1.0.tar.gz">http://www.kamaelia.org/release/Kamaelia Speak N Learn-0.1.0.tar.gz</a></li>
+<li><a
+href="../../../release/Kamaelia%20Speak%20N%20Learn-0.1.0.tar.gz">http://www.kamaelia.org/release/Kamaelia
+Speak N Learn-0.1.0.tar.gz</a></li>
 </ul>
 <h2 id="installing">Installing:</h2>
 <blockquote>
@@ -41,7 +55,9 @@
 </blockquote>
 <h2 id="wheres-the-source">Where's the Source?</h2>
 <ul>
-<li><a href="https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/branches/private_MPS_SpeakNLearn/Apps/SpeakNLearn/App/SpeakNWrite.py" class="uri">https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/branches/private_MPS_SpeakNLearn/Apps/SpeakNLearn/App/SpeakNWrite.py</a></li>
+<li><a
+href="https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/branches/private_MPS_SpeakNLearn/Apps/SpeakNLearn/App/SpeakNWrite.py"
+class="uri">https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/branches/private_MPS_SpeakNLearn/Apps/SpeakNLearn/App/SpeakNWrite.py</a></li>
 </ul>
 <h2 id="running">Running:</h2>
 <blockquote>
@@ -56,21 +72,39 @@
 </li>
 </ul>
 <h2 id="internals">Internals</h2>
-<p>This will shift off to the developers area since you don't need to know this to use it, but provided for those who may find it interesting:<br />
+<p>This will shift off to the developers area since you don't need to
+know this to use it, but provided for those who may find it
+interesting:<br />
 </p>
 <div data-align="center">
 <p><img src="../../../images/SpeakNWriteCodeArchitecture.png" /><br />
 </p>
 <div data-align="left">
-<p>To read this, start at the top - with Challenger. That sends a challenge out, which is sent to both the display and to a backplane called "speech". The speech backplane simply speaks anything that gets to it. The child hears this and scribbles on the canvas. (The canvas sends messages about scribbles to the pen which decides what to do - draw, etc. The pen sends messages to the strokes (handwriting) recogniser. They both need to be able to draw lines on the canvas, and/or clear it.<br />
+<p>To read this, start at the top - with Challenger. That sends a
+challenge out, which is sent to both the display and to a backplane
+called "speech". The speech backplane simply speaks anything that gets
+to it. The child hears this and scribbles on the canvas. (The canvas
+sends messages about scribbles to the pen which decides what to do -
+draw, etc. The pen sends messages to the strokes (handwriting)
+recogniser. They both need to be able to draw lines on the canvas,
+and/or clear it.<br />
 <br />
-The stroke recogniser sends messages to the aggregator which turns the recognised strokes into commands the textbox understands. This includes detecting a stroke from top right to bottom left to mean "press return". The output from the text box is then forwarded to the display and also to something that's checking what the challenger asked for. It then sends a message to the "speech" backplane to say something to the user, and also, if appropriate to the challenger. The challenger then either repeats or says a new word. This diagram has a 1:1 correspondance with the code.<br />
+The stroke recogniser sends messages to the aggregator which turns the
+recognised strokes into commands the textbox understands. This includes
+detecting a stroke from top right to bottom left to mean "press return".
+The output from the text box is then forwarded to the display and also
+to something that's checking what the challenger asked for. It then
+sends a message to the "speech" backplane to say something to the user,
+and also, if appropriate to the challenger. The challenger then either
+repeats or says a new word. This diagram has a 1:1 correspondance with
+the code.<br />
 </p>
 </div>
 </div>
 <p><br />
 </p>
-<h3 id="whats-inside-the-stroke-recogniser">What's inside the Stroke Recogniser?</h3>
+<h3 id="whats-inside-the-stroke-recogniser">What's inside the Stroke
+Recogniser?</h3>
 <p>For tomorrow :-)<br />
 <br />
 </p>

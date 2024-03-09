@@ -15,28 +15,45 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
 <h1 id="project-task-page-webclient">Project Task Page: WebClient</h1>
 <h2 id="description"><strong>Description</strong></h2>
 <div class="boxright">
-<p><strong>Status:</strong> Running - Looking to add Basic Authentication<br />
+<p><strong>Status:</strong> Running - Looking to add Basic
+Authentication<br />
 <strong>Current Developers:</strong> Michael Sparks<br />
-<strong>Current "inflight" dev location:</strong> Kamaelia.Protocol.HTTP.HTTPClient<br />
+<strong>Current "inflight" dev location:</strong>
+Kamaelia.Protocol.HTTP.HTTPClient<br />
 <strong>Start Date:</strong> July 2006<br />
-<strong>Major Milestone date:</strong> Met by Ryan (Google Summer of Code deadline - August 2006)<br />
+<strong>Major Milestone date:</strong> Met by Ryan (Google Summer of
+Code deadline - August 2006)<br />
 <strong>Expected End Date:</strong> na<br />
 <strong>End Date:</strong> na<br />
 <strong>Date this page last updated:</strong> December 27th 2006<br />
 <strong>Estimated effort so far:</strong> X+1/4</p>
 </div>
-<p>The components created by this task are targetted as being the basic of web clients.<br />
+<p>The components created by this task are targetted as being the basic
+of web clients.<br />
 <br />
-A developer will be able to embed a web client into their application. Specifically this means they will be able to request objects from HTTP Servers for processing/handling and acting upon.<br />
+A developer will be able to embed a web client into their application.
+Specifically this means they will be able to request objects from HTTP
+Servers for processing/handling and acting upon.<br />
 <br />
-The original version of this code was developed by Ryan Lothian as part of his work on Google's summer of code 2006. The current context for continuing development (hence this page) is to provide tools for collecting RSS/Atom feeds over HTTP and then doing funky things with the results. Specifically <a href="/Michael">I</a> have a need to publish an authenticated RSS feed of incoming requests on sourceforge, be able to download them, and then send out registration emails from another server. <a href="/Cookbook/HTTPClient">This isn't hard</a> despite how it might sound, except we need authentication adding.<br />
+The original version of this code was developed by Ryan Lothian as part
+of his work on Google's summer of code 2006. The current context for
+continuing development (hence this page) is to provide tools for
+collecting RSS/Atom feeds over HTTP and then doing funky things with the
+results. Specifically <a href="/Michael">I</a> have a need to publish an
+authenticated RSS feed of incoming requests on sourceforge, be able to
+download them, and then send out registration emails from another
+server. <a href="/Cookbook/HTTPClient">This isn't hard</a> despite how
+it might sound, except we need authentication adding.<br />
 <br />
-A key benefit of this work is that it allows Kamaelia systems to publish data to (push) and recieve data from (pull) from the web world. A fun example would be a "publish picture to blog/flickr" from the whiteboard.<br />
+A key benefit of this work is that it allows Kamaelia systems to publish
+data to (push) and recieve data from (pull) from the web world. A fun
+example would be a "publish picture to blog/flickr" from the
+whiteboard.<br />
 </p>
 <h2 id="inputs">Inputs</h2>
 <p>Task Sponsor: Michael Sparks</p>
@@ -59,69 +76,93 @@ A key benefit of this work is that it allows Kamaelia systems to publish data to
 </ul>
 <p>Requirements</p>
 <ul>
-<li>Ryan Lothian - There MUST be a component that can download a given URL (done by Ryan)</li>
-<li>Ryan Lothian - There MUST be a component that can download URLs sent to its inbox (done by Ryan)</li>
-<li>Ryan Lothian - It should be possible to make POST based requests (done by Ryan I believe - needs checking)</li>
-<li>Michael Sparks - It should be possible to make requests to sites with basic authentication <strong>- TODO</strong><br />
+<li>Ryan Lothian - There MUST be a component that can download a given
+URL (done by Ryan)</li>
+<li>Ryan Lothian - There MUST be a component that can download URLs sent
+to its inbox (done by Ryan)</li>
+<li>Ryan Lothian - It should be possible to make POST based requests
+(done by Ryan I believe - needs checking)</li>
+<li>Michael Sparks - It should be possible to make requests to sites
+with basic authentication <strong>- TODO</strong><br />
 </li>
 </ul>
 <p><strong>Relevant Influencing factors:</strong><br />
 </p>
 <ul>
-<li><em>Ryan wanted to be able to download and upload bit torrent tracker</em> files from/to a webserver<br />
+<li><em>Ryan wanted to be able to download and upload bit torrent
+tracker</em> files from/to a webserver<br />
 </li>
 </ul>
 <h2 id="outputs">Outputs</h2>
 <h3 id="expected">Expected</h3>
 <ul>
-<li>This page was created after the fact, so it details actual outputs rather than expected.<br />
+<li>This page was created after the fact, so it details actual outputs
+rather than expected.<br />
 </li>
 </ul>
 <h3 id="actual">Actual</h3>
 <ul>
-<li>Code - /Code/Python/Kamaelia/Kamaelia/Protocol/HTTP/HTTPClient.py<br />
+<li>Code -
+/Code/Python/Kamaelia/Kamaelia/Protocol/HTTP/HTTPClient.py<br />
 </li>
 <li><a href="/Cookbook/HTTPClient">Cookbook page</a></li>
 </ul>
-<h3 id="realistic-possibilities-arising-as-a-result-of-activity-on-this-task">Realistic possibilities arising as a result of activity on this task</h3>
-<p>The ability to bring in data from HTTP based systems (normally websites) into running Kamaelia systems.<br />
+<h3
+id="realistic-possibilities-arising-as-a-result-of-activity-on-this-task">Realistic
+possibilities arising as a result of activity on this task</h3>
+<p>The ability to bring in data from HTTP based systems (normally
+websites) into running Kamaelia systems.<br />
 </p>
 <h2 id="related-tasks">Related Tasks</h2>
-<h3 id="tasks-that-directly-enable-this-task-dependencies">Tasks that directly enable this task (dependencies)</h3>
+<h3 id="tasks-that-directly-enable-this-task-dependencies">Tasks that
+directly enable this task (dependencies)</h3>
 <ul>
 <li>TCP client side of Internet subsystem (inc Selector, CSA, etc)<br />
 </li>
 </ul>
 <h3 id="sub-tasks">Sub Tasks</h3>
 <ul>
-<li><strong>TODO:</strong> Add in basic authentication (added by Michael, December 2006)<br />
+<li><strong>TODO:</strong> Add in basic authentication (added by
+Michael, December 2006)<br />
 </li>
 </ul>
 <h2 id="task-log">Task Log</h2>
 <ul>
-<li>Ryan - Google Summer of Code 2006 - Created initial working versions of a useful web client.</li>
-<li><strong>Output:</strong> September 2006 - Included in Kamaelia 0.5.0 release<br />
+<li>Ryan - Google Summer of Code 2006 - Created initial working versions
+of a useful web client.</li>
+<li><strong>Output:</strong> September 2006 - Included in Kamaelia 0.5.0
+release<br />
 </li>
-<li>Michael - December 27th 2006 - Created the PTP page, added links regarding previous work</li>
-<li><strong>Output:</strong> Michael - December 27th 2006 - Created the HTTPClient cookbook page.</li>
-<li>Michael - December 27th 2006 - Added subtask (handle basic authentication)<br />
+<li>Michael - December 27th 2006 - Created the PTP page, added links
+regarding previous work</li>
+<li><strong>Output:</strong> Michael - December 27th 2006 - Created the
+HTTPClient cookbook page.</li>
+<li>Michael - December 27th 2006 - Added subtask (handle basic
+authentication)<br />
 </li>
 </ul>
 <h2 id="discussion">Discussion</h2>
 <p><em>Anything that doesn't fit above fits in here.</em></p>
 <p>-- Michael Sparks, December 2006</p>
-<p><strong>Basic Authentication RFC:</strong> <a href="http://www.faqs.org/rfcs/rfc2617.html" class="uri">http://www.faqs.org/rfcs/rfc2617.html</a></p>
-<p>Basic Authentication seems to be suprisingly trivial, and insecure. Essentially, to create an appropriate basic authentication header, the necessary python is:</p>
+<p><strong>Basic Authentication RFC:</strong> <a
+href="http://www.faqs.org/rfcs/rfc2617.html"
+class="uri">http://www.faqs.org/rfcs/rfc2617.html</a></p>
+<p>Basic Authentication seems to be suprisingly trivial, and insecure.
+Essentially, to create an appropriate basic authentication header, the
+necessary python is:</p>
 <blockquote>
 <pre><code>&gt;&gt;&gt; import base64
 &gt;&gt;&gt; &quot;Authorization: Basic %s&quot; % base64.encodestring(&quot;Username:password&quot;)
 &#39;Authorization: Basic VXNlcm5hbWU6cGFzc3dvcmQ=\n&#39;</code></pre>
 </blockquote>
-<p>Figuring out the "best" place to put this in Ryan's code is less than obvious however... (I'll put it somewhere convenient first)<br />
+<p>Figuring out the "best" place to put this in Ryan's code is less than
+obvious however... (I'll put it somewhere convenient first)<br />
 </p>
 <p>Later on...<br />
 <br />
-OK, added a basic initial patch to SingleShotHTTPClient - specifically you can now pass in an "extraheaders" parameter which you can use to define extra headers (shockingly) for adding to the request.<br />
+OK, added a basic initial patch to SingleShotHTTPClient - specifically
+you can now pass in an "extraheaders" parameter which you can use to
+define extra headers (shockingly) for adding to the request.<br />
 <br />
 This allows me to take an application like this:<br />
 </p>
@@ -164,12 +205,14 @@ Well, it's getting dictionaries, and they look like this:<br />
   }
 }</code></pre>
 </blockquote>
-<p>However, what is going into the PureTransformer is simply a string that looks like this:<br />
+<p>However, what is going into the PureTransformer is simply a string
+that looks like this:<br />
 </p>
 <blockquote>
 <pre><code>&quot;http://some.site.com/bla&quot;</code></pre>
 </blockquote>
-<p>PureTransformer takes a function, and applies it to every thing it recieves. So,"clearly" that function is transforming this:<br />
+<p>PureTransformer takes a function, and applies it to every thing it
+recieves. So,"clearly" that function is transforming this:<br />
 </p>
 <blockquote>
 <pre><code>&quot;http://some.site.com/bla&quot;</code></pre>
@@ -188,9 +231,14 @@ Well, it's getting dictionaries, and they look like this:<br />
 <blockquote>
 <pre><code>AuthenticatedRequestStream(&quot;Username&quot;, &quot;password&quot;)</code></pre>
 </blockquote>
-<p>Is in fact returning a <strong><em>function</em></strong> that performs this transform which the PureTransformer can then use.<br />
+<p>Is in fact returning a <strong><em>function</em></strong> that
+performs this transform which the PureTransformer can then use.<br />
 <br />
-In fact what it's doing is just that - it performs the transform that turns the username/password into the authorization code, then returns a function that embeds that value and the supplied value to the user. If we look a the function definition we this is exactly what's happening. At first glance that does (admittedly) look a little hairy!<br />
+In fact what it's doing is just that - it performs the transform that
+turns the username/password into the authorization code, then returns a
+function that embeds that value and the supplied value to the user. If
+we look a the function definition we this is exactly what's happening.
+At first glance that does (admittedly) look a little hairy!<br />
 <br />
 <br />
 </p>

@@ -15,24 +15,38 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
 <h1 id="get-started-with-kamaelia">Get Started With Kamaelia</h1>
 <div class="boxright">
-<p><a href="../../../NewIntroduction.html"><strong>Want a single page rapid overview of everything?</strong></a> <strong><a href="../../../NewIntroduction.html">Click this link :-)</a></strong> <strong>Recent Hacks: <a href="../../../SpeakAndWrite.html">Speak N Write</a></strong> - A tool based on gesture/stroke recognition and speech synthesis to be a toy assisting a child to learn to read and write<br />
-<strong><a href="../../../IRCSpeakerBot.html">IRCSpeakerBot</a></strong> - A tool for connecting to IRC sessions you want to keep abreast of, but don't want to read. This connections to groups and using speech synth <strong><em>literally</em></strong> allows you to listen into chatter on an IRC channel.</p>
+<p><a href="../../../NewIntroduction.html"><strong>Want a single page
+rapid overview of everything?</strong></a> <strong><a
+href="../../../NewIntroduction.html">Click this link :-)</a></strong>
+<strong>Recent Hacks: <a href="../../../SpeakAndWrite.html">Speak N
+Write</a></strong> - A tool based on gesture/stroke recognition and
+speech synthesis to be a toy assisting a child to learn to read and
+write<br />
+<strong><a href="../../../IRCSpeakerBot.html">IRCSpeakerBot</a></strong>
+- A tool for connecting to IRC sessions you want to keep abreast of, but
+don't want to read. This connections to groups and using speech synth
+<strong><em>literally</em></strong> allows you to listen into chatter on
+an IRC channel.</p>
 </div>
-<p>Download and get started with Kamaelia :-) Step 1 - Get Kamaelia &amp; Install it<br />
+<p>Download and get started with Kamaelia :-) Step 1 - Get Kamaelia
+&amp; Install it<br />
 Step 2 - Run &amp; Tweak the Examples<br />
 Step 3 - Start writing your own components<br />
 Step 4 - Wire up your component to a new system<br />
 Step 5 - Build something new!<br />
 </p>
-<h2 id="step-1---get-kamaelia-install-it">Step 1 - Get Kamaelia &amp; Install it</h2>
-<p><strong>Stable Release</strong> Get the latest stable release from here:<br />
+<h2 id="step-1---get-kamaelia-install-it">Step 1 - Get Kamaelia &amp;
+Install it</h2>
+<p><strong>Stable Release</strong> Get the latest stable release from
+here:<br />
 </p>
 <blockquote>
-<p><a href="http://www.kamaelia.org/release/Kamaelia-0.6.0.tar.gz" class="uri">http://www.kamaelia.org/release/Kamaelia-0.6.0.tar.gz</a></p>
+<p><a href="http://www.kamaelia.org/release/Kamaelia-0.6.0.tar.gz"
+class="uri">http://www.kamaelia.org/release/Kamaelia-0.6.0.tar.gz</a></p>
 </blockquote>
 <p>Install:<br />
 </p>
@@ -41,10 +55,13 @@ Step 5 - Build something new!<br />
 ~/ &gt; cd Kamaelia-0.6.0/
 ~/Kamaelia-0.6.0 &gt; sudo python setup.py install</code></pre>
 </blockquote>
-<p><strong>Testing Release</strong> Get the latest stable release from here: (August '09 0.9.8.0)<br />
+<p><strong>Testing Release</strong> Get the latest stable release from
+here: (August '09 0.9.8.0)<br />
 </p>
 <blockquote>
-<p><a href="http://www.kamaelia.org/release/MonthlyReleases/Kamaelia-0.9.8.0.tar.gz" class="uri">http://www.kamaelia.org/release/MonthlyReleases/Kamaelia-0.9.8.0.tar.gz</a></p>
+<p><a
+href="http://www.kamaelia.org/release/MonthlyReleases/Kamaelia-0.9.8.0.tar.gz"
+class="uri">http://www.kamaelia.org/release/MonthlyReleases/Kamaelia-0.9.8.0.tar.gz</a></p>
 </blockquote>
 <p>Install:<br />
 </p>
@@ -57,54 +74,102 @@ Step 5 - Build something new!<br />
 ~/Kamaelia-0.9.8.0/ &gt; cd Kamaelia
 ~/Kamaelia-0.9.8.0/Kamaelia &gt; sudo python setup.py install</code></pre>
 </blockquote>
-<p>Then install any of the bindings you're interested in inside <code>Bindings</code>, and run any of the applications inside Apps.</p>
+<p>Then install any of the bindings you're interested in inside
+<code>Bindings</code>, and run any of the applications inside Apps.</p>
 <p><strong>setuptools/easy_install</strong><br />
-For those that like easy_install, the following should work for you: (<strong>note:</strong> capital K)<br />
+For those that like easy_install, the following should work for you:
+(<strong>note:</strong> capital K)<br />
 </p>
 <blockquote>
 <pre><code>~/ &gt; sudo easy_install Kamaelia</code></pre>
 </blockquote>
-<p>Apparently there are issues with this usage of easy_install and windows. If you'd like to fix them, please get in touch.</p>
-<h2 id="step-1a---read-this-to-get-the-gist-of-things">Step 1a - Read this to get the gist of things</h2>
-<p>::: {#__ss_599466; float: right style=“width: 425px; text-align: left;”} ::: {style=“font-size: 11px; font-family: tahoma,arial; height: 26px; padding-top: 2px;”} View SlideShare <a href="http://www.slideshare.net/kamaelian/practical-concurrent-systems-made-simple-using-kamaelia-presentation?type=powerpoint" title="View Practical concurrent systems made simple using Kamaelia on SlideShare">presentation</a> or <a href="http://www.slideshare.net/upload?type=powerpoint">Upload</a> your own. (tags: <a href="http://slideshare.net/tag/kamaelia">kamaelia</a> <a href="http://slideshare.net/tag/python">python</a>) ::: :::</p>
+<p>Apparently there are issues with this usage of easy_install and
+windows. If you'd like to fix them, please get in touch.</p>
+<h2 id="step-1a---read-this-to-get-the-gist-of-things">Step 1a - Read
+this to get the gist of things</h2>
+<p>::: {#__ss_599466; float: right style=“width: 425px; text-align:
+left;”} ::: {style=“font-size: 11px; font-family: tahoma,arial; height:
+26px; padding-top: 2px;”} View SlideShare <a
+href="http://www.slideshare.net/kamaelian/practical-concurrent-systems-made-simple-using-kamaelia-presentation?type=powerpoint"
+title="View Practical concurrent systems made simple using Kamaelia on SlideShare">presentation</a>
+or <a href="http://www.slideshare.net/upload?type=powerpoint">Upload</a>
+your own. (tags: <a
+href="http://slideshare.net/tag/kamaelia">kamaelia</a> <a
+href="http://slideshare.net/tag/python">python</a>) ::: :::</p>
 <p><br />
 </p>
-<h2 id="step-2---run-tweak-the-examples">Step 2 - Run &amp; Tweak the Examples</h2>
-<p>Many of these require pygame or similar libraries. We're putting together dependencies as we speak. You'll find the examples in the examples directory.<br />
-You will also find a large number of examples in the <a href="../../../Cookbook.html"><strong>Kamaelia Cookbook</strong></a><br />
+<h2 id="step-2---run-tweak-the-examples">Step 2 - Run &amp; Tweak the
+Examples</h2>
+<p>Many of these require pygame or similar libraries. We're putting
+together dependencies as we speak. You'll find the examples in the
+examples directory.<br />
+You will also find a large number of examples in the <a
+href="../../../Cookbook.html"><strong>Kamaelia
+Cookbook</strong></a><br />
 <br />
 </p>
-<h2 id="step-3---start-writing-your-own-components">Step 3 - Start writing your own components</h2>
-<p>For the moment, see <a href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1113495151">this tutorial on how to go from non-component code to component code</a><br />
+<h2 id="step-3---start-writing-your-own-components">Step 3 - Start
+writing your own components</h2>
+<p>For the moment, see <a
+href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1113495151">this
+tutorial on how to go from non-component code to component
+code</a><br />
 <br />
 </p>
-<h2 id="step-4---wire-up-your-component-to-a-new-system">Step 4 - Wire up your component to a new system</h2>
-<p>The best way to get started here is to look at the examples in the already <a href="../../../Cookbook.html"><strong>Kamaelia Cookbook</strong></a> mentioned.<br />
+<h2 id="step-4---wire-up-your-component-to-a-new-system">Step 4 - Wire
+up your component to a new system</h2>
+<p>The best way to get started here is to look at the examples in the
+already <a href="../../../Cookbook.html"><strong>Kamaelia
+Cookbook</strong></a> mentioned.<br />
 <br />
-You'll be looking at using a number of the <a href="../../../Components.html"><strong>components from the reference area</strong></a><strong>.</strong><br />
+You'll be looking at using a number of the <a
+href="../../../Components.html"><strong>components from the reference
+area</strong></a><strong>.</strong><br />
 </p>
 <h2 id="step-5---build-something-new">Step 5 - Build something new</h2>
-<p>All sorts of possible ideas exist here - as inspiration please look here:<br />
+<p>All sorts of possible ideas exist here - as inspiration please look
+here:<br />
 </p>
 <ul>
 <li><a href="../../../Developers/Projects.html">Projects</a></li>
-<li><a href="../../../Developers/SpeculativeNewIdeas.html">SpeculativeNewIdeas</a></li>
+<li><a
+href="../../../Developers/SpeculativeNewIdeas.html">SpeculativeNewIdeas</a></li>
 <li><a href="../../../Developers/HelpWanted.html">HelpWanted</a></li>
 <li><a href="../../../Developers/Tasks.html">Tasks</a></li>
 </ul>
-<p>Our pages for our involvement with <a href="../../../SummerOfCode.html"><strong>Google Summer of Code</strong></a> have lots of ideas.<br />
+<p>Our pages for our involvement with <a
+href="../../../SummerOfCode.html"><strong>Google Summer of
+Code</strong></a> have lots of ideas.<br />
 </p>
 <ul>
-<li><strong><a href="../../../SummerOfCode2008.html">Summer of Code 2008</a></strong> <strong>(This page also has a presentation/overview there)<br />
+<li><strong><a href="../../../SummerOfCode2008.html">Summer of Code
+2008</a></strong> <strong>(This page also has a presentation/overview
+there)<br />
 </strong></li>
-<li><a href="../../../SummerOfCode2007.html">Summer of Code 2007</a></li>
-<li><a href="../../../SummerOfCode2006.html">Summer of Code 2006</a></li>
-<li>Introductions: <a href="../../../Introduction.html">Overview</a>, <a href="../../../t/TN-LinuxFormat-Kamaelia.pdf">Whiteboard Article</a>, <a href="../../../t/TN-LightTechnicalIntroToKamaelia.pdf">Light Technical Intro</a>, <a href="http://www.slideshare.net/kamaelian/slideshows">Presentations</a></li>
+<li><a href="../../../SummerOfCode2007.html">Summer of Code
+2007</a></li>
+<li><a href="../../../SummerOfCode2006.html">Summer of Code
+2006</a></li>
+<li>Introductions: <a href="../../../Introduction.html">Overview</a>, <a
+href="../../../t/TN-LinuxFormat-Kamaelia.pdf">Whiteboard Article</a>, <a
+href="../../../t/TN-LightTechnicalIntroToKamaelia.pdf">Light Technical
+Intro</a>, <a
+href="http://www.slideshare.net/kamaelian/slideshows">Presentations</a></li>
 </ul>
-<h2 id="whats-in-the-release-candidate">What's in the Release Candidate?</h2>
-<p>Well, the usual slew of extra components and bug fixes, a variety of new tools - from video shot change detection, through to SMTP greylisting, but also perhaps the biggest extra: <strong>Multiprocess &amp; hence multicore support</strong> (experimental at this stage, but so far so good :) )<br />
+<h2 id="whats-in-the-release-candidate">What's in the Release
+Candidate?</h2>
+<p>Well, the usual slew of extra components and bug fixes, a variety of
+new tools - from video shot change detection, through to SMTP
+greylisting, but also perhaps the biggest extra: <strong>Multiprocess
+&amp; hence multicore support</strong> (experimental at this stage, but
+so far so good :) )<br />
 <br />
-And a large number of extra components - this is actually a lot more than originally expected/anticipated. However they're divided into two halves - new components and components from applications merged into the repository. (the latter means that you can take parts of random Kamaelia applications and embed them in other random Kamaelia applications. As a result…</p>
+And a large number of extra components - this is actually a lot more
+than originally expected/anticipated. However they're divided into two
+halves - new components and components from applications merged into the
+repository. (the latter means that you can take parts of random Kamaelia
+applications and embed them in other random Kamaelia applications. As a
+result…</p>
 <p>New Components:</p>
 <ul>
 <li>Kamaelia.
@@ -124,7 +189,10 @@ And a large number of extra components - this is actually a lot more than origin
 <li>SoftDemux</li>
 <li>Parse
 <ul>
-<li>ParseEventInformationTable, ParseNetworkInformationTable, ParseProgramAssociationTable, ParseProgramMapTable, ParseServiceDescriptionTable, ParseTimeAndDateTable, ParseTimeOffsetTable, PrettifyTables, ReassemblePSITables</li>
+<li>ParseEventInformationTable, ParseNetworkInformationTable,
+ParseProgramAssociationTable, ParseProgramMapTable,
+ParseServiceDescriptionTable, ParseTimeAndDateTable,
+ParseTimeOffsetTable, PrettifyTables, ReassemblePSITables</li>
 </ul></li>
 </ul></li>
 </ul></li>
@@ -160,7 +228,8 @@ And a large number of extra components - this is actually a lot more than origin
 </ul></li>
 <li>RTP
 <ul>
-<li>NullPayloadPreFramer, NullPayloadRTP, RTCPHeader, RTPHeader, RtpPacker, RTP</li>
+<li>NullPayloadPreFramer, NullPayloadRTP, RTCPHeader, RTPHeader,
+RtpPacker, RTP</li>
 </ul></li>
 <li>Util
 <ul>
@@ -168,7 +237,9 @@ And a large number of extra components - this is actually a lot more than origin
 <ul>
 <li>Simple</li>
 </ul></li>
-<li>Collate, FirstOnly, Max, OneShot, PromptedTurnstile, RangeFilter, RateChunker, SequentialTransformer, Sync, TagWithSequenceNumber, TwoWaySplitter</li>
+<li>Collate, FirstOnly, Max, OneShot, PromptedTurnstile, RangeFilter,
+RateChunker, SequentialTransformer, Sync, TagWithSequenceNumber,
+TwoWaySplitter</li>
 </ul></li>
 </ul></li>
 <li>UI
@@ -186,7 +257,8 @@ And a large number of extra components - this is actually a lot more than origin
 <ul>
 <li>ER
 <ul>
-<li>ERLaws, ERVisualiserServer, ExtraWindowFurniture, PAttribute, PEntity, PISA, PRelation</li>
+<li>ERLaws, ERVisualiserServer, ExtraWindowFurniture, PAttribute,
+PEntity, PISA, PRelation</li>
 </ul></li>
 </ul></li>
 <li>XML
@@ -220,13 +292,16 @@ And a large number of extra components - this is actually a lot more than origin
 </ul></li>
 <li>Whiteboard
 <ul>
-<li>Audio, Canvas, CheckpointSequencer, CommandConsole, Entuple, Options, Painter, Palette, Router, Routers, SingleShot, TagFiltering, Tokenisation, TwoWaySplitter, UI<br />
+<li>Audio, Canvas, CheckpointSequencer, CommandConsole, Entuple,
+Options, Painter, Palette, Router, Routers, SingleShot, TagFiltering,
+Tokenisation, TwoWaySplitter, UI<br />
 </li>
 </ul></li>
 </ul></li>
 </ul></li>
 </ul>
-<p>All of this also totally ignores the new examples &amp; new Kamaelia based apps.</p>
+<p>All of this also totally ignores the new examples &amp; new Kamaelia
+based apps.</p>
 
 </div> <!-- end section -->
 </div> <!-- end page container -->

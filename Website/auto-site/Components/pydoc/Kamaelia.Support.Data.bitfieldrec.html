@@ -15,10 +15,17 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
 <div class="container">
-<h1 id="kamaelia.support.data.bitfieldrec"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Support.html" class="reference">Support</a>.<a href="/Components/pydoc/Kamaelia.Support.Data.html" class="reference">Data</a>.<a href="/Components/pydoc/Kamaelia.Support.Data.bitfieldrec.html" class="reference">bitfieldrec</a></h1>
+<h1 id="kamaelia.support.data.bitfieldrec"><a
+href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a
+href="/Components/pydoc/Kamaelia.Support.html"
+class="reference">Support</a>.<a
+href="/Components/pydoc/Kamaelia.Support.Data.html"
+class="reference">Data</a>.<a
+href="/Components/pydoc/Kamaelia.Support.Data.bitfieldrec.html"
+class="reference">bitfieldrec</a></h1>
 <section>
 <div class="container">
 
@@ -27,27 +34,36 @@
 <li><a href="#52" class="reference">Bit Field Record Support</a></li>
 </ul>
 </section>
-<h1 id="bit-field-record-support-52">Bit Field Record Support {#52}</h1>
+<h1 id="52">Bit Field Record Support</h1>
 <ol type="1">
 <li><p>subclass bfrec</p></li>
 <li><p>Define a class var "fields"</p></li>
-<li><p>The value for this field should be a list of "field"s, created by calling the static method field.mkList. This takes a list of tuples, one tuple per field. (fieldname, bitwidth, None or list)</p>
+<li><p>The value for this field should be a list of "field"s, created by
+calling the static method field.mkList. This takes a list of tuples, one
+tuple per field. (fieldname, bitwidth, None or list)</p>
 <p>See testBFR for an example.</p></li>
 </ol>
 <p>Usage:</p>
 <pre class="literal-block"><code>&gt;&gt; import bitfieldrec
 &gt;&gt; bfrec,field = bitfieldrec.bfrec,bitfieldrec.field
 &gt;&gt; reload(bitfieldrec)</code></pre>
-<p>Currently only supports packing. Does not support unpacking (yet).</p>
+<p>Currently only supports packing. Does not support unpacking
+(yet).</p>
 <hr />
 <section>
 
 </section>
 </div>
 <h1 id="feedback">Feedback</h1>
-<p>Got a problem with the documentation? Something unclear that could be clearer? Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
-<p>Please leave you feedback <a href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701" class="reference">here</a> in reply to the documentation thread in the Kamaelia blog.</p>
-<p><em>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</em></p>
+<p>Got a problem with the documentation? Something unclear that could be
+clearer? Want to help improve it? Constructive criticism is very welcome
+- especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback <a
+href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701"
+class="reference">here</a> in reply to the documentation thread in the
+Kamaelia blog.</p>
+<p><em>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38
+UTC/GMT</em></p>
 
 </div> <!-- end section -->
 </div> <!-- end page container -->

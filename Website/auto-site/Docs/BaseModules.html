@@ -15,11 +15,24 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
-<h1 id="base-modules"><span style="font-size: 24pt; font-weight: 600;">Base Modules</span></h1>
-<p><a href="/Components/pydoc/Kamaelia.Exceptions">Kamaelia.Exceptions</a> contains a number of exceptions covering different potential failure points in the modules. These exceptions generally inherit from <a href="/Docs/Axon/Axon.AxonExceptions.AxonException">Axon.AxonExceptions.AxonException</a></p>
-<p><a href="/Components/pydoc/Kamaelia.BaseIPC">Kamaelia.BaseIPC</a> however defines some specific payloads for intercomponent communication. These are generally control messages used by various Internet Adaption components for signalling various events - normally relating to new or closed socket events. The IPC messages inherit from <span style="">Axon.IPC</span>, and are mainly notify events. Currently the only <span style="">producerFinished</span>class is <span style="">socketShutdown</span>- issued by Internet Abstraction Modules.</p>
+<h1 id="base-modules"><span
+style="font-size: 24pt; font-weight: 600;">Base Modules</span></h1>
+<p><a
+href="/Components/pydoc/Kamaelia.Exceptions">Kamaelia.Exceptions</a>
+contains a number of exceptions covering different potential failure
+points in the modules. These exceptions generally inherit from <a
+href="/Docs/Axon/Axon.AxonExceptions.AxonException">Axon.AxonExceptions.AxonException</a></p>
+<p><a href="/Components/pydoc/Kamaelia.BaseIPC">Kamaelia.BaseIPC</a>
+however defines some specific payloads for intercomponent communication.
+These are generally control messages used by various Internet Adaption
+components for signalling various events - normally relating to new or
+closed socket events. The IPC messages inherit from <span
+style="">Axon.IPC</span>, and are mainly notify events. Currently the
+only <span style="">producerFinished</span>class is <span
+style="">socketShutdown</span>- issued by Internet Abstraction
+Modules.</p>
 <p>-- Michael, December 2004, updated by Matt, April 2007<br />
 </p>
 

@@ -15,76 +15,139 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
-<p><span style="font-size:24pt">Axon.</span><span style="font-size:24pt;font-weight:600">debug.py</span></p>
+<p><span style="font-size:24pt">Axon.</span><span
+style="font-size:24pt;font-weight:600">debug.py</span></p>
 <p>Version: Axon 1.0.4</p>
 <p><span style="font-weight:600">What is it?</span></p>
 <p>A simple debugging class.</p>
 <p><span style="font-weight:600">What is its purpose?</span></p>
-<p>The purpose of this debug subsystem is to allow a configurable method for debugging. When dealing with single threaded concurrency it can become difficult to trace code, limiting the effectiveness of debuggers. (Especially the kind that allows you to step through execution)</p>
+<p>The purpose of this debug subsystem is to allow a configurable method
+for debugging. When dealing with single threaded concurrency it can
+become difficult to trace code, limiting the effectiveness of debuggers.
+(Especially the kind that allows you to step through execution)</p>
 <p><span style="font-weight:600">How does it work?</span></p>
 <p>The essential idea is this:</p>
 <ul>
-<li>Sections of the code can be conceptually tagged with a name. This can be a function, a class, or an expected code flow.</li>
-<li>Each tag has an associated debug level. A debug level of zero implies that debugging for that section is switched off. The higher the number, the greater the amount of debugging output.</li>
-<li>Debugging statements can then be made with a tag &amp; debug level - along with any arbitrary data represented as a string.</li>
+<li>Sections of the code can be conceptually tagged with a name. This
+can be a function, a class, or an expected code flow.</li>
+<li>Each tag has an associated debug level. A debug level of zero
+implies that debugging for that section is switched off. The higher the
+number, the greater the amount of debugging output.</li>
+<li>Debugging statements can then be made with a tag &amp; debug level -
+along with any arbitrary data represented as a string.</li>
 </ul>
-<p>If one or more sections of code have an active tag, then a trace of what they requested is output along with a small amount of data to assist with debugging.</p>
-<p>These sections, levels etc are defined in a "debug.conf" file in the local directory. In the absence of a debug.conf file, the system uses internal hard coded defaults.</p>
-<p>One caveat: using a debug section/tag in code, but not defined in defaults nor in a config file will crash. <span style="font-style:italic">This is by design.</span>The reason is simple - whilst developers may wish to add random debug tags when creating their code, later when some maintainer wishes to figure out what's broken, having a complete list of all debug tags is vital. One way of ensuring this is to ensure they're either in the defaults or in a supplied and always findable debug.conf file. Quite how this will pan out in the long term is still unclear, but the motivation will remain the same. (Implementation approach may change of course!)</p>
+<p>If one or more sections of code have an active tag, then a trace of
+what they requested is output along with a small amount of data to
+assist with debugging.</p>
+<p>These sections, levels etc are defined in a "debug.conf" file in the
+local directory. In the absence of a debug.conf file, the system uses
+internal hard coded defaults.</p>
+<p>One caveat: using a debug section/tag in code, but not defined in
+defaults nor in a config file will crash. <span
+style="font-style:italic">This is by design.</span>The reason is simple
+- whilst developers may wish to add random debug tags when creating
+their code, later when some maintainer wishes to figure out what's
+broken, having a complete list of all debug tags is vital. One way of
+ensuring this is to ensure they're either in the defaults or in a
+supplied and always findable debug.conf file. Quite how this will pan
+out in the long term is still unclear, but the motivation will remain
+the same. (Implementation approach may change of course!)</p>
 <p><span style="font-weight:600">debug.conf file format</span></p>
 <p>The config file consists of a number of lines.</p>
 <p>Each line is either a comment or config line</p>
-<p>A comment line is either an empty line, or a line starting with a '#'</p>
+<p>A comment line is either an empty line, or a line starting with a
+'#'</p>
 <p>A config line has 3 values:</p>
 <p>section.tag debug.level debug.location</p>
 <ul>
-<li>section.tag has the form [a-zA-Z]+(\.[a-zA-Z]+)* - ie a dotted alpha value.</li>
+<li>section.tag has the form [a-zA-Z]+(\.[a-zA-Z]+)* - ie a dotted alpha
+value.</li>
 <li>debug.level is an integer, 0 or more</li>
-<li>debug.location is currently just "default", but may change to gain extra values if appropriate at a later point in time.</li>
+<li>debug.location is currently just "default", but may change to gain
+extra values if appropriate at a later point in time.</li>
 </ul>
 <p>eg:</p>
 <p><span style="font-weight:600">Sample trace output</span></p>
-<p><span style="font-family:Courier 10 Pitch">Sat Feb 26 08:26:39 2005 | SimpleServerTestProtocol.mainBody | NetServ : We were sent data -</span></p>
-<p><span style="font-family:Courier 10 Pitch">Sat Feb 26 08:26:39 2005 | SimpleServerTestProtocol.mainBody | We should probably do something with it now? :-)</span></p>
-<p><span style="font-family:Courier 10 Pitch">Sat Feb 26 08:26:39 2005 | SimpleServerTestProtocol.mainBody | I know, let's sling it straight back at them :-)</span></p>
+<p><span style="font-family:Courier 10 Pitch">Sat Feb 26 08:26:39 2005 |
+SimpleServerTestProtocol.mainBody | NetServ : We were sent data
+-</span></p>
+<p><span style="font-family:Courier 10 Pitch">Sat Feb 26 08:26:39 2005 |
+SimpleServerTestProtocol.mainBody | We should probably do something with
+it now? :-)</span></p>
+<p><span style="font-family:Courier 10 Pitch">Sat Feb 26 08:26:39 2005 |
+SimpleServerTestProtocol.mainBody | I know, let's sling it straight back
+at them :-)</span></p>
 <p><span style="font-weight:600">Outstanding Issues</span></p>
-<p>Just prior to the 1.0 release of Axon, we changed over to using setup.py (ie distutils) for installation/packaging etc. Prior to this the code expected to be run from a specific location and hence a debug.conf file would always be available. This was disable prior to the actual 1.0 release, but it would be nice to re-enable the full system again.</p>
-<p>There are a number of issues with the way debugging is handled at present:</p>
+<p>Just prior to the 1.0 release of Axon, we changed over to using
+setup.py (ie distutils) for installation/packaging etc. Prior to this
+the code expected to be run from a specific location and hence a
+debug.conf file would always be available. This was disable prior to the
+actual 1.0 release, but it would be nice to re-enable the full system
+again.</p>
+<p>There are a number of issues with the way debugging is handled at
+present:</p>
 <p>Configuration and defaults</p>
 <ul>
-<li>Currently we allow a debug.conf file to override <span style="font-style:italic">all</span>values for debugging. What it should allow is allow the values for debugging to be replaced/merged - with the config values taking precedence.</li>
+<li>Currently we allow a debug.conf file to override <span
+style="font-style:italic">all</span>values for debugging. What it should
+allow is allow the values for debugging to be replaced/merged - with the
+config values taking precedence.</li>
 </ul>
-<p>Lack of decent test suite. (There is some partial testing, but it's nowhere near complete)</p>
-<p>Documentation for the debug API currently sucks. (The only real usage docs would be to look at how Axon itself uses the debug subsystem)</p>
-<p>Essentially the debugging divides the system into sections, and each section can have a debug level. The higher the debug level, the more output for that section you see. Debugging can also be switched on on a <span style="font-style:italic">per component</span> basis.</p>
+<p>Lack of decent test suite. (There is some partial testing, but it's
+nowhere near complete)</p>
+<p>Documentation for the debug API currently sucks. (The only real usage
+docs would be to look at how Axon itself uses the debug subsystem)</p>
+<p>Essentially the debugging divides the system into sections, and each
+section can have a debug level. The higher the debug level, the more
+output for that section you see. Debugging can also be switched on on a
+<span style="font-style:italic">per component</span> basis.</p>
 <p><span style="font-weight:600">Issues Resolved</span></p>
 <ul>
-<li>Now have a set of defaults covering debugging. These will probably need to change as we need namespaces, but for now the defaults work. (Allowing debugging to really be available, reducing Heisenbug scenarios)</li>
-<li>Previous speed related issues regarding debugging have been resolved (largely).</li>
+<li>Now have a set of defaults covering debugging. These will probably
+need to change as we need namespaces, but for now the defaults work.
+(Allowing debugging to really be available, reducing Heisenbug
+scenarios)</li>
+<li>Previous speed related issues regarding debugging have been resolved
+(largely).</li>
 </ul>
-<p><span style="font-size:14pt;font-weight:600">Pydoc Style Documentation</span></p>
+<p><span style="font-size:14pt;font-weight:600">Pydoc Style
+Documentation</span></p>
 <p>class debug(object)</p>
 <p>Methods defined here:</p>
-<p><span style="font-weight:600">__init__(self, assertBadDebug=1)</span></p>
-<p><span style="font-weight:600">debug(self, section, level, *message)</span></p>
+<p><span style="font-weight:600">__init__(self,
+assertBadDebug=1)</span></p>
+<p><span style="font-weight:600">debug(self, section, level,
+*message)</span></p>
 <ul>
-<li>Outputs *message if user set level is greater than requested level for given section returns True. This allows debug to be used in assert statements to allow lazy evaluation of expressions in *message so that they can disabled by running the system using python's -O flag</li>
+<li>Outputs *message if user set level is greater than requested level
+for given section returns True. This allows debug to be used in assert
+statements to allow lazy evaluation of expressions in *message so that
+they can disabled by running the system using python's -O flag</li>
 </ul>
-<p><span style="font-weight:600">note = debug(self, section, level, *message)</span></p>
+<p><span style="font-weight:600">note = debug(self, section, level,
+*message)</span></p>
 <ul>
 <li>note is an alias for debug.</li>
 </ul>
-<p><span style="font-weight:600">addDebug(self, **debugSections)</span></p>
-<p><span style="font-weight:600">addDebugSection(self, section, level)</span></p>
+<p><span style="font-weight:600">addDebug(self,
+**debugSections)</span></p>
+<p><span style="font-weight:600">addDebugSection(self, section,
+level)</span></p>
 <p><span style="font-weight:600">decreaseDebug(self, section)</span></p>
 <p><span style="font-weight:600">increaseDebug(self, section)</span></p>
-<p><span style="font-weight:600">readConfig(self, configFile='debug.conf')</span></p>
-<p><span style="font-weight:600">setDebugSections(self, **debugSections)</span></p>
-<p><span style="font-weight:600">useConfig(self, filename='debug.conf')</span></p>
-<p><span style="font-size:14pt;font-weight:600">Testdoc Documentation</span></p>
-<p><span style="font-weight:600">TODO:</span>Implement test suite for Axon.debug.py (We did mention that tests were added late in the project?)</p>
+<p><span style="font-weight:600">readConfig(self,
+configFile='debug.conf')</span></p>
+<p><span style="font-weight:600">setDebugSections(self,
+**debugSections)</span></p>
+<p><span style="font-weight:600">useConfig(self,
+filename='debug.conf')</span></p>
+<p><span style="font-size:14pt;font-weight:600">Testdoc
+Documentation</span></p>
+<p><span style="font-weight:600">TODO:</span>Implement test suite for
+Axon.debug.py (We did mention that tests were added late in the
+project?)</p>
 <p>Michael, December 2004, February 2005</p>
 
 </div> <!-- end section -->

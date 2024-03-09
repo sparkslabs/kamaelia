@@ -15,19 +15,34 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
 <h2 id="multimedia-facilities">Multimedia facilities</h2>
-<h3 data-align="right" id="audio-and-video-capabilities">Audio and Video capabilities</h3>
-<p><a href="/Components/pydoc/Kamaelia.Audio">Kamaelia.Audio</a> contains components implementing audio input and output as well as support for some codecs such as MP3. These are provided by using the cross-platform pymedia library (make sure you have installed it!). Some bespoke components for audio filtering and mixing are also held here.<br />
+<h3 data-align="right" id="audio-and-video-capabilities">Audio and Video
+capabilities</h3>
+<p><a href="/Components/pydoc/Kamaelia.Audio">Kamaelia.Audio</a>
+contains components implementing audio input and output as well as
+support for some codecs such as MP3. These are provided by using the
+cross-platform pymedia library (make sure you have installed it!). Some
+bespoke components for audio filtering and mixing are also held
+here.<br />
 </p>
-<p><a href="/Components/pydoc/Kamaelia.Codec">Kamaelia.Codec</a> contains components for encoding and decoding Dirac video, and Speex and Ogg Vorbis audio, as well as support for parsing raw data into video frame data structures. There is also a libAO based audio player, which obviously requires libAO and the pyao python bindings.</p>
-<p><strong>Formats used to pass audio and video between components</strong><br />
+<p><a href="/Components/pydoc/Kamaelia.Codec">Kamaelia.Codec</a>
+contains components for encoding and decoding Dirac video, and Speex and
+Ogg Vorbis audio, as well as support for parsing raw data into video
+frame data structures. There is also a libAO based audio player, which
+obviously requires libAO and the pyao python bindings.</p>
+<p><strong>Formats used to pass audio and video between
+components</strong><br />
 </p>
-<p>Audio components for the most part pass around raw audio data as raw pcm data in python strings.</p>
-<p>Uncompressed raw video is passed around as whole frames - using a dictionary structure containing the raw data and useful metadata such as the width, height, pixel format and frame rate.</p>
+<p>Audio components for the most part pass around raw audio data as raw
+pcm data in python strings.</p>
+<p>Uncompressed raw video is passed around as whole frames - using a
+dictionary structure containing the raw data and useful metadata such as
+the width, height, pixel format and frame rate.</p>
 <p><strong>Where to look:</strong></p>
-<p>See <a href="/Components/pydoc/Kamaelia.Audio">Kamaelia.Audio</a> for:<br />
+<p>See <a href="/Components/pydoc/Kamaelia.Audio">Kamaelia.Audio</a>
+for:<br />
 </p>
 <ul>
 <li>Audio Input / Capture (pymedia)</li>
@@ -39,7 +54,8 @@
 <li>Audio mixing</li>
 </ul>
 <p><br />
-See <a href="/Components/pydoc/Kamaelia.Codec">Kamaelia.Codec</a> for:<br />
+See <a href="/Components/pydoc/Kamaelia.Codec">Kamaelia.Codec</a>
+for:<br />
 </p>
 <ul>
 <li>Ogg Speex audio encoding</li>

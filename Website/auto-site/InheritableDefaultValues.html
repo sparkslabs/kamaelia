@@ -15,16 +15,19 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
 <h1 id="inheritable-default-values">Inheritable Default Values</h1>
 <div data-align="right">
-<p><strong>Making systemic specialisation more declarative</strong><br />
+<p><strong>Making systemic specialisation more
+declarative</strong><br />
 </p>
 </div>
 <p>This feature was introduced in Axon 1.6.0 (Kamaelia 0.6.0)<br />
 <br />
-The idea behind this is to allow a more compact, declarative way of defining more complex Kamaelia systems. It stemmed initially from an observation that two of us wanted to do this:<br />
+The idea behind this is to allow a more compact, declarative way of
+defining more complex Kamaelia systems. It stemmed initially from an
+observation that two of us wanted to do this:<br />
 <br />
 </p>
 <blockquote>
@@ -35,7 +38,14 @@ The idea behind this is to allow a more compact, declarative way of defining mor
                       socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1))</code></pre>
 </blockquote>
 <p><br />
-Specifically we noticed that we were creating a fair number of factory functions which only really differed based on on value. The problem we have here is that this is relatively fragile. Specifically, what happens if ServerCore adds in extra arguments - do we also update ReusableSocketAddrServer ? What if we don't, does someone else come along and duplicate our code in order to support those extra arguments? OK, well we can handle this in python if we use the **argd syntax. If we do that, we can do that this way:<br />
+Specifically we noticed that we were creating a fair number of factory
+functions which only really differed based on on value. The problem we
+have here is that this is relatively fragile. Specifically, what happens
+if ServerCore adds in extra arguments - do we also update
+ReusableSocketAddrServer ? What if we don't, does someone else come
+along and duplicate our code in order to support those extra arguments?
+OK, well we can handle this in python if we use the **argd syntax. If we
+do that, we can do that this way:<br />
 </p>
 <blockquote>
 <pre><code>def ReusableSocketAddr(**argd):
@@ -43,15 +53,22 @@ Specifically we noticed that we were creating a fair number of factory functions
     argd_local[&quot;socketOptions&quot;] = (socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     return ServerCore(**argd_local)</code></pre>
 </blockquote>
-<p>Whilst that's maybe more reflective of what we wanted to do, it now looks rather obscured. We then realised that there is a useful side effect of python namespaces that we can take advantage of, which is this:<br />
+<p>Whilst that's maybe more reflective of what we wanted to do, it now
+looks rather obscured. We then realised that there is a useful side
+effect of python namespaces that we can take advantage of, which is
+this:<br />
 </p>
-<p>self.attribute first of all looks inside the object self. If this is not found...</p>
+<p>self.attribute first of all looks inside the object self. If this is
+not found...</p>
 <p>self.attribute looks inside self.__class__ . If that's not found,</p>
-<p>self.attribute looks inside the parents of self.__class__ all the way up.</p>
+<p>self.attribute looks inside the parents of self.__class__ all the way
+up.</p>
 <ul>
-<li>This is kinda necessary to make (self.method) work, so it can be relied upon.</li>
+<li>This is kinda necessary to make (self.method) work, so it can be
+relied upon.</li>
 </ul>
-<p>This means that if we change the base component class to do this:<br />
+<p>This means that if we change the base component class to do
+this:<br />
 </p>
 <blockquote>
 <pre><code>def __init__(self, **argd):
@@ -66,11 +83,18 @@ Specifically we noticed that we were creating a fair number of factory functions
 <p>This has a number of advantages over the factory method:<br />
 </p>
 <ul>
-<li>First and foremost it makes it very clear that this is just a ServerCore that happens to have different socketOptions.</li>
-<li>Secondly it means that if the parent component (ServerCore) adds extra arguments into the initialiser, we'll pick those up automagically.</li>
-<li>Thirdly, it encourages us to provide more things into the class namespace, which actually assists with testing, but also makes the system more flexible.</li>
+<li>First and foremost it makes it very clear that this is just a
+ServerCore that happens to have different socketOptions.</li>
+<li>Secondly it means that if the parent component (ServerCore) adds
+extra arguments into the initialiser, we'll pick those up
+automagically.</li>
+<li>Thirdly, it encourages us to provide more things into the class
+namespace, which actually assists with testing, but also makes the
+system more flexible.</li>
 </ul>
-<p>For example, suppose the component we're using creates components as a part of it's operation, and we want to add tracing to these. Normally that code would default to looking like this:<br />
+<p>For example, suppose the component we're using creates components as
+a part of it's operation, and we want to add tracing to these. Normally
+that code would default to looking like this:<br />
 <br />
 </p>
 <blockquote>
@@ -86,7 +110,8 @@ class ServerCore(...):
 </p>
 </blockquote>
 <p><br />
-Replacing TCPServer here with our TracedTCPServer would have to look like this:<br />
+Replacing TCPServer here with our TracedTCPServer would have to look
+like this:<br />
 <br />
 </p>
 <blockquote>
@@ -96,7 +121,13 @@ ExamplePatch.TCPServer = TracedTCPServer</code></pre>
 <p><strong>Hypothetical File:</strong> ExamplePatchUser.py<br />
 </p>
 </blockquote>
-<p>The downside of this as well is that this is not particularly targetted, and leads to the situation where it would be more natural to create a copy of the code for traced versions. This misses one of the handy features of what inheritance gives us, which is controlled duplication of functionality with little twists of functionality. By comparison, with inheritable default values, we can do this instead:<br />
+<p>The downside of this as well is that this is not particularly
+targetted, and leads to the situation where it would be more natural to
+create a copy of the code for traced versions. This misses one of the
+handy features of what inheritance gives us, which is controlled
+duplication of functionality with little twists of functionality. By
+comparison, with inheritable default values, we can do this
+instead:<br />
 <br />
 </p>
 <blockquote>
@@ -111,10 +142,13 @@ class ServerCore(...):
 <p><strong>Hypothetical File:</strong> ExamplePatch.py<br />
 </p>
 </blockquote>
-<p>However, when someone wants to create a traced version they can be far more to the point. Suppose they have code that looks like this:<br />
+<p>However, when someone wants to create a traced version they can be
+far more to the point. Suppose they have code that looks like
+this:<br />
 ServerCore(port = 1500, protocol=WhizzyProto1).run()<br />
 <br />
-They can change it over to use the hypothetical TracedTCPServer like this:<br />
+They can change it over to use the hypothetical TracedTCPServer like
+this:<br />
 </p>
 <blockquote>
 <pre><code>from Hypothetical import TracedTCPServer
@@ -123,7 +157,8 @@ ServerCore(port = 1500, protocol=WhizzyProto1, TCPS=TracedTCPServer).run()</code
 <p><strong>Hypothetical File:</strong> ExamplePatchUser.py</p>
 </blockquote>
 <p><br />
-Not only that, but if they wanted to define this as a common thing they wanted to do, they could do this:<br />
+Not only that, but if they wanted to define this as a common thing they
+wanted to do, they could do this:<br />
 </p>
 <blockquote>
 <pre><code>class TracedServerCore(ServerCore):
@@ -134,7 +169,11 @@ Not only that, but if they wanted to define this as a common thing they wanted t
 <blockquote>
 <pre><code>TracedServerCore(port = 1500, protocol=WhizzyProto1).run()</code></pre>
 </blockquote>
-<p>Whilst this seems theoretical, it was bandied about as a possible idea for nearly a year until it suddenly became extremely useful - specifically in the [greylisting code](/KamaeliaGrey.html to allow it to use inactivity timers on connected sockets, as well as configuration of protocol handlers in a declarative manner:<br />
+<p>Whilst this seems theoretical, it was bandied about as a possible
+idea for nearly a year until it suddenly became extremely useful -
+specifically in the [greylisting code](/KamaeliaGrey.html to allow it to
+use inactivity timers on connected sockets, as well as configuration of
+protocol handlers in a declarative manner:<br />
 </p>
 <blockquote>
 <pre><code>class GreylistServer(ServerCore):
@@ -155,28 +194,41 @@ Not only that, but if they wanted to define this as a common thing they wanted t
         whitelisted_triples = config[&quot;whitelisted_triples&quot;]
         whitelisted_nonstandard_triples = config[&quot;whitelisted_nonstandard_triples&quot;]</code></pre>
 </blockquote>
-<p>Since then the idiom has been found to be useful in other scenarios.<br />
+<p>Since then the idiom has been found to be useful in other
+scenarios.<br />
 <br />
-It's also worth noticing that this also means that the ServerCore code could be repurposed to work with servers that act in a similar way to TCPServer. For example, a hypothetical ConnectionBasedUDPListener, could be created which operated in a similar manner to TCPServer, and then reused as follows:<br />
+It's also worth noticing that this also means that the ServerCore code
+could be repurposed to work with servers that act in a similar way to
+TCPServer. For example, a hypothetical ConnectionBasedUDPListener, could
+be created which operated in a similar manner to TCPServer, and then
+reused as follows:<br />
 </p>
 <blockquote>
 <pre><code>class UDPServerCore(ServerCore):
      TCPS = ConnectionBasedUDPListener</code></pre>
 </blockquote>
-<p>Thereby making it as simple to create connection oriented UDP servers as it would be to create TCPServers. The only difference between the two being lack of guarantee of ordering or delivery.<br />
+<p>Thereby making it as simple to create connection oriented UDP servers
+as it would be to create TCPServers. The only difference between the two
+being lack of guarantee of ordering or delivery.<br />
 </p>
 <h2 id="downsides">Downsides?</h2>
-<p>The clear downside of this is that the signature of your component's generally initialiser becomes this:<br />
+<p>The clear downside of this is that the signature of your component's
+generally initialiser becomes this:<br />
 </p>
 <blockquote>
 <pre><code>def __init__(self, **argd):
  ...</code></pre>
 </blockquote>
-<p>This in turn puts a greater onus on you as a component writer to document the arguments to your component in a clearer manner.<br />
+<p>This in turn puts a greater onus on you as a component writer to
+document the arguments to your component in a clearer manner.<br />
 <br />
 </p>
 <h2 id="but-why">But WHY???</h2>
-<p>This is an implicit thing. <strong>In Kamaelia when syntactic sugar gets added</strong> (and that's precisely what this is), <strong>one of the most common aims is to aim to move towards a declarative reusable syntax.</strong> After all, if you consider that the starting point was this:<br />
+<p>This is an implicit thing. <strong>In Kamaelia when syntactic sugar
+gets added</strong> (and that's precisely what this is), <strong>one of
+the most common aims is to aim to move towards a declarative reusable
+syntax.</strong> After all, if you consider that the starting point was
+this:<br />
 </p>
 <blockquote>
 <pre><code>def ReusableSocketAddrServer(port=100,
@@ -185,9 +237,13 @@ It's also worth noticing that this also means that the ServerCore code could be 
                       port=port,
                       socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1))</code></pre>
 </blockquote>
-<p>You're actually starting off with something very fragile, especially considering that if ServerCore changes it's configuration, you have to change this factory function as well.<br />
+<p>You're actually starting off with something very fragile, especially
+considering that if ServerCore changes it's configuration, you have to
+change this factory function as well.<br />
 <br />
-Secondly, the next approach for dealing with changing __init__ialiser arguments is to use **argd, you then end up with something which is a bit perl-ish in structure, and obfuscates what's really going on:<br />
+Secondly, the next approach for dealing with changing __init__ialiser
+arguments is to use **argd, you then end up with something which is a
+bit perl-ish in structure, and obfuscates what's really going on:<br />
 </p>
 <blockquote>
 <pre><code>def ReusableSocketAddr(**argd):
@@ -195,17 +251,27 @@ Secondly, the next approach for dealing with changing __init__ialiser arguments 
     argd_local[&quot;socketOptions&quot;] = (socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     return ServerCore(**argd_local)</code></pre>
 </blockquote>
-<p>However, by switching over to an inheritable default value approach you gain something which is declarative, picks up new default values from the base class cleanly and makes it much clearer that actually this returns objects of this type, just preconfigured in a particular way:<br />
+<p>However, by switching over to an inheritable default value approach
+you gain something which is declarative, picks up new default values
+from the base class cleanly and makes it much clearer that actually this
+returns objects of this type, just preconfigured in a particular
+way:<br />
 </p>
 <blockquote>
 <pre><code>class ReusableSocketAttrServer(ServerCore):
     socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  </code></pre>
 </blockquote>
-<p>So, by aiming for a syntactic sugar that's declarative in nature, we're hopefully making the intent in the system clearer.<br />
+<p>So, by aiming for a syntactic sugar that's declarative in nature,
+we're hopefully making the intent in the system clearer.<br />
 </p>
 <h2 id="summary">Summary</h2>
 <p><br />
-If you want to provide default values for parameters for your components, and please do, providing them in the form of inheritable default values will make your components more useful to others. You don't have to do this, and if you find it odd, simply don't do this. However if you do, it would be appreciated by the users of your code.<br />
+If you want to provide default values for parameters for your
+components, and please do, providing them in the form of inheritable
+default values will make your components more useful to others. You
+don't have to do this, and if you find it odd, simply don't do this.
+However if you do, it would be appreciated by the users of your
+code.<br />
 <br />
 </p>
 

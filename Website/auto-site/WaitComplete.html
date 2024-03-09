@@ -15,24 +15,36 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
 <h1 id="axon.ipc.waitcomplete">Axon.Ipc.WaitComplete</h1>
-<p>The purpose behind WaitComplete is to allow a generator based component to say cleanly: run this other generator for a while and when they're done, return to me. This allows for more direct representation of certain kinds of code structure. It is likely to be joined at somepoint with a "continue with this" style message. There are two common usecases where it is nice to use:<br />
+<p>The purpose behind WaitComplete is to allow a generator based
+component to say cleanly: run this other generator for a while and when
+they're done, return to me. This allows for more direct representation
+of certain kinds of code structure. It is likely to be joined at
+somepoint with a "continue with this" style message. There are two
+common usecases where it is nice to use:<br />
 </p>
-<p>One is with regard to reading lines of data from a network connection. This allows for a more direct form of writing code, and essentially provides a mechanism of dealing with the idea that "you can't nest yield statements cleanly". But telling the scheduler "run this until it's finished, not me" you essentially gain that ability.</p>
-<p>The other is where you are requesting a resource from a Kamaelia service using the idiom</p>
+<p>One is with regard to reading lines of data from a network
+connection. This allows for a more direct form of writing code, and
+essentially provides a mechanism of dealing with the idea that "you
+can't nest yield statements cleanly". But telling the scheduler "run
+this until it's finished, not me" you essentially gain that ability.</p>
+<p>The other is where you are requesting a resource from a Kamaelia
+service using the idiom</p>
 <p>Find the service, create links to talk to it</p>
 <p>Send it a message</p>
 <p>Wait for the response, containing the resource<br />
 </p>
 <p>Move on</p>
 <ul>
-<li>A good example of a resource that's like this is pygame displays<br />
+<li>A good example of a resource that's like this is pygame
+displays<br />
 </li>
 </ul>
 <h2 id="basic-usage">Basic Usage</h2>
-<p>To give an example which isn't tied up with a usecase, but just shows the mechanism, you use it like this:<br />
+<p>To give an example which isn't tied up with a usecase, but just shows
+the mechanism, you use it like this:<br />
 </p>
 <blockquote>
 <pre><code>class myComponent(Axon.Component.component):
@@ -66,9 +78,11 @@ running in the other secondary generator
 still running in the other secondary generator
 Back Running inside main again</code></pre>
 </blockquote>
-<p>This doesn't look like a big deal, but it's worth asking "what would this look like without WaitComplete" ?<br />
+<p>This doesn't look like a big deal, but it's worth asking "what would
+this look like without WaitComplete" ?<br />
 <br />
-If we were doing this without WaitComplete, it would look like this:<br />
+If we were doing this without WaitComplete, it would look like
+this:<br />
 </p>
 <pre><code>class myComponent(Axon.Component.component):
     def main(self):
@@ -91,10 +105,14 @@ If we were doing this without WaitComplete, it would look like this:<br />
         yield 1
         print &quot;still running in the other secondary generator&quot;
         yield 1</code></pre>
-<p>Whilst it's not that much worse, it does obfuscate things, as we'll see with real world examples.<br />
+<p>Whilst it's not that much worse, it does obfuscate things, as we'll
+see with real world examples.<br />
 </p>
-<h2 id="real-world-example---connecting-to-a-pop3-server-logging-in">Real world example - Connecting to a POP3 server &amp; Logging in</h2>
-<p>The following code is from a basic POP3 client skeleton (as used in the client side spam tools):<br />
+<h2
+id="real-world-example---connecting-to-a-pop3-server-logging-in">Real
+world example - Connecting to a POP3 server &amp; Logging in</h2>
+<p>The following code is from a basic POP3 client skeleton (as used in
+the client side spam tools):<br />
 </p>
 <blockquote>
 <pre><code>    def waitForBanner(self):
@@ -141,7 +159,9 @@ If we were doing this without WaitComplete, it would look like this:<br />
                 yield WaitComplete(self.getline(), tag=&quot;_getline5&quot;)
 #                print &quot;SERVER RESPONSE&quot;, self.line</code></pre>
 </blockquote>
-<p>Now, ignoring the tag= parts at the end, restructuring this to use the more tradition for ... in self.generator() syntax, you would get this:<br />
+<p>Now, ignoring the tag= parts at the end, restructuring this to use
+the more tradition for ... in self.generator() syntax, you would get
+this:<br />
 </p>
 <blockquote>
 <pre><code>    def waitForBanner(self):
@@ -196,11 +216,19 @@ If we were doing this without WaitComplete, it would look like this:<br />
                     yield i
 #                print &quot;SERVER RESPONSE&quot;, self.line</code></pre>
 </blockquote>
-<p>Whilst each individual part is only slightly less clear, the overall effect is significantly less clear.<br />
+<p>Whilst each individual part is only slightly less clear, the overall
+effect is significantly less clear.<br />
 <br />
-The tag= line incidentally allows us to give each call to a generator a different tag. This allows us to determine if a generator is getting stuck in any particular state. In the case of a network system, knowing just where the system is getting unexpected data (or not getting expected data) causing it to stay in an unexpected state is particularly useful - hence the use of tags. In the second, non-WaitComplete version we don't have that hinting available.<br />
+The tag= line incidentally allows us to give each call to a generator a
+different tag. This allows us to determine if a generator is getting
+stuck in any particular state. In the case of a network system, knowing
+just where the system is getting unexpected data (or not getting
+expected data) causing it to stay in an unexpected state is particularly
+useful - hence the use of tags. In the second, non-WaitComplete version
+we don't have that hinting available.<br />
 </p>
-<h2 id="real-world-example---requesting-a-pygame-display-surface">Real World Example - Requesting A Pygame Display Surface</h2>
+<h2 id="real-world-example---requesting-a-pygame-display-surface">Real
+World Example - Requesting A Pygame Display Surface</h2>
 <p>In this example we have to do this:<br />
 </p>
 <ul>
@@ -208,7 +236,10 @@ The tag= line incidentally allows us to give each call to a generator a differen
 <li>Send it a request</li>
 <li>Wait for the response</li>
 </ul>
-<p>This is a common task that would be nice to wrap up inside a method that we can just call trivially. Again this is where WaitComplete comes in, since it assists in wrapping up this functionality cleanly as follows:<br />
+<p>This is a common task that would be nice to wrap up inside a method
+that we can just call trivially. Again this is where WaitComplete comes
+in, since it assists in wrapping up this functionality cleanly as
+follows:<br />
 </p>
 <blockquote>
 <pre><code>    def __init__(self, **argd):
@@ -232,7 +263,8 @@ The tag= line incidentally allows us to give each call to a generator a differen
 <pre><code>    def main(self):
        yield WaitComplete(self.getDisplay())</code></pre>
 </blockquote>
-<p>And <strong>that</strong> is a significant simplication over the current structure.<br />
+<p>And <strong>that</strong> is a significant simplication over the
+current structure.<br />
 <br />
 Furthermore, it also allows this:<br />
 </p>
@@ -258,7 +290,8 @@ Furthermore, it also allows this:<br />
 <pre><code>    def main(self):
        yield self.getDisplay()</code></pre>
 </blockquote>
-<p>It's perhaps worth noting that the common alternative here is this:<br />
+<p>It's perhaps worth noting that the common alternative here is
+this:<br />
 </p>
 <blockquote>
 <pre><code>    def main(self):
@@ -272,16 +305,21 @@ Furthermore, it also allows this:<br />
 
        self.display = self.recv(&quot;callback&quot;)</code></pre>
 </blockquote>
-<p>And that for example is something that can be placed into a potential baseclass to be used as a re-usable mixin, which can then just be used in a simple manner of "yield self.getDisplay()".<br />
-Given that this is a commonly used idiom, the ability to cleanly wrap this is a massive advantage.<br />
+<p>And that for example is something that can be placed into a potential
+baseclass to be used as a re-usable mixin, which can then just be used
+in a simple manner of "yield self.getDisplay()".<br />
+Given that this is a commonly used idiom, the ability to cleanly wrap
+this is a massive advantage.<br />
 </p>
 <h2 id="summary">Summary</h2>
 <p>WaitComplete is a useful as:<br />
 </p>
 <ul>
 <li>Syntactic sugar to make a common construct clearer</li>
-<li>A mechanism for wrapping up functionality that needs to yield inside a seperate method for reuse</li>
-<li>A mechanism for assisting debugging of more complex systems, due to the tag= notation.</li>
+<li>A mechanism for wrapping up functionality that needs to yield inside
+a seperate method for reuse</li>
+<li>A mechanism for assisting debugging of more complex systems, due to
+the tag= notation.</li>
 </ul>
 <p><br />
 </p>

@@ -15,32 +15,51 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
 <p><br />
 </p>
 <h1 id="a-simple-bittorrent-helper">A Simple BitTorrent Helper</h1>
-<p>This cookbook is based on a small tool that I built to solve a problem I had that required the use of BitTorrent. I wanted a script that would do the following:</p>
+<p>This cookbook is based on a small tool that I built to solve a
+problem I had that required the use of BitTorrent. I wanted a script
+that would do the following:</p>
 <ul>
 <li>'Publish' files to a BitTorrent network when given a file name<br />
 </li>
-<li>Download files from the network when given a *.torrent file name</li>
+<li>Download files from the network when given a *.torrent file
+name</li>
 <li>Accept all input from stdin</li>
-<li>Send meaningful messages to stdout that could be parsed by another tool</li>
+<li>Send meaningful messages to stdout that could be parsed by another
+tool</li>
 </ul>
-<p>The idea was to use this from another Python program and to communicate via pipes (hence the need for IO to happen via stdin and stdout. Using components found in the Kamaelia MegaBundle along with a couple of small modifications, a reliable and robust tool was put together in very little time and very few lines of code. The network needed is as follows:</p>
+<p>The idea was to use this from another Python program and to
+communicate via pipes (hence the need for IO to happen via stdin and
+stdout. Using components found in the Kamaelia MegaBundle along with a
+couple of small modifications, a reliable and robust tool was put
+together in very little time and very few lines of code. The network
+needed is as follows:</p>
 <figure>
-<img src="/images/ktorrent_network_cookbook.png" style="width:100%" alt="" /><figcaption>BitTorrent Helper !graph</figcaption>
+<img src="/images/ktorrent_network_cookbook.png" style="width:100%"
+alt="BitTorrent Helper !graph" />
+<figcaption aria-hidden="true">BitTorrent Helper !graph</figcaption>
 </figure>
 <p>Let's consider each component in turn.</p>
 <h2 id="reader-and-parser">reader and parser</h2>
-<p>This pair takes in commands from the parent program. It reads from the console, so we use the ready made Kamaelia <strong>ConsoleReader</strong> to get the input and pass it to the <strong>InstructionParser</strong>.<br />
+<p>This pair takes in commands from the parent program. It reads from
+the console, so we use the ready made Kamaelia
+<strong>ConsoleReader</strong> to get the input and pass it to the
+<strong>InstructionParser</strong>.<br />
 </p>
-<p>The <strong>InstructionParser</strong> will take a kind of URI and, based on what it is given, put it in one of three outboxes:</p>
+<p>The <strong>InstructionParser</strong> will take a kind of URI and,
+based on what it is given, put it in one of three outboxes:</p>
 <ul>
-<li>"outbox" if the URI starts '<em>file:</em>' - a torrent must be made of this file and then seeding must commence</li>
-<li>"retrieveHtml" if the URI starts '<em>torrent:http:</em> - a torrent file must be retrieved from the web and the file(s) downloaded</li>
-<li>"retrieveFile" if the URI starts 'torrent:' - a *.torrent file must be read from the file system and passed to BitTorrent to start downloading the file(s)</li>
+<li>"outbox" if the URI starts '<em>file:</em>' - a torrent must be made
+of this file and then seeding must commence</li>
+<li>"retrieveHtml" if the URI starts '<em>torrent:http:</em> - a torrent
+file must be retrieved from the web and the file(s) downloaded</li>
+<li>"retrieveFile" if the URI starts 'torrent:' - a *.torrent file must
+be read from the file system and passed to BitTorrent to start
+downloading the file(s)</li>
 </ul>
 <p><br />
 The code is as follows:<br />
@@ -82,16 +101,40 @@ The code is as follows:<br />
                 yield 1</code></pre>
 <p>Notes:</p>
 <ul>
-<li>The chop(f) function simply removes trailing <em>\r</em> and <em>\n</em> characters</li>
+<li>The chop(f) function simply removes trailing <em>\r</em> and
+<em>\n</em> characters</li>
 </ul>
 <h2 id="reading-.torrent-files">Reading *.torrent files</h2>
-<p>If a torrent file URI has been given it needs to be downloaded. Fortunately the components already exist: to download an HTML file, we use the <strong>SimpleHTTPClient</strong> and reading a file is done with the <strong>TriggeredFileReader</strong>. No code needed there!<br />
+<p>If a torrent file URI has been given it needs to be downloaded.
+Fortunately the components already exist: to download an HTML file, we
+use the <strong>SimpleHTTPClient</strong> and reading a file is done
+with the <strong>TriggeredFileReader</strong>. No code needed
+there!<br />
 <br />
 </p>
 <h2 id="making-a-torrent-file">Making a torrent file</h2>
-<p>If the name of a local file has been given, we need (a) to make a torrent file, (b) to publish this to the BitTorrent tracker and (c) to start seeding. In the network diagram above we have a number of components to do this. Firstly <strong>fnSplitter</strong> is simply a Kamelia <strong>Fanout</strong> component. This takes input on its inbox and <em>fans it out</em> to a number of outboxes specified when the component is instantiated (which we'll see later). We use this because we want the ready-made <strong>TorrentMaker</strong> component to know what file it needs to make a torrent from, and another set of components to create a new file named as per the source file with a '.torrent' suffix into which we can write the torrent so that we can pass it to anyone who may wish to download the file we're publishing.<br />
+<p>If the name of a local file has been given, we need (a) to make a
+torrent file, (b) to publish this to the BitTorrent tracker and (c) to
+start seeding. In the network diagram above we have a number of
+components to do this. Firstly <strong>fnSplitter</strong> is simply a
+Kamelia <strong>Fanout</strong> component. This takes input on its inbox
+and <em>fans it out</em> to a number of outboxes specified when the
+component is instantiated (which we'll see later). We use this because
+we want the ready-made <strong>TorrentMaker</strong> component to know
+what file it needs to make a torrent from, and another set of components
+to create a new file named as per the source file with a '.torrent'
+suffix into which we can write the torrent so that we can pass it to
+anyone who may wish to download the file we're publishing.<br />
 <br />
-<strong>suffixTorrent</strong> is a Kamaelia <strong>PureTransformer</strong> which takes a function (can be a lambda) with which it transforms input into output. We will use it to append '.torrent' to the string on the inbox. <strong>torrentNamer</strong> is a <strong>TwoSourceListifier</strong> which takes input on two inboxes and pairs them up to output them as a list. This component was copied from Ryan Lothian's <strong>torrentseeder.py</strong> and is copied without permission as follows:<br />
+<strong>suffixTorrent</strong> is a Kamaelia
+<strong>PureTransformer</strong> which takes a function (can be a
+lambda) with which it transforms input into output. We will use it to
+append '.torrent' to the string on the inbox.
+<strong>torrentNamer</strong> is a <strong>TwoSourceListifier</strong>
+which takes input on two inboxes and pairs them up to output them as a
+list. This component was copied from Ryan Lothian's
+<strong>torrentseeder.py</strong> and is copied without permission as
+follows:<br />
 <br />
 </p>
 <pre><code>class TwoSourceListifier(component):
@@ -114,13 +157,33 @@ The code is as follows:<br />
                     return
             
             self.pause()</code></pre>
-<p>The final component, the <strong>torrentWriter</strong>, takes this list as input and writes to disk the file named in element 0 with content in element 1 of the list.<br />
+<p>The final component, the <strong>torrentWriter</strong>, takes this
+list as input and writes to disk the file named in element 0 with
+content in element 1 of the list.<br />
 <br />
 </p>
-<h2 id="meanwhile...-lets-seed-or-download">Meanwhile... let's seed or download</h2>
-<p>Now we have a torrent file. It may have been generated just now to describe a local file that we wish to seed, or it may have been obtained from elsewhere and describe a file we wish to download. Either way, the <strong>TorrentPatron</strong> needs to know about it. TorrentPatron is a Kamaelia component written by Ryan Lothian that manages the Mainline BitTorrent code for Kamaelia. All we need to do is give it the torrent file <em>et voila!</em> Any BitTorrent client givent torrent files generated by this utility will now be able to download your file!<br />
+<h2 id="meanwhile...-lets-seed-or-download">Meanwhile... let's seed or
+download</h2>
+<p>Now we have a torrent file. It may have been generated just now to
+describe a local file that we wish to seed, or it may have been obtained
+from elsewhere and describe a file we wish to download. Either way, the
+<strong>TorrentPatron</strong> needs to know about it. TorrentPatron is
+a Kamaelia component written by Ryan Lothian that manages the Mainline
+BitTorrent code for Kamaelia. All we need to do is give it the torrent
+file <em>et voila!</em> Any BitTorrent client givent torrent files
+generated by this utility will now be able to download your file!<br />
 <br />
-The output is OK, but it could be made easier for upstream tools to process. What I'd like is to pass output of the form '<em>id:file:percentage complete</em>' and this is just what the <strong>MonitorParser</strong> does. Output from the <strong>TorrentPatron</strong> appears on its inbox. The lines are re-formatted and sent to the outbox whereupon they can be sent to the <strong>ConsoleEchoer</strong> (as in this case) or split off to any other interested components (how about an <strong>EmailEchoer</strong>, or an <strong>IRCEchoer</strong>? Or perhaps status messages could go to your phone - just need an <strong>SMSEchoer</strong>!). The <strong>MonitorParser</strong> is simply as follows:<br />
+The output is OK, but it could be made easier for upstream tools to
+process. What I'd like is to pass output of the form
+'<em>id:file:percentage complete</em>' and this is just what the
+<strong>MonitorParser</strong> does. Output from the
+<strong>TorrentPatron</strong> appears on its inbox. The lines are
+re-formatted and sent to the outbox whereupon they can be sent to the
+<strong>ConsoleEchoer</strong> (as in this case) or split off to any
+other interested components (how about an <strong>EmailEchoer</strong>,
+or an <strong>IRCEchoer</strong>? Or perhaps status messages could go to
+your phone - just need an <strong>SMSEchoer</strong>!). The
+<strong>MonitorParser</strong> is simply as follows:<br />
 <br />
 </p>
 <pre><code>class MonitorParser(component):
@@ -156,7 +219,8 @@ changes are observed.&quot;&quot;&quot;
         details = self.torrentMapper[id]
         return &quot;%d:%s:%d&quot; % (id,details[0],details[1])</code></pre>
 <h2 id="putting-it-all-together">Putting it all together</h2>
-<p>Now that we have all the components we need, we must link them together with a <strong>GraphLine</strong>.<br />
+<p>Now that we have all the components we need, we must link them
+together with a <strong>GraphLine</strong>.<br />
 <br />
 </p>
 <pre><code>    tracker = &#39;http://my.tracker.host:6969/announce&#39;
@@ -195,19 +259,41 @@ changes are observed.&quot;&quot;&quot;
                                (&quot;addCR&quot;, &quot;outbox&quot;) : (&quot;console&quot;, &quot;inbox&quot;),
                            }
                       ).run()</code></pre>
-<p>This puts the components into the graph structure described in the image at the top of this document, then commands the Kamaelia system to start running.</p>
+<p>This puts the components into the graph structure described in the
+image at the top of this document, then commands the Kamaelia system to
+start running.</p>
 <h2 id="required-infrastructure">Required infrastructure</h2>
-<p>None of this will work unless you have access to a BitTorrent tracker. The tracker is a server application that lets all clients know where to find files and which chunks to download from which machines. You can use either a public server or, perhaps better for experimentation, simply run one of your own. The BitTorrent package in the Kamaelia MegaBundle that you must install for any of this to work contains a tracker; start it with:<br />
+<p>None of this will work unless you have access to a BitTorrent
+tracker. The tracker is a server application that lets all clients know
+where to find files and which chunks to download from which machines.
+You can use either a public server or, perhaps better for
+experimentation, simply run one of your own. The BitTorrent package in
+the Kamaelia MegaBundle that you must install for any of this to work
+contains a tracker; start it with:<br />
 <br />
 </p>
 <pre><code> bittorrent-tracker --port port_number</code></pre>
-<p>You may encounter some problems with BitTorrent as it can be a touch sensitive. Make note of the following:</p>
+<p>You may encounter some problems with BitTorrent as it can be a touch
+sensitive. Make note of the following:</p>
 <ol type="1">
-<li>You cannot run more than one client on one machine. In otherwords, Host_A can run a tracker and one seeder/downloader, Host_B another seeder/downloader. Neither can run a second seeder/downloader.</li>
-<li>The Mainline BitTorrent code seems ony to want to seed files in the current working directory and only downloads files to the cwd also. However, you can use softlinks to collect files in one place without moving them from their normal location.</li>
-<li>Once downloaded do not immediately move the file away - this will prevent other clients downloading from a host that has the full file. As with collecting files together for seeding, if a downloaded file needs to reside elsewhere, soft-linking may provide the solution.<br />
+<li>You cannot run more than one client on one machine. In otherwords,
+Host_A can run a tracker and one seeder/downloader, Host_B another
+seeder/downloader. Neither can run a second seeder/downloader.</li>
+<li>The Mainline BitTorrent code seems ony to want to seed files in the
+current working directory and only downloads files to the cwd also.
+However, you can use softlinks to collect files in one place without
+moving them from their normal location.</li>
+<li>Once downloaded do not immediately move the file away - this will
+prevent other clients downloading from a host that has the full file. As
+with collecting files together for seeding, if a downloaded file needs
+to reside elsewhere, soft-linking may provide the solution.<br />
 </li>
-<li>Occasionaly the tracker will ignore requests to seed a torrent. This may occur if you've been testing and seeded the same torrent a few times. To rectify I've found it best to stop the tracker, delete <em>~/.bittorrent</em> and <em>/tmp/dfile*</em>, then re-start the tracker. I'm not sure where the tracker keeps its config and state files when run under Windows (please edit if you know!)<br />
+<li>Occasionaly the tracker will ignore requests to seed a torrent. This
+may occur if you've been testing and seeded the same torrent a few
+times. To rectify I've found it best to stop the tracker, delete
+<em>~/.bittorrent</em> and <em>/tmp/dfile*</em>, then re-start the
+tracker. I'm not sure where the tracker keeps its config and state files
+when run under Windows (please edit if you know!)<br />
 </li>
 </ol>
 <p><br />

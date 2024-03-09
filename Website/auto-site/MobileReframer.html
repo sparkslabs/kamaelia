@@ -15,34 +15,51 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
 <h1 id="mobilereframer">MobileReframer</h1>
 <div class="boxright">
-<p>For development/status information, see the <a href="/Developers/Projects/MobileReframer%20">project task page</a></p>
+<p>For development/status information, see the <a
+href="/Developers/Projects/MobileReframer%20">project task page</a></p>
 </div>
 <p><br />
-<span style="background-color: rgb(255, 255, 255);">This is a command line tool that decodes a video clip; applies edit decisisions (cutting, cropping and scaling); and re</span>-encodes it. The idea is to cut and crop video to make it suitable for playback on a small screen mobile device by zooming in onto just the important bit - such as the face of the interviewee.<br />
+<span style="background-color: rgb(255, 255, 255);">This is a command
+line tool that decodes a video clip; applies edit decisisions (cutting,
+cropping and scaling); and re</span>-encodes it. The idea is to cut and
+crop video to make it suitable for playback on a small screen mobile
+device by zooming in onto just the important bit - such as the face of
+the interviewee.<br />
 <br />
-You supply a set of edit decisions in an XML file, and the MobileReframer will apply those to the source video file you provide, creating a new output video file with the resolution you specify<br />
+You supply a set of edit decisions in an XML file, and the
+MobileReframer will apply those to the source video file you provide,
+creating a new output video file with the resolution you specify<br />
 <br />
 </p>
 <h2 id="getting-started">Getting Started</h2>
-<p>You can find the Mobile Reframer itself in <code>/Sketches/MH/MobileReframe</code> in the trunk of the subversion repository.<br />
+<p>You can find the Mobile Reframer itself in
+<code>/Sketches/MH/MobileReframe</code> in the trunk of the subversion
+repository.<br />
 </p>
 <h3 id="pre-requisites">Pre-requisites</h3>
 <ol type="1">
-<li>You must install Axon from the <code>private_MH_outboxwakeups</code> branch in the subversion repository. Mobile Reframer requires the new features in this branch to enable it to self rate limit without exploding memory usage!<br />
+<li>You must install Axon from the <code>private_MH_outboxwakeups</code>
+branch in the subversion repository. Mobile Reframer requires the new
+features in this branch to enable it to self rate limit without
+exploding memory usage!<br />
 <br />
 Install it the usual way using the command line:<br />
 <code>python setup.py install</code><br />
 <br />
 </li>
-<li>You must have an installed copy of the command line ffmpeg tool, which can be obtained from <a href="http://ffmpeg.mplayerhq.hu/">here.</a> Make sure you have all the codecs you need of course!<br />
+<li>You must have an installed copy of the command line ffmpeg tool,
+which can be obtained from <a
+href="http://ffmpeg.mplayerhq.hu/">here.</a> Make sure you have all the
+codecs you need of course!<br />
 </li>
 </ol>
 <h3 id="running-mobilereframer.py">Running MobileReframer.py</h3>
-<p>Run MobileReframer.py from the command line and you'll get usage information:<br />
+<p>Run MobileReframer.py from the command line and you'll get usage
+information:<br />
 </p>
 <pre style="margin-left: 40px;"><code>&gt; ./MobileReframer.py
 
@@ -54,12 +71,19 @@ Usage:
 <br />
 </p>
 <pre style="margin-left: 40px;"><code>./MobileReframer.py myVideo.avi myEditDecisions.xml theResult.avi 240 160 /tmp/mobile_reframer_scratch</code></pre>
-<p>This will apply the edit decisions in the xml file to the input video file and produce a result that is 240x160 pixels.<br />
+<p>This will apply the edit decisions in the xml file to the input video
+file and produce a result that is 240x160 pixels.<br />
 <br />
-Note that you need to specify a temporary working directory for mobile reframer to use, since it needs somewhere to decompress video frames into. This temporary directory should not be being used by any other programs, including other instances of MobileReframer, and there should be enough free disk space to hold, in the worst case, the whole input video file when decompressed to raw frames and audio.<br />
+Note that you need to specify a temporary working directory for mobile
+reframer to use, since it needs somewhere to decompress video frames
+into. This temporary directory should not be being used by any other
+programs, including other instances of MobileReframer, and there should
+be enough free disk space to hold, in the worst case, the whole input
+video file when decompressed to raw frames and audio.<br />
 <br />
 </p>
-<h2 id="writing-the-edit-decision-xml-file">Writing the edit decision XML file</h2>
+<h2 id="writing-the-edit-decision-xml-file">Writing the edit decision
+XML file</h2>
 <p><br />
 Write your edit decisions in an XML file, like this:<br />
 </p>
@@ -83,13 +107,21 @@ Write your edit decisions in an XML file, like this:<br />
 &lt;/EDL&gt;
   </code></pre>
 </blockquote>
-<p><span style="font-family: verdana,arial,helvetica,sans-serif;">The above edit decision list, or a similar one, shoudl be in the file <code>TestEDL.xml</code> in the MobileReframer's directory.<br />
+<p><span style="font-family: verdana,arial,helvetica,sans-serif;">The
+above edit decision list, or a similar one, shoudl be in the file
+<code>TestEDL.xml</code> in the MobileReframer's directory.<br />
 <br />
-</span>The format is pretty simple: simply specify a set of 'edits', in the order you want them to appear in the resulting video.<br />
+</span>The format is pretty simple: simply specify a set of 'edits', in
+the order you want them to appear in the resulting video.<br />
 <br />
-Each edit is a chunk of the input video specified by a start and end frame number, and then the bit of the video you want it cropped down to. Frames are numbered from zero, and coordinates are specified in pixels where (0,0) is the top left corner.<br />
+Each edit is a chunk of the input video specified by a start and end
+frame number, and then the bit of the video you want it cropped down to.
+Frames are numbered from zero, and coordinates are specified in pixels
+where (0,0) is the top left corner.<br />
 <br />
-For example perhaps, for frames 25 to 49 inclusive (a 2 second chunk that starts 4 seconds into the video, assuming 25fps video) we want the video to be cropped to a region in the lower left of the image:<br />
+For example perhaps, for frames 25 to 49 inclusive (a 2 second chunk
+that starts 4 seconds into the video, assuming 25fps video) we want the
+video to be cropped to a region in the lower left of the image:<br />
 <br />
 <br />
 </p>
@@ -138,15 +170,22 @@ For example perhaps, for frames 25 to 49 inclusive (a 2 second chunk that starts
 </tbody>
 </table>
 <p><br />
-Then to achieve this we would write, as part of our edit decisions:<br />
+Then to achieve this we would write, as part of our edit
+decisions:<br />
 </p>
 <pre><code>    &lt;Edit&gt;
         &lt;Start frame=&quot;25&quot; /&gt;
         &lt;End   frame=&quot;49&quot; /&gt;
         &lt;Crop  x1=&quot;100&quot; y1=&quot;150&quot; x2=&quot;400&quot; y2=&quot;250&quot; /&gt;
     &lt;/Edit&gt;</code></pre>
-<p>You can write your edit decisions in any order - you don't have to preserve the chronological order of the original video. For example, perhaps the video you are editing has 10 seconds of titles 30 seconds in from the start. Your edit decisions could specify that the output video should start with a few seconds of those titles, then return to something closer to the beginning.</p>
-<p>You don't have to use the whole video - you can use your edit decisions to cut a video down into a shorter one.</p>
+<p>You can write your edit decisions in any order - you don't have to
+preserve the chronological order of the original video. For example,
+perhaps the video you are editing has 10 seconds of titles 30 seconds in
+from the start. Your edit decisions could specify that the output video
+should start with a few seconds of those titles, then return to
+something closer to the beginning.</p>
+<p>You don't have to use the whole video - you can use your edit
+decisions to cut a video down into a shorter one.</p>
 <p><br />
 ****<br />
 ****</p>

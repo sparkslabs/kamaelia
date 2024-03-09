@@ -15,83 +15,154 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
-<h1 id="developersprojectskamaeliapublishindex">Developers/Projects/KamaeliaPublish/index</h1>
-<h2 id="head-c56d7c932f5d44641046aae5892bb3342b553c19">Kamaelia: Publish</h2>
+<h1
+id="developersprojectskamaeliapublishindex">Developers/Projects/KamaeliaPublish/index</h1>
+<h2 id="head-c56d7c932f5d44641046aae5892bb3342b553c19">Kamaelia:
+Publish</h2>
 <h2 id="head-cb43cfbe3084966a3a3d76039ca664b41579c854">What is it?</h2>
-<p>Kamaelia Publish as of right now aims to be a system that will let users publish themselves on their own terms. The goal is to allow a person to host their own web services without being beholden to anyone else for web space.</p>
+<p>Kamaelia Publish as of right now aims to be a system that will let
+users publish themselves on their own terms. The goal is to allow a
+person to host their own web services without being beholden to anyone
+else for web space.</p>
 <p><strong>Who wrote it?</strong></p>
-<p>It's developed by Jason Baker. It builds on HTTP work by Michael Sparks &amp; Ryan Lothian</p>
+<p>It's developed by Jason Baker. It builds on HTTP work by Michael
+Sparks &amp; Ryan Lothian</p>
 <p><strong>Who's interested in it?</strong></p>
 <p>Michael Sparks, ... you?<br />
 </p>
-<h2 id="head-4ae61e667b2c73bd4538b78f2443acaacfb3a7e7">Where do I get it &amp; install it?</h2>
+<h2 id="head-4ae61e667b2c73bd4538b78f2443acaacfb3a7e7">Where do I get it
+&amp; install it?</h2>
 <p><strong>developers</strong></p>
 <ul>
-<li><p>svn co <a href="https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/branches/private_JMB_Wsgi" class="uri">https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/branches/private_JMB_Wsgi</a></p></li>
-<li><p><a href="./KamaeliaPublish/BuildForUnix">Build the executable</a></p></li>
+<li><p>svn co <a
+href="https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/branches/private_JMB_Wsgi"
+class="uri">https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/branches/private_JMB_Wsgi</a></p></li>
+<li><p><a href="./KamaeliaPublish/BuildForUnix">Build the
+executable</a></p></li>
 </ul>
 <p><strong>Mac/Linux</strong></p>
 <ol type="1">
-<li><p>Download <a href="http://www.coderspalace.com/downloads/kpublish.zip" class="uri">http://www.coderspalace.com/downloads/kpublish.zip</a></p></li>
+<li><p>Download <a
+href="http://www.coderspalace.com/downloads/kpublish.zip"
+class="uri">http://www.coderspalace.com/downloads/kpublish.zip</a></p></li>
 <li><p>Unzip the file.</p></li>
 <li><p>Run the executable.</p></li>
-<li><p>Go to <a href="http://127.0.0.1:8082/simple" class="uri">http://127.0.0.1:8082/simple</a> to try it out.</p></li>
+<li><p>Go to <a href="http://127.0.0.1:8082/simple"
+class="uri">http://127.0.0.1:8082/simple</a> to try it out.</p></li>
 </ol>
-<h2 id="head-ab982e78aa80eb65225e149907cae69c7abf9889">Planned Schedule:</h2>
+<h2 id="head-ab982e78aa80eb65225e149907cae69c7abf9889">Planned
+Schedule:</h2>
 <ul>
-<li>June 6 - Build local tool chain for packaging up the webserver as it stands at that instant using py2app, py2exe, distutils.</li>
-<li>June 20 - Fix POST support with the server. Simplify URL routing and possibly include Paste, werkzeug, etc for more advanced URL routing. Make a WSGI application or use a pre-made one for serving static content and remove reliance on Minimal.</li>
-<li>July 4 - Convert the server to be an XMPP client instead of using HTTP.</li>
-<li>July 18 - Make an XMPP gateway to convert HTTP requests to XMPP that the WSGI server can understand.</li>
-<li>Aug 1 - Work on package manager to easily install WSGI software. This is intended to be an easy to use graphical interface for installing and configuring WSGI software.</li>
-<li>Aug 18 - I'll leave the last two weeks as a giant Miscellaneous. Tie up any loose ends with any of the apps I've written. Implement some of the would be nices that didn't make it into the final schedule. Examples include:
+<li>June 6 - Build local tool chain for packaging up the webserver as it
+stands at that instant using py2app, py2exe, distutils.</li>
+<li>June 20 - Fix POST support with the server. Simplify URL routing and
+possibly include Paste, werkzeug, etc for more advanced URL routing.
+Make a WSGI application or use a pre-made one for serving static content
+and remove reliance on Minimal.</li>
+<li>July 4 - Convert the server to be an XMPP client instead of using
+HTTP.</li>
+<li>July 18 - Make an XMPP gateway to convert HTTP requests to XMPP that
+the WSGI server can understand.</li>
+<li>Aug 1 - Work on package manager to easily install WSGI software.
+This is intended to be an easy to use graphical interface for installing
+and configuring WSGI software.</li>
+<li>Aug 18 - I'll leave the last two weeks as a giant Miscellaneous. Tie
+up any loose ends with any of the apps I've written. Implement some of
+the would be nices that didn't make it into the final schedule. Examples
+include:
 <ul>
-<li><p>Create a FOAF database of some kind so that Google's <a href="http://wsgi.coderspalace.com/kcwiki/SocialGraph" class="nonexistent">SocialGraph</a> API can be used to build friends lists.</p></li>
-<li><p>Make the server more user friendly and create some good administration tools for idiots either using a native application or some kind of web app (the latter is preferable).</p></li>
-<li><p>Make a basic plugin system based on mako templating. It's kind of hard to put this one into words, but the basic idea is to have a system that end users can design their own webpages with pre-made widgets that can be inserted as mako expression substitution.</p></li>
+<li><p>Create a FOAF database of some kind so that Google's <a
+href="http://wsgi.coderspalace.com/kcwiki/SocialGraph"
+class="nonexistent">SocialGraph</a> API can be used to build friends
+lists.</p></li>
+<li><p>Make the server more user friendly and create some good
+administration tools for idiots either using a native application or
+some kind of web app (the latter is preferable).</p></li>
+<li><p>Make a basic plugin system based on mako templating. It's kind of
+hard to put this one into words, but the basic idea is to have a system
+that end users can design their own webpages with pre-made widgets that
+can be inserted as mako expression substitution.</p></li>
 </ul></li>
 </ul>
-<h2 id="head-38c970225e454db55841fa5cd8c542a5e0948c10">Progress (dates related to the weekly meeting - these are the "DONE" lines)</h2>
+<h2 id="head-38c970225e454db55841fa5cd8c542a5e0948c10">Progress (dates
+related to the weekly meeting - these are the "DONE" lines)</h2>
 <ul>
-<li>Fixed some more stuff with the Minimal request handler, got <a href="http://wsgi.coderspalace.com/kcwiki/MoinMoin">MoinMoin</a> working</li>
+<li>Fixed some more stuff with the Minimal request handler, got <a
+href="http://wsgi.coderspalace.com/kcwiki/MoinMoin">MoinMoin</a>
+working</li>
 </ul>
 <h2 id="head-105aec3df2ff0e4fd9e666bbf89cba1902e148a1">See Also</h2>
-<p><a href="./KamaeliaPublish/HowToBuildEXE">How to use my toolchain for other projects</a><br />
+<p><a href="./KamaeliaPublish/HowToBuildEXE">How to use my toolchain for
+other projects</a><br />
 <strong><br />
 Project sub pages:</strong> (by last change)<br />
 </p>
 <ul>
-<li><a href="/Developers/Projects/KamaeliaPublish/kpgate_ini">kpgate_ini</a>      (<em>Sat Sep 20 22:31:56 2008</em>)</li>
-<li><a href="/Developers/Projects/KamaeliaPublish/kp_ini">kp_ini</a>      (<em>Sat Sep 20 22:31:56 2008</em>)</li>
-<li><a href="/Developers/Projects/KamaeliaPublish/index">index</a>      (<em>Sat Sep 20 22:31:56 2008</em>)</li>
-<li><a href="/Developers/Projects/KamaeliaPublish/UrlsFile">UrlsFile</a>      (<em>Sat Sep 20 22:31:56 2008</em>)</li>
-<li><a href="/Developers/Projects/KamaeliaPublish/Review">Review</a>      (<em>Sat Sep 20 22:31:56 2008</em>)</li>
-<li><a href="/Developers/Projects/KamaeliaPublish/RequestReference">RequestReference</a>      (<em>Sat Sep 20 22:31:56 2008</em>)</li>
-<li><a href="/Developers/Projects/KamaeliaPublish/Pylons">Pylons</a>      (<em>Sat Sep 20 22:31:56 2008</em>)</li>
-<li><a href="/Developers/Projects/KamaeliaPublish/OpenIssues">OpenIssues</a>      (<em>Sat Sep 20 22:31:56 2008</em>)</li>
-<li><a href="/Developers/Projects/KamaeliaPublish/MoinMoin">MoinMoin</a>      (<em>Sat Sep 20 22:31:56 2008</em>)</li>
-<li><a href="/Developers/Projects/KamaeliaPublish/HowToBuildExe">HowToBuildExe</a>      (<em>Sat Sep 20 22:31:56 2008</em>)</li>
-<li><a href="/Developers/Projects/KamaeliaPublish/Files">Files</a>      (<em>Sat Sep 20 22:31:56 2008</em>)</li>
-<li><a href="/Developers/Projects/KamaeliaPublish/Django">Django</a>      (<em>Sat Sep 20 22:31:56 2008</em>)</li>
-<li><a href="/Developers/Projects/KamaeliaPublish/CrossTalk">CrossTalk</a>      (<em>Sat Sep 20 22:31:56 2008</em>)</li>
-<li><a href="/Developers/Projects/KamaeliaPublish/BuildForUnix">BuildForUnix</a>      (<em>Sat Sep 20 22:31:56 2008</em>)</li>
+<li><a
+href="/Developers/Projects/KamaeliaPublish/kpgate_ini">kpgate_ini</a>      (<em>Sat
+Sep 20 22:31:56 2008</em>)</li>
+<li><a
+href="/Developers/Projects/KamaeliaPublish/kp_ini">kp_ini</a>      (<em>Sat
+Sep 20 22:31:56 2008</em>)</li>
+<li><a
+href="/Developers/Projects/KamaeliaPublish/index">index</a>      (<em>Sat
+Sep 20 22:31:56 2008</em>)</li>
+<li><a
+href="/Developers/Projects/KamaeliaPublish/UrlsFile">UrlsFile</a>      (<em>Sat
+Sep 20 22:31:56 2008</em>)</li>
+<li><a
+href="/Developers/Projects/KamaeliaPublish/Review">Review</a>      (<em>Sat
+Sep 20 22:31:56 2008</em>)</li>
+<li><a
+href="/Developers/Projects/KamaeliaPublish/RequestReference">RequestReference</a>      (<em>Sat
+Sep 20 22:31:56 2008</em>)</li>
+<li><a
+href="/Developers/Projects/KamaeliaPublish/Pylons">Pylons</a>      (<em>Sat
+Sep 20 22:31:56 2008</em>)</li>
+<li><a
+href="/Developers/Projects/KamaeliaPublish/OpenIssues">OpenIssues</a>      (<em>Sat
+Sep 20 22:31:56 2008</em>)</li>
+<li><a
+href="/Developers/Projects/KamaeliaPublish/MoinMoin">MoinMoin</a>      (<em>Sat
+Sep 20 22:31:56 2008</em>)</li>
+<li><a
+href="/Developers/Projects/KamaeliaPublish/HowToBuildExe">HowToBuildExe</a>      (<em>Sat
+Sep 20 22:31:56 2008</em>)</li>
+<li><a
+href="/Developers/Projects/KamaeliaPublish/Files">Files</a>      (<em>Sat
+Sep 20 22:31:56 2008</em>)</li>
+<li><a
+href="/Developers/Projects/KamaeliaPublish/Django">Django</a>      (<em>Sat
+Sep 20 22:31:56 2008</em>)</li>
+<li><a
+href="/Developers/Projects/KamaeliaPublish/CrossTalk">CrossTalk</a>      (<em>Sat
+Sep 20 22:31:56 2008</em>)</li>
+<li><a
+href="/Developers/Projects/KamaeliaPublish/BuildForUnix">BuildForUnix</a>      (<em>Sat
+Sep 20 22:31:56 2008</em>)</li>
 </ul>
 <p><br />
 </p>
-<h2 id="head-105aec3df2ff0e4fd9e666bbf89cba1902e148a1">Log/Discussion</h2>
-<p>Just tested the "executable" under linux with python 2.5. Works perfectly fine. Really impressive - worked straight out the box.<br />
+<h2
+id="head-105aec3df2ff0e4fd9e666bbf89cba1902e148a1">Log/Discussion</h2>
+<p>Just tested the "executable" under linux with python 2.5. Works
+perfectly fine. Really impressive - worked straight out the box.<br />
 <br />
-Also just tested under Mac OS 10.. That comes with python2.3 which doesn't include wsgiref, which means I get the following failure:<br />
+Also just tested under Mac OS 10.. That comes with python2.3 which
+doesn't include wsgiref, which means I get the following failure:<br />
 <br />
 Traceback (most recent call last):<br />
 File " stdin ", line 9, in ?<br />
 File "./kpublish/main.py", line 5, in ?<br />
-File "./kpublish/Kamaelia/Experimental/Wsgi/WsgiHandler.py", line 9, in ?<br />
+File "./kpublish/Kamaelia/Experimental/Wsgi/WsgiHandler.py", line 9, in
+?<br />
 ImportError: No module named wsgiref.validate<br />
 <br />
-Which isn't the least bit surprising - that machine doesn't have wsgiref installed. It may be worth considering re-packaging this to include a copy of wsgiref.<br />
+Which isn't the least bit surprising - that machine doesn't have wsgiref
+installed. It may be worth considering re-packaging this to include a
+copy of wsgiref.<br />
 <br />
 Still despite that, impressive :-)<br />
 <br />

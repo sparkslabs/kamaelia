@@ -15,65 +15,113 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
-<p><span style="font-size:23pt;font-weight:600">Axon Visualiser</span></p>
-<p><span style="font-size:15pt">Looking inside running systems</span></p>
-<p>In <span style="font-style:italic">Tools</span> in the Kamaelia distribution, we have the Axon Visualiser. This allows you to look inside running Kamaelia based systems and see what your system is currently doing, what components are active and linked to what.</p>
-<p><span style="font-size:13pt;font-weight:600">Starting the Axon Visualiser</span></p>
+<p><span style="font-size:23pt;font-weight:600">Axon
+Visualiser</span></p>
+<p><span style="font-size:15pt">Looking inside running
+systems</span></p>
+<p>In <span style="font-style:italic">Tools</span> in the Kamaelia
+distribution, we have the Axon Visualiser. This allows you to look
+inside running Kamaelia based systems and see what your system is
+currently doing, what components are active and linked to what.</p>
+<p><span style="font-size:13pt;font-weight:600">Starting the Axon
+Visualiser</span></p>
 <div class="boxright">
-<p>The Axon visualiser can be found in the <span style="font-family:Courier">Tools</span> directory of the Kamaelia distribution, named <span style="font-family:Courier">AxonVisualiser.py</span>. In the following run through, we'll use <span style="font-family:Courier;font-style:italic;font-weight:600">bold italic</span> to indicate something the user types.</p>
+<p>The Axon visualiser can be found in the <span
+style="font-family:Courier">Tools</span> directory of the Kamaelia
+distribution, named <span
+style="font-family:Courier">AxonVisualiser.py</span>. In the following
+run through, we'll use <span
+style="font-family:Courier;font-style:italic;font-weight:600">bold
+italic</span> to indicate something the user types.</p>
 </div>
 <p>Start the Axon Visualiser:</p>
-<p>If all goes well, an empty visualiser window will appear (empty except for a logo).</p>
-<p>Press <span style="font-style:italic;font-weight:600">ESCAPE</span> or <span style="font-style:italic;font-weight:600">Q</span> to quit.</p>
+<p>If all goes well, an empty visualiser window will appear (empty
+except for a logo).</p>
+<p>Press <span style="font-style:italic;font-weight:600">ESCAPE</span>
+or <span style="font-style:italic;font-weight:600">Q</span> to quit.</p>
 <p>You can see the full command line options for this tool:</p>
-<p><span style="font-size:13pt;font-weight:600">Simple Navel gazing</span></p>
-<p>But that isn't very interesting. Let's get the visualiser to navel gaze a little and introspect itself:</p>
-<p>Once the display has settled down, things should look a little more interesting. The visualiser is now showing the components it consists of:</p>
-<p><a href="screenshots/AxonVisualiser_navelgaze.gif"><img src="screenshots/thumbnail/AxonVisualiser_navelgaze.gif" /></a></p>
-<p><span style="font-style:italic">Axon Visualiser Introspecting itself (Click to enlarge)</span></p>
-<p><span style="font-style:italic;font-weight:600">What am I seeing?</span></p>
-<p>Each grey 'blob' is a component. A component's inboxes and outboxes are labels that hover round the edge of the blob. Linkages between components are the green and orange lines. The direction arrows show the which way data flows. Orange linkages are 'passthrough' linkages - where a component forwards an inbox to a child's inbox or an outbox to a child's outbox.</p>
-<p>The name labels for all compoents, inboxes and outboxes are abbreviated.</p>
-<p>What you are seeing may not look quite this tidy. But don't worry, you can re-arrange the blobs!</p>
-<p><span style="font-style:italic;font-weight:600">Manipulating the view</span></p>
-<p><span style="font-weight:600">Drag</span>components, inboxes or outboxes with the mouse to move them around. As you drag things, the topology visualiser physics model will cause things to move around, trying to rearrange themselves to not get in the way.</p>
-<p><span style="font-weight:600">Click</span>a component, inbox or outbox and it will be highlighted. Its full, unabbreviated, name will also be displayed at the top. In the screenshot above, the Introspector component (the source of this introspection data) is highlighted.</p>
-<p>Use the <span style="font-weight:600">arrow keys</span> to pan the view left, right, up and down.</p>
-<p><span style="font-size:13pt;font-weight:600">Introspecting Another Program</span></p>
-<p>The Axon Visualiser, by default, receives introspection data from a TCP socket. Lets plug introspection code into another system and watch what is going on.</p>
-<p><span style="font-style:italic;font-weight:600">Adding Introspection</span></p>
-<p>Take the SimpleStreamer.py example. The code added to provide introspection is highlighted in green:</p>
+<p><span style="font-size:13pt;font-weight:600">Simple Navel
+gazing</span></p>
+<p>But that isn't very interesting. Let's get the visualiser to navel
+gaze a little and introspect itself:</p>
+<p>Once the display has settled down, things should look a little more
+interesting. The visualiser is now showing the components it consists
+of:</p>
+<p><a href="screenshots/AxonVisualiser_navelgaze.gif"><img
+src="screenshots/thumbnail/AxonVisualiser_navelgaze.gif" /></a></p>
+<p><span style="font-style:italic">Axon Visualiser Introspecting itself
+(Click to enlarge)</span></p>
+<p><span style="font-style:italic;font-weight:600">What am I
+seeing?</span></p>
+<p>Each grey 'blob' is a component. A component's inboxes and outboxes
+are labels that hover round the edge of the blob. Linkages between
+components are the green and orange lines. The direction arrows show the
+which way data flows. Orange linkages are 'passthrough' linkages - where
+a component forwards an inbox to a child's inbox or an outbox to a
+child's outbox.</p>
+<p>The name labels for all compoents, inboxes and outboxes are
+abbreviated.</p>
+<p>What you are seeing may not look quite this tidy. But don't worry,
+you can re-arrange the blobs!</p>
+<p><span style="font-style:italic;font-weight:600">Manipulating the
+view</span></p>
+<p><span style="font-weight:600">Drag</span>components, inboxes or
+outboxes with the mouse to move them around. As you drag things, the
+topology visualiser physics model will cause things to move around,
+trying to rearrange themselves to not get in the way.</p>
+<p><span style="font-weight:600">Click</span>a component, inbox or
+outbox and it will be highlighted. Its full, unabbreviated, name will
+also be displayed at the top. In the screenshot above, the Introspector
+component (the source of this introspection data) is highlighted.</p>
+<p>Use the <span style="font-weight:600">arrow keys</span> to pan the
+view left, right, up and down.</p>
+<p><span style="font-size:13pt;font-weight:600">Introspecting Another
+Program</span></p>
+<p>The Axon Visualiser, by default, receives introspection data from a
+TCP socket. Lets plug introspection code into another system and watch
+what is going on.</p>
+<p><span style="font-style:italic;font-weight:600">Adding
+Introspection</span></p>
+<p>Take the SimpleStreamer.py example. The code added to provide
+introspection is highlighted in green:</p>
 <div class="boxright">
-<p>This example can be found in <span style="font-family:courier">Kamaelia/Examples/example3/SimpleStreamer.py</span></p>
+<p>This example can be found in <span
+style="font-family:courier">Kamaelia/Examples/example3/SimpleStreamer.py</span></p>
 </div>
 <div>
 <p><span style="font-family:Courier">import Axon as _Axon</span></p>
 </div>
 <div>
-<p><span style="font-family:Courier">import Kamaelia.ReadFileAdaptor</span></p>
+<p><span style="font-family:Courier">import
+Kamaelia.ReadFileAdaptor</span></p>
 </div>
 <div>
-<p><span style="font-family:Courier">from Kamaelia.SimpleServerComponent import SimpleServer</span></p>
-</div>
-<div>
-
-</div>
-<div>
-<p><span style="font-family:Courier">file_to_stream = "/usr/share/wesnoth/music/wesnoth-1.ogg"</span></p>
+<p><span style="font-family:Courier">from Kamaelia.SimpleServerComponent
+import SimpleServer</span></p>
 </div>
 <div>
 
 </div>
 <div>
-<p><span style="font-family:Courier">def AdHocFileProtocolHandler(filename):</span></p>
+<p><span style="font-family:Courier">file_to_stream =
+"/usr/share/wesnoth/music/wesnoth-1.ogg"</span></p>
 </div>
 <div>
-<p><span style="font-family:Courier">class klass(Kamaelia.ReadFileAdaptor.ReadFileAdaptor):</span></p>
+
 </div>
 <div>
-<p><span style="font-family:Courier">def __init__(self,*argv,**argd):</span></p>
+<p><span style="font-family:Courier">def
+AdHocFileProtocolHandler(filename):</span></p>
+</div>
+<div>
+<p><span style="font-family:Courier">class
+klass(Kamaelia.ReadFileAdaptor.ReadFileAdaptor):</span></p>
+</div>
+<div>
+<p><span style="font-family:Courier">def
+__init__(self,*argv,**argd):</span></p>
 </div>
 <div>
 <p><span style="font-family:Courier">return klass</span></p>
@@ -82,109 +130,202 @@
 
 </div>
 <div>
-<p><span style="font-family:Courier">clientServerTestPort=1500</span></p>
+<p><span
+style="font-family:Courier">clientServerTestPort=1500</span></p>
 </div>
 <div>
 
 </div>
 <div>
-<p><span style="font-family:Courier;font-weight:600;color:#008002">from Kamaelia.Util.PipelineComponent import pipeline</span></p>
+<p><span style="font-family:Courier;font-weight:600;color:#008002">from
+Kamaelia.Util.PipelineComponent import pipeline</span></p>
 </div>
 <div>
-<p><span style="font-family:Courier;font-weight:600;color:#008002">from Kamaelia.Internet.TCPClient import TCPClient</span></p>
+<p><span style="font-family:Courier;font-weight:600;color:#008002">from
+Kamaelia.Internet.TCPClient import TCPClient</span></p>
 </div>
 <div>
-<p><span style="font-family:Courier;font-weight:600;color:#008002">from Kamaelia.Util.Introspector import Introspector</span></p>
-</div>
-<div>
-
-</div>
-<div>
-<p><span style="font-family:Courier;font-weight:600;color:#008002">pipeline( Introspector(), TCPClient("127.0.0.1",1501) ).activate()</span></p>
+<p><span style="font-family:Courier;font-weight:600;color:#008002">from
+Kamaelia.Util.Introspector import Introspector</span></p>
 </div>
 <div>
 
 </div>
 <div>
-<p><span style="font-family:Courier">SimpleServer(protocol=AdHocFileProtocolHandler(file_to_stream),</span></p>
+<p><span
+style="font-family:Courier;font-weight:600;color:#008002">pipeline(
+Introspector(), TCPClient("127.0.0.1",1501) ).activate()</span></p>
 </div>
-<p>As you can see, all you need to do is create an Introspector, and TCPClient (to send the data) and pipeline them together.</p>
-<p>By default the Axon Visualiser expects the client to connect on port 1500, however this example program already uses that port. We therefore arbitrarily choose port 1501 instead.</p>
-<p><span style="font-style:italic;font-weight:600">Performing the Introspection</span></p>
-<p>We must start the Axon Visualiser before the system we are introspecting. Why? Because the Introspector component only sends the changes it sees in the system it is introspecting and the TCPClient component will want to connect to the visualiser immediately. If we were to start up the streaming server first, then the visualiser would not be in sync with the data and the TCPClient would have given up trying to connect to it.</p>
-<p>Lets start the visualiser, remembering to ask it to listen on port 1501, rather than its default of port 1500:</p>
+<div>
+
+</div>
+<div>
+<p><span
+style="font-family:Courier">SimpleServer(protocol=AdHocFileProtocolHandler(file_to_stream),</span></p>
+</div>
+<p>As you can see, all you need to do is create an Introspector, and
+TCPClient (to send the data) and pipeline them together.</p>
+<p>By default the Axon Visualiser expects the client to connect on port
+1500, however this example program already uses that port. We therefore
+arbitrarily choose port 1501 instead.</p>
+<p><span style="font-style:italic;font-weight:600">Performing the
+Introspection</span></p>
+<p>We must start the Axon Visualiser before the system we are
+introspecting. Why? Because the Introspector component only sends the
+changes it sees in the system it is introspecting and the TCPClient
+component will want to connect to the visualiser immediately. If we were
+to start up the streaming server first, then the visualiser would not be
+in sync with the data and the TCPClient would have given up trying to
+connect to it.</p>
+<p>Lets start the visualiser, remembering to ask it to listen on port
+1501, rather than its default of port 1500:</p>
 <p>Now we can start the streaming system:</p>
-<p>After a brief pause, the visualiser will gradually be populated with the components, postboxes and linkages currently in SimpleServer. Once it has settled down and you have moved things around to tidy it up, you should see something like this:</p>
-<p><a href="screenshots/AxonVisualiser_SimpleStreamer.gif"><img src="screenshots/thumbnail/AxonVisualiser_SimpleStreamer.gif" /></a></p>
-<p><span style="font-style:italic">A view inside SimpleStreamer.py (Click to enlarge)</span></p>
-<p><span style="font-style:italic;font-weight:600">What am I seeing?</span></p>
-<p>Why are there so many components, when the SimpleStreamer surely only consists of a few? The simple answer is that you're not only seeing the SimpleServer components, but also the ones you added to perform the introspection.</p>
+<p>After a brief pause, the visualiser will gradually be populated with
+the components, postboxes and linkages currently in SimpleServer. Once
+it has settled down and you have moved things around to tidy it up, you
+should see something like this:</p>
+<p><a href="screenshots/AxonVisualiser_SimpleStreamer.gif"><img
+src="screenshots/thumbnail/AxonVisualiser_SimpleStreamer.gif" /></a></p>
+<p><span style="font-style:italic">A view inside SimpleStreamer.py
+(Click to enlarge)</span></p>
+<p><span style="font-style:italic;font-weight:600">What am I
+seeing?</span></p>
+<p>Why are there so many components, when the SimpleStreamer surely only
+consists of a few? The simple answer is that you're not only seeing the
+SimpleServer components, but also the ones you added to perform the
+introspection.</p>
 <div class="boxright">
-<p>Introspector (5) is the source of introspection data. Pipeline (5) joins it to TCPClient (7) which is using ConnectedSocketAdapter (17) to send the data to the visualiser.</p>
+<p>Introspector (5) is the source of introspection data. Pipeline (5)
+joins it to TCPClient (7) which is using ConnectedSocketAdapter (17) to
+send the data to the visualiser.</p>
 </div>
-<p>The highlighted Selector component represents the unix 'select' statement, waiting for events on all socket bindings. Notice that both the introspection 'system' and the server share the Selector. Obviously, the moral of the story is that you can't observe a system without modifying and affecting it.</p>
-<p><span style="font-size:13pt;font-weight:600">Watching a changing system</span></p>
-<p>Lets see what happens when a client connects to our streaming server.</p>
-<p>First, check that the client (SimpleStreamingClient.py) is going to connect to the machine we're running SimpleStreamer.py on:</p>
+<p>The highlighted Selector component represents the unix 'select'
+statement, waiting for events on all socket bindings. Notice that both
+the introspection 'system' and the server share the Selector. Obviously,
+the moral of the story is that you can't observe a system without
+modifying and affecting it.</p>
+<p><span style="font-size:13pt;font-weight:600">Watching a changing
+system</span></p>
+<p>Lets see what happens when a client connects to our streaming
+server.</p>
+<p>First, check that the client (SimpleStreamingClient.py) is going to
+connect to the machine we're running SimpleStreamer.py on:</p>
 <div>
-<p><span style="font-family:courier">from Kamaelia.Internet.TCPClient import TCPClient</span></p>
+<p><span style="font-family:courier">from Kamaelia.Internet.TCPClient
+import TCPClient</span></p>
 </div>
 <div>
-<p><span style="font-family:courier">from Kamaelia.vorbisDecodeComponent import VorbisDecode, AOAudioPlaybackAdaptor</span></p>
+<p><span style="font-family:courier">from Kamaelia.vorbisDecodeComponent
+import VorbisDecode, AOAudioPlaybackAdaptor</span></p>
 </div>
 <div>
-<p><span style="font-family:courier">from Kamaelia.Util.PipelineComponent import pipeline</span></p>
+<p><span style="font-family:courier">from
+Kamaelia.Util.PipelineComponent import pipeline</span></p>
 </div>
 <div>
 
 </div>
 <div>
-<p><span style="font-family:courier">clientServerTestPort=1500</span></p>
+<p><span
+style="font-family:courier">clientServerTestPort=1500</span></p>
 </div>
 <div>
-<p><span style="font-family:courier">pipeline(TCPClient(</span><span style="font-family:courier;font-weight:600;color:#008002">"127.0.0.1"</span><span style="font-family:courier">,clientServerTestPort),</span></p>
+<p><span style="font-family:courier">pipeline(TCPClient(</span><span
+style="font-family:courier;font-weight:600;color:#008002">"127.0.0.1"</span><span
+style="font-family:courier">,clientServerTestPort),</span></p>
 </div>
 <div>
 <p><span style="font-family:courier">).run()</span></p>
 </div>
-<p><span style="font-family:verdana">Now lets run the client...</span></p>
+<p><span style="font-family:verdana">Now lets run the
+client...</span></p>
 <p>...and see what happens:</p>
-<p><a href="screenshots/AxonVisualiser_SimpleStreamerWithClient.gif"><img src="screenshots/thumbnail/AxonVisualiser_SimpleStreamerWithClient.gif" /></a></p>
-<p><span style="font-style:italic">A view inside SimpleStreamer.py when a client has connected (Click to enlarge)</span></p>
-<p>For the duration of the streaming connection, you can see new components, postboxes and linkages created (circled in blue in the above screenshot).</p>
-<p><span style="font-style:italic;font-weight:600">Limitations</span></p>
-<p>You may find that the components appear and disappear too quickly for you to be able to see what is happening. This is because you are remotely viewing what is happening in a live running system, rather than stepping through execution in a debugger. It takes time for data to flow from introspector to visualiser; and it takes time for the visualiser's physics model to sort out the visual mess into a semblance of order.</p>
-<p>Also bear in mind that the visualiser will batch process data from the introspector if it comes in particularly fast, redrawing the view less frequently. You may have noticed this when you first started up the streaming server. Consequently, if a change to the system has a very short duration, you may not see it at all.</p>
-<p>If you want to freeze the state of a system to inspect it properly, you must cut off the flow of introspection data to the visualiser - either by in some may pausing your program, or by simply killing it (pressing <span style="font-weight:600">ctrl-c</span> in unix systems).</p>
-<p><span style="font-size:13pt;font-weight:600">Visualisation as a debugging aid</span></p>
-<p>We've found this tool to be useful as a debugging aid. We've spotted the following when introspecting running systems:</p>
-<p><span style="font-style:italic;font-weight:600">The Linkages are all wrong!</span></p>
-<p>Introspection lets you see whether the linkages you think you coded have actually been made. You can also follow the arrows to check that the data-flow of your system makes sense.</p>
-<p><span style="font-style:italic;font-weight:600">Components left dangling</span></p>
-<p>A component has finished doing its task and should have been unwired (linkages removed) and/or disappeared.</p>
+<p><a
+href="screenshots/AxonVisualiser_SimpleStreamerWithClient.gif"><img
+src="screenshots/thumbnail/AxonVisualiser_SimpleStreamerWithClient.gif" /></a></p>
+<p><span style="font-style:italic">A view inside SimpleStreamer.py when
+a client has connected (Click to enlarge)</span></p>
+<p>For the duration of the streaming connection, you can see new
+components, postboxes and linkages created (circled in blue in the above
+screenshot).</p>
+<p><span
+style="font-style:italic;font-weight:600">Limitations</span></p>
+<p>You may find that the components appear and disappear too quickly for
+you to be able to see what is happening. This is because you are
+remotely viewing what is happening in a live running system, rather than
+stepping through execution in a debugger. It takes time for data to flow
+from introspector to visualiser; and it takes time for the visualiser's
+physics model to sort out the visual mess into a semblance of order.</p>
+<p>Also bear in mind that the visualiser will batch process data from
+the introspector if it comes in particularly fast, redrawing the view
+less frequently. You may have noticed this when you first started up the
+streaming server. Consequently, if a change to the system has a very
+short duration, you may not see it at all.</p>
+<p>If you want to freeze the state of a system to inspect it properly,
+you must cut off the flow of introspection data to the visualiser -
+either by in some may pausing your program, or by simply killing it
+(pressing <span style="font-weight:600">ctrl-c</span> in unix
+systems).</p>
+<p><span style="font-size:13pt;font-weight:600">Visualisation as a
+debugging aid</span></p>
+<p>We've found this tool to be useful as a debugging aid. We've spotted
+the following when introspecting running systems:</p>
+<p><span style="font-style:italic;font-weight:600">The Linkages are all
+wrong!</span></p>
+<p>Introspection lets you see whether the linkages you think you coded
+have actually been made. You can also follow the arrows to check that
+the data-flow of your system makes sense.</p>
+<p><span style="font-style:italic;font-weight:600">Components left
+dangling</span></p>
+<p>A component has finished doing its task and should have been unwired
+(linkages removed) and/or disappeared.</p>
 <ul>
-<li>Linkages are 'owned' by the component you called the link() method on. Only that component's postman can destroy that linkage. Check that all components that created the linkages are destroying them ... correctly.</li>
-<li>A component will remain 'active' (and be called by the scheduler) until it exits its main() generator. Check that the component is shutting down properly.</li>
+<li>Linkages are 'owned' by the component you called the link() method
+on. Only that component's postman can destroy that linkage. Check that
+all components that created the linkages are destroying them ...
+correctly.</li>
+<li>A component will remain 'active' (and be called by the scheduler)
+until it exits its main() generator. Check that the component is
+shutting down properly.</li>
 </ul>
-<p><span style="font-style:italic;font-weight:600">One outbox linked to multiple inboxes</span></p>
-<p>Axon only supports many-to-one or one-to-one linkages. One-to-many are not supported.</p>
+<p><span style="font-style:italic;font-weight:600">One outbox linked to
+multiple inboxes</span></p>
+<p>Axon only supports many-to-one or one-to-one linkages. One-to-many
+are not supported.</p>
 <ul>
-<li>If one outbox is linked to many inboxes, only one will receive any data sent. Which one receives the data is undefined.</li>
+<li>If one outbox is linked to many inboxes, only one will receive any
+data sent. Which one receives the data is undefined.</li>
 </ul>
-<p><span style="font-style:italic;font-weight:600">Non-sensical introspection visualisation / far too many components</span></p>
-<p>If a component's microprocess is activated more than once, the scheduler will register it multiple times. The Introspector cannot guarantee being able to make sense of such situations!</p>
+<p><span style="font-style:italic;font-weight:600">Non-sensical
+introspection visualisation / far too many components</span></p>
+<p>If a component's microprocess is activated more than once, the
+scheduler will register it multiple times. The Introspector cannot
+guarantee being able to make sense of such situations!</p>
 <ul>
-<li>Check that you are not, for example, activating a component, then placing it in a pipeline and activating that too.</li>
+<li>Check that you are not, for example, activating a component, then
+placing it in a pipeline and activating that too.</li>
 </ul>
 <p><span style="font-size:13pt;font-weight:600">How it works</span></p>
-<p>This is a specialisation of the Topology Visualiser for viewing the components, and linkages between them, in a running system. This is a quick tutorial to give you an understanding of how to use this tool and what you can do with it.</p>
-<p>The actual introspection into a running system is performed separately - by the Introspector component. The visualiser waits to receive this data over a TCP socket connection.</p>
-<p><span style="font-size:13pt;font-weight:600">Further information</span></p>
-<p>You can obtain help on the full command line options for the Axon Visualiser:</p>
-<p>The Axon visualiser is a specialisation of the generic Topology visualiser system. Set it to navelgaze or 'loop back' to understand what components it is built from:</p>
+<p>This is a specialisation of the Topology Visualiser for viewing the
+components, and linkages between them, in a running system. This is a
+quick tutorial to give you an understanding of how to use this tool and
+what you can do with it.</p>
+<p>The actual introspection into a running system is performed
+separately - by the Introspector component. The visualiser waits to
+receive this data over a TCP socket connection.</p>
+<p><span style="font-size:13pt;font-weight:600">Further
+information</span></p>
+<p>You can obtain help on the full command line options for the Axon
+Visualiser:</p>
+<p>The Axon visualiser is a specialisation of the generic Topology
+visualiser system. Set it to navelgaze or 'loop back' to understand what
+components it is built from:</p>
 <p><span style="font-family:verdana">or:</span></p>
 <p><span style="font-size:13pt;font-weight:600">Summary</span></p>
-<p>This page has shown how to use the Axon Visualiser program and how to add introspection code to a Kamaelia system. You should also have a flavour of how this can be used to aid understanding the runtime properties of your system and to aid debugging.</p>
+<p>This page has shown how to use the Axon Visualiser program and how to
+add introspection code to a Kamaelia system. You should also have a
+flavour of how this can be used to aid understanding the runtime
+properties of your system and to aid debugging.</p>
 
 </div> <!-- end section -->
 </div> <!-- end page container -->

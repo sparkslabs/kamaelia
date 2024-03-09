@@ -15,54 +15,108 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
-<h1 id="kamaelia-publish-gateway-config-file">Kamaelia Publish Gateway config file</h1>
-<p>The config file format is very similar to the one used by <a href="../../../cgi-bin/Wiki/edit/Developers/Projects/KamaeliaPublish/kp_ini">Kamaelia WebServe and the Kamaelia Publish peer</a>.</p>
+<h1 id="kamaelia-publish-gateway-config-file">Kamaelia Publish Gateway
+config file</h1>
+<p>The config file format is very similar to the one used by <a
+href="../../../cgi-bin/Wiki/edit/Developers/Projects/KamaeliaPublish/kp_ini">Kamaelia
+WebServe and the Kamaelia Publish peer</a>.</p>
 <h2 id="server">SERVER</h2>
-<p>This section holds most of the data required to configure the server in general.<br />
+<p>This section holds most of the data required to configure the server
+in general.<br />
 <br />
 </p>
 <ul>
-<li><strong>Port</strong> - This is the port that Kamaelia WebServe will listen on for HTTP requests.  Note that using port 80 (typically used for HTTP) will require elevated privileges on most *NIX systems.  <strong>It is not recommended that you use port 80 currently as this is a potential security problem since Kamaelia WebServe does not de-escalate privileges.</strong></li>
-<li><strong>pypath_append</strong> - This is a list of entries to add to the python path, separated by colons (:).  Entries added here will be added to the end of the python path.  This is useful if you would like to put WSGI applications somewhere where the system can get to them.</li>
-<li><strong>pypath_prepend</strong> - This is a list of entries to be added to the front of the python path, separated by colons.  You probably don't need to use this except for testing and debugging purposes.</li>
-<li><strong>log</strong> - This is the location where the log will go.  Note that you may get errors if this file does not already exist.</li>
-<li><strong>db</strong> - This is URI of the database to connect to.  See <a href="http://www.sqlalchemy.org/docs/05/dbengine.html#dbengine_establishing">this page</a> for more info.  Note that there is a sample database file in private_JMB_Wsgi/Apps/Kamaelia-Publish/Gateway/util named kpgate.db.  You will probably have to edit in the JID that you're wanting to use in the Peer in manually (Ubuntu has sqlitebrowser in its package management system that can be used to do this).<a href="http://www.sqlalchemy.org/docs/05/dbengine.html#dbengine_establishing"><br />
+<li><strong>Port</strong> - This is the port that Kamaelia WebServe will
+listen on for HTTP requests.  Note that using port 80 (typically used
+for HTTP) will require elevated privileges on most *NIX systems. 
+<strong>It is not recommended that you use port 80 currently as this is
+a potential security problem since Kamaelia WebServe does not
+de-escalate privileges.</strong></li>
+<li><strong>pypath_append</strong> - This is a list of entries to add to
+the python path, separated by colons (:).  Entries added here will be
+added to the end of the python path.  This is useful if you would like
+to put WSGI applications somewhere where the system can get to
+them.</li>
+<li><strong>pypath_prepend</strong> - This is a list of entries to be
+added to the front of the python path, separated by colons.  You
+probably don't need to use this except for testing and debugging
+purposes.</li>
+<li><strong>log</strong> - This is the location where the log will go. 
+Note that you may get errors if this file does not already exist.</li>
+<li><strong>db</strong> - This is URI of the database to connect to. 
+See <a
+href="http://www.sqlalchemy.org/docs/05/dbengine.html#dbengine_establishing">this
+page</a> for more info.  Note that there is a sample database file in
+private_JMB_Wsgi/Apps/Kamaelia-Publish/Gateway/util named kpgate.db. 
+You will probably have to edit in the JID that you're wanting to use in
+the Peer in manually (Ubuntu has sqlitebrowser in its package management
+system that can be used to do this).<a
+href="http://www.sqlalchemy.org/docs/05/dbengine.html#dbengine_establishing"><br />
 </a></li>
 </ul>
 <p><br />
 </p>
 <h2 id="static">STATIC</h2>
-<p>This section holds the data necessary to configure server to handle static content (javascript, images, HTML, etc).  <strong>NOTE:  This is likely to either be changed or moved elsewhere (likely the urls file) to simplify URL routing.</strong><br />
+<p>This section holds the data necessary to configure server to handle
+static content (javascript, images, HTML, etc).  <strong>NOTE:  This is
+likely to either be changed or moved elsewhere (likely the urls file) to
+simplify URL routing.</strong><br />
 <br />
 </p>
 <ul>
-<li><strong>url</strong> - The url prefix that will handle static content (set to '/static' by default).</li>
-<li><strong>indexfilename</strong> - If no filename is specified in the URI, this is what to assume (set to 'index.html' by default).</li>
-<li><strong>homedirectory</strong> - The directory to look in for static content in.  The "root" of the static handler's "file system."</li>
+<li><strong>url</strong> - The url prefix that will handle static
+content (set to '/static' by default).</li>
+<li><strong>indexfilename</strong> - If no filename is specified in the
+URI, this is what to assume (set to 'index.html' by default).</li>
+<li><strong>homedirectory</strong> - The directory to look in for static
+content in.  The "root" of the static handler's "file system."</li>
 </ul>
 <h2 id="wsgi">WSGI</h2>
-<p>This section holds the configuration data for the WSGI handler.  Most of the keys are self explanitory, but are explained here for completeness's sake.  <strong>NOTE: This section currently doesn't do anything.  But it may do something when a website where people can register is set up.</strong><br />
+<p>This section holds the configuration data for the WSGI handler.  Most
+of the keys are self explanitory, but are explained here for
+completeness's sake.  <strong>NOTE: This section currently doesn't do
+anything.  But it may do something when a website where people can
+register is set up.</strong><br />
 <br />
 </p>
 <ul>
-<li><strong>SERVER_SOFTWARE</strong> - Currently set to 'Kamaelia WSGI Server v0.0.1'</li>
+<li><strong>SERVER_SOFTWARE</strong> - Currently set to 'Kamaelia WSGI
+Server v0.0.1'</li>
 <li><strong>SERVER_ADMIN</strong> - The person who runs the server.</li>
-<li><strong>WSGI_VER</strong> - You want to leave this at 1.0 unless you have a really, really good reason for changing it.</li>
-<li><strong>URL_LIST</strong> - The URLs file to use to route URLs.  For more info on URLs files, see <a href="../../../Developers/Projects/KamaeliaPublish/UrlsFile">http://www.kamaelia.org/Developers/Projects/KamaeliaPublish/UrlsFile</a></li>
+<li><strong>WSGI_VER</strong> - You want to leave this at 1.0 unless you
+have a really, really good reason for changing it.</li>
+<li><strong>URL_LIST</strong> - The URLs file to use to route URLs.  For
+more info on URLs files, see <a
+href="../../../Developers/Projects/KamaeliaPublish/UrlsFile">http://www.kamaelia.org/Developers/Projects/KamaeliaPublish/UrlsFile</a></li>
 </ul>
 <h2 id="xmpp">XMPP</h2>
-<p>This section is relevant only in the Kamaelia Publish Peer.  For this section, we'll assume that we're using the JID kamaelia_user@jabber.org.<br />
+<p>This section is relevant only in the Kamaelia Publish Peer.  For this
+section, we'll assume that we're using the JID
+kamaelia_user@jabber.org.<br />
 </p>
 <ul>
-<li><strong>username</strong> - This is your username (the part of your JID before the @ symbol).  For kamaelia_user@jabber.org, you would put kamaelia_user.</li>
-<li><strong>domain</strong> - This is the domain of your JID (the part after the @, but before the / if there is one).  For the above example, this would be jabber.org.</li>
-<li><strong>server</strong> - This depends on which server you're using.  For the above example, it will be jabber.org:5222.<br />
+<li><strong>username</strong> - This is your username (the part of your
+JID before the @ symbol).  For kamaelia_user@jabber.org, you would put
+kamaelia_user.</li>
+<li><strong>domain</strong> - This is the domain of your JID (the part
+after the @, but before the / if there is one).  For the above example,
+this would be jabber.org.</li>
+<li><strong>server</strong> - This depends on which server you're
+using.  For the above example, it will be jabber.org:5222.<br />
 </li>
-<li><strong>resource</strong> - This key is optional.  It represents the resource in your jid (the part after the /).  This is typically used to indicate the instant messenging program you're using and is useful if you want to be logged into the same jabber account on two different computers or programs.</li>
-<li><strong>password</strong> - You should know this one already.  :) </li>
-<li><strong>usetls</strong> - This will also be dependent on the server.  This is a boolean value, so it doesn't matter what you set it to.  If it's present and the value is anything but a blank key, it will evaluate to True.<br />
+<li><strong>resource</strong> - This key is optional.  It represents the
+resource in your jid (the part after the /).  This is typically used to
+indicate the instant messenging program you're using and is useful if
+you want to be logged into the same jabber account on two different
+computers or programs.</li>
+<li><strong>password</strong> - You should know this one already. 
+:) </li>
+<li><strong>usetls</strong> - This will also be dependent on the
+server.  This is a boolean value, so it doesn't matter what you set it
+to.  If it's present and the value is anything but a blank key, it will
+evaluate to True.<br />
 </li>
 </ul>
 

@@ -15,14 +15,21 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
 <div class="container">
-<h1 id="kamaelia.util.twowaysplitter"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Util.html" class="reference">Util</a>.<a href="/Components/pydoc/Kamaelia.Util.TwoWaySplitter.html" class="reference">TwoWaySplitter</a></h1>
+<h1 id="kamaelia.util.twowaysplitter"><a
+href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a
+href="/Components/pydoc/Kamaelia.Util.html"
+class="reference">Util</a>.<a
+href="/Components/pydoc/Kamaelia.Util.TwoWaySplitter.html"
+class="reference">TwoWaySplitter</a></h1>
 <section>
 <div class="container">
 <ul>
-<li><strong>component <a href="/Components/pydoc/Kamaelia.Util.TwoWaySplitter.TwoWaySplitter.html" class="reference">TwoWaySplitter</a></strong></li>
+<li><strong>component <a
+href="/Components/pydoc/Kamaelia.Util.TwoWaySplitter.TwoWaySplitter.html"
+class="reference">TwoWaySplitter</a></strong></li>
 </ul>
 </div>
 <ul>
@@ -33,10 +40,16 @@
 </ul></li>
 </ul>
 </section>
-<h1 id="send-stuff-to-two-places-165">Send stuff to two places {#165}</h1>
-<p>Splits a data source sending it to two destinations. Forwards both things sent to its "inbox" inbox and "control" inboxes, so shutdown messages propogate through this splitter. Fully supports delivery to size limited inboxes.</p>
-<h2 id="example-usage-166"><span id="example-usage">Example Usage</span> {#166}</h2>
-<p>Send from a data source to two destinations. Do this for both the inbox-&gt;outbox path and the signal-&gt;control paths, so both destinations receive shutdown messages when the data source finishes:</p>
+<h1 id="165">Send stuff to two places</h1>
+<p>Splits a data source sending it to two destinations. Forwards both
+things sent to its "inbox" inbox and "control" inboxes, so shutdown
+messages propogate through this splitter. Fully supports delivery to
+size limited inboxes.</p>
+<h2 id="166"><span id="example-usage">Example Usage</span></h2>
+<p>Send from a data source to two destinations. Do this for both the
+inbox-&gt;outbox path and the signal-&gt;control paths, so both
+destinations receive shutdown messages when the data source
+finishes:</p>
 <pre class="literal-block"><code>Graphline( SOURCE = MyDataSource(),
            SPLIT  = TwoWaySplitter(),
            DEST1  = MyDataSink1(),
@@ -52,21 +65,44 @@
                (&quot;SPLIT&quot;, &quot;signal2&quot;) : (&quot;DEST1&quot;, &quot;control&quot;),
            }
          ).run()</code></pre>
-<h2 id="behaviour-167"><span id="behaviour">Behaviour</span> {#167}</h2>
-<p>Send a message to the "inbox" inbox of this component and it will be sent on out of the "outbox" and "outbox2" outboxes.</p>
-<p>This component supports sending to a size limited inbox. If the size limited inbox is full, this component will pause until it is able to send out the data.</p>
-<p>Send a message to the "control" inbox of this component and it will be sent on out of the "signal" and "signal2" outboxes. If the message is a shutdownMicroprocess message then this component will also terminate immediately. If it is a producerFinished message then this component will finish sending any messages still waiting at its "inbox" inbox, then immediately terminate.</p>
+<h2 id="167"><span id="behaviour">Behaviour</span></h2>
+<p>Send a message to the "inbox" inbox of this component and it will be
+sent on out of the "outbox" and "outbox2" outboxes.</p>
+<p>This component supports sending to a size limited inbox. If the size
+limited inbox is full, this component will pause until it is able to
+send out the data.</p>
+<p>Send a message to the "control" inbox of this component and it will
+be sent on out of the "signal" and "signal2" outboxes. If the message is
+a shutdownMicroprocess message then this component will also terminate
+immediately. If it is a producerFinished message then this component
+will finish sending any messages still waiting at its "inbox" inbox,
+then immediately terminate.</p>
 <hr />
-<h1 id="kamaelia.util.twowaysplitter.twowaysplitter"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Util.html" class="reference">Util</a>.<a href="/Components/pydoc/Kamaelia.Util.TwoWaySplitter.html" class="reference">TwoWaySplitter</a>.<a href="/Components/pydoc/Kamaelia.Util.TwoWaySplitter.TwoWaySplitter.html" class="reference">TwoWaySplitter</a></h1>
-<h2 id="symbol-TwoWaySplitter">class TwoWaySplitter(<a href="/Docs/Axon/Axon.Component.component.html" class="reference">Axon.Component.component</a>)</h2>
+<h1 id="kamaelia.util.twowaysplitter.twowaysplitter"><a
+href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a
+href="/Components/pydoc/Kamaelia.Util.html"
+class="reference">Util</a>.<a
+href="/Components/pydoc/Kamaelia.Util.TwoWaySplitter.html"
+class="reference">TwoWaySplitter</a>.<a
+href="/Components/pydoc/Kamaelia.Util.TwoWaySplitter.TwoWaySplitter.html"
+class="reference">TwoWaySplitter</a></h1>
+<h2 id="symbol-TwoWaySplitter">class TwoWaySplitter(<a
+href="/Docs/Axon/Axon.Component.component.html"
+class="reference">Axon.Component.component</a>)</h2>
 <p>TwoWaySplitter() -&gt; new TwoWaySplitter component</p>
-<p>Anything sent to the "inbox" or "control" inboxes is sent on out of the "outbox" and "outbox2" or "signal" and "signal2" outboxes respectively.</p>
-<h3 id="inboxes"><span id="symbol-TwoWaySplitter.Inboxes">Inboxes</span></h3>
+<p>Anything sent to the "inbox" or "control" inboxes is sent on out of
+the "outbox" and "outbox2" or "signal" and "signal2" outboxes
+respectively.</p>
+<h3 id="inboxes"><span
+id="symbol-TwoWaySplitter.Inboxes">Inboxes</span></h3>
 <ul>
-<li><strong>control</strong> : Shutdown signalling (also sent to the 'signal' and 'signal2' outboxes</li>
-<li><strong>inbox</strong> : Message to be sent to the 'outbox' and 'outbox2' outboxes</li>
+<li><strong>control</strong> : Shutdown signalling (also sent to the
+'signal' and 'signal2' outboxes</li>
+<li><strong>inbox</strong> : Message to be sent to the 'outbox' and
+'outbox2' outboxes</li>
 </ul>
-<h3 id="outboxes"><span id="symbol-TwoWaySplitter.Outboxes">Outboxes</span></h3>
+<h3 id="outboxes"><span
+id="symbol-TwoWaySplitter.Outboxes">Outboxes</span></h3>
 <ul>
 <li><strong>outbox2</strong> : Messages sent to the 'inbox' inbox</li>
 <li><strong>outbox</strong> : Messages sent to the 'inbox' inbox</li>
@@ -77,22 +113,36 @@
 <div class="container">
 <div class="boxright">
 <p><strong>Warning!</strong></p>
-<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+<p>You should be using the inbox/outbox interface, not these methods
+(except construction). This documentation is designed as a roadmap as to
+their functionalilty for maintainers and new component developers.</p>
 </div>
 </div>
-<h4 id="canstopself"><span id="symbol-TwoWaySplitter.canStop">canStop(self)</span></h4>
-<h4 id="handlecontrolself"><span id="symbol-TwoWaySplitter.handleControl">handleControl(self)</span></h4>
-<h4 id="mainself"><span id="symbol-TwoWaySplitter.main">main(self)</span></h4>
-<h4 id="muststopself"><span id="symbol-TwoWaySplitter.mustStop">mustStop(self)</span></h4>
-<h4 id="waitsendmultipleself-things"><span id="symbol-TwoWaySplitter.waitSendMultiple">waitSendMultiple(self, *things)</span></h4>
+<h4 id="canstopself"><span
+id="symbol-TwoWaySplitter.canStop">canStop(self)</span></h4>
+<h4 id="handlecontrolself"><span
+id="symbol-TwoWaySplitter.handleControl">handleControl(self)</span></h4>
+<h4 id="mainself"><span
+id="symbol-TwoWaySplitter.main">main(self)</span></h4>
+<h4 id="muststopself"><span
+id="symbol-TwoWaySplitter.mustStop">mustStop(self)</span></h4>
+<h4 id="waitsendmultipleself-things"><span
+id="symbol-TwoWaySplitter.waitSendMultiple">waitSendMultiple(self,
+*things)</span></h4>
 <section>
 
 </section>
 </div>
 <h1 id="feedback">Feedback</h1>
-<p>Got a problem with the documentation? Something unclear that could be clearer? Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
-<p>Please leave you feedback <a href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701" class="reference">here</a> in reply to the documentation thread in the Kamaelia blog.</p>
-<p><em>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</em></p>
+<p>Got a problem with the documentation? Something unclear that could be
+clearer? Want to help improve it? Constructive criticism is very welcome
+- especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback <a
+href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701"
+class="reference">here</a> in reply to the documentation thread in the
+Kamaelia blog.</p>
+<p><em>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38
+UTC/GMT</em></p>
 
 </div> <!-- end section -->
 </div> <!-- end page container -->

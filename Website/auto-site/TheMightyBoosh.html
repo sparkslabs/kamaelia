@@ -15,18 +15,22 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
-<p><span style="font-size:24pt;font-weight:600">Mini Project: The Mighty Boosh</span></p>
+<p><span style="font-size:24pt;font-weight:600">Mini Project: The Mighty
+Boosh</span></p>
 <p><span style="font-weight:600">Multicast streaming system</span></p>
-<p>A simple kamaelia based system to multicast stream programmes. Aiming to stream carousel(s) to clients containing 1/2 hour programme episodes (pre-recorded, pre-compressed to files)</p>
+<p>A simple kamaelia based system to multicast stream programmes. Aiming
+to stream carousel(s) to clients containing 1/2 hour programme episodes
+(pre-recorded, pre-compressed to files)</p>
 <p>System consisting of:</p>
 <ul>
 <li>playout system</li>
 <li>client 'tuner' application</li>
 </ul>
 <p><span style="font-weight:600">Target schedule</span></p>
-<p>Highly aggressive schedule to see what can be done in a short space of time. Expected to actually take a little longer.</p>
+<p>Highly aggressive schedule to see what can be done in a short space
+of time. Expected to actually take a little longer.</p>
 <ul>
 <li>Mon 11th July 2005 - Project start</li>
 <li>Wed 13th July 2005 - code written</li>
@@ -48,17 +52,23 @@
 <p><span style="font-weight:600">Server pipeline:</span></p>
 <p>CRON (MH) <span style="font-style:italic">Done</span></p>
 <ul>
-<li>system cron, eventually to be a 'component' cron, probably a combination of both for a while</li>
+<li>system cron, eventually to be a 'component' cron, probably a
+combination of both for a while</li>
 <li>determine shape of text file 'scripts' for component cron</li>
 </ul>
 <p>DATA SOURCE (MH) <span style="font-style:italic">Done</span></p>
 <ul>
-<li>improved file reader. sequence of files to read coming from a new CHOOSER component, separate out bitrate limiting</li>
+<li>improved file reader. sequence of files to read coming from a new
+CHOOSER component, separate out bitrate limiting</li>
 </ul>
 <p>SERVER (MS) <span style="font-style:italic">Done</span></p>
-<p>Implementation of more robust <a href="SimpleReliableMulticast.html">Simple Reliable Multicast</a> protocol.</p>
-<p>Took longer than anticipated due to boundary conditions in the sending side.</p>
-<p>Provide factory interface for MH to do testing (wasn't necessary/needed)</p>
+<p>Implementation of more robust <a
+href="SimpleReliableMulticast.html">Simple Reliable Multicast</a>
+protocol.</p>
+<p>Took longer than anticipated due to boundary conditions in the
+sending side.</p>
+<p>Provide factory interface for MH to do testing (wasn't
+necessary/needed)</p>
 <ul>
 <li>Bypassed - MH used an basic alternative.</li>
 </ul>
@@ -67,18 +77,24 @@
 <li>In progress</li>
 </ul>
 <p><span style="font-weight:600">Client pipeline</span></p>
-<p>Implementation of more robust <a href="SimpleReliableMulticast.html">Simple Reliable Multicast</a> protocol.</p>
+<p>Implementation of more robust <a
+href="SimpleReliableMulticast.html">Simple Reliable Multicast</a>
+protocol.</p>
 <ul>
-<li>Took longer than anticipated due to boundary conditions in the sending side.</li>
+<li>Took longer than anticipated due to boundary conditions in the
+sending side.</li>
 </ul>
 <p>HTTP Server (MS)</p>
-<p><span style="font-style:italic">Over optimistic for such a short time frame. Currently reviewing approach.</span></p>
+<p><span style="font-style:italic">Over optimistic for such a short time
+frame. Currently reviewing approach.</span></p>
 <ul>
-<li><span style="font-style:italic">VLC will happily take data on stdin on linux, so let's do that /first/</span></li>
+<li><span style="font-style:italic">VLC will happily take data on stdin
+on linux, so let's do that /first/</span></li>
 </ul>
 <p>restreaming locally</p>
 <p>must be turned into threaded component</p>
-<p>Client player (eg. VLC, <span style="text-decoration:underline">not our responsibility</span>)</p>
+<p>Client player (eg. VLC, <span style="text-decoration:underline">not
+our responsibility</span>)</p>
 <ul>
 <li>receiving locally restreamed HTTP</li>
 </ul>

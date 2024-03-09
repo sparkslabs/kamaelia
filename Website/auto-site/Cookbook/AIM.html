@@ -15,15 +15,21 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
 <h1 id="cookbook-aimharness">Cookbook: AIMHarness</h1>
-<p>Sending and receiving messages over AIM is easy. AIMHarness only deals with four kinds of messages: outgoing IMs, incoming IMs, buddy online notifications, and error notifications. The first kind it receives in its inbox, and the other three are sent out through its outbox.<br />
+<p>Sending and receiving messages over AIM is easy. AIMHarness only
+deals with four kinds of messages: outgoing IMs, incoming IMs, buddy
+online notifications, and error notifications. The first kind it
+receives in its inbox, and the other three are sent out through its
+outbox.<br />
 <br />
 </p>
 <ul>
-<li>To send an instant message to another user, send the command ("message", recipient, text of the message) to its "inbox".</li>
-<li>AIMHarness will send out the following notifications through its "outbox":</li>
+<li>To send an instant message to another user, send the command
+("message", recipient, text of the message) to its "inbox".</li>
+<li>AIMHarness will send out the following notifications through its
+"outbox":</li>
 </ul>
 <!-- -->
 <pre><code>      NOTIFICATION                                         EVENT
@@ -33,7 +39,8 @@
 <p><br />
 <br />
 </p>
-<h2 id="a-simple-one-buddy-aim-client-using-pygame">A simple, one-buddy AIM client using Pygame</h2>
+<h2 id="a-simple-one-buddy-aim-client-using-pygame">A simple, one-buddy
+AIM client using Pygame</h2>
 <blockquote>
 <pre><code>def sendTo(recipient, text):
     return (&quot;message&quot;, recipient, text)

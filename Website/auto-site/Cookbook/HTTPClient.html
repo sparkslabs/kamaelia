@@ -15,7 +15,7 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
 <h1 id="cookbook-httpclient">Cookbook: HTTPClient</h1>
 <p>The web client support in Kamaelia currently comes in two forms:</p>
@@ -26,7 +26,9 @@
 <p>As well as basic examples for these two, this page also shows:<br />
 </p>
 <ul>
-<li>How to build a basic RSS client (well, actually any feed <a href="http://feedparser.org/">the universal feedparser</a> will parse, which is a lot more than just RSS)</li>
+<li>How to build a basic RSS client (well, actually any feed <a
+href="http://feedparser.org/">the universal feedparser</a> will parse,
+which is a lot more than just RSS)</li>
 </ul>
 <p><br />
 </p>
@@ -41,16 +43,25 @@ Pipeline(
     ConsoleEchoer(),
 ).run()</code></pre>
 </blockquote>
-<p>As you can see, this component takes a single argument, goes off, fetches it, and spits it out of it's main outbox "outbox". If we run this, we get the following:<br />
+<p>As you can see, this component takes a single argument, goes off,
+fetches it, and spits it out of it's main outbox "outbox". If we run
+this, we get the following:<br />
 </p>
 <blockquote>
 <pre><code>~&gt; ./test.py</code></pre>
 </blockquote>
-<p>As you can see this is not as simple an object as you might have expected. Rather than just being passed the data, you are passed an object. You're not really expected to use this, but it is useful to know about.<br />
+<p>As you can see this is not as simple an object as you might have
+expected. Rather than just being passed the data, you are passed an
+object. You're not really expected to use this, but it is useful to know
+about.<br />
 </p>
 <h2 id="the-reusable-web-client">The Reusable Web Client</h2>
 <div class="boxright">
-<p><strong>NOTE:</strong> The URLs passed over to the SimpleHTTPClient <strong>MUST NOT</strong> include a newline, or else you will be left wondering why your code doesn't work. This is why this example ensures that the ConsoleReader strips the carriage return from the end of line!</p>
+<p><strong>NOTE:</strong> The URLs passed over to the SimpleHTTPClient
+<strong>MUST NOT</strong> include a newline, or else you will be left
+wondering why your code doesn't work. This is why this example ensures
+that the ConsoleReader strips the carriage return from the end of
+line!</p>
 </div>
 <p><br />
 </p>
@@ -66,7 +77,10 @@ Pipeline(
 ).run()</code></pre>
 </blockquote>
 <p><br />
-As you can see, this time we have a console reader - where we're expected to type URLs. These URLs are passed to the SimpleHTTPClient which goes off, grabs the URLs and dumps them out of it's main outbox "outbox". If we runs this, we get the following:<br />
+As you can see, this time we have a console reader - where we're
+expected to type URLs. These URLs are passed to the SimpleHTTPClient
+which goes off, grabs the URLs and dumps them out of it's main outbox
+"outbox". If we runs this, we get the following:<br />
 </p>
 <blockquote>
 <pre><code>~&gt; ./PipedHTTP.py
@@ -78,12 +92,18 @@ As you can see, this time we have a console reader - where we're expected to typ
 
 &gt;&gt;&gt;</code></pre>
 </blockquote>
-<p>As you can see, this version of the system simple sends the body of the HTTP response to its main outbox "outbox". If you want more information (such as response headers etc), you have to use these components differently. However as basic examples hopefully these are sufficient :-)<br />
+<p>As you can see, this version of the system simple sends the body of
+the HTTP response to its main outbox "outbox". If you want more
+information (such as response headers etc), you have to use these
+components differently. However as basic examples hopefully these are
+sufficient :-)<br />
 <br />
 </p>
-<h2 id="feed-fetching-parsing-printing-displaying">Feed Fetching, Parsing, Printing, Displaying</h2>
+<h2 id="feed-fetching-parsing-printing-displaying">Feed Fetching,
+Parsing, Printing, Displaying</h2>
 <div class="boxright">
-<p>Note: This example can be simplified - see <a href="/Cookbook/PureTransformer">Cookbook PureTransformer</a></p>
+<p>Note: This example can be simplified - see <a
+href="/Cookbook/PureTransformer">Cookbook PureTransformer</a></p>
 </div>
 <p>This is a more substantial, but relatively basic example.<br />
 </p>
@@ -164,7 +184,11 @@ Pipeline(
  &#39;version&#39;: &#39;rss20&#39;}
 &gt;&gt;&gt;</code></pre>
 </blockquote>
-<p>It's probably worth noting at this point that you can pretty much use this then in a similar way to the way <a href="/Developers/Projects/KamaeliaMacro">Kamaelia Macro</a> handles multiplexes EIT information and uses that to trigger events (such as finishing a transcoding session).<br />
+<p>It's probably worth noting at this point that you can pretty much use
+this then in a similar way to the way <a
+href="/Developers/Projects/KamaeliaMacro">Kamaelia Macro</a> handles
+multiplexes EIT information and uses that to trigger events (such as
+finishing a transcoding session).<br />
 <br />
 -- Michael, December 2006<br />
 <br />

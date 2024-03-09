@@ -15,19 +15,29 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
 <div class="container">
-<h1 id="kamaelia.util.marshalling"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Util.html" class="reference">Util</a>.<a href="/Components/pydoc/Kamaelia.Util.Marshalling.html" class="reference">Marshalling</a></h1>
+<h1 id="kamaelia.util.marshalling"><a
+href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a
+href="/Components/pydoc/Kamaelia.Util.html"
+class="reference">Util</a>.<a
+href="/Components/pydoc/Kamaelia.Util.Marshalling.html"
+class="reference">Marshalling</a></h1>
 <section>
 <div class="container">
 <ul>
-<li><strong>component <a href="/Components/pydoc/Kamaelia.Util.Marshalling.DeMarshaller.html" class="reference">DeMarshaller</a></strong></li>
-<li><strong>component <a href="/Components/pydoc/Kamaelia.Util.Marshalling.Marshaller.html" class="reference">Marshaller</a></strong></li>
+<li><strong>component <a
+href="/Components/pydoc/Kamaelia.Util.Marshalling.DeMarshaller.html"
+class="reference">DeMarshaller</a></strong></li>
+<li><strong>component <a
+href="/Components/pydoc/Kamaelia.Util.Marshalling.Marshaller.html"
+class="reference">Marshaller</a></strong></li>
 </ul>
 </div>
 <ul>
-<li><a href="#225" class="reference">Simple Marshalling/demarshalling framework</a>
+<li><a href="#225" class="reference">Simple Marshalling/demarshalling
+framework</a>
 <ul>
 <li><a href="#226" class="reference">Example usage</a></li>
 <li><a href="#227" class="reference">How does it work?</a></li>
@@ -35,10 +45,14 @@
 </ul></li>
 </ul>
 </section>
-<h1 id="simple-marshallingdemarshalling-framework-225">Simple Marshalling/demarshalling framework {#225}</h1>
-<p>A pair of components for marshalling and demarshalling data respectively. You supply a class containing methods to marshall and demarshall the data in the way you want.</p>
-<p>The idea is that you would place this between your logic and a network socket to transform the data to and from a form suitable for transport.</p>
-<h2 id="example-usage-226"><span id="example-usage">Example usage</span> {#226}</h2>
+<h1 id="225">Simple Marshalling/demarshalling framework</h1>
+<p>A pair of components for marshalling and demarshalling data
+respectively. You supply a class containing methods to marshall and
+demarshall the data in the way you want.</p>
+<p>The idea is that you would place this between your logic and a
+network socket to transform the data to and from a form suitable for
+transport.</p>
+<h2 id="226"><span id="example-usage">Example usage</span></h2>
 <p>Marshalling and demarshalling a stream of integers:</p>
 <pre class="literal-block"><code>class SerialiseInt:
 
@@ -59,33 +73,61 @@ Pipeline( receiver(...),
           DeMarshaller(SerialiseInt),
           consumer(...)
         ).activate()</code></pre>
-<h2 id="how-does-it-work-227"><span id="how-does-it-work">How does it work?</span> {#227}</h2>
-<p>When instantiating the Marshaller or DeMarshaller components, you provide an object (eg. class) containing these static methods:</p>
+<h2 id="227"><span id="how-does-it-work">How does it work?</span></h2>
+<p>When instantiating the Marshaller or DeMarshaller components, you
+provide an object (eg. class) containing these static methods:</p>
 <ul>
 <li>marshall(item) - returns the item serialised for transmission</li>
 <li>demarshall(item) - returns the original item, deserialised</li>
 </ul>
-<p>Marshaller requires only the marshall(...) static method, and DeMarshaller requires only demarshall(...).</p>
-<p>Why static methods? Because marshalling/demarshalling is a stateless activity. This distinguishes marshalling activity from other protocols and other processes that can be implemented with a similar style of framework.</p>
-<p>For simplicity this component expects to be given an entire object to marshall or demarshall. This requires the user to deal with the framing and deframing of objects separately.</p>
-<p>Any data sent to the Marshaller or DeMarshaller components' "inbox" inbox is passed to the marshall(...) or demarshall(...) method respectively of the class you supplied. The result is immediately sent on out of the components' "outbox" outbox.</p>
-<p>If a producerFinished or shutdownMicroprocess message is received on the components' "control" inbox, it is sent on out of the "signal" outbox. The component will then immediately terminate.</p>
-<h2 id="post-script-228"><span id="post-script">Post script</span> {#228}</h2>
-<p>The initial data format this is designed to work with is the MimeDict object.</p>
-<p>It is expected that there will be a more complex marshaller that supports receiving that is capable of receiving objects segmented over multiple messages.</p>
+<p>Marshaller requires only the marshall(...) static method, and
+DeMarshaller requires only demarshall(...).</p>
+<p>Why static methods? Because marshalling/demarshalling is a stateless
+activity. This distinguishes marshalling activity from other protocols
+and other processes that can be implemented with a similar style of
+framework.</p>
+<p>For simplicity this component expects to be given an entire object to
+marshall or demarshall. This requires the user to deal with the framing
+and deframing of objects separately.</p>
+<p>Any data sent to the Marshaller or DeMarshaller components' "inbox"
+inbox is passed to the marshall(...) or demarshall(...) method
+respectively of the class you supplied. The result is immediately sent
+on out of the components' "outbox" outbox.</p>
+<p>If a producerFinished or shutdownMicroprocess message is received on
+the components' "control" inbox, it is sent on out of the "signal"
+outbox. The component will then immediately terminate.</p>
+<h2 id="228"><span id="post-script">Post script</span></h2>
+<p>The initial data format this is designed to work with is the MimeDict
+object.</p>
+<p>It is expected that there will be a more complex marshaller that
+supports receiving that is capable of receiving objects segmented over
+multiple messages.</p>
 <hr />
 <section>
-<h1 id="kamaelia.util.marshalling.demarshaller"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Util.html" class="reference">Util</a>.<a href="/Components/pydoc/Kamaelia.Util.Marshalling.html" class="reference">Marshalling</a>.<a href="/Components/pydoc/Kamaelia.Util.Marshalling.DeMarshaller.html" class="reference">DeMarshaller</a></h1>
-<h2 id="symbol-DeMarshaller">class DeMarshaller(<a href="/Docs/Axon/Axon.Component.component.html" class="reference">Axon.Component.component</a>)</h2>
+<h1 id="kamaelia.util.marshalling.demarshaller"><a
+href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a
+href="/Components/pydoc/Kamaelia.Util.html"
+class="reference">Util</a>.<a
+href="/Components/pydoc/Kamaelia.Util.Marshalling.html"
+class="reference">Marshalling</a>.<a
+href="/Components/pydoc/Kamaelia.Util.Marshalling.DeMarshaller.html"
+class="reference">DeMarshaller</a></h1>
+<h2 id="symbol-DeMarshaller">class DeMarshaller(<a
+href="/Docs/Axon/Axon.Component.component.html"
+class="reference">Axon.Component.component</a>)</h2>
 <p>DeMarshaller(klass) -&gt; new DeMarshaller component.</p>
-<p>A component for demarshalling data (deserialising it from a string).</p>
-<p>Keyword arguments: - klass -- a class with static method: demarshall(data) that returns the data, demarshalled.</p>
-<h3 id="inboxes"><span id="symbol-DeMarshaller.Inboxes">Inboxes</span></h3>
+<p>A component for demarshalling data (deserialising it from a
+string).</p>
+<p>Keyword arguments: - klass -- a class with static method:
+demarshall(data) that returns the data, demarshalled.</p>
+<h3 id="inboxes"><span
+id="symbol-DeMarshaller.Inboxes">Inboxes</span></h3>
 <ul>
 <li><strong>control</strong> : Shutdown signalling</li>
 <li><strong>inbox</strong> : data to be demarshalled</li>
 </ul>
-<h3 id="outboxes"><span id="symbol-DeMarshaller.Outboxes">Outboxes</span></h3>
+<h3 id="outboxes"><span
+id="symbol-DeMarshaller.Outboxes">Outboxes</span></h3>
 <ul>
 <li><strong>outbox</strong> : demarshalled data</li>
 <li><strong>signal</strong> : Shutdown signalling</li>
@@ -94,30 +136,47 @@ Pipeline( receiver(...),
 <div class="container">
 <div class="boxright">
 <p><strong>Warning!</strong></p>
-<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+<p>You should be using the inbox/outbox interface, not these methods
+(except construction). This documentation is designed as a roadmap as to
+their functionalilty for maintainers and new component developers.</p>
 </div>
 </div>
-<h4 id="init__self-klass"><span id="symbol-DeMarshaller.__init__">__init__(self, klass)</span></h4>
-<p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</p>
-<h4 id="mainself"><span id="symbol-DeMarshaller.main">main(self)</span></h4>
+<h4 id="init__self-klass"><span
+id="symbol-DeMarshaller.__init__">__init__(self, klass)</span></h4>
+<p>x.__init__(...) initializes x; see x.__class__.__doc__ for
+signature</p>
+<h4 id="mainself"><span
+id="symbol-DeMarshaller.main">main(self)</span></h4>
 <p>Main loop.</p>
 <section>
 
 </section>
-<h1 id="kamaelia.util.marshalling.marshaller"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Util.html" class="reference">Util</a>.<a href="/Components/pydoc/Kamaelia.Util.Marshalling.html" class="reference">Marshalling</a>.<a href="/Components/pydoc/Kamaelia.Util.Marshalling.Marshaller.html" class="reference">Marshaller</a></h1>
-<h2 id="symbol-Marshaller">class Marshaller(<a href="/Docs/Axon/Axon.Component.component.html" class="reference">Axon.Component.component</a>)</h2>
+<h1 id="kamaelia.util.marshalling.marshaller"><a
+href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a
+href="/Components/pydoc/Kamaelia.Util.html"
+class="reference">Util</a>.<a
+href="/Components/pydoc/Kamaelia.Util.Marshalling.html"
+class="reference">Marshalling</a>.<a
+href="/Components/pydoc/Kamaelia.Util.Marshalling.Marshaller.html"
+class="reference">Marshaller</a></h1>
+<h2 id="symbol-Marshaller">class Marshaller(<a
+href="/Docs/Axon/Axon.Component.component.html"
+class="reference">Axon.Component.component</a>)</h2>
 <p>Marshaller(klass) -&gt; new Marshaller component.</p>
 <p>A component for marshalling data (serialising it to a string).</p>
 <p>Keyword arguments:</p>
 <ul>
-<li>klass -- a class with static method: marshall(data) that returns the data, marshalled.</li>
+<li>klass -- a class with static method: marshall(data) that returns the
+data, marshalled.</li>
 </ul>
-<h3 id="inboxes-1"><span id="symbol-Marshaller.Inboxes">Inboxes</span></h3>
+<h3 id="inboxes-1"><span
+id="symbol-Marshaller.Inboxes">Inboxes</span></h3>
 <ul>
 <li><strong>control</strong> : Shutdown signalling</li>
 <li><strong>inbox</strong> : data to be marshalled</li>
 </ul>
-<h3 id="outboxes-1"><span id="symbol-Marshaller.Outboxes">Outboxes</span></h3>
+<h3 id="outboxes-1"><span
+id="symbol-Marshaller.Outboxes">Outboxes</span></h3>
 <ul>
 <li><strong>outbox</strong> : marshalled data</li>
 <li><strong>signal</strong> : Shutdown signalling</li>
@@ -126,12 +185,17 @@ Pipeline( receiver(...),
 <div class="container">
 <div class="boxright">
 <p><strong>Warning!</strong></p>
-<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+<p>You should be using the inbox/outbox interface, not these methods
+(except construction). This documentation is designed as a roadmap as to
+their functionalilty for maintainers and new component developers.</p>
 </div>
 </div>
-<h4 id="init__self-klass-1"><span id="symbol-Marshaller.__init__">__init__(self, klass)</span></h4>
-<p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</p>
-<h4 id="mainself-1"><span id="symbol-Marshaller.main">main(self)</span></h4>
+<h4 id="init__self-klass-1"><span
+id="symbol-Marshaller.__init__">__init__(self, klass)</span></h4>
+<p>x.__init__(...) initializes x; see x.__class__.__doc__ for
+signature</p>
+<h4 id="mainself-1"><span
+id="symbol-Marshaller.main">main(self)</span></h4>
 <p>Main loop.</p>
 <section>
 
@@ -139,9 +203,15 @@ Pipeline( receiver(...),
 </section>
 </div>
 <h1 id="feedback">Feedback</h1>
-<p>Got a problem with the documentation? Something unclear that could be clearer? Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
-<p>Please leave you feedback <a href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701" class="reference">here</a> in reply to the documentation thread in the Kamaelia blog.</p>
-<p><em>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</em></p>
+<p>Got a problem with the documentation? Something unclear that could be
+clearer? Want to help improve it? Constructive criticism is very welcome
+- especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback <a
+href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701"
+class="reference">here</a> in reply to the documentation thread in the
+Kamaelia blog.</p>
+<p><em>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38
+UTC/GMT</em></p>
 
 </div> <!-- end section -->
 </div> <!-- end page container -->

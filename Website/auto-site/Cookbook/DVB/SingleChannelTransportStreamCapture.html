@@ -15,12 +15,16 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
-<h1 id="cookbook-recording-a-channel-from-a-dvb-broadcast">Cookbook : Recording a channel from a DVB broadcast</h1>
+<h1 id="cookbook-recording-a-channel-from-a-dvb-broadcast">Cookbook :
+Recording a channel from a DVB broadcast</h1>
 <p><em>Find the code for this here:<br />
-</em><a href="http://svn.sourceforge.net/viewvc/kamaelia/trunk/Code/Python/Kamaelia/Examples/DVB_Systems/SingleChannelTransportStreamCapture.py?view=markup">/Code/Python/Kamaelia/Examples/DVB_Systems/SingleChannelTransportStreamCapture.py</a></p>
-<p>This simple example shows how to record a channel broadcast in a DVB multiplex at a frequency of 754MHz, where the channel's audio and video data are carried in packets with packet IDs 640 and 641:<br />
+</em><a
+href="http://svn.sourceforge.net/viewvc/kamaelia/trunk/Code/Python/Kamaelia/Examples/DVB_Systems/SingleChannelTransportStreamCapture.py?view=markup">/Code/Python/Kamaelia/Examples/DVB_Systems/SingleChannelTransportStreamCapture.py</a></p>
+<p>This simple example shows how to record a channel broadcast in a DVB
+multiplex at a frequency of 754MHz, where the channel's audio and video
+data are carried in packets with packet IDs 640 and 641:<br />
 </p>
 <blockquote>
 <pre><code>from Kamaelia.Device.DVB.Core import DVB_Multiplex
@@ -32,7 +36,10 @@ Pipeline(
    SimpleFileWriter(&quot;BBC_NEWS_24.ts&quot;)
 ).run()</code></pre>
 </blockquote>
-<p>The DVB_Multiplex component is the simplest and easiest to use combined tuner and demultiplexer component - you simply specify the frequency, a list of packet IDs to demultiplex, and an optional dictionary of tuner control parameters.<br />
+<p>The DVB_Multiplex component is the simplest and easiest to use
+combined tuner and demultiplexer component - you simply specify the
+frequency, a list of packet IDs to demultiplex, and an optional
+dictionary of tuner control parameters.<br />
 </p>
 <p>-- 04 Jan 2007, Matt<br />
 </p>

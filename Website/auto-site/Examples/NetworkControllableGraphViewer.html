@@ -15,58 +15,62 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
-<p><span style="font-size:24pt;font-weight:600">Cookbook Example</span></p>
+<p><span style="font-size:24pt;font-weight:600">Cookbook
+Example</span></p>
 <p><span style="font-size:18pt">How can I...?</span></p>
-<p>Example 6: How to build a network controllable graph viewer. <span style="font-weight:600">Components used:</span><span style="font-style:italic;color:#ff0004">TopologyViewerServer</span></p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="co">#!/usr/bin/python</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="im">from</span> Kamaelia.Visualisation.PhysicsGraph.TopologyViewerServer <span class="im">import</span> TopologyViewerServer</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a><span class="kw">def</span> parseArgs(argv, extraShortArgs<span class="op">=</span><span class="st">&quot;&quot;</span>, extraLongArgs<span class="op">=</span>[]):</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a>    <span class="im">import</span> getopt</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a>    shortargs <span class="op">=</span> <span class="st">&quot;fh&quot;</span> <span class="op">+</span> extraShortArgs</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true"></a>    longargs  <span class="op">=</span> <span class="bu">list</span>(<span class="st">&quot;help&quot;</span>,<span class="st">&quot;fullscreen&quot;</span>,<span class="st">&quot;resolution=&quot;</span>,<span class="st">&quot;port=&quot;</span>) <span class="op">+</span> extraLongArgs</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true"></a></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true"></a>    optlist, remargs <span class="op">=</span> getopt.getopt(argv, shortargs, longargs)</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true"></a></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true"></a>    dictArgs <span class="op">=</span> {}</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true"></a>    <span class="cf">for</span> o,a <span class="kw">in</span> optlist:</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true"></a>        <span class="cf">if</span> o <span class="kw">in</span> (<span class="st">&quot;-h&quot;</span>,<span class="st">&quot;--help&quot;</span>):</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true"></a>            dictArgs[<span class="st">&#39;help&#39;</span>] <span class="op">=</span> <span class="st">&quot;Arguments:</span><span class="ch">\n</span><span class="st">&quot;</span> <span class="op">+</span> <span class="op">\</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true"></a>                               <span class="co">&quot;   -h, --help</span><span class="ch">\n</span><span class="co">&quot;</span> <span class="op">+</span> <span class="op">\</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true"></a>                               <span class="co">&quot;      This help message</span><span class="ch">\n\n</span><span class="co">&quot;</span> <span class="op">+</span> <span class="op">\</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true"></a>                               <span class="co">&quot;   -f, --fullscreen</span><span class="ch">\n</span><span class="co">&quot;</span> <span class="op">+</span> <span class="op">\</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true"></a>                               <span class="co">&quot;      Full screen mode</span><span class="ch">\n\n</span><span class="co">&quot;</span> <span class="op">+</span> <span class="op">\</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true"></a>                               <span class="co">&quot;   --resolution=WxH</span><span class="ch">\n</span><span class="co">&quot;</span> <span class="op">+</span> <span class="op">\</span></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true"></a>                               <span class="co">&quot;      Set window size to W by H pixels</span><span class="ch">\n\n</span><span class="co">&quot;</span> <span class="op">+</span> <span class="op">\</span></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true"></a>                               <span class="co">&quot;   --port=N</span><span class="ch">\n</span><span class="co">&quot;</span> <span class="op">+</span> <span class="op">\</span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true"></a>                               <span class="co">&quot;      Listen on port N (default is 1500)</span><span class="ch">\n\n</span><span class="co">&quot;</span></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true"></a></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true"></a>        <span class="cf">elif</span> o <span class="kw">in</span> (<span class="st">&quot;-f&quot;</span>,<span class="st">&quot;--fullscreen&quot;</span>):</span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true"></a>            dictArgs[<span class="st">&#39;fullscreen&#39;</span>] <span class="op">=</span> <span class="va">True</span></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true"></a></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true"></a>        <span class="cf">elif</span> o <span class="kw">in</span> (<span class="st">&quot;--resolution&quot;</span>):</span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true"></a>            match <span class="op">=</span> re.match(<span class="vs">r&quot;^(\d+)[x,-](\d+)$&quot;</span>, a)</span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true"></a>            x<span class="op">=</span><span class="bu">int</span>(match.group(<span class="dv">1</span>))</span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true"></a>            y<span class="op">=</span><span class="bu">int</span>(match.group(<span class="dv">2</span>))</span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true"></a>            dictArgs[<span class="st">&#39;screensize&#39;</span>] <span class="op">=</span> (x,y)</span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true"></a></span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true"></a>        <span class="cf">elif</span> o <span class="kw">in</span> (<span class="st">&quot;--port&quot;</span>):</span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true"></a>            dictArgs[<span class="st">&#39;serverPort&#39;</span>] <span class="op">=</span> <span class="bu">int</span>(a)</span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true"></a></span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true"></a>    <span class="cf">return</span> dictArgs, optlist, remargs</span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true"></a></span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true"></a><span class="cf">if</span> <span class="va">__name__</span><span class="op">==</span><span class="st">&quot;__main__&quot;</span>:</span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true"></a>    <span class="im">import</span> sys</span>
-<span id="cb1-42"><a href="#cb1-42" aria-hidden="true"></a>    dictArgs, remargs, junk <span class="op">=</span> parseArgs(sys.argv[<span class="dv">1</span>:])</span>
-<span id="cb1-43"><a href="#cb1-43" aria-hidden="true"></a></span>
-<span id="cb1-44"><a href="#cb1-44" aria-hidden="true"></a>    <span class="cf">if</span> <span class="st">&quot;help&quot;</span> <span class="kw">in</span> dictArgs:</span>
-<span id="cb1-45"><a href="#cb1-45" aria-hidden="true"></a>        <span class="bu">print</span> dictArgs[<span class="st">&quot;help&quot;</span>]</span>
-<span id="cb1-46"><a href="#cb1-46" aria-hidden="true"></a>    <span class="cf">else</span>:</span>
-<span id="cb1-47"><a href="#cb1-47" aria-hidden="true"></a>        TopologyViewerServer(<span class="op">**</span>dictArgs).run()</span></code></pre></div>
+<p>Example 6: How to build a network controllable graph viewer. <span
+style="font-weight:600">Components used:</span><span
+style="font-style:italic;color:#ff0004">TopologyViewerServer</span></p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/usr/bin/python</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> Kamaelia.Visualisation.PhysicsGraph.TopologyViewerServer <span class="im">import</span> TopologyViewerServer</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> parseArgs(argv, extraShortArgs<span class="op">=</span><span class="st">&quot;&quot;</span>, extraLongArgs<span class="op">=</span>[]):</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="im">import</span> getopt</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    shortargs <span class="op">=</span> <span class="st">&quot;fh&quot;</span> <span class="op">+</span> extraShortArgs</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    longargs  <span class="op">=</span> <span class="bu">list</span>(<span class="st">&quot;help&quot;</span>,<span class="st">&quot;fullscreen&quot;</span>,<span class="st">&quot;resolution=&quot;</span>,<span class="st">&quot;port=&quot;</span>) <span class="op">+</span> extraLongArgs</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    optlist, remargs <span class="op">=</span> getopt.getopt(argv, shortargs, longargs)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    dictArgs <span class="op">=</span> {}</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> o,a <span class="kw">in</span> optlist:</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> o <span class="kw">in</span> (<span class="st">&quot;-h&quot;</span>,<span class="st">&quot;--help&quot;</span>):</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>            dictArgs[<span class="st">&#39;help&#39;</span>] <span class="op">=</span> <span class="st">&quot;Arguments:</span><span class="ch">\n</span><span class="st">&quot;</span> <span class="op">+</span> <span class="op">\</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>                               <span class="st">&quot;   -h, --help</span><span class="ch">\n</span><span class="st">&quot;</span> <span class="op">+</span> <span class="op">\</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>                               <span class="st">&quot;      This help message</span><span class="ch">\n\n</span><span class="st">&quot;</span> <span class="op">+</span> <span class="op">\</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>                               <span class="st">&quot;   -f, --fullscreen</span><span class="ch">\n</span><span class="st">&quot;</span> <span class="op">+</span> <span class="op">\</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>                               <span class="st">&quot;      Full screen mode</span><span class="ch">\n\n</span><span class="st">&quot;</span> <span class="op">+</span> <span class="op">\</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>                               <span class="st">&quot;   --resolution=WxH</span><span class="ch">\n</span><span class="st">&quot;</span> <span class="op">+</span> <span class="op">\</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>                               <span class="st">&quot;      Set window size to W by H pixels</span><span class="ch">\n\n</span><span class="st">&quot;</span> <span class="op">+</span> <span class="op">\</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>                               <span class="st">&quot;   --port=N</span><span class="ch">\n</span><span class="st">&quot;</span> <span class="op">+</span> <span class="op">\</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>                               <span class="st">&quot;      Listen on port N (default is 1500)</span><span class="ch">\n\n</span><span class="st">&quot;</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>        <span class="cf">elif</span> o <span class="kw">in</span> (<span class="st">&quot;-f&quot;</span>,<span class="st">&quot;--fullscreen&quot;</span>):</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>            dictArgs[<span class="st">&#39;fullscreen&#39;</span>] <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>        <span class="cf">elif</span> o <span class="kw">in</span> (<span class="st">&quot;--resolution&quot;</span>):</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>            match <span class="op">=</span> re.match(<span class="vs">r&quot;^(\d+)[x,-](\d+)$&quot;</span>, a)</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>            x<span class="op">=</span><span class="bu">int</span>(match.group(<span class="dv">1</span>))</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>            y<span class="op">=</span><span class="bu">int</span>(match.group(<span class="dv">2</span>))</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>            dictArgs[<span class="st">&#39;screensize&#39;</span>] <span class="op">=</span> (x,y)</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>        <span class="cf">elif</span> o <span class="kw">in</span> (<span class="st">&quot;--port&quot;</span>):</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>            dictArgs[<span class="st">&#39;serverPort&#39;</span>] <span class="op">=</span> <span class="bu">int</span>(a)</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> dictArgs, optlist, remargs</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="va">__name__</span><span class="op">==</span><span class="st">&quot;__main__&quot;</span>:</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>    <span class="im">import</span> sys</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>    dictArgs, remargs, junk <span class="op">=</span> parseArgs(sys.argv[<span class="dv">1</span>:])</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="st">&quot;help&quot;</span> <span class="kw">in</span> dictArgs:</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span> dictArgs[<span class="st">&quot;help&quot;</span>]</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>        TopologyViewerServer(<span class="op">**</span>dictArgs).run()</span></code></pre></div>
 <p><strong>Source:</strong> Examples/example6/TopologyVisualiser.py</p>
 
 </div> <!-- end section -->

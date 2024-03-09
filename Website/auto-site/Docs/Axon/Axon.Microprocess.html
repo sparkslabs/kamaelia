@@ -15,48 +15,69 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
 <div class="container">
 <section>
-<h2 id="axon.microprocess"><a href="/Docs/Axon/Axon.html" class="reference">Axon</a>.<a href="/Docs/Axon/Axon.Microprocess.html" class="reference">Microprocess</a></h2>
+<h2 id="axon.microprocess"><a href="/Docs/Axon/Axon.html"
+class="reference">Axon</a>.<a href="/Docs/Axon/Axon.Microprocess.html"
+class="reference">Microprocess</a></h2>
 </section>
-<h1 id="microprocess---a-class-supporting-concurrent-execution">Microprocess - A class supporting concurrent execution</h1>
+<h1
+id="microprocess---a-class-supporting-concurrent-execution">Microprocess
+- A class supporting concurrent execution</h1>
 <div class="container">
 <ul>
-<li><strong>class <a href="/Docs/Axon/Axon.Microprocess._NullScheduler.html" class="reference">_NullScheduler</a></strong></li>
-<li><strong>class <a href="/Docs/Axon/Axon.Microprocess.microprocess.html" class="reference">microprocess</a></strong></li>
+<li><strong>class <a
+href="/Docs/Axon/Axon.Microprocess._NullScheduler.html"
+class="reference">_NullScheduler</a></strong></li>
+<li><strong>class <a
+href="/Docs/Axon/Axon.Microprocess.microprocess.html"
+class="reference">microprocess</a></strong></li>
 </ul>
 </div>
 <ul>
 <li><a href="#46" class="reference">Basic Usage</a></li>
 <li><a href="#47" class="reference">More detail</a>
 <ul>
-<li><a href="#48" class="reference">Alternative ways of defining the generator/thread</a></li>
+<li><a href="#48" class="reference">Alternative ways of defining the
+generator/thread</a></li>
 </ul></li>
-<li><a href="#49" class="reference">Microprocess lifecycle in detail</a></li>
+<li><a href="#49" class="reference">Microprocess lifecycle in
+detail</a></li>
 <li><a href="#50" class="reference">Internal flags/state</a></li>
 <li><a href="#51" class="reference">Test documentation</a></li>
 </ul>
 <section>
-<p>A microprocess is a class supporting parallel execution, provided by forming a wrapper around a generator. It also provides a place for context to be stored about the generator.</p>
+<p>A microprocess is a class supporting parallel execution, provided by
+forming a wrapper around a generator. It also provides a place for
+context to be stored about the generator.</p>
 <ul>
-<li>A component is based on a microprocess - giving it its thread of execution.</li>
+<li>A component is based on a microprocess - giving it its thread of
+execution.</li>
 <li>The Scheduler runs microprocesses that have been 'activated'</li>
 </ul>
-<p><em>This is an Axon internal. If you are writing components you do not need to understand this as you will normally not use it directly.</em></p>
-<p>Developers wishing to use Axon in other ways or understand its implementation shoudl read on with interest!</p>
-<h2 id="basic-usage-46"><span id="basic-usage">Basic Usage</span> {#46}</h2>
+<p><em>This is an Axon internal. If you are writing components you do
+not need to understand this as you will normally not use it
+directly.</em></p>
+<p>Developers wishing to use Axon in other ways or understand its
+implementation shoudl read on with interest!</p>
+<h2 id="46"><span id="basic-usage">Basic Usage</span></h2>
 <p>Making and using a microprocess is easy:</p>
 <ol type="1">
 <li>Subclass microprocess writing your own main() generator method</li>
 <li>Create and 'activate' it</li>
 <li>Run the scheduler so it is executed</li>
 </ol>
-<p>Specifically, classes that subclass microprocess, and implement a main() generator function can be activated, and scheduled by the scheduler/microthread systems. Essentially a microprocess provides a minimal runtime context for the scheduling &amp; thread handling system.</p>
+<p>Specifically, classes that subclass microprocess, and implement a
+main() generator function can be activated, and scheduled by the
+scheduler/microthread systems. Essentially a microprocess provides a
+minimal runtime context for the scheduling &amp; thread handling
+system.</p>
 <p>In more detail:</p>
 <ol type="1">
-<li><p>Subclass a microprocess, overriding the main() generator method to make your own that yields non-zero/False values:</p>
+<li><p>Subclass a microprocess, overriding the main() generator method
+to make your own that yields non-zero/False values:</p>
 <pre class="literal-block"><code>class Loopy(microprocess):
     def __init__(self, num):
         self.num = num
@@ -66,7 +87,8 @@
         while 1:
             print &quot;we loop forever&quot;, self.num
             yield 1</code></pre></li>
-<li><p>Instantiate and activate a few (note these are two separate steps!):</p>
+<li><p>Instantiate and activate a few (note these are two separate
+steps!):</p>
 <pre class="literal-block"><code>mp1=Loopy(1)
 mp1.activate()
 
@@ -74,7 +96,9 @@ mp2=Loopy(2)
 mp2.activate()
 
 mp3=Loopy(3).activate()     # a more convenient shorthand</code></pre></li>
-<li><p>If you haven't already, start the scheduler to cause them to be run. The call will return when all microprocesses have finished executing (which is <em>never</em> in this example case):</p>
+<li><p>If you haven't already, start the scheduler to cause them to be
+run. The call will return when all microprocesses have finished
+executing (which is <em>never</em> in this example case):</p>
 <pre class="literal-block"><code>&gt;&gt;&gt; scheduler.run.runThreads()
 we loop forever 1
 we loop forever 2
@@ -86,15 +110,35 @@ we loop forever 1
 we loop forever 2
 ... etc ...</code></pre></li>
 </ol>
-<p>Pause a microprocess whilst it is running by calling the pause() method. Wake it up again by calling unpause(). Pausing a microprocess means that it will cease to be executed until something else unpauses it. When unpaused it picks up from where it left off.</p>
-<h2 id="more-detail-47"><span id="more-detail">More detail</span> {#47}</h2>
-<p>Essentially a microprocess provides a context for scheduling generators, and treating them similar to processes/threads. It provides basic facilities to support the activation (starting), pausing, unpausing and termination of a generator.</p>
-<p>To start a microprocess running, you must create it and then activate it. Activation is a separate step to allow you to control exactly when you want a microprocess to actually start running. Once activated, running the scheduler will cause your generator to be executed along with all other active microprocesses.</p>
-<p>Every yield statement in your generator hands back control, allowing Axon to schedule other microprocesses that may be running.</p>
-<p>You can yield any value you like except zero or False (which are reserved for future use).</p>
-<p>When a microprocess finishes, the scheduler calls its _closeDownMicroprocess() method. You can either override this in your subclass, or specify a closeDownValue when initialising microprocess. The scheduler will act on the return value if it recognises it - see the Scheduler module for more details.</p>
-<h3 id="alternative-ways-of-defining-the-generatorthread-48"><span id="alternative-ways-of-defining-the-generator-thread">Alternative ways of defining the generator/thread</span> {#48}</h3>
-<p>Subclass microprocess and write your generator as a differently named method, for example foo(), and to then specify the <em>name</em> of the "mainmethod" when you ask the microproces to activate:</p>
+<p>Pause a microprocess whilst it is running by calling the pause()
+method. Wake it up again by calling unpause(). Pausing a microprocess
+means that it will cease to be executed until something else unpauses
+it. When unpaused it picks up from where it left off.</p>
+<h2 id="47"><span id="more-detail">More detail</span></h2>
+<p>Essentially a microprocess provides a context for scheduling
+generators, and treating them similar to processes/threads. It provides
+basic facilities to support the activation (starting), pausing,
+unpausing and termination of a generator.</p>
+<p>To start a microprocess running, you must create it and then activate
+it. Activation is a separate step to allow you to control exactly when
+you want a microprocess to actually start running. Once activated,
+running the scheduler will cause your generator to be executed along
+with all other active microprocesses.</p>
+<p>Every yield statement in your generator hands back control, allowing
+Axon to schedule other microprocesses that may be running.</p>
+<p>You can yield any value you like except zero or False (which are
+reserved for future use).</p>
+<p>When a microprocess finishes, the scheduler calls its
+_closeDownMicroprocess() method. You can either override this in your
+subclass, or specify a closeDownValue when initialising microprocess.
+The scheduler will act on the return value if it recognises it - see the
+Scheduler module for more details.</p>
+<h3 id="48"><span
+id="alternative-ways-of-defining-the-generator-thread">Alternative ways
+of defining the generator/thread</span></h3>
+<p>Subclass microprocess and write your generator as a differently named
+method, for example foo(), and to then specify the <em>name</em> of the
+"mainmethod" when you ask the microproces to activate:</p>
 <pre class="literal-block"><code>class MyMicroprocess(microprocess):
     def foo(self):
         yield 1
@@ -105,7 +149,8 @@ we loop forever 2
 mp = MyMicroprocess()
 mp.activate(mainmethod=&quot;foo&quot;)
 scheduler.run.runThreads()</code></pre>
-<p>Alternatively, you can instantiate a microprocess providing your own generator:</p>
+<p>Alternatively, you can instantiate a microprocess providing your own
+generator:</p>
 <pre class="literal-block"><code>def bar():
     yield 1
     while 1:
@@ -115,19 +160,70 @@ scheduler.run.runThreads()</code></pre>
 mp = MyMicroprocess(thread=bar())
 mp.activate()
 scheduler.run.runThreads()</code></pre>
-<p>Note that this last approach removes the ability of the microprocess to be prematurely stopped by calling its stop() method.</p>
-<h2 id="microprocess-lifecycle-in-detail-49"><span id="microprocess-lifecycle-in-detail">Microprocess lifecycle in detail</span> {#49}</h2>
-<p>In terms of runtime a microprocess can be viewed to have 2 different life cycles - that which an external user sees, and that which the microprocess sees.</p>
-<p>In terms of runtime life cycle viewed externally, a microprocess is created, activated, and then has its next method repeatedly called until a StopIteration exception is raised, at which point the microprocess is deleted. In terms of a more traditional approach the next call approximates to a timeslice being allocated to a process/thread.</p>
-<p>The value returned by next() should be non-zero (reserved for future use). The scheduler calling next() may also recognise some specific values - see the <a href="/Docs/Axon/Axon.Scheduler.scheduler.html" class="reference">Axon.Scheduler.scheduler</a> class for more information.</p>
-<p>The runtime life cycle from the view of the microprocess stems from the fact that a generator wraps a thread of control, by effectively treating the program counter like a static variable. The following describes this runtime from the microprocess's point of view.</p>
-<p>First the '__init__' function is called during initialisation at object creation time. This results in a non-active, non-running microprocess. Activation has been deliberately separated from creation and initialisation. At some point in the future, the microprocess's activate method is called, activating the object. When the object is activated, an internal call to a '_microprocessGenerator' occurs. This function in fact results in the return object being a generator, which can then have its next method called repeatedly. This generator is then stored as an attribute of the microprocess class.</p>
-<p>The following describe the flow of control the generator takes when the generator is provided with a flow of control/time slice via it's next method. Initially, it creates a local generator object - 'pc' - by calling the object's main method. (This allows the client of the microprocess class to provide their own generator if they wish.) This is necessary due to the fact that any function containing a 'yield' keyword is a generator - the 'yield' keyword cannot be abstracted away. Next, inside a loop, the microprocess calls the next() method of its local generator object 'pc' - effectively providing a time slice to the user of the microprocess class. Any result provided by the timeslice is then yielded (returned) to the client of the generator. However if the microprocess has its stopped flag set, the microprocess generator simply yields a null value, followed by stopping.</p>
-<p>This all boils down to checking to see if the microprocess is not stopped prior to running the body of a generator formed from the main method of the class. The intent here is that users will inherit from the microprocess class, and then reimplement the main method, which periodically yields control. If the user/inheriting class does not implement a main method, then the system provides a stub that simply returns.</p>
-<p>Pausing and unpausing of microprocesses has been delegated to the scheduler to allow Axon systems to not consume CPU cycles when idle. When a microprocess is paused the scheduler simply never calls its next() method until it is unpaused. As such, calls to pause() and unpause() are actually relayed to the scheduler.</p>
-<p>The microprocess class uses a dummy scheduler _NullScheduler until it is actually activated. This is done so pause() and unpause() calls can be silently absorbed whilst a microprocess is not yet active.</p>
-<p>Essentially the microprocess provides a context for scheduling generators, and treating them similar to processes/threads.</p>
-<p>Clients are not expected to use the microprocess class itself directly - they are expected to subclass the microprocess class. Subclasses do need however to call the microprocess constructor. A minimal client class could look like this:</p>
+<p>Note that this last approach removes the ability of the microprocess
+to be prematurely stopped by calling its stop() method.</p>
+<h2 id="49"><span id="microprocess-lifecycle-in-detail">Microprocess
+lifecycle in detail</span></h2>
+<p>In terms of runtime a microprocess can be viewed to have 2 different
+life cycles - that which an external user sees, and that which the
+microprocess sees.</p>
+<p>In terms of runtime life cycle viewed externally, a microprocess is
+created, activated, and then has its next method repeatedly called until
+a StopIteration exception is raised, at which point the microprocess is
+deleted. In terms of a more traditional approach the next call
+approximates to a timeslice being allocated to a process/thread.</p>
+<p>The value returned by next() should be non-zero (reserved for future
+use). The scheduler calling next() may also recognise some specific
+values - see the <a href="/Docs/Axon/Axon.Scheduler.scheduler.html"
+class="reference">Axon.Scheduler.scheduler</a> class for more
+information.</p>
+<p>The runtime life cycle from the view of the microprocess stems from
+the fact that a generator wraps a thread of control, by effectively
+treating the program counter like a static variable. The following
+describes this runtime from the microprocess's point of view.</p>
+<p>First the '__init__' function is called during initialisation at
+object creation time. This results in a non-active, non-running
+microprocess. Activation has been deliberately separated from creation
+and initialisation. At some point in the future, the microprocess's
+activate method is called, activating the object. When the object is
+activated, an internal call to a '_microprocessGenerator' occurs. This
+function in fact results in the return object being a generator, which
+can then have its next method called repeatedly. This generator is then
+stored as an attribute of the microprocess class.</p>
+<p>The following describe the flow of control the generator takes when
+the generator is provided with a flow of control/time slice via it's
+next method. Initially, it creates a local generator object - 'pc' - by
+calling the object's main method. (This allows the client of the
+microprocess class to provide their own generator if they wish.) This is
+necessary due to the fact that any function containing a 'yield' keyword
+is a generator - the 'yield' keyword cannot be abstracted away. Next,
+inside a loop, the microprocess calls the next() method of its local
+generator object 'pc' - effectively providing a time slice to the user
+of the microprocess class. Any result provided by the timeslice is then
+yielded (returned) to the client of the generator. However if the
+microprocess has its stopped flag set, the microprocess generator simply
+yields a null value, followed by stopping.</p>
+<p>This all boils down to checking to see if the microprocess is not
+stopped prior to running the body of a generator formed from the main
+method of the class. The intent here is that users will inherit from the
+microprocess class, and then reimplement the main method, which
+periodically yields control. If the user/inheriting class does not
+implement a main method, then the system provides a stub that simply
+returns.</p>
+<p>Pausing and unpausing of microprocesses has been delegated to the
+scheduler to allow Axon systems to not consume CPU cycles when idle.
+When a microprocess is paused the scheduler simply never calls its
+next() method until it is unpaused. As such, calls to pause() and
+unpause() are actually relayed to the scheduler.</p>
+<p>The microprocess class uses a dummy scheduler _NullScheduler until it
+is actually activated. This is done so pause() and unpause() calls can
+be silently absorbed whilst a microprocess is not yet active.</p>
+<p>Essentially the microprocess provides a context for scheduling
+generators, and treating them similar to processes/threads.</p>
+<p>Clients are not expected to use the microprocess class itself
+directly - they are expected to subclass the microprocess class.
+Subclasses do need however to call the microprocess constructor. A
+minimal client class could look like this:</p>
 <pre class="literal-block"><code>from microprocess import microprocess
 class automaton(microprocess):
     def __init__(self):
@@ -142,126 +238,231 @@ s = scheduler.scheduler()
 a = automaton()
 a.activate()
 s.runThreads()</code></pre>
-<p>The component class does this, and adds further facilities for inter-microprocess communication. Likewise, the scheduler class subclasses microprocess so that it can be scheduled in parallel with other tasks.</p>
-<p>As noted previously, every microprocess object has access to a debugger, which is accessed via the local attribute self.debugger, which we shall return to later. Likewise every microprocess object contains a reference to a scheduler.</p>
-<h2 id="internal-flagsstate-50"><span id="internal-flags-state">Internal flags/state</span> {#50}</h2>
+<p>The component class does this, and adds further facilities for
+inter-microprocess communication. Likewise, the scheduler class
+subclasses microprocess so that it can be scheduled in parallel with
+other tasks.</p>
+<p>As noted previously, every microprocess object has access to a
+debugger, which is accessed via the local attribute self.debugger, which
+we shall return to later. Likewise every microprocess object contains a
+reference to a scheduler.</p>
+<h2 id="50"><span id="internal-flags-state">Internal
+flags/state</span></h2>
 <ul>
-<li><strong>id</strong> and <strong>name</strong> - unique identifiers. No other Axon entity will have the same name or id.</li>
-<li><strong>init</strong> - a flag indicating if the microprocess has been correctly initialised.</li>
-<li><strong>stopped</strong> - Indicates that the microprocess has run and since stopped.</li>
-<li><strong>__thread</strong> - the generator object that gets executed whenever next() is called. Is actually an internally created generator that wraps the one created by the main() method.</li>
-<li><strong>scheduler</strong> - The scheduler that controls execution of this microprocess. When not yet activated a dummy scheduler (NullScheduler) is used instead.</li>
-<li><strong>tracker</strong> - The coordinating assistant tracker to be used by this microprocess.</li>
-<li><strong>debugger</strong> - A local debugging object. (See the debug class docs for more detail)</li>
+<li><strong>id</strong> and <strong>name</strong> - unique identifiers.
+No other Axon entity will have the same name or id.</li>
+<li><strong>init</strong> - a flag indicating if the microprocess has
+been correctly initialised.</li>
+<li><strong>stopped</strong> - Indicates that the microprocess has run
+and since stopped.</li>
+<li><strong>__thread</strong> - the generator object that gets executed
+whenever next() is called. Is actually an internally created generator
+that wraps the one created by the main() method.</li>
+<li><strong>scheduler</strong> - The scheduler that controls execution
+of this microprocess. When not yet activated a dummy scheduler
+(NullScheduler) is used instead.</li>
+<li><strong>tracker</strong> - The coordinating assistant tracker to be
+used by this microprocess.</li>
+<li><strong>debugger</strong> - A local debugging object. (See the debug
+class docs for more detail)</li>
 </ul>
-<p>Note that the paused/awake state of a microprocess is something maintained and managed by the scheduler; not the microprocess itself.</p>
-<h1 id="test-documentation-51">Test documentation {#51}</h1>
+<p>Note that the paused/awake state of a microprocess is something
+maintained and managed by the scheduler; not the microprocess
+itself.</p>
+<h1 id="51">Test documentation</h1>
 <p>Tests passed:</p>
 <ul>
-<li>Additional checks over the main overridden main checks to test pausing and stopping behaviour.</li>
-<li>__init__ - Called with no arguments. Creates multiple microprocess objects with no arguments and checks they do not have matching ids.</li>
-<li>After being stopped a microprocess returns true to _isStopped and false to _isRunnable.</li>
+<li>Additional checks over the main overridden main checks to test
+pausing and stopping behaviour.</li>
+<li>__init__ - Called with no arguments. Creates multiple microprocess
+objects with no arguments and checks they do not have matching ids.</li>
+<li>After being stopped a microprocess returns true to _isStopped and
+false to _isRunnable.</li>
 <li>test___str__ (__main__.MicroProcess_Test)</li>
 <li>Stub _closeDownMicroprocess should always return 0</li>
-<li>Tests the setting of the scheduler class to be used for a subclass of microprocess is actually reflected at activation</li>
-<li>Tests the activation method operates as expected with a chosen scheduler</li>
-<li>Tests that an overridden main is run correctly by repeatedly calling next() and that termination occurs at the proper time with the proper StopIteration exception.</li>
-<li>After being paused a microprocess returns false to _isRunnable. Also tests _isRunnable and _unpause.</li>
-<li>Tests setting scheduler class and that the default scheduler is Scheduler.scheduler</li>
+<li>Tests the setting of the scheduler class to be used for a subclass
+of microprocess is actually reflected at activation</li>
+<li>Tests the activation method operates as expected with a chosen
+scheduler</li>
+<li>Tests that an overridden main is run correctly by repeatedly calling
+next() and that termination occurs at the proper time with the proper
+StopIteration exception.</li>
+<li>After being paused a microprocess returns false to _isRunnable. Also
+tests _isRunnable and _unpause.</li>
+<li>Tests setting scheduler class and that the default scheduler is
+Scheduler.scheduler</li>
 <li>test___str__ (test___str__.str_Test)</li>
 </ul>
 </section>
 <hr />
 <section>
-<h1 id="axon.microprocess._nullscheduler"><a href="/Docs/Axon/Axon.html" class="reference">Axon</a>.<a href="/Docs/Axon/Axon.Microprocess.html" class="reference">Microprocess</a>.<a href="/Docs/Axon/Axon.Microprocess._NullScheduler.html" class="reference">_NullScheduler</a></h1>
+<h1 id="axon.microprocess._nullscheduler"><a href="/Docs/Axon/Axon.html"
+class="reference">Axon</a>.<a href="/Docs/Axon/Axon.Microprocess.html"
+class="reference">Microprocess</a>.<a
+href="/Docs/Axon/Axon.Microprocess._NullScheduler.html"
+class="reference">_NullScheduler</a></h1>
 <h2 id="symbol-_NullScheduler">class _NullScheduler(object)</h2>
 <section>
-<p>A dummy scheduler, used by microprocess when it has not yet been activated (and therefore isn't yet assigned to a real scheduler).</p>
-<p>Provides dummy versions of the methods a microprocess may wish to call to get stuff done.</p>
+<p>A dummy scheduler, used by microprocess when it has not yet been
+activated (and therefore isn't yet assigned to a real scheduler).</p>
+<p>Provides dummy versions of the methods a microprocess may wish to
+call to get stuff done.</p>
 </section>
 <h3 id="methods-defined-here">Methods defined here</h3>
-<h4 id="isthreadpausedself-mprocess"><span id="symbol-_NullScheduler.isThreadPaused">isThreadPaused(self, mprocess)</span></h4>
+<h4 id="isthreadpausedself-mprocess"><span
+id="symbol-_NullScheduler.isThreadPaused">isThreadPaused(self,
+mprocess)</span></h4>
 <p>Dummy method - does nothing.</p>
-<h4 id="pausethreadself-mprocess"><span id="symbol-_NullScheduler.pauseThread">pauseThread(self, mprocess)</span></h4>
+<h4 id="pausethreadself-mprocess"><span
+id="symbol-_NullScheduler.pauseThread">pauseThread(self,
+mprocess)</span></h4>
 <p>Dummy method - does nothing.</p>
-<h4 id="wakethreadself-mprocess"><span id="symbol-_NullScheduler.wakeThread">wakeThread(self, mprocess)</span></h4>
+<h4 id="wakethreadself-mprocess"><span
+id="symbol-_NullScheduler.wakeThread">wakeThread(self,
+mprocess)</span></h4>
 <p>Dummy method - does nothing.</p>
 <section>
 
 </section>
-<h1 id="axon.microprocess.microprocess"><a href="/Docs/Axon/Axon.html" class="reference">Axon</a>.<a href="/Docs/Axon/Axon.Microprocess.html" class="reference">Microprocess</a>.<a href="/Docs/Axon/Axon.Microprocess.microprocess.html" class="reference">microprocess</a></h1>
-<h2 id="symbol-microprocess">class microprocess(<a href="/Docs/Axon/Axon.Axon.AxonObject.html" class="reference">Axon.Axon.AxonObject</a>)</h2>
+<h1 id="axon.microprocess.microprocess"><a href="/Docs/Axon/Axon.html"
+class="reference">Axon</a>.<a href="/Docs/Axon/Axon.Microprocess.html"
+class="reference">Microprocess</a>.<a
+href="/Docs/Axon/Axon.Microprocess.microprocess.html"
+class="reference">microprocess</a></h1>
+<h2 id="symbol-microprocess">class microprocess(<a
+href="/Docs/Axon/Axon.Axon.AxonObject.html"
+class="reference">Axon.Axon.AxonObject</a>)</h2>
 <section>
-<p>microprocess([thread][,closeDownValue]) -&gt; new microprocess object</p>
-<p>Creates a new microprocess object (not yet activated). You can optionally specify an alternative generator to be used instead of the one the microprocess would ordinarily create for itself.</p>
+<p>microprocess([thread][,closeDownValue]) -&gt; new microprocess
+object</p>
+<p>Creates a new microprocess object (not yet activated). You can
+optionally specify an alternative generator to be used instead of the
+one the microprocess would ordinarily create for itself.</p>
 <p>Keyword arguments:</p>
 <ul>
-<li>thread -- None, or an alternative generator to be the thread of execution in this microprocess.</li>
-<li>closeDownValue -- Value to be returned when the microprocess has finished and _closeDownMicroprocess() is called (default=0)</li>
+<li>thread -- None, or an alternative generator to be the thread of
+execution in this microprocess.</li>
+<li>closeDownValue -- Value to be returned when the microprocess has
+finished and _closeDownMicroprocess() is called (default=0)</li>
 </ul>
 </section>
 <h3 id="methods-defined-here-1">Methods defined here</h3>
-<h4 id="init__self-thread-closedownvalue-tag"><span id="symbol-microprocess.__init__">__init__(self[, thread][, closeDownValue][, tag])</span></h4>
+<h4 id="init__self-thread-closedownvalue-tag"><span
+id="symbol-microprocess.__init__">__init__(self[, thread][,
+closeDownValue][, tag])</span></h4>
 <p>Microprocess initialiser.</p>
-<p>Subclasses must call this using the idiom super(TheClass, self).__init__()</p>
-<h4 id="str__self"><span id="symbol-microprocess.__str__">__str__(self)</span></h4>
+<p>Subclasses must call this using the idiom super(TheClass,
+self).__init__()</p>
+<h4 id="str__self"><span
+id="symbol-microprocess.__str__">__str__(self)</span></h4>
 <p>Standard function for rendering the object as a string.</p>
-<h4 id="closedownmicroprocessself"><span id="symbol-microprocess._closeDownMicroprocess">_closeDownMicroprocess(self)</span></h4>
+<h4 id="closedownmicroprocessself"><span
+id="symbol-microprocess._closeDownMicroprocess">_closeDownMicroprocess(self)</span></h4>
 <p>Stub method that is overridden internally in Axon but not clients</p>
-<p>Called by scheduler to ask microprocess to perform any desired shutdown tasks. The scheduler also processes any IPC objects in the return value.</p>
-<h4 id="isrunnableself"><span id="symbol-microprocess._isRunnable">_isRunnable(self)</span></h4>
+<p>Called by scheduler to ask microprocess to perform any desired
+shutdown tasks. The scheduler also processes any IPC objects in the
+return value.</p>
+<h4 id="isrunnableself"><span
+id="symbol-microprocess._isRunnable">_isRunnable(self)</span></h4>
 <p>Returns True if the microprocess is active and awake, or paused.</p>
-<p>This query is actually passed on to this microprocess's scheduler.</p>
-<h4 id="isstoppedself"><span id="symbol-microprocess._isStopped">_isStopped(self)</span></h4>
-<p>Returns True if this microprocess has been running but has since been halted or terminated of its own accord. Otherwise returns False.</p>
-<h4 id="microprocessgeneratorself-someobject-mainmethod"><span id="symbol-microprocess._microprocessGenerator">_microprocessGenerator(self, someobject[, mainmethod])</span></h4>
-<p>This contains the mainloop for a microprocess, returning a generator object. Creates the thread of control by calling the class's main method, then in a loop repeatedly calls the resulting generator's next method providing the object with time slices. After each time slice, the _microprocessGenerator yields control back to its caller.</p>
+<p>This query is actually passed on to this microprocess's
+scheduler.</p>
+<h4 id="isstoppedself"><span
+id="symbol-microprocess._isStopped">_isStopped(self)</span></h4>
+<p>Returns True if this microprocess has been running but has since been
+halted or terminated of its own accord. Otherwise returns False.</p>
+<h4 id="microprocessgeneratorself-someobject-mainmethod"><span
+id="symbol-microprocess._microprocessGenerator">_microprocessGenerator(self,
+someobject[, mainmethod])</span></h4>
+<p>This contains the mainloop for a microprocess, returning a generator
+object. Creates the thread of control by calling the class's main
+method, then in a loop repeatedly calls the resulting generator's next
+method providing the object with time slices. After each time slice, the
+_microprocessGenerator yields control back to its caller.</p>
 <p>Keyword arguments:</p>
 <ul>
-<li>someobject -- the object containing the main method (usually 'self')</li>
-<li>mainmethod -- <em>name</em> of the method that is the generator to be run as the thread.</li>
+<li>someobject -- the object containing the main method (usually
+'self')</li>
+<li>mainmethod -- <em>name</em> of the method that is the generator to
+be run as the thread.</li>
 </ul>
-<h4 id="unpauseself"><span id="symbol-microprocess._unpause">_unpause(self)</span></h4>
+<h4 id="unpauseself"><span
+id="symbol-microprocess._unpause">_unpause(self)</span></h4>
 <p>DEPRECATED - use M.unpause() instead</p>
-<h4 id="activateself-scheduler-tracker-mainmethod"><span id="symbol-microprocess.activate">activate(self[, Scheduler][, Tracker][, mainmethod])</span></h4>
-<p>Call to activate this microprocess, so it can start to be executed by a scheduler. Usual usage is to simply call x.activate()</p>
-<p>You can optionally specify a specific scheduler or tracker to use (instead of the defaults). You can also specify that a different method is the 'main' generator.</p>
+<h4 id="activateself-scheduler-tracker-mainmethod"><span
+id="symbol-microprocess.activate">activate(self[, Scheduler][,
+Tracker][, mainmethod])</span></h4>
+<p>Call to activate this microprocess, so it can start to be executed by
+a scheduler. Usual usage is to simply call x.activate()</p>
+<p>You can optionally specify a specific scheduler or tracker to use
+(instead of the defaults). You can also specify that a different method
+is the 'main' generator.</p>
 <p>Keyword arguments:</p>
 <ul>
-<li>Scheduler -- None to use the default scheduler; or an alternate scheduler.</li>
-<li>Tracker -- None to use the default coordinating assistant tracker; or an alternative one.</li>
-<li>mainmethod -- Optional. The name of the 'main' method of this microprocess (default="main")</li>
+<li>Scheduler -- None to use the default scheduler; or an alternate
+scheduler.</li>
+<li>Tracker -- None to use the default coordinating assistant tracker;
+or an alternative one.</li>
+<li>mainmethod -- Optional. The name of the 'main' method of this
+microprocess (default="main")</li>
 </ul>
-<h4 id="mainself"><span id="symbol-microprocess.main">main(self)</span></h4>
-<p>'main' thread of execution stub function. Client classes are expected to override this.</p>
-<p>Write your replacement as a generator (a method with 'yield' statements in it). 'Yield' any non-zero values you like regularly to hand control to the scheduler so other microprocesses can get a turn at executing. Your code must therefore not block - eg. waiting on a system call or event.</p>
-<p>If you miss this off a class that directly subclass's microprocess, your program will run, but it will not do what you want!</p>
-<h4 id="nextself"><span id="symbol-microprocess.next">next(self)</span></h4>
-<p>Calls next() of the internal generator - lets you drop a microprocess in somewhere where you'd ordinarily stick a generator.</p>
-<p>Internally this calls self.__thread.next() to pass the timeslice down to the actual generator</p>
-<h4 id="pauseself"><span id="symbol-microprocess.pause">pause(self)</span></h4>
+<h4 id="mainself"><span
+id="symbol-microprocess.main">main(self)</span></h4>
+<p>'main' thread of execution stub function. Client classes are expected
+to override this.</p>
+<p>Write your replacement as a generator (a method with 'yield'
+statements in it). 'Yield' any non-zero values you like regularly to
+hand control to the scheduler so other microprocesses can get a turn at
+executing. Your code must therefore not block - eg. waiting on a system
+call or event.</p>
+<p>If you miss this off a class that directly subclass's microprocess,
+your program will run, but it will not do what you want!</p>
+<h4 id="nextself"><span
+id="symbol-microprocess.next">next(self)</span></h4>
+<p>Calls next() of the internal generator - lets you drop a microprocess
+in somewhere where you'd ordinarily stick a generator.</p>
+<p>Internally this calls self.__thread.next() to pass the timeslice down
+to the actual generator</p>
+<h4 id="pauseself"><span
+id="symbol-microprocess.pause">pause(self)</span></h4>
 <p>Pauses the microprocess.</p>
-<p>If done by the microprocess itself, the microprocess will pause at the next point it 'yields'.</p>
-<p>Internally, the request is forwarded to this microprocesses scheduler.</p>
-<h4 id="runself"><span id="symbol-microprocess.run">run(self)</span></h4>
+<p>If done by the microprocess itself, the microprocess will pause at
+the next point it 'yields'.</p>
+<p>Internally, the request is forwarded to this microprocesses
+scheduler.</p>
+<h4 id="runself"><span
+id="symbol-microprocess.run">run(self)</span></h4>
 <p>run - starts the scheduler for this microprocess and runs it.</p>
-<p>This is a convenient shortcut to activate and run this microprocess and any other microprocesses that have already been activated (with the same scheduler).</p>
-<h4 id="stopself"><span id="symbol-microprocess.stop">stop(self)</span></h4>
+<p>This is a convenient shortcut to activate and run this microprocess
+and any other microprocesses that have already been activated (with the
+same scheduler).</p>
+<h4 id="stopself"><span
+id="symbol-microprocess.stop">stop(self)</span></h4>
 <p>Halts the microprocess, no way to "unstop"</p>
-<h4 id="unpauseself-1"><span id="symbol-microprocess.unpause">unpause(self)</span></h4>
+<h4 id="unpauseself-1"><span
+id="symbol-microprocess.unpause">unpause(self)</span></h4>
 <p>Un-pauses the microprocess.</p>
-<p>This is provided to allow other microprocesses to 'wake up' this one. This can only be performed by an external microprocess - if you are paused there is no way you can unpause yourself!</p>
+<p>This is provided to allow other microprocesses to 'wake up' this one.
+This can only be performed by an external microprocess - if you are
+paused there is no way you can unpause yourself!</p>
 <p>Does nothing if microprocess has been stopped.</p>
-<p>Internally, the request is forwarded to this microprocess's scheduler.</p>
+<p>Internally, the request is forwarded to this microprocess's
+scheduler.</p>
 <section>
 
 </section>
 </section>
 </div>
 <h1 id="feedback">Feedback</h1>
-<p>Got a problem with the documentation? Something unclear that could be clearer? Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
-<p>Please leave you feedback <a href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701" class="reference">here</a> in reply to the documentation thread in the Kamaelia blog.</p>
-<p><em>-- Automatic documentation generator, 09 Dec 2009 at 04:00:25 UTC/GMT</em></p>
+<p>Got a problem with the documentation? Something unclear that could be
+clearer? Want to help improve it? Constructive criticism is very welcome
+- especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback <a
+href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701"
+class="reference">here</a> in reply to the documentation thread in the
+Kamaelia blog.</p>
+<p><em>-- Automatic documentation generator, 09 Dec 2009 at 04:00:25
+UTC/GMT</em></p>
 
 </div> <!-- end section -->
 </div> <!-- end page container -->

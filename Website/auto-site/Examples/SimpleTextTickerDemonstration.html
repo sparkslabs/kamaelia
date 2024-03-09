@@ -15,26 +15,35 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
-<p><span style="font-size:24pt;font-weight:600">Cookbook Example</span></p>
+<p><span style="font-size:24pt;font-weight:600">Cookbook
+Example</span></p>
 <p><span style="font-size:18pt">How can I...?</span></p>
-<p>Examples 11 : Simple example showing how to use the ticker component. The ticker component was first developed for displaying subtitles. <span style="font-weight:600">Components used:</span> <a href="/Components/pydoc/Kamaelia.UI.Pygame.Ticker.Ticker.html">Ticker</a>, <a href="/Components/pydoc/Kamaelia.Util.PipelineComponent.pipeline.html">pipeline</a>, <a href="/Components/pydoc/Kamaelia.ReadFileAdaptor.ReadFileAdaptor.html">ReadFileAdaptor</a></p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="co">#!/usr/bin/python</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="im">from</span> Kamaelia.UI.Pygame.Ticker <span class="im">import</span> Ticker</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a><span class="im">from</span> Kamaelia.Util.PipelineComponent <span class="im">import</span> pipeline</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a><span class="im">from</span> Kamaelia.ReadFileAdaptor <span class="im">import</span> ReadFileAdaptor</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a>pipeline( ReadFileAdaptor(<span class="st">&quot;Ulysses&quot;</span>),</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a>          Ticker(background_colour<span class="op">=</span>(<span class="dv">128</span>,<span class="dv">48</span>,<span class="dv">128</span>),</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true"></a>                 render_left <span class="op">=</span> <span class="dv">1</span>,</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true"></a>                 render_top <span class="op">=</span> <span class="dv">1</span>,</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true"></a>                 render_right <span class="op">=</span> <span class="dv">600</span>,</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true"></a>                 render_bottom <span class="op">=</span> <span class="dv">200</span>,</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true"></a>                 position <span class="op">=</span> (<span class="dv">100</span>, <span class="dv">300</span>),</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true"></a>          )</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true"></a>).run()</span></code></pre></div>
+<p>Examples 11 : Simple example showing how to use the ticker component.
+The ticker component was first developed for displaying subtitles. <span
+style="font-weight:600">Components used:</span> <a
+href="/Components/pydoc/Kamaelia.UI.Pygame.Ticker.Ticker.html">Ticker</a>,
+<a
+href="/Components/pydoc/Kamaelia.Util.PipelineComponent.pipeline.html">pipeline</a>,
+<a
+href="/Components/pydoc/Kamaelia.ReadFileAdaptor.ReadFileAdaptor.html">ReadFileAdaptor</a></p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/usr/bin/python</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> Kamaelia.UI.Pygame.Ticker <span class="im">import</span> Ticker</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> Kamaelia.Util.PipelineComponent <span class="im">import</span> pipeline</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> Kamaelia.ReadFileAdaptor <span class="im">import</span> ReadFileAdaptor</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>pipeline( ReadFileAdaptor(<span class="st">&quot;Ulysses&quot;</span>),</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>          Ticker(background_colour<span class="op">=</span>(<span class="dv">128</span>,<span class="dv">48</span>,<span class="dv">128</span>),</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>                 render_left <span class="op">=</span> <span class="dv">1</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>                 render_top <span class="op">=</span> <span class="dv">1</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>                 render_right <span class="op">=</span> <span class="dv">600</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>                 render_bottom <span class="op">=</span> <span class="dv">200</span>,</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>                 position <span class="op">=</span> (<span class="dv">100</span>, <span class="dv">300</span>),</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>          )</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>).run()</span></code></pre></div>
 <p><strong>Source:</strong> Examples/example11/Ticker.py</p>
 
 </div> <!-- end section -->

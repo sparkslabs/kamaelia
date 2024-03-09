@@ -15,40 +15,67 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
 <div class="container">
-<h1 id="kamaelia.visualisation.physicsgraph.particledragger"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Visualisation.html" class="reference">Visualisation</a>.<a href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph.html" class="reference">PhysicsGraph</a>.<a href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph.ParticleDragger.html" class="reference">ParticleDragger</a></h1>
+<h1 id="kamaelia.visualisation.physicsgraph.particledragger"><a
+href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a
+href="/Components/pydoc/Kamaelia.Visualisation.html"
+class="reference">Visualisation</a>.<a
+href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph.html"
+class="reference">PhysicsGraph</a>.<a
+href="/Components/pydoc/Kamaelia.Visualisation.PhysicsGraph.ParticleDragger.html"
+class="reference">ParticleDragger</a></h1>
 <section>
 <div class="container">
 
 </div>
 <ul>
-<li><a href="#454" class="reference">Drag handler for Topology Viewer</a>
+<li><a href="#454" class="reference">Drag handler for Topology
+Viewer</a>
 <ul>
 <li><a href="#455" class="reference">Example Usage</a></li>
 <li><a href="#456" class="reference">How does it work?</a></li>
 </ul></li>
 </ul>
 </section>
-<h1 id="drag-handler-for-topology-viewer-454">Drag handler for Topology Viewer {#454}</h1>
-<p>A subclass of <a href="/Components/pydoc/Kamaelia.UI.MH.DragHandler.html" class="reference">Kamaelia.UI.MH.DragHandler</a> that implements "click and hold" dragging of particles for the TopologyViewer.</p>
-<h2 id="example-usage-455"><span id="example-usage">Example Usage</span> {#455}</h2>
+<h1 id="454">Drag handler for Topology Viewer</h1>
+<p>A subclass of <a
+href="/Components/pydoc/Kamaelia.UI.MH.DragHandler.html"
+class="reference">Kamaelia.UI.MH.DragHandler</a> that implements "click
+and hold" dragging of particles for the TopologyViewer.</p>
+<h2 id="455"><span id="example-usage">Example Usage</span></h2>
 <p>See source for TopologyViewer.</p>
-<h2 id="how-does-it-work-456"><span id="how-does-it-work">How does it work?</span> {#456}</h2>
-<p>This is an implementation of <a href="/Components/pydoc/Kamaelia.UI.MH.DragHandler.html" class="reference">Kamaelia.UI.MH.DragHandler</a>. See that for more details.</p>
-<p>The detect() method uses the withinRadius method of the physics attribute of the 'app' to determine which (if any) particle the mouse is hovering over when the drag is started. If there is no particle, then the drag does not begin.</p>
-<p>At the start of the drag, the particle is 'frozen' to prevent motion due to the physics model of the topology viewer. This is achieved by calling the freeze() and unfreeze() methods of the particle. The particle is also 'selected'.</p>
-<p>During the drag the particle's coordinates are updated and the physics model is notified of the change.</p>
+<h2 id="456"><span id="how-does-it-work">How does it work?</span></h2>
+<p>This is an implementation of <a
+href="/Components/pydoc/Kamaelia.UI.MH.DragHandler.html"
+class="reference">Kamaelia.UI.MH.DragHandler</a>. See that for more
+details.</p>
+<p>The detect() method uses the withinRadius method of the physics
+attribute of the 'app' to determine which (if any) particle the mouse is
+hovering over when the drag is started. If there is no particle, then
+the drag does not begin.</p>
+<p>At the start of the drag, the particle is 'frozen' to prevent motion
+due to the physics model of the topology viewer. This is achieved by
+calling the freeze() and unfreeze() methods of the particle. The
+particle is also 'selected'.</p>
+<p>During the drag the particle's coordinates are updated and the
+physics model is notified of the change.</p>
 <hr />
 <section>
 
 </section>
 </div>
 <h1 id="feedback">Feedback</h1>
-<p>Got a problem with the documentation? Something unclear that could be clearer? Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
-<p>Please leave you feedback <a href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701" class="reference">here</a> in reply to the documentation thread in the Kamaelia blog.</p>
-<p><em>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</em></p>
+<p>Got a problem with the documentation? Something unclear that could be
+clearer? Want to help improve it? Constructive criticism is very welcome
+- especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback <a
+href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701"
+class="reference">here</a> in reply to the documentation thread in the
+Kamaelia blog.</p>
+<p><em>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38
+UTC/GMT</em></p>
 
 </div> <!-- end section -->
 </div> <!-- end page container -->

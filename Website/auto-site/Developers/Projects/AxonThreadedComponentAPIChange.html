@@ -15,32 +15,44 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
-<h2 id="project-task-page-axon-threadedcomponent-api-change">Project Task Page: Axon ThreadedComponent API Change</h2>
+<h2 id="project-task-page-axon-threadedcomponent-api-change">Project
+Task Page: Axon ThreadedComponent API Change</h2>
 <div class="boxright">
 <p><strong>Status:</strong> <em>Completed</em><br />
 <strong>Current Developers: </strong> <em>MH</em><br />
-<strong>Current "inflight" dev location:</strong> /branches/private_MH_axon_threads<br />
+<strong>Current "inflight" dev location:</strong>
+/branches/private_MH_axon_threads<br />
 <strong>Start Date:</strong> <em>13 April 2006</em><br />
 <strong>Expected End Date:</strong> <em>n/a</em><br />
 <strong>End Date:</strong> <em>4 May 2006</em><br />
-<strong>Date this page last updated:</strong> <em>22 February 2007</em><br />
+<strong>Date this page last updated:</strong> <em>22 February
+2007</em><br />
 <strong>Estimated effort so far:</strong> <em>15</em><br />
 </p>
 </div>
 <p><strong><br />
 </strong></p>
 <h2 id="description"><strong>Description</strong></h2>
-<p>To change the design of ThreadedComponent so that when writing a component based on it, it is almost identical to writing a normal component (just leaving out the yield statements).</p>
-<p>The existing design required the component writer to access queue objects to send and receive data, rather than use the <em>self.dataReady()</em>, <em>self.send</em> and <em>self.recv()</em> methods they would use for a normal component.</p>
-<p>In the process, thread safety should also be improved, and the ability to add and remove inboxes and outboxes on the fly (ala AdaptiveCommsComponent) should be implemented.</p>
+<p>To change the design of ThreadedComponent so that when writing a
+component based on it, it is almost identical to writing a normal
+component (just leaving out the yield statements).</p>
+<p>The existing design required the component writer to access queue
+objects to send and receive data, rather than use the
+<em>self.dataReady()</em>, <em>self.send</em> and <em>self.recv()</em>
+methods they would use for a normal component.</p>
+<p>In the process, thread safety should also be improved, and the
+ability to add and remove inboxes and outboxes on the fly (ala
+AdaptiveCommsComponent) should be implemented.</p>
 <p>Benefits:</p>
 <ul>
 <li>Much easier to write threaded components</li>
-<li>Very easy to convery a normal component to/from being a threaded one<br />
+<li>Very easy to convery a normal component to/from being a threaded
+one<br />
 </li>
-<li>Possible to write threaded components that dynamically change their inboxes and outboxes (eg. Selector service component)<br />
+<li>Possible to write threaded components that dynamically change their
+inboxes and outboxes (eg. Selector service component)<br />
 </li>
 </ul>
 <h2 id="inputs">Inputs</h2>
@@ -55,10 +67,12 @@
 <p>Interested third parties: none<br />
 </p>
 <p>Requirements</p>
-<p>Just like for a normal component, when writing a threaded one...<br />
+<p>Just like for a normal component, when writing a threaded
+one...<br />
 </p>
 <ul>
-<li>MUST be able to use <em>self.dataReady()</em>, <em>self.send()</em> and *self.recv()<br />
+<li>MUST be able to use <em>self.dataReady()</em>, <em>self.send()</em>
+and *self.recv()<br />
 
 <ul>
 <li></li>
@@ -75,12 +89,14 @@
 <li>creating linkages</li>
 <li>destroying linkages</li>
 </ul>
-<p>SHOULD be able to trap exceptions and throw them back to the main thread so an Axon system can correctly terminate.<br />
+<p>SHOULD be able to trap exceptions and throw them back to the main
+thread so an Axon system can correctly terminate.<br />
 </p>
 <p>Relevant Influencing factors:<br />
 </p>
 <ul>
-<li>*Need to implement 'Selector' as a threaded component (for throughput optimisations)<br />
+<li>*Need to implement 'Selector' as a threaded component (for
+throughput optimisations)<br />
 
 <ul>
 <li></li>
@@ -89,7 +105,8 @@
 <h2 id="outputs">Outputs</h2>
 <h3 id="expected">Expected</h3>
 <ul>
-<li>Modifications to Axon (initially in branch, then merged into mainline code)</li>
+<li>Modifications to Axon (initially in branch, then merged into
+mainline code)</li>
 <li>Modifications and additions to Axon test suite</li>
 </ul>
 <h3 id="actual">Actual</h3>
@@ -116,7 +133,9 @@
 <li>/Sketches/MPS/dj2.py</li>
 <li>/Sketches/MPS/music.py</li>
 </ul>
-<h3 id="realistic-possibilities-arising-as-a-result-of-activity-on-this-task">Realistic possibilities arising as a result of activity on this task</h3>
+<h3
+id="realistic-possibilities-arising-as-a-result-of-activity-on-this-task">Realistic
+possibilities arising as a result of activity on this task</h3>
 <p>Need to make access to CAT threadsafe too.<br />
 </p>
 <h2 id="task-log">Task Log</h2>
@@ -124,10 +143,12 @@
 <li>13 April 2006 : Added developer Matt<br />
 </li>
 <li>13 April 2006 : <strong>Task status changed</strong> to running</li>
-<li>13 April 2006 : Matt : worked on private_MH_Axon_threads branch for Axon</li>
+<li>13 April 2006 : Matt : worked on private_MH_Axon_threads branch for
+Axon</li>
 <li>02 May 2006 : Matt : completed development<br />
 </li>
-<li>03 May 2006 : Added developer Michael : to merge branch into mainline</li>
+<li>03 May 2006 : Added developer Michael : to merge branch into
+mainline</li>
 <li>04 May 2006 : Michael : Merge completed</li>
 <li>04 May 2006 : <strong>Task status changed</strong> to completed</li>
 <li>04 May 2006 : Removed developers Matt, Michael</li>
@@ -135,7 +156,13 @@
 </li>
 </ul>
 <h2 id="discussion">Discussion</h2>
-<p>Distinction between activity-creators and non activity-creator components removed (the scheduler would stop if there wasn't at least one activity-creator microprocess running). This was no longer necessary as there was no longer a postman microprocess (a non activity-creator). Removing support for this from the scheduler simplified things, making implementing support for the new design threaded components (and later quiescence optimisations) easier.<br />
+<p>Distinction between activity-creators and non activity-creator
+components removed (the scheduler would stop if there wasn't at least
+one activity-creator microprocess running). This was no longer necessary
+as there was no longer a postman microprocess (a non activity-creator).
+Removing support for this from the scheduler simplified things, making
+implementing support for the new design threaded components (and later
+quiescence optimisations) easier.<br />
 <br />
 </p>
 <p>-- Matt Hammond, 22 February 2007<br />

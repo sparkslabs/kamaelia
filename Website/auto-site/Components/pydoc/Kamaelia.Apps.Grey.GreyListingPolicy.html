@@ -15,31 +15,47 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
 <div class="container">
-<h1 id="kamaelia.apps.grey.greylistingpolicy"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Apps.html" class="reference">Apps</a>.<a href="/Components/pydoc/Kamaelia.Apps.Grey.html" class="reference">Grey</a>.<a href="/Components/pydoc/Kamaelia.Apps.Grey.GreyListingPolicy.html" class="reference">GreyListingPolicy</a></h1>
+<h1 id="kamaelia.apps.grey.greylistingpolicy"><a
+href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a
+href="/Components/pydoc/Kamaelia.Apps.html"
+class="reference">Apps</a>.<a
+href="/Components/pydoc/Kamaelia.Apps.Grey.html"
+class="reference">Grey</a>.<a
+href="/Components/pydoc/Kamaelia.Apps.Grey.GreyListingPolicy.html"
+class="reference">GreyListingPolicy</a></h1>
 <section>
 <div class="container">
 <ul>
-<li><strong>component <a href="/Components/pydoc/Kamaelia.Apps.Grey.GreyListingPolicy.GreyListingPolicy.html" class="reference">GreyListingPolicy</a></strong></li>
+<li><strong>component <a
+href="/Components/pydoc/Kamaelia.Apps.Grey.GreyListingPolicy.GreyListingPolicy.html"
+class="reference">GreyListingPolicy</a></strong></li>
 </ul>
 </div>
 <ul>
-<li><a href="#63" class="reference">Greylisting Policy For/Subclass Of Concrete Mail Handler</a>
+<li><a href="#63" class="reference">Greylisting Policy For/Subclass Of
+Concrete Mail Handler</a>
 <ul>
 <li><a href="#64" class="reference">Example Usage</a></li>
 <li><a href="#65" class="reference">How does it work?</a></li>
 </ul></li>
 </ul>
 </section>
-<h1 id="greylisting-policy-forsubclass-of-concrete-mail-handler-63">Greylisting Policy For/Subclass Of Concrete Mail Handler {#63}</h1>
-<p>This component implements a greylisting SMTP proxy protocol, by subclassing ConcreteMailHandler and overriding the appropriate methods (primarily the shouldWeAcceptMail method).</p>
-<p>For more detail, please see <a href="http://www.kamaelia.org/KamaeliaGrey" class="uri">http://www.kamaelia.org/KamaeliaGrey</a></p>
-<h2 id="example-usage-64"><span id="example-usage">Example Usage</span> {#64}</h2>
+<h1 id="63">Greylisting Policy For/Subclass Of Concrete Mail
+Handler</h1>
+<p>This component implements a greylisting SMTP proxy protocol, by
+subclassing ConcreteMailHandler and overriding the appropriate methods
+(primarily the shouldWeAcceptMail method).</p>
+<p>For more detail, please see <a
+href="http://www.kamaelia.org/KamaeliaGrey"
+class="uri">http://www.kamaelia.org/KamaeliaGrey</a></p>
+<h2 id="64"><span id="example-usage">Example Usage</span></h2>
 <p>You use this as follows (at minimum):</p>
 <pre class="literal-block"><code>ServerCore(protocol=GreyListingPolicy, port=25)</code></pre>
-<p>If you want to have a hardcoded/configured greylisting server you could do this:</p>
+<p>If you want to have a hardcoded/configured greylisting server you
+could do this:</p>
 <pre class="literal-block"><code>class GreyLister(ServerCore):
     class protocol(GreyListingPolicy):
         allowed_senders = []
@@ -47,8 +63,9 @@
         allowed_domains = [ ]
 
 GreyLister(port=25)</code></pre>
-<h2 id="how-does-it-work-65"><span id="how-does-it-work">How does it work?</span> {#65}</h2>
-<p>Primarily it override the method shouldWeAcceptMail, and implements the following logic:</p>
+<h2 id="65"><span id="how-does-it-work">How does it work?</span></h2>
+<p>Primarily it override the method shouldWeAcceptMail, and implements
+the following logic:</p>
 <pre class="literal-block"><code>if self.sentFromAllowedIPAddress():  return True # Allowed hosts can always send to anywhere through us
 if self.sentFromAllowedNetwork():    return True # People on truste networks can always do the same
 if self.sentToADomainWeForwardFor():
@@ -61,8 +78,11 @@ if self.sentToADomainWeForwardFor():
     except Exception, e:
         pass
     return True # Anyone can always send to hosts we own</code></pre>
-<p>Clearly AllowedIPAddress, AllowedNetwork, whiteListed, and DomainWeForwardFor are fairly clear concepts, so for more details on those please look at the implementation.</p>
-<p>isGreylisted by comparison is slightly more complex. Fundamentally this works on the basis of saying this:</p>
+<p>Clearly AllowedIPAddress, AllowedNetwork, whiteListed, and
+DomainWeForwardFor are fairly clear concepts, so for more details on
+those please look at the implementation.</p>
+<p>isGreylisted by comparison is slightly more complex. Fundamentally
+this works on the basis of saying this:</p>
 <blockquote>
 <ul>
 <li>have we seen the triple (ip, sender, recipient) before ?</li>
@@ -70,77 +90,173 @@ if self.sentToADomainWeForwardFor():
 <li>otherwise, defer the message</li>
 </ul>
 </blockquote>
-<p>Now there is a little more subtlty here, based on the following conditions:</p>
+<p>Now there is a little more subtlty here, based on the following
+conditions:</p>
 <blockquote>
 <ul>
 <li>If greylisted, and not been there too long, allow through</li>
-<li>If grey too long, refuse (restarting the greylisting for that combo)</li>
+<li>If grey too long, refuse (restarting the greylisting for that
+combo)</li>
 <li>If not seen this triplet before, defer and note triplet</li>
-<li>If triplet retrying waaay too soon, reset their timer &amp; defer</li>
+<li>If triplet retrying waaay too soon, reset their timer &amp;
+defer</li>
 <li>If triplet retrying too soon generally speaking just defer</li>
 <li>If triplet hasn't been seen in aaaages, defer</li>
 <li>Otherwise, allow through &amp; greylist them</li>
 </ul>
 </blockquote>
 <hr />
-<h1 id="kamaelia.apps.grey.greylistingpolicy.greylistingpolicy"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Apps.html" class="reference">Apps</a>.<a href="/Components/pydoc/Kamaelia.Apps.Grey.html" class="reference">Grey</a>.<a href="/Components/pydoc/Kamaelia.Apps.Grey.GreyListingPolicy.html" class="reference">GreyListingPolicy</a>.<a href="/Components/pydoc/Kamaelia.Apps.Grey.GreyListingPolicy.GreyListingPolicy.html" class="reference">GreyListingPolicy</a></h1>
-<h2 id="symbol-GreyListingPolicy">class GreyListingPolicy(<a href="/Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler.ConcreteMailHandler.html" class="reference">Kamaelia.Apps.Grey.ConcreteMailHandler.ConcreteMailHandler</a>)</h2>
-<h3 id="inboxes"><span id="symbol-GreyListingPolicy.Inboxes">Inboxes</span></h3>
-<h3 id="outboxes"><span id="symbol-GreyListingPolicy.Outboxes">Outboxes</span></h3>
+<h1 id="kamaelia.apps.grey.greylistingpolicy.greylistingpolicy"><a
+href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a
+href="/Components/pydoc/Kamaelia.Apps.html"
+class="reference">Apps</a>.<a
+href="/Components/pydoc/Kamaelia.Apps.Grey.html"
+class="reference">Grey</a>.<a
+href="/Components/pydoc/Kamaelia.Apps.Grey.GreyListingPolicy.html"
+class="reference">GreyListingPolicy</a>.<a
+href="/Components/pydoc/Kamaelia.Apps.Grey.GreyListingPolicy.GreyListingPolicy.html"
+class="reference">GreyListingPolicy</a></h1>
+<h2 id="symbol-GreyListingPolicy">class GreyListingPolicy(<a
+href="/Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler.ConcreteMailHandler.html"
+class="reference">Kamaelia.Apps.Grey.ConcreteMailHandler.ConcreteMailHandler</a>)</h2>
+<h3 id="inboxes"><span
+id="symbol-GreyListingPolicy.Inboxes">Inboxes</span></h3>
+<h3 id="outboxes"><span
+id="symbol-GreyListingPolicy.Outboxes">Outboxes</span></h3>
 <h3 id="methods-defined-here">Methods defined here</h3>
 <div class="container">
 <div class="boxright">
 <p><strong>Warning!</strong></p>
-<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+<p>You should be using the inbox/outbox interface, not these methods
+(except construction). This documentation is designed as a roadmap as to
+their functionalilty for maintainers and new component developers.</p>
 </div>
 </div>
-<h4 id="isgreylistedself-recipient"><span id="symbol-GreyListingPolicy.isGreylisted">isGreylisted(self, recipient)</span></h4>
-<h4 id="logresultself"><span id="symbol-GreyListingPolicy.logResult">logResult(self)</span></h4>
-<h4 id="sentfromallowedipaddressself"><span id="symbol-GreyListingPolicy.sentFromAllowedIPAddress">sentFromAllowedIPAddress(self)</span></h4>
-<h4 id="sentfromallowednetworkself"><span id="symbol-GreyListingPolicy.sentFromAllowedNetwork">sentFromAllowedNetwork(self)</span></h4>
-<h4 id="senttoadomainweforwardforself"><span id="symbol-GreyListingPolicy.sentToADomainWeForwardFor">sentToADomainWeForwardFor(self)</span></h4>
-<h4 id="shouldweacceptmailself"><span id="symbol-GreyListingPolicy.shouldWeAcceptMail">shouldWeAcceptMail(self)</span></h4>
-<h4 id="whitelistedself-recipient"><span id="symbol-GreyListingPolicy.whiteListed">whiteListed(self, recipient)</span></h4>
+<h4 id="isgreylistedself-recipient"><span
+id="symbol-GreyListingPolicy.isGreylisted">isGreylisted(self,
+recipient)</span></h4>
+<h4 id="logresultself"><span
+id="symbol-GreyListingPolicy.logResult">logResult(self)</span></h4>
+<h4 id="sentfromallowedipaddressself"><span
+id="symbol-GreyListingPolicy.sentFromAllowedIPAddress">sentFromAllowedIPAddress(self)</span></h4>
+<h4 id="sentfromallowednetworkself"><span
+id="symbol-GreyListingPolicy.sentFromAllowedNetwork">sentFromAllowedNetwork(self)</span></h4>
+<h4 id="senttoadomainweforwardforself"><span
+id="symbol-GreyListingPolicy.sentToADomainWeForwardFor">sentToADomainWeForwardFor(self)</span></h4>
+<h4 id="shouldweacceptmailself"><span
+id="symbol-GreyListingPolicy.shouldWeAcceptMail">shouldWeAcceptMail(self)</span></h4>
+<h4 id="whitelistedself-recipient"><span
+id="symbol-GreyListingPolicy.whiteListed">whiteListed(self,
+recipient)</span></h4>
 <section>
-<h4 id="methods-inherited-from-kamaelia.apps.grey.concretemailhandler.concretemailhandler">Methods inherited from <a href="/Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler.ConcreteMailHandler.html" class="reference">Kamaelia.Apps.Grey.ConcreteMailHandler.ConcreteMailHandler</a> :</h4>
+<h4
+id="methods-inherited-from-kamaelia.apps.grey.concretemailhandler.concretemailhandler">Methods
+inherited from <a
+href="/Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler.ConcreteMailHandler.html"
+class="reference">Kamaelia.Apps.Grey.ConcreteMailHandler.ConcreteMailHandler</a>
+:</h4>
 <ul>
-<li><a href="/Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler.html#symbol-ConcreteMailHandler.getline_fromsmtpserver" class="reference">getline_fromsmtpserver</a>(self)</li>
-<li><a href="/Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler.html#symbol-ConcreteMailHandler.handleVrfy" class="reference">handleVrfy</a>(self, command)</li>
-<li><a href="/Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler.html#symbol-ConcreteMailHandler.handleQuit" class="reference">handleQuit</a>(self, command)</li>
-<li><a href="/Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler.html#symbol-ConcreteMailHandler.handleMail" class="reference">handleMail</a>(self, command)</li>
-<li><a href="/Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler.html#symbol-ConcreteMailHandler.__init__" class="reference">__init__</a>(self, **argv)</li>
-<li><a href="/Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler.html#symbol-ConcreteMailHandler.handleNoop" class="reference">handleNoop</a>(self, command)</li>
-<li><a href="/Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler.html#symbol-ConcreteMailHandler.handleRset" class="reference">handleRset</a>(self, command)</li>
-<li><a href="/Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler.html#symbol-ConcreteMailHandler.handleData" class="reference">handleData</a>(self, command)</li>
-<li><a href="/Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler.html#symbol-ConcreteMailHandler.deferMail" class="reference">deferMail</a>(self)</li>
-<li><a href="/Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler.html#symbol-ConcreteMailHandler.handleDisconnect" class="reference">handleDisconnect</a>(self)</li>
-<li><a href="/Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler.html#symbol-ConcreteMailHandler.handleRcpt" class="reference">handleRcpt</a>(self, command)</li>
-<li><a href="/Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler.html#symbol-ConcreteMailHandler.handleEhlo" class="reference">handleEhlo</a>(self, command)</li>
-<li><a href="/Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler.html#symbol-ConcreteMailHandler.RelayError" class="reference">RelayError</a>(self)</li>
-<li><a href="/Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler.html#symbol-ConcreteMailHandler.handleHelo" class="reference">handleHelo</a>(self, command)</li>
-<li><a href="/Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler.html#symbol-ConcreteMailHandler.handleConnect" class="reference">handleConnect</a>(self)</li>
-<li><a href="/Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler.html#symbol-ConcreteMailHandler.error" class="reference">error</a>(self, message)</li>
-<li><a href="/Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler.html#symbol-ConcreteMailHandler.handleHelp" class="reference">handleHelp</a>(self, command)</li>
-<li><a href="/Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler.html#symbol-ConcreteMailHandler.connectToRealSMTPServer" class="reference">connectToRealSMTPServer</a>(self)</li>
-<li><a href="/Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler.html#symbol-ConcreteMailHandler.acceptMail" class="reference">acceptMail</a>(self)</li>
+<li><a
+href="/Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler.html#symbol-ConcreteMailHandler.getline_fromsmtpserver"
+class="reference">getline_fromsmtpserver</a>(self)</li>
+<li><a
+href="/Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler.html#symbol-ConcreteMailHandler.handleVrfy"
+class="reference">handleVrfy</a>(self, command)</li>
+<li><a
+href="/Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler.html#symbol-ConcreteMailHandler.handleQuit"
+class="reference">handleQuit</a>(self, command)</li>
+<li><a
+href="/Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler.html#symbol-ConcreteMailHandler.handleMail"
+class="reference">handleMail</a>(self, command)</li>
+<li><a
+href="/Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler.html#symbol-ConcreteMailHandler.__init__"
+class="reference">__init__</a>(self, **argv)</li>
+<li><a
+href="/Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler.html#symbol-ConcreteMailHandler.handleNoop"
+class="reference">handleNoop</a>(self, command)</li>
+<li><a
+href="/Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler.html#symbol-ConcreteMailHandler.handleRset"
+class="reference">handleRset</a>(self, command)</li>
+<li><a
+href="/Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler.html#symbol-ConcreteMailHandler.handleData"
+class="reference">handleData</a>(self, command)</li>
+<li><a
+href="/Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler.html#symbol-ConcreteMailHandler.deferMail"
+class="reference">deferMail</a>(self)</li>
+<li><a
+href="/Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler.html#symbol-ConcreteMailHandler.handleDisconnect"
+class="reference">handleDisconnect</a>(self)</li>
+<li><a
+href="/Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler.html#symbol-ConcreteMailHandler.handleRcpt"
+class="reference">handleRcpt</a>(self, command)</li>
+<li><a
+href="/Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler.html#symbol-ConcreteMailHandler.handleEhlo"
+class="reference">handleEhlo</a>(self, command)</li>
+<li><a
+href="/Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler.html#symbol-ConcreteMailHandler.RelayError"
+class="reference">RelayError</a>(self)</li>
+<li><a
+href="/Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler.html#symbol-ConcreteMailHandler.handleHelo"
+class="reference">handleHelo</a>(self, command)</li>
+<li><a
+href="/Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler.html#symbol-ConcreteMailHandler.handleConnect"
+class="reference">handleConnect</a>(self)</li>
+<li><a
+href="/Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler.html#symbol-ConcreteMailHandler.error"
+class="reference">error</a>(self, message)</li>
+<li><a
+href="/Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler.html#symbol-ConcreteMailHandler.handleHelp"
+class="reference">handleHelp</a>(self, command)</li>
+<li><a
+href="/Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler.html#symbol-ConcreteMailHandler.connectToRealSMTPServer"
+class="reference">connectToRealSMTPServer</a>(self)</li>
+<li><a
+href="/Components/pydoc/Kamaelia.Apps.Grey.ConcreteMailHandler.html#symbol-ConcreteMailHandler.acceptMail"
+class="reference">acceptMail</a>(self)</li>
 </ul>
-<h4 id="methods-inherited-from-kamaelia.apps.grey.mailhandler.mailhandler">Methods inherited from <a href="/Components/pydoc/Kamaelia.Apps.Grey.MailHandler.MailHandler.html" class="reference">Kamaelia.Apps.Grey.MailHandler.MailHandler</a> :</h4>
+<h4
+id="methods-inherited-from-kamaelia.apps.grey.mailhandler.mailhandler">Methods
+inherited from <a
+href="/Components/pydoc/Kamaelia.Apps.Grey.MailHandler.MailHandler.html"
+class="reference">Kamaelia.Apps.Grey.MailHandler.MailHandler</a> :</h4>
 <ul>
-<li><a href="/Components/pydoc/Kamaelia.Apps.Grey.MailHandler.html#symbol-MailHandler.noteToDebugLog" class="reference">noteToDebugLog</a>(self, line)</li>
-<li><a href="/Components/pydoc/Kamaelia.Apps.Grey.MailHandler.html#symbol-MailHandler.noteToLog" class="reference">noteToLog</a>(self, line)</li>
-<li><a href="/Components/pydoc/Kamaelia.Apps.Grey.MailHandler.html#symbol-MailHandler.lastline" class="reference">lastline</a>(self)</li>
-<li><a href="/Components/pydoc/Kamaelia.Apps.Grey.MailHandler.html#symbol-MailHandler.main" class="reference">main</a>(self)</li>
-<li><a href="/Components/pydoc/Kamaelia.Apps.Grey.MailHandler.html#symbol-MailHandler.getline" class="reference">getline</a>(self)</li>
-<li><a href="/Components/pydoc/Kamaelia.Apps.Grey.MailHandler.html#symbol-MailHandler.handleCommand" class="reference">handleCommand</a>(self, command)</li>
-<li><a href="/Components/pydoc/Kamaelia.Apps.Grey.MailHandler.html#symbol-MailHandler.netPrint" class="reference">netPrint</a>(self, *args)</li>
-<li><a href="/Components/pydoc/Kamaelia.Apps.Grey.MailHandler.html#symbol-MailHandler.logging_recv_connection" class="reference">logging_recv_connection</a>(self)</li>
+<li><a
+href="/Components/pydoc/Kamaelia.Apps.Grey.MailHandler.html#symbol-MailHandler.noteToDebugLog"
+class="reference">noteToDebugLog</a>(self, line)</li>
+<li><a
+href="/Components/pydoc/Kamaelia.Apps.Grey.MailHandler.html#symbol-MailHandler.noteToLog"
+class="reference">noteToLog</a>(self, line)</li>
+<li><a
+href="/Components/pydoc/Kamaelia.Apps.Grey.MailHandler.html#symbol-MailHandler.lastline"
+class="reference">lastline</a>(self)</li>
+<li><a
+href="/Components/pydoc/Kamaelia.Apps.Grey.MailHandler.html#symbol-MailHandler.main"
+class="reference">main</a>(self)</li>
+<li><a
+href="/Components/pydoc/Kamaelia.Apps.Grey.MailHandler.html#symbol-MailHandler.getline"
+class="reference">getline</a>(self)</li>
+<li><a
+href="/Components/pydoc/Kamaelia.Apps.Grey.MailHandler.html#symbol-MailHandler.handleCommand"
+class="reference">handleCommand</a>(self, command)</li>
+<li><a
+href="/Components/pydoc/Kamaelia.Apps.Grey.MailHandler.html#symbol-MailHandler.netPrint"
+class="reference">netPrint</a>(self, *args)</li>
+<li><a
+href="/Components/pydoc/Kamaelia.Apps.Grey.MailHandler.html#symbol-MailHandler.logging_recv_connection"
+class="reference">logging_recv_connection</a>(self)</li>
 </ul>
 </section>
 </div>
 <h1 id="feedback">Feedback</h1>
-<p>Got a problem with the documentation? Something unclear that could be clearer? Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
-<p>Please leave you feedback <a href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701" class="reference">here</a> in reply to the documentation thread in the Kamaelia blog.</p>
-<p><em>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</em></p>
+<p>Got a problem with the documentation? Something unclear that could be
+clearer? Want to help improve it? Constructive criticism is very welcome
+- especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback <a
+href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701"
+class="reference">here</a> in reply to the documentation thread in the
+Kamaelia blog.</p>
+<p><em>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38
+UTC/GMT</em></p>
 
 </div> <!-- end section -->
 </div> <!-- end page container -->

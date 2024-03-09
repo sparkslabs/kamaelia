@@ -15,10 +15,16 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
-<h1 id="developersprojectskamaeliapublishhowtobuildexe">Developers/Projects/KamaeliaPublish/HowToBuildExe</h1>
-<p>This page describes the process for changing the toolchain to use different scripts.  There are two important files that you may need to edit to alter this behavior:  zipheader.unix and scripts/Publish.prepare.sh.  To build an executable, you will need at minimum the following files from private_JMB_DescartesComponentsAdded/Apps/Kamaelia-Publish:<br />
+<h1
+id="developersprojectskamaeliapublishhowtobuildexe">Developers/Projects/KamaeliaPublish/HowToBuildExe</h1>
+<p>This page describes the process for changing the toolchain to use
+different scripts.  There are two important files that you may need to
+edit to alter this behavior:  zipheader.unix and
+scripts/Publish.prepare.sh.  To build an executable, you will need at
+minimum the following files from
+private_JMB_DescartesComponentsAdded/Apps/Kamaelia-Publish:<br />
 </p>
 <ul>
 <li>zipheader.unix</li>
@@ -27,20 +33,32 @@
 </li>
 </ul>
 <h2 id="make-unix.sh">make-unix.sh</h2>
-<p>There is not currently any part of make-unix.sh that needs to be customized.<br />
+<p>There is not currently any part of make-unix.sh that needs to be
+customized.<br />
 <br />
 </p>
 <h2 id="zipheader.unix">zipheader.unix</h2>
-<p>This file won't need to be changed if you have a module main with a main function in it (which is to be the main entry point to your application). Otherwise, these lines will need to be changed: <span id="line-52" class="anchor"></span><span id="line-53" class="anchor"></span></p>
-<p><span id="line-54" class="anchor"></span><span id="line-55" class="anchor"></span><span id="line-56" class="anchor"></span><span id="line-57" class="anchor"></span></p>
+<p>This file won't need to be changed if you have a module main with a
+main function in it (which is to be the main entry point to your
+application). Otherwise, these lines will need to be changed: <span
+id="line-52" class="anchor"></span><span id="line-53"
+class="anchor"></span></p>
+<p><span id="line-54" class="anchor"></span><span id="line-55"
+class="anchor"></span><span id="line-56" class="anchor"></span><span
+id="line-57" class="anchor"></span></p>
 <pre><code>import main
 
 main.main()</code></pre>
-<p><span id="line-58" class="anchor"></span>This is plain old python code, so you can put whatever you want here. My advice would be to have it import and run your main module.<br />
+<p><span id="line-58" class="anchor"></span>This is plain old python
+code, so you can put whatever you want here. My advice would be to have
+it import and run your main module.<br />
 <br />
 </p>
 <h2 id="scriptspublish.prepare.sh">scripts/publish.prepare.sh</h2>
-<p>This file is only responsible for moving all the files into the assembly directory.  Thus, all you really have to do is move all the files that you want built into the executable into the assembly directory.<br />
+<p>This file is only responsible for moving all the files into the
+assembly directory.  Thus, all you really have to do is move all the
+files that you want built into the executable into the assembly
+directory.<br />
 </p>
 
 </div> <!-- end section -->

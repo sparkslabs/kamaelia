@@ -15,10 +15,13 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
-<h1 id="network-protocol-modules"><span style="font-size: 24pt; font-weight: 600;">Network Protocol Modules</span></h1>
-<p><a href="/Components/pydoc/Kamaelia.Protocol">Kamaelia.Protocol</a></p>
+<h1 id="network-protocol-modules"><span
+style="font-size: 24pt; font-weight: 600;">Network Protocol
+Modules</span></h1>
+<p><a
+href="/Components/pydoc/Kamaelia.Protocol">Kamaelia.Protocol</a></p>
 <ul>
 <li>AudioCookieProtocol<br />
 </li>
@@ -32,42 +35,94 @@
 </ul>
 <p><strong>Echo protocol and Fortune Cookies</strong><br />
 </p>
-<p><a href="/Components/pydoc/Kamaelia.Protocol.EchoProtocol">EchoProtocol</a> is the simplest protocol and forms a simple loopback protocol useful for integration testing. In practice this component is really a <span style="font-style: italic;">data pass through</span>component since all data recieved on its inbox is passed on directly to its outbox. <a href="/Components/pydoc/Kamaelia.Util.PassThrough">Kamaelia.Util.PassThrough</a> is a similar component.</p>
-<p><a href="/Components/pydoc/Kamaelia.Protocol.FortuneCookieProtocol">FortuneCookieProtocol</a> is one step above EchoProtocol. It runs the fortune program on the server and sends the result to its outbox. In a networked environment what this means is the server will simply blat the fortune cookie to a client that connects to the server.</p>
-<p><a href="/Components/pydoc/Kamaelia.Protocol.AudioCookieProtocol">AudioCookieProtocol</a> is a further logical extension. Similar to FortuneCookieProtocol it too runs an external program and sends the result to its outbox. In this case however rather than a short piece of text, it is a short snippet of audio.<br />
+<p><a
+href="/Components/pydoc/Kamaelia.Protocol.EchoProtocol">EchoProtocol</a>
+is the simplest protocol and forms a simple loopback protocol useful for
+integration testing. In practice this component is really a <span
+style="font-style: italic;">data pass through</span>component since all
+data recieved on its inbox is passed on directly to its outbox. <a
+href="/Components/pydoc/Kamaelia.Util.PassThrough">Kamaelia.Util.PassThrough</a>
+is a similar component.</p>
+<p><a
+href="/Components/pydoc/Kamaelia.Protocol.FortuneCookieProtocol">FortuneCookieProtocol</a>
+is one step above EchoProtocol. It runs the fortune program on the
+server and sends the result to its outbox. In a networked environment
+what this means is the server will simply blat the fortune cookie to a
+client that connects to the server.</p>
+<p><a
+href="/Components/pydoc/Kamaelia.Protocol.AudioCookieProtocol">AudioCookieProtocol</a>
+is a further logical extension. Similar to FortuneCookieProtocol it too
+runs an external program and sends the result to its outbox. In this
+case however rather than a short piece of text, it is a short snippet of
+audio.<br />
 </p>
-<p><a href="/Components/pydoc/Kamaelia.Protocol.SimpleVideoCookieServer">SimpleVideoCookieServer</a> is essentially the same but his time with a short piece of video.<br />
+<p><a
+href="/Components/pydoc/Kamaelia.Protocol.SimpleVideoCookieServer">SimpleVideoCookieServer</a>
+is essentially the same but his time with a short piece of video.<br />
 </p>
 <p><strong>HTTP</strong><br />
 </p>
 <ul>
-<li><a href="/Components/pydoc/Kamaelia.Protocol.HTTP.HTTPClient">Kamaelia.Protocol.HTTP.HTTPClient</a></li>
-<li><a href="/Components/pydoc/Kamaelia.Protocol.HTTP.HTTPServer">Kamaelia.Protocol.HTTP.HTTPServer</a></li>
-<li><a href="/Components/pydoc/Kamaelia.Protocol.HTTP.IcecastClient">Kamaelia.Protocol.HTTP.IcecastClient</a> (SHOUTcast)<br />
+<li><a
+href="/Components/pydoc/Kamaelia.Protocol.HTTP.HTTPClient">Kamaelia.Protocol.HTTP.HTTPClient</a></li>
+<li><a
+href="/Components/pydoc/Kamaelia.Protocol.HTTP.HTTPServer">Kamaelia.Protocol.HTTP.HTTPServer</a></li>
+<li><a
+href="/Components/pydoc/Kamaelia.Protocol.HTTP.IcecastClient">Kamaelia.Protocol.HTTP.IcecastClient</a>
+(SHOUTcast)<br />
 </li>
 </ul>
-<p><a href="/Components/pydoc/Kamaelia.Protocol.HTTP">Kamaelia.Protocol.HTTP</a> is a collection of components implementing an extensible HTTP server and an HTTP Client. There is also an implementation of a SHOUTcast/Icecast client.<br />
+<p><a
+href="/Components/pydoc/Kamaelia.Protocol.HTTP">Kamaelia.Protocol.HTTP</a>
+is a collection of components implementing an extensible HTTP server and
+an HTTP Client. There is also an implementation of a SHOUTcast/Icecast
+client.<br />
 </p>
 <p><strong>RTP</strong></p>
-<p><a href="/Components/pydoc/Kamaelia.Protocol.RTP">Kamaelia.Protocol.RTP</a> is a set of modules for implementing RTP.<br />
+<p><a
+href="/Components/pydoc/Kamaelia.Protocol.RTP">Kamaelia.Protocol.RTP</a>
+is a set of modules for implementing RTP.<br />
 </p>
 <p><strong>Simple Reliable Multicast</strong></p>
-<p><a href="/Components/pydoc/Kamaelia.Protocol.SimpleReliableMulticast">Kamaelia.Protocol.SimpleReliableMulticast</a> module contains a simple collection of components that can be pipelined together to create a simple protocol for reliable transfer of data over multicast - designed to cope with duplicated, lost and delivered-out-of-order packets.<br />
+<p><a
+href="/Components/pydoc/Kamaelia.Protocol.SimpleReliableMulticast">Kamaelia.Protocol.SimpleReliableMulticast</a>
+module contains a simple collection of components that can be pipelined
+together to create a simple protocol for reliable transfer of data over
+multicast - designed to cope with duplicated, lost and
+delivered-out-of-order packets.<br />
 </p>
 <p><strong>Bit Torrent</strong></p>
-<p><a href="/Components/pydoc/Kamaelia.Protocol.Torrent">Kamaelia.Protocol.Torrent</a> is a set of modules that wrap the mainline bittorrent code adding bit-torrent components to Kamaelia. Specifically the <a href="/Components/pydoc/Kamaelia.Protocol.Torrent.TorrentPatron">TorrentPatron</a> component provided shared access to bittorrent functionality.<br />
+<p><a
+href="/Components/pydoc/Kamaelia.Protocol.Torrent">Kamaelia.Protocol.Torrent</a>
+is a set of modules that wrap the mainline bittorrent code adding
+bit-torrent components to Kamaelia. Specifically the <a
+href="/Components/pydoc/Kamaelia.Protocol.Torrent.TorrentPatron">TorrentPatron</a>
+component provided shared access to bittorrent functionality.<br />
 <strong><br />
 Support: Packetisation, Framing, MIME types, etc</strong></p>
 <ul>
-<li><a href="/Components/pydoc/Kamaelia.Protocol.Framing">Kamaelia.Protocol.Framing</a></li>
-<li><a href="/Components/pydoc/Kamaelia.Protocol.MimeRequestComponent">Kamaelia.Protocol.MimeRequestComponent</a></li>
-<li><a href="/Components/pydoc/Kamaelia.Protocol.Packetise">Kamaelia.Protocol.Packetise</a></li>
+<li><a
+href="/Components/pydoc/Kamaelia.Protocol.Framing">Kamaelia.Protocol.Framing</a></li>
+<li><a
+href="/Components/pydoc/Kamaelia.Protocol.MimeRequestComponent">Kamaelia.Protocol.MimeRequestComponent</a></li>
+<li><a
+href="/Components/pydoc/Kamaelia.Protocol.Packetise">Kamaelia.Protocol.Packetise</a></li>
 </ul>
-<p>These components don't implement fully fledged protocols, but provide useful support that many protocols may wish to use.<br />
+<p>These components don't implement fully fledged protocols, but provide
+useful support that many protocols may wish to use.<br />
 </p>
-<p>The <a href="/Components/pydoc/Kamaelia.Protocol.Framing">Framing</a> module contains components that implement a simple protocol for framing chunks of data and combining them with an associated 'tag' - making it easy to add things like sequence numbers to a stream of chunks of data.</p>
-<p><a href="/Components/pydoc/Kamaelia.Protocol.MimeRequestComponent">MimeRequestComponent</a> module unpacks MIME request headers into a python dict object.</p>
-<p><a href="/Components/pydoc/Kamaelia.Protocol.Packetise">Packetise</a> contains a simple component for ensuring that data chunks do not exceed a specified size - particularly useful, for example, for ensuring UDP payloads fit within a packet size limit.<br />
+<p>The <a href="/Components/pydoc/Kamaelia.Protocol.Framing">Framing</a>
+module contains components that implement a simple protocol for framing
+chunks of data and combining them with an associated 'tag' - making it
+easy to add things like sequence numbers to a stream of chunks of
+data.</p>
+<p><a
+href="/Components/pydoc/Kamaelia.Protocol.MimeRequestComponent">MimeRequestComponent</a>
+module unpacks MIME request headers into a python dict object.</p>
+<p><a href="/Components/pydoc/Kamaelia.Protocol.Packetise">Packetise</a>
+contains a simple component for ensuring that data chunks do not exceed
+a specified size - particularly useful, for example, for ensuring UDP
+payloads fit within a packet size limit.<br />
 </p>
 <p><br />
 </p>

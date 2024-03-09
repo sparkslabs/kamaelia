@@ -15,10 +15,17 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
 <div class="container">
-<h1 id="kamaelia.protocol.irc.ircclient"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Protocol.html" class="reference">Protocol</a>.<a href="/Components/pydoc/Kamaelia.Protocol.IRC.html" class="reference">IRC</a>.<a href="/Components/pydoc/Kamaelia.Protocol.IRC.IRCClient.html" class="reference">IRCClient</a></h1>
+<h1 id="kamaelia.protocol.irc.ircclient"><a
+href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a
+href="/Components/pydoc/Kamaelia.Protocol.html"
+class="reference">Protocol</a>.<a
+href="/Components/pydoc/Kamaelia.Protocol.IRC.html"
+class="reference">IRC</a>.<a
+href="/Components/pydoc/Kamaelia.Protocol.IRC.IRCClient.html"
+class="reference">IRCClient</a></h1>
 <section>
 <div class="container">
 
@@ -37,11 +44,16 @@
 </ul></li>
 </ul>
 </section>
-<h1 id="kamaelia-irc-interface-644">Kamaelia IRC Interface {#644}</h1>
+<h1 id="644">Kamaelia IRC Interface</h1>
 <p>IRC_Client provides an IRC interface for Kamaelia components.</p>
-<p>SimpleIRCClientPrefab is a handy prefab that links IRC_Client and TCPClient to each other and IRC_Client's "talk" and "heard" boxes to the prefab's "inbox" and "outbox" boxes, respectively. SimpleIRCClientPrefab does not terminate.</p>
-<p>The functions informat, outformat, channelInformat, and channelOutformat can be used to format incoming and outgoing messages.</p>
-<h2 id="example-usage-645"><span id="example-usage">Example Usage</span> {#645}</h2>
+<p>SimpleIRCClientPrefab is a handy prefab that links IRC_Client and
+TCPClient to each other and IRC_Client's "talk" and "heard" boxes to the
+prefab's "inbox" and "outbox" boxes, respectively. SimpleIRCClientPrefab
+does not terminate.</p>
+<p>The functions informat, outformat, channelInformat, and
+channelOutformat can be used to format incoming and outgoing
+messages.</p>
+<h2 id="645"><span id="example-usage">Example Usage</span></h2>
 <p>To link IRC_Client to the web with console input and output:</p>
 <pre class="literal-block"><code>client = Graphline(irc = IRC_Client(),
               tcp = TCPClient(host, port),
@@ -59,19 +71,29 @@ Pipeline(ConsoleReader(),
 <p>Note: The user needs to enter:</p>
 <pre class="literal-block"><code>/nick aNickName
 /user uname server host realname</code></pre>
-<p>into the console before doing anything else in the above example. Be quick before the connection times out.</p>
-<p>Then try IRC commands preceded by a slash. Messages to the channel need not be preceded by anything:</p>
+<p>into the console before doing anything else in the above example. Be
+quick before the connection times out.</p>
+<p>Then try IRC commands preceded by a slash. Messages to the channel
+need not be preceded by anything:</p>
 <pre class="literal-block"><code>&gt;&gt;&gt; /join #kamtest
 &gt;&gt;&gt; /msg nickserv identify secretpassword
 &gt;&gt;&gt; /topic #kamtest Testing IRC client
 &gt;&gt;&gt; Hello everyone.
 &gt;&gt;&gt; /part #kamtest
 &gt;&gt;&gt; /quit</code></pre>
-<p>This example sends all plaintext to #kamtest by default. To send to another channel by default, change the arguments of channelInformat and channelOutformat to the name of a different channel. (E.g. "#python")</p>
+<p>This example sends all plaintext to #kamtest by default. To send to
+another channel by default, change the arguments of channelInformat and
+channelOutformat to the name of a different channel. (E.g.
+"#python")</p>
 <p>For a more comprehensive example, see Logger.py in Tools.</p>
-<h2 id="how-does-it-work-646"><span id="how-does-it-work">How does it work?</span> {#646}</h2>
-<h3 id="sending-messages-over-irc-647"><span id="sending-messages-over-irc">Sending messages over IRC</span> {#647}</h3>
-<p>IRC_Client accepts commands arriving at its "talk" inbox. A command is a list/tuple and is in the form ('cmd', [arg1] [,arg2] [,arg3...]). IRC_Client retransmits these as full-fledged IRC commands to its "outbox". Arguments following the command are per RFC 1459 and RFC 2812.</p>
+<h2 id="646"><span id="how-does-it-work">How does it work?</span></h2>
+<h3 id="647"><span id="sending-messages-over-irc">Sending messages over
+IRC</span></h3>
+<p>IRC_Client accepts commands arriving at its "talk" inbox. A command
+is a list/tuple and is in the form ('cmd', [arg1] [,arg2] [,arg3...]).
+IRC_Client retransmits these as full-fledged IRC commands to its
+"outbox". Arguments following the command are per RFC 1459 and RFC
+2812.</p>
 <p>For example,</p>
 <ul>
 <li>('NICK', 'Zorknpals')</li>
@@ -83,28 +105,38 @@ Pipeline(ConsoleReader(),
 <li>('QUIT', "Konversation terminated!")</li>
 <li>('BERSERKER', "Lvl. 10")</li>
 </ul>
-<p>Note that "BERSERKER" is not a recognized IRC command. IRC_Client will not complain about this, as it treats commands uniformly, but you might get an error 421, "ERR_UNKNOWNCOMMAND" back from the server.</p>
-<h3 id="sending-ctcp-commands-648"><span id="sending-ctcp-commands">Sending CTCP commands</span> {#648}</h3>
+<p>Note that "BERSERKER" is not a recognized IRC command. IRC_Client
+will not complain about this, as it treats commands uniformly, but you
+might get an error 421, "ERR_UNKNOWNCOMMAND" back from the server.</p>
+<h3 id="648"><span id="sending-ctcp-commands">Sending CTCP
+commands</span></h3>
 <p>IRC_Client also handles a few CTCP commands:</p>
 <table>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">ACTION:</td>
-<td style="text-align: left;">("ME", channel-or-user, the-action-that-you-do).</td>
+<td style="text-align: left;">("ME", channel-or-user,
+the-action-that-you-do).</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">MSG:</td>
-<td style="text-align: left;">If you use the outformat function defined here, 'MSG' commands are treated as 'PRIVMSGs'.</td>
+<td style="text-align: left;">If you use the outformat function defined
+here, 'MSG' commands are treated as 'PRIVMSGs'.</td>
 </tr>
 </tbody>
 </table>
 <p>No other CTCP commands are implemented.</p>
-<h3 id="receiving-messages-649"><span id="receiving-messages">Receiving messages</span> {#649}</h3>
-<p>IRC_Client's "inbox" takes messages from an IRC server and retransmits them to its "heard" outbox in tuple format. Currently each tuple has fields (command, sender, receiver, rest). This method has worked well so far.</p>
+<h3 id="649"><span id="receiving-messages">Receiving
+messages</span></h3>
+<p>IRC_Client's "inbox" takes messages from an IRC server and
+retransmits them to its "heard" outbox in tuple format. Currently each
+tuple has fields (command, sender, receiver, rest). This method has
+worked well so far.</p>
 <p>Example output:</p>
 <div class="line-block">
 <div class="line">
-<p>('001', 'heinlein.freenode.net', 'jinnaslogbot', ' Welcome to the freenode IRC Network jinnaslogbot')</p>
+<p>('001', 'heinlein.freenode.net', 'jinnaslogbot', ' Welcome to the
+freenode IRC Network jinnaslogbot')</p>
 </div>
 <div class="line">
 <p>('NOTICE', '', 'jinnaslogbot', '***Checking ident')</p>
@@ -119,18 +151,28 @@ Pipeline(ConsoleReader(),
 <p>('ACTION', 'jinnaslogbot', '#kamtest', 'does the macarena')</p>
 </div>
 </div>
-<p>To stop IRC_Client, send a shutdownMicroprocess or a producerFinished to its "control" box. The higher-level client must send a login itself and respond to pings. IRC_Client will not do this automatically.</p>
-<h2 id="known-issues-650"><span id="known-issues">Known Issues</span> {#650}</h2>
-<p>The prefab does not terminate. (?) Sometimes messages from the server are split up. IRC_Client does not recognize these messages and flags them as errors.</p>
+<p>To stop IRC_Client, send a shutdownMicroprocess or a producerFinished
+to its "control" box. The higher-level client must send a login itself
+and respond to pings. IRC_Client will not do this automatically.</p>
+<h2 id="650"><span id="known-issues">Known Issues</span></h2>
+<p>The prefab does not terminate. (?) Sometimes messages from the server
+are split up. IRC_Client does not recognize these messages and flags
+them as errors.</p>
 <hr />
 <section>
 
 </section>
 </div>
 <h1 id="feedback">Feedback</h1>
-<p>Got a problem with the documentation? Something unclear that could be clearer? Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
-<p>Please leave you feedback <a href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701" class="reference">here</a> in reply to the documentation thread in the Kamaelia blog.</p>
-<p><em>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</em></p>
+<p>Got a problem with the documentation? Something unclear that could be
+clearer? Want to help improve it? Constructive criticism is very welcome
+- especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback <a
+href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701"
+class="reference">here</a> in reply to the documentation thread in the
+Kamaelia blog.</p>
+<p><em>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38
+UTC/GMT</em></p>
 
 </div> <!-- end section -->
 </div> <!-- end page container -->

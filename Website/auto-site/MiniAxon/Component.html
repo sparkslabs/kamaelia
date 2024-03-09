@@ -15,32 +15,45 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
-<p><span style="font-size: 14pt; font-weight: 600;">4<span id="Component"></span> Simple Component - Microprocesses with standard external interfaces</span></p>
-<p><span style="font-weight: 600;">Exercise:</span> Write a class called <span style="font-family: Courier; font-weight: 600;">component</span> that subclasses <span style="font-family: Courier;">microprocess</span> with the following...</p>
+<p><span style="font-size: 14pt; font-weight: 600;">4<span
+id="Component"></span> Simple Component - Microprocesses with standard
+external interfaces</span></p>
+<p><span style="font-weight: 600;">Exercise:</span> Write a class called
+<span style="font-family: Courier; font-weight: 600;">component</span>
+that subclasses <span style="font-family: Courier;">microprocess</span>
+with the following...</p>
 <p>Attributes:</p>
-<p><span style="font-family: Courier;">self.boxes</span> - this should be a dictionary of the following form:</p>
+<p><span style="font-family: Courier;">self.boxes</span> - this should
+be a dictionary of the following form:</p>
 <div>
-<p>Clearly this allows for more inboxes and outboxes, but at this stage we'll keep things simple.</p>
+<p>Clearly this allows for more inboxes and outboxes, but at this stage
+we'll keep things simple.</p>
 </div>
 <p>Behaviour: (methods)</p>
-<p>As before an <span style="font-family: Courier;">__init__</span> for anything you need (eg attributes above :)<br />
+<p>As before an <span style="font-family: Courier;">__init__</span> for
+anything you need (eg attributes above :)<br />
 </p>
-<p><span style="font-family: Courier;">send(self, value, boxname)</span></p>
-<p>This method takes the value and appends it to the end of the list associated with the boxname.</p>
+<p><span style="font-family: Courier;">send(self, value,
+boxname)</span></p>
+<p>This method takes the value and appends it to the end of the list
+associated with the boxname.</p>
 <p>That is if I do:</p>
 <div dir="ltr">
 
 </div>
 <div dir="ltr">
-<p>Then given the suggested implementation of boxes above the following should be true afterwards:</p>
+<p>Then given the suggested implementation of boxes above the following
+should be true afterwards:</p>
 </div>
 <div dir="ltr">
 
 </div>
 <div dir="ltr">
-<p>ie the last value in the list associated with the boxname is the value we sent to that outbox. More explicitly, if the value of self.boxes was this beforehand:</p>
+<p>ie the last value in the list associated with the boxname is the
+value we sent to that outbox. More explicitly, if the value of
+self.boxes was this beforehand:</p>
 </div>
 <div dir="ltr">
 
@@ -58,7 +71,9 @@
 
 </div>
 <p><span style="font-family: Courier;">recv(self, boxname)</span></p>
-<p>This is the logical opposite of sending. Rather than appending a value at the end of the send queue, we take the first value in the queue.</p>
+<p>This is the logical opposite of sending. Rather than appending a
+value at the end of the send queue, we take the first value in the
+queue.</p>
 <p>Behaviourally, given a starting value of self.boxes:</p>
 <div dir="ltr">
 <p>Then I would expect the following behaviour code.…</p>
@@ -70,13 +85,16 @@
 
 </div>
 <div dir="ltr">
-<p>The value of self.boxes should also change as follows after each call:</p>
+<p>The value of self.boxes should also change as follows after each
+call:</p>
 </div>
 <div dir="ltr">
 
 </div>
-<p><span style="font-family: Courier;">dataReady(self, boxname)</span></p>
-<p>This should return the length of the list associated with the boxname.<br />
+<p><span style="font-family: Courier;">dataReady(self,
+boxname)</span></p>
+<p>This should return the length of the list associated with the
+boxname.<br />
 <br />
 For example, given:</p>
 <div>
@@ -85,17 +103,31 @@ For example, given:</p>
 <div>
 <p>The following behaviour is expected:</p>
 </div>
-<p><strong><a href="/MiniAxon/Component?template=veryplain">Answer Hidden</a></strong></p>
-<p><strong><a href="/MiniAxon/Component?template=veryplain&amp;cat=2">Show Answer</a></strong></p>
+<p><strong><a href="/MiniAxon/Component?template=veryplain">Answer
+Hidden</a></strong></p>
+<p><strong><a
+href="/MiniAxon/Component?template=veryplain&amp;cat=2">Show
+Answer</a></strong></p>
 <p><span style="font-weight:600">Answer:</span></p>
 <ul>
 <li>Select from the above tabs to show the answer!</li>
 </ul>
 <p><span style="font-weight: 600;">Discussion:</span></p>
-<p>Ok that's a fairly long description, but a fairly simple implementation. So what's this done? It's enabled us to send data to a running generator and receive data back. We're not worried what the generator is doing at any point in time, and so the communications between us and the generator (or between generators) is asynchronous.</p>
+<p>Ok that's a fairly long description, but a fairly simple
+implementation. So what's this done? It's enabled us to send data to a
+running generator and receive data back. We're not worried what the
+generator is doing at any point in time, and so the communications
+between us and the generator (or between generators) is
+asynchronous.</p>
 <p>An extension to the suggested __init__ is to do the following:</p>
-<p>This small extension means that classes subclassing <span style="font-family: Courier;">component</span> can have a different set of inboxes and outboxes. For example:</p>
-<p>That said, components by themselves are relatively boring. Unless we have some way of moving the data between generators we haven't gained anything (really) beyond the printer example above. So we need someone/something that can move data/messages from outboxes and deliver to inboxes...</p>
+<p>This small extension means that classes subclassing <span
+style="font-family: Courier;">component</span> can have a different set
+of inboxes and outboxes. For example:</p>
+<p>That said, components by themselves are relatively boring. Unless we
+have some way of moving the data between generators we haven't gained
+anything (really) beyond the printer example above. So we need
+someone/something that can move data/messages from outboxes and deliver
+to inboxes...</p>
 
 </div> <!-- end section -->
 </div> <!-- end page container -->

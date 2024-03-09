@@ -15,11 +15,12 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
 <h1 id="kamaelia-grey">Kamaelia: Grey</h1>
 <h3 id="what-is-kamaelia-grey">What is Kamaelia: Grey ?</h3>
-<p>It's a greylisting SMTP proxy. It doesn't replace your existing mail server, but does sit between your mail server and the outside world.</p>
+<p>It's a greylisting SMTP proxy. It doesn't replace your existing mail
+server, but does sit between your mail server and the outside world.</p>
 <h3 id="how-do-i-install-it">How do I install it?</h3>
 <p>After unpacking, as root, type:</p>
 <ul>
@@ -29,17 +30,25 @@
 <ul>
 <li><code>chmod +x /etc/init.d/kamaeliagrey</code></li>
 </ul>
-<p>The code was developed under linux, but is currently acting as a workhorse under Mac OS X. As a result a startup script for Mac OS X is also included - take a look in the setup.py file to see what you need to edit.</p>
+<p>The code was developed under linux, but is currently acting as a
+workhorse under Mac OS X. As a result a startup script for Mac OS X is
+also included - take a look in the setup.py file to see what you need to
+edit.</p>
 <h3 id="how-do-i-configure-it">How do I configure it?</h3>
-<p>Copy the default config file - installed to <strong>/etc/greylist.conf.dist</strong> to a localised version - ie <strong>/etc/greylist.conf</strong></p>
-<p>You then edit the freshly copied config file. The config options are documented in the config file.</p>
+<p>Copy the default config file - installed to
+<strong>/etc/greylist.conf.dist</strong> to a localised version - ie
+<strong>/etc/greylist.conf</strong></p>
+<p>You then edit the freshly copied config file. The config options are
+documented in the config file.</p>
 <h3 id="how-does-it-work-then">How does it work then?</h3>
 <p>Suppose your existing mailserver:</p>
 <ul>
 <li>listens on port 25</li>
 <li>runs on host 192.168.2.25</li>
 </ul>
-<p>You change your mailserver to listen on some other port instead. eg 8025 You then configure Kamaelia:Grey to listen on port 25 instead, on that host.</p>
+<p>You change your mailserver to listen on some other port instead. eg
+8025 You then configure Kamaelia:Grey to listen on port 25 instead, on
+that host.</p>
 <p>You also configure Kamaelia:Grey to forward to your mail server</p>
 <h3 id="how-do-i-configure-that">How do I configure that?</h3>
 <p>Edit <strong>/etc/greylist.conf</strong></p>
@@ -50,28 +59,40 @@
 
 smtp_port = 8025</code></pre>
 </blockquote>
-<h3 id="where-can-i-get-more-information">Where can I get more information?</h3>
-<p>Information will be added to this page. (maybe) Discussion and feedback should be sent to as issues on github.</p>
+<h3 id="where-can-i-get-more-information">Where can I get more
+information?</h3>
+<p>Information will be added to this page. (maybe) Discussion and
+feedback should be sent to as issues on github.</p>
 <h3 id="what-on-earth-is-greylisting">What on Earth is Greylisting?</h3>
-<p>Without apologies, here's a link to a non-techie (albeit a bit silly) description of greylisting:</p>
+<p>Without apologies, here's a link to a non-techie (albeit a bit silly)
+description of greylisting:</p>
 <ul>
-<li><a href="http://www.sparkslabs.com/michael/blog/2007/07/31/greylisting-for-non-techies">Sparkslabs: Greylisting for non-techies</a></li>
+<li><a
+href="http://www.sparkslabs.com/michael/blog/2007/07/31/greylisting-for-non-techies">Sparkslabs:
+Greylisting for non-techies</a></li>
 </ul>
-<p>More detail on how Kamaelia: Grey works: (this should get consolidated onto this page)</p>
+<p>More detail on how Kamaelia: Grey works: (this should get
+consolidated onto this page)</p>
 <ul>
-<li><a href="http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1190238560">Sparkslabs: Greylisting using Kamaelia</a></li>
+<li><a
+href="http://yeoldeclue.com/cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1190238560">Sparkslabs:
+Greylisting using Kamaelia</a></li>
 </ul>
 <h3 id="i-want-to-understand-more">I want to understand more?</h3>
 <p>A presentation</p>
 <iframe src="https://www.slideshare.net/slideshow/embed_code/key/xnWyAejVOZ5Hts?startSlide=1" width="597" height="486" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="margin: auto; display: block; border:1px solid #CCC; border-width:1px; margin-bottom:5px;max-width: 100%;" allowfullscreen>
 </iframe>
 <div style="margin-bottom:5px">
-<strong><a href="https://www.slideshare.net/kamaelian/kamaelia-grey" title="Kamaelia Grey" target="_blank">Kamaelia Grey</a></strong> from <strong><a href="https://www.slideshare.net/kamaelian" target="_blank">kamaelian</a></strong>
+<strong><a href="https://www.slideshare.net/kamaelian/kamaelia-grey" title="Kamaelia Grey" target="_blank">Kamaelia
+Grey</a></strong> from
+<strong><a href="https://www.slideshare.net/kamaelian" target="_blank">kamaelian</a></strong>
 </div>
 <h3 id="related">Related</h3>
-<p>You may also wish to look at <a href="KamaeliaSpamAssistant">Kamaelia: Spam Assistant</a></p>
+<p>You may also wish to look at <a
+href="KamaeliaSpamAssistant">Kamaelia: Spam Assistant</a></p>
 <h3 id="getting-the-code">Getting the code</h3>
-<p><strong>NB, this is currently out of date and so commented out for now</strong></p>
+<p><strong>NB, this is currently out of date and so commented out for
+now</strong></p>
 <!--
     You can get the install bundle for Kamaelia Grey here: <a href="http://thwackety.com/Kamaelia-Grey.tar.gz">http://thwackety.com/Kamaelia-Grey.tar.gz</a>
     This code is Beta quality in the old fashioned meaning of the term.

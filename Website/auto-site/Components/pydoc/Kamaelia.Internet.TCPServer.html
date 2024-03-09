@@ -15,14 +15,21 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
 <div class="container">
-<h1 id="kamaelia.internet.tcpserver"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Internet.html" class="reference">Internet</a>.<a href="/Components/pydoc/Kamaelia.Internet.TCPServer.html" class="reference">TCPServer</a></h1>
+<h1 id="kamaelia.internet.tcpserver"><a
+href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a
+href="/Components/pydoc/Kamaelia.Internet.html"
+class="reference">Internet</a>.<a
+href="/Components/pydoc/Kamaelia.Internet.TCPServer.html"
+class="reference">TCPServer</a></h1>
 <section>
 <div class="container">
 <ul>
-<li><strong>component <a href="/Components/pydoc/Kamaelia.Internet.TCPServer.TCPServer.html" class="reference">TCPServer</a></strong></li>
+<li><strong>component <a
+href="/Components/pydoc/Kamaelia.Internet.TCPServer.TCPServer.html"
+class="reference">TCPServer</a></strong></li>
 </ul>
 </div>
 <ul>
@@ -33,72 +40,153 @@
 </ul></li>
 </ul>
 </section>
-<h1 id="tcp-socket-server-112">TCP Socket Server {#112}</h1>
-<p>A building block for creating a TCP based network server. It accepts incoming connection requests and sets up a component to handle the socket which it then passes on.</p>
-<p>This component does not handle the instantiation of components to handle an accepted connection request. Another component is needed that responds to this component and actually does something with the newly established connection. If you require a more complete implementation that does this, see <a href="/Components/pydoc/Kamaelia.Internet.SingleServer.html" class="reference">Kamaelia.Internet.SingleServer</a> or <a href="/Components/pydoc/Kamaelia.Chassis.ConnectedServer.html" class="reference">Kamaelia.Chassis.ConnectedServer</a>.</p>
-<h2 id="example-usage-113"><span id="example-usage">Example Usage</span> {#113}</h2>
-<p>See <a href="/Components/pydoc/Kamaelia.Internet.SingleServer.html" class="reference">Kamaelia.Internet.SingleServer</a> or <a href="/Components/pydoc/Kamaelia.Chassis.ConnectedServer.html" class="reference">Kamaelia.Chassis.ConnectedServer</a> for examples of how this component can be used.</p>
-<p>The process of using a TCPServer component can be summarised as: - Create a TCP Server - Wait for newCSA messages from the TCP Server's "protocolHandlerSignal" outbox - Send what you like to CSA's, ensure you recieve data from the CSAs - Send producerFinished to the CSA to shut it down.</p>
-<h2 id="how-does-it-work-114"><span id="how-does-it-work">How does it work?</span> {#114}</h2>
-<p>This component creates a listener socket, bound to the specified port, and registers itself and the socket with a selectorComponent so it is notified of incoming connections. The selectorComponent is obtained by calling selectorComponent.getSelectorService(...) to look it up with the local Coordinating Assistant Tracker (CAT).</p>
-<p>When the it recieves a new connection it performs an accept, and creates a ConnectedSocketAdapter (CSA) to handle the activity on that connection.</p>
-<p>The CSA is passed in a newCSA(self,CSA) message to TCPServer's "protocolHandlerSignal" outbox.</p>
-<p>The CSA is also registered with the selector service by sending it a newCSA(self,(CSA,sock)) message, to ensure the CSA is notified of incoming data on its socket.</p>
-<p>The client component(s) using the TCPServer should handle the newly created CSA passed to it in whatever way it sees fit.</p>
-<p>If a socketShutdown message is received on the "_feedbackFromCSA" inbox, then a shutdownCSA(self, CSA) message is sent to TCPServer's "protocolHandlerSignal" outbox to notify the client component that the connection has closed.</p>
-<p>Also, a shutdownCSA(self, (CSA, sock)) message is sent to the selector service to deregister the CSA from receiving notifications.</p>
+<h1 id="112">TCP Socket Server</h1>
+<p>A building block for creating a TCP based network server. It accepts
+incoming connection requests and sets up a component to handle the
+socket which it then passes on.</p>
+<p>This component does not handle the instantiation of components to
+handle an accepted connection request. Another component is needed that
+responds to this component and actually does something with the newly
+established connection. If you require a more complete implementation
+that does this, see <a
+href="/Components/pydoc/Kamaelia.Internet.SingleServer.html"
+class="reference">Kamaelia.Internet.SingleServer</a> or <a
+href="/Components/pydoc/Kamaelia.Chassis.ConnectedServer.html"
+class="reference">Kamaelia.Chassis.ConnectedServer</a>.</p>
+<h2 id="113"><span id="example-usage">Example Usage</span></h2>
+<p>See <a href="/Components/pydoc/Kamaelia.Internet.SingleServer.html"
+class="reference">Kamaelia.Internet.SingleServer</a> or <a
+href="/Components/pydoc/Kamaelia.Chassis.ConnectedServer.html"
+class="reference">Kamaelia.Chassis.ConnectedServer</a> for examples of
+how this component can be used.</p>
+<p>The process of using a TCPServer component can be summarised as: -
+Create a TCP Server - Wait for newCSA messages from the TCP Server's
+"protocolHandlerSignal" outbox - Send what you like to CSA's, ensure you
+recieve data from the CSAs - Send producerFinished to the CSA to shut it
+down.</p>
+<h2 id="114"><span id="how-does-it-work">How does it work?</span></h2>
+<p>This component creates a listener socket, bound to the specified
+port, and registers itself and the socket with a selectorComponent so it
+is notified of incoming connections. The selectorComponent is obtained
+by calling selectorComponent.getSelectorService(...) to look it up with
+the local Coordinating Assistant Tracker (CAT).</p>
+<p>When the it recieves a new connection it performs an accept, and
+creates a ConnectedSocketAdapter (CSA) to handle the activity on that
+connection.</p>
+<p>The CSA is passed in a newCSA(self,CSA) message to TCPServer's
+"protocolHandlerSignal" outbox.</p>
+<p>The CSA is also registered with the selector service by sending it a
+newCSA(self,(CSA,sock)) message, to ensure the CSA is notified of
+incoming data on its socket.</p>
+<p>The client component(s) using the TCPServer should handle the newly
+created CSA passed to it in whatever way it sees fit.</p>
+<p>If a socketShutdown message is received on the "_feedbackFromCSA"
+inbox, then a shutdownCSA(self, CSA) message is sent to TCPServer's
+"protocolHandlerSignal" outbox to notify the client component that the
+connection has closed.</p>
+<p>Also, a shutdownCSA(self, (CSA, sock)) message is sent to the
+selector service to deregister the CSA from receiving notifications.</p>
 <p>This component does not terminate.</p>
 <hr />
-<h1 id="kamaelia.internet.tcpserver.tcpserver"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Internet.html" class="reference">Internet</a>.<a href="/Components/pydoc/Kamaelia.Internet.TCPServer.html" class="reference">TCPServer</a>.<a href="/Components/pydoc/Kamaelia.Internet.TCPServer.TCPServer.html" class="reference">TCPServer</a></h1>
-<h2 id="symbol-TCPServer">class TCPServer(<a href="/Docs/Axon/Axon.Component.component.html" class="reference">Axon.Component.component</a>)</h2>
-<p>TCPServer(listenport) -&gt; TCPServer component listening on the specified port.</p>
-<p>Creates a TCPServer component that accepts all connection requests on the specified port.</p>
+<h1 id="kamaelia.internet.tcpserver.tcpserver"><a
+href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a
+href="/Components/pydoc/Kamaelia.Internet.html"
+class="reference">Internet</a>.<a
+href="/Components/pydoc/Kamaelia.Internet.TCPServer.html"
+class="reference">TCPServer</a>.<a
+href="/Components/pydoc/Kamaelia.Internet.TCPServer.TCPServer.html"
+class="reference">TCPServer</a></h1>
+<h2 id="symbol-TCPServer">class TCPServer(<a
+href="/Docs/Axon/Axon.Component.component.html"
+class="reference">Axon.Component.component</a>)</h2>
+<p>TCPServer(listenport) -&gt; TCPServer component listening on the
+specified port.</p>
+<p>Creates a TCPServer component that accepts all connection requests on
+the specified port.</p>
 <h3 id="inboxes"><span id="symbol-TCPServer.Inboxes">Inboxes</span></h3>
 <ul>
-<li><strong>control</strong> : we expect to recieve serverShutdown messages here</li>
-<li><strong>newconnection</strong> : We expected to recieve a message here when a new connection is ready</li>
-<li><strong>_feedbackFromCSA</strong> : for feedback from ConnectedSocketAdapter (shutdown messages)</li>
+<li><strong>control</strong> : we expect to recieve serverShutdown
+messages here</li>
+<li><strong>newconnection</strong> : We expected to recieve a message
+here when a new connection is ready</li>
+<li><strong>_feedbackFromCSA</strong> : for feedback from
+ConnectedSocketAdapter (shutdown messages)</li>
 </ul>
-<h3 id="outboxes"><span id="symbol-TCPServer.Outboxes">Outboxes</span></h3>
+<h3 id="outboxes"><span
+id="symbol-TCPServer.Outboxes">Outboxes</span></h3>
 <ul>
-<li><strong>protocolHandlerSignal</strong> : For passing on newly created ConnectedSocketAdapter components</li>
+<li><strong>protocolHandlerSignal</strong> : For passing on newly
+created ConnectedSocketAdapter components</li>
 <li><strong>signal</strong> : NOT USED</li>
-<li><strong>_selectorShutdownSignal</strong> : To deregister our interest with the selector</li>
-<li><strong>_selectorSignal</strong> : For registering newly created ConnectedSocketAdapter components with a selector service</li>
+<li><strong>_selectorShutdownSignal</strong> : To deregister our
+interest with the selector</li>
+<li><strong>_selectorSignal</strong> : For registering newly created
+ConnectedSocketAdapter components with a selector service</li>
 </ul>
 <h3 id="methods-defined-here">Methods defined here</h3>
 <div class="container">
 <div class="boxright">
 <p><strong>Warning!</strong></p>
-<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+<p>You should be using the inbox/outbox interface, not these methods
+(except construction). This documentation is designed as a roadmap as to
+their functionalilty for maintainers and new component developers.</p>
 </div>
 </div>
-<h4 id="init__self-listenport-socketoptions-argd"><span id="symbol-TCPServer.__init__">__init__(self, listenport, socketOptions, **argd)</span></h4>
-<p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</p>
-<h4 id="anyclosedsocketsself"><span id="symbol-TCPServer.anyClosedSockets">anyClosedSockets(self)</span></h4>
-<p>Check "_feedbackFromCSA" inbox for socketShutdown messages, and close sockets in response.</p>
-<h4 id="closesocketself-shutdownmessage"><span id="symbol-TCPServer.closeSocket">closeSocket(self, shutdownMessage)</span></h4>
+<h4 id="init__self-listenport-socketoptions-argd"><span
+id="symbol-TCPServer.__init__">__init__(self, listenport, socketOptions,
+**argd)</span></h4>
+<p>x.__init__(...) initializes x; see x.__class__.__doc__ for
+signature</p>
+<h4 id="anyclosedsocketsself"><span
+id="symbol-TCPServer.anyClosedSockets">anyClosedSockets(self)</span></h4>
+<p>Check "_feedbackFromCSA" inbox for socketShutdown messages, and close
+sockets in response.</p>
+<h4 id="closesocketself-shutdownmessage"><span
+id="symbol-TCPServer.closeSocket">closeSocket(self,
+shutdownMessage)</span></h4>
 <p>Respond to a socketShutdown message by closing the socket.</p>
-<p>Sends a removeReader and removeWriter message to the selectorComponent. Sends a shutdownCSA(self, theCSA) message to "protocolHandlerSignal" outbox.</p>
-<h4 id="createconnectedsocketself-sock"><span id="symbol-TCPServer.createConnectedSocket">createConnectedSocket(self, sock)</span></h4>
-<p>Accepts the connection request on the specified socket and returns a ConnectedSocketAdapter component for it.</p>
-<h4 id="handlenewconnectionself"><span id="symbol-TCPServer.handleNewConnection">handleNewConnection(self)</span></h4>
-<p>Handle notifications from the selector service of new connection requests.</p>
-<p>Accepts and sets up new connections, wiring them up and passing them on via the "protocolHandlerSignal" outbox.</p>
-<h4 id="mainself"><span id="symbol-TCPServer.main">main(self)</span></h4>
-<h4 id="maketcpserverportself-suppliedport-host-minrange-maxrange-maxlisten"><span id="symbol-TCPServer.makeTCPServerPort">makeTCPServerPort(self[, suppliedport][, HOST][, minrange][, maxrange][, maxlisten])</span></h4>
-<p>Returns (socket,port) - a bound TCP listener socket and the port number it is listening on.</p>
-<p>If suppliedPort is not specified, then a random port is chosen between minrange and maxrange inclusive.</p>
-<p>maxlisten is the max number of pending requests the server will allow (queue up).</p>
-<h4 id="stopself"><span id="symbol-TCPServer.stop">stop(self)</span></h4>
+<p>Sends a removeReader and removeWriter message to the
+selectorComponent. Sends a shutdownCSA(self, theCSA) message to
+"protocolHandlerSignal" outbox.</p>
+<h4 id="createconnectedsocketself-sock"><span
+id="symbol-TCPServer.createConnectedSocket">createConnectedSocket(self,
+sock)</span></h4>
+<p>Accepts the connection request on the specified socket and returns a
+ConnectedSocketAdapter component for it.</p>
+<h4 id="handlenewconnectionself"><span
+id="symbol-TCPServer.handleNewConnection">handleNewConnection(self)</span></h4>
+<p>Handle notifications from the selector service of new connection
+requests.</p>
+<p>Accepts and sets up new connections, wiring them up and passing them
+on via the "protocolHandlerSignal" outbox.</p>
+<h4 id="mainself"><span
+id="symbol-TCPServer.main">main(self)</span></h4>
+<h4
+id="maketcpserverportself-suppliedport-host-minrange-maxrange-maxlisten"><span
+id="symbol-TCPServer.makeTCPServerPort">makeTCPServerPort(self[,
+suppliedport][, HOST][, minrange][, maxrange][, maxlisten])</span></h4>
+<p>Returns (socket,port) - a bound TCP listener socket and the port
+number it is listening on.</p>
+<p>If suppliedPort is not specified, then a random port is chosen
+between minrange and maxrange inclusive.</p>
+<p>maxlisten is the max number of pending requests the server will allow
+(queue up).</p>
+<h4 id="stopself"><span
+id="symbol-TCPServer.stop">stop(self)</span></h4>
 <section>
 
 </section>
 </div>
 <h1 id="feedback">Feedback</h1>
-<p>Got a problem with the documentation? Something unclear that could be clearer? Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
-<p>Please leave you feedback <a href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701" class="reference">here</a> in reply to the documentation thread in the Kamaelia blog.</p>
-<p><em>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</em></p>
+<p>Got a problem with the documentation? Something unclear that could be
+clearer? Want to help improve it? Constructive criticism is very welcome
+- especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback <a
+href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701"
+class="reference">here</a> in reply to the documentation thread in the
+Kamaelia blog.</p>
+<p><em>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38
+UTC/GMT</em></p>
 
 </div> <!-- end section -->
 </div> <!-- end page container -->

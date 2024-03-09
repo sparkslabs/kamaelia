@@ -15,14 +15,25 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
 <div class="container">
-<h1 id="kamaelia.protocol.http.handlers.minimal"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Protocol.html" class="reference">Protocol</a>.<a href="/Components/pydoc/Kamaelia.Protocol.HTTP.html" class="reference">HTTP</a>.<a href="/Components/pydoc/Kamaelia.Protocol.HTTP.Handlers.html" class="reference">Handlers</a>.<a href="/Components/pydoc/Kamaelia.Protocol.HTTP.Handlers.Minimal.html" class="reference">Minimal</a></h1>
+<h1 id="kamaelia.protocol.http.handlers.minimal"><a
+href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a
+href="/Components/pydoc/Kamaelia.Protocol.html"
+class="reference">Protocol</a>.<a
+href="/Components/pydoc/Kamaelia.Protocol.HTTP.html"
+class="reference">HTTP</a>.<a
+href="/Components/pydoc/Kamaelia.Protocol.HTTP.Handlers.html"
+class="reference">Handlers</a>.<a
+href="/Components/pydoc/Kamaelia.Protocol.HTTP.Handlers.Minimal.html"
+class="reference">Minimal</a></h1>
 <section>
 <div class="container">
 <ul>
-<li><strong>component <a href="/Components/pydoc/Kamaelia.Protocol.HTTP.Handlers.Minimal.Minimal.html" class="reference">Minimal</a></strong></li>
+<li><strong>component <a
+href="/Components/pydoc/Kamaelia.Protocol.HTTP.Handlers.Minimal.Minimal.html"
+class="reference">Minimal</a></strong></li>
 </ul>
 </div>
 <ul>
@@ -32,15 +43,35 @@
 </ul></li>
 </ul>
 </section>
-<h1 id="minimal-586">Minimal {#586}</h1>
-<p>A simple HTTP request handler for HTTPServer. Minimal serves files within a given directory, guessing their MIME-type from their file extension.</p>
-<h2 id="example-usage-587"><span id="example-usage">Example Usage</span> {#587}</h2>
+<h1 id="586">Minimal</h1>
+<p>A simple HTTP request handler for HTTPServer. Minimal serves files
+within a given directory, guessing their MIME-type from their file
+extension.</p>
+<h2 id="587"><span id="example-usage">Example Usage</span></h2>
 <p>See HTTPResourceGlue.py for how to use request handlers.</p>
 <hr />
-<h1 id="kamaelia.protocol.http.handlers.minimal.minimal"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Protocol.html" class="reference">Protocol</a>.<a href="/Components/pydoc/Kamaelia.Protocol.HTTP.html" class="reference">HTTP</a>.<a href="/Components/pydoc/Kamaelia.Protocol.HTTP.Handlers.html" class="reference">Handlers</a>.<a href="/Components/pydoc/Kamaelia.Protocol.HTTP.Handlers.Minimal.html" class="reference">Minimal</a>.<a href="/Components/pydoc/Kamaelia.Protocol.HTTP.Handlers.Minimal.Minimal.html" class="reference">Minimal</a></h1>
-<h2 id="symbol-Minimal">class Minimal(<a href="/Docs/Axon/Axon.Component.component.html" class="reference">Axon.Component.component</a>)</h2>
-<p>A simple HTTP request handler for HTTPServer which serves files within a given directory, guessing their MIME-type from their file extension.</p>
-<p>Arguments: -- request - the request dictionary object that spawned this component -- homedirectory - the path to prepend to paths requested -- indexfilename - if a directory is requested, this file is checked for inside it, and sent if found</p>
+<h1 id="kamaelia.protocol.http.handlers.minimal.minimal"><a
+href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a
+href="/Components/pydoc/Kamaelia.Protocol.html"
+class="reference">Protocol</a>.<a
+href="/Components/pydoc/Kamaelia.Protocol.HTTP.html"
+class="reference">HTTP</a>.<a
+href="/Components/pydoc/Kamaelia.Protocol.HTTP.Handlers.html"
+class="reference">Handlers</a>.<a
+href="/Components/pydoc/Kamaelia.Protocol.HTTP.Handlers.Minimal.html"
+class="reference">Minimal</a>.<a
+href="/Components/pydoc/Kamaelia.Protocol.HTTP.Handlers.Minimal.Minimal.html"
+class="reference">Minimal</a></h1>
+<h2 id="symbol-Minimal">class Minimal(<a
+href="/Docs/Axon/Axon.Component.component.html"
+class="reference">Axon.Component.component</a>)</h2>
+<p>A simple HTTP request handler for HTTPServer which serves files
+within a given directory, guessing their MIME-type from their file
+extension.</p>
+<p>Arguments: -- request - the request dictionary object that spawned
+this component -- homedirectory - the path to prepend to paths requested
+-- indexfilename - if a directory is requested, this file is checked for
+inside it, and sent if found</p>
 <h3 id="inboxes"><span id="symbol-Minimal.Inboxes">Inboxes</span></h3>
 <ul>
 <li><strong>control</strong> : UNUSED</li>
@@ -48,9 +79,11 @@
 <li><strong>_fileread</strong> : File data</li>
 <li><strong>inbox</strong> : UNUSED</li>
 </ul>
-<h3 id="outboxes"><span id="symbol-Minimal.Outboxes">Outboxes</span></h3>
+<h3 id="outboxes"><span
+id="symbol-Minimal.Outboxes">Outboxes</span></h3>
 <ul>
-<li><strong>_fileprompt</strong> : Get the file reader to do some reading</li>
+<li><strong>_fileprompt</strong> : Get the file reader to do some
+reading</li>
 <li><strong>outbox</strong> : Response dictionaries</li>
 <li><strong>signal</strong> : UNUSED</li>
 <li><strong>_filesignal</strong> : Shutdown the file reader</li>
@@ -59,10 +92,14 @@
 <div class="container">
 <div class="boxright">
 <p><strong>Warning!</strong></p>
-<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+<p>You should be using the inbox/outbox interface, not these methods
+(except construction). This documentation is designed as a roadmap as to
+their functionalilty for maintainers and new component developers.</p>
 </div>
 </div>
-<h4 id="init__self-request-indexfilename-homedirectory"><span id="symbol-Minimal.__init__">__init__(self, request[, indexfilename][, homedirectory])</span></h4>
+<h4 id="init__self-request-indexfilename-homedirectory"><span
+id="symbol-Minimal.__init__">__init__(self, request[, indexfilename][,
+homedirectory])</span></h4>
 <h4 id="mainself"><span id="symbol-Minimal.main">main(self)</span></h4>
 <p>Produce the appropriate response then terminate.</p>
 <section>
@@ -70,9 +107,15 @@
 </section>
 </div>
 <h1 id="feedback">Feedback</h1>
-<p>Got a problem with the documentation? Something unclear that could be clearer? Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
-<p>Please leave you feedback <a href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701" class="reference">here</a> in reply to the documentation thread in the Kamaelia blog.</p>
-<p><em>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</em></p>
+<p>Got a problem with the documentation? Something unclear that could be
+clearer? Want to help improve it? Constructive criticism is very welcome
+- especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback <a
+href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701"
+class="reference">here</a> in reply to the documentation thread in the
+Kamaelia blog.</p>
+<p><em>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38
+UTC/GMT</em></p>
 
 </div> <!-- end section -->
 </div> <!-- end page container -->

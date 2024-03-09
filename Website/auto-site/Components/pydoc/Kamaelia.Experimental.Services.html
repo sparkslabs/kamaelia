@@ -15,20 +15,32 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
 <div class="container">
-<h1 id="kamaelia.experimental.services"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Experimental.html" class="reference">Experimental</a>.<a href="/Components/pydoc/Kamaelia.Experimental.Services.html" class="reference">Services</a></h1>
+<h1 id="kamaelia.experimental.services"><a
+href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a
+href="/Components/pydoc/Kamaelia.Experimental.html"
+class="reference">Experimental</a>.<a
+href="/Components/pydoc/Kamaelia.Experimental.Services.html"
+class="reference">Services</a></h1>
 <section>
 <div class="container">
 <ul>
-<li><strong>prefab <a href="/Components/pydoc/Kamaelia.Experimental.Services.RegisterService.html" class="reference">RegisterService</a></strong></li>
-<li><strong>component <a href="/Components/pydoc/Kamaelia.Experimental.Services.Subscribe.html" class="reference">Subscribe</a></strong></li>
-<li><strong>component <a href="/Components/pydoc/Kamaelia.Experimental.Services.ToService.html" class="reference">ToService</a></strong></li>
+<li><strong>prefab <a
+href="/Components/pydoc/Kamaelia.Experimental.Services.RegisterService.html"
+class="reference">RegisterService</a></strong></li>
+<li><strong>component <a
+href="/Components/pydoc/Kamaelia.Experimental.Services.Subscribe.html"
+class="reference">Subscribe</a></strong></li>
+<li><strong>component <a
+href="/Components/pydoc/Kamaelia.Experimental.Services.ToService.html"
+class="reference">ToService</a></strong></li>
 </ul>
 </div>
 <ul>
-<li><a href="#553" class="reference">Components to help build Services (EXPERIMENTAL)</a>
+<li><a href="#553" class="reference">Components to help build Services
+(EXPERIMENTAL)</a>
 <ul>
 <li><a href="#554" class="reference">Register Service</a>
 <ul>
@@ -48,46 +60,78 @@
 </ul></li>
 </ul>
 </section>
-<h1 id="components-to-help-build-services-experimental-553">Components to help build Services (EXPERIMENTAL) {#553}</h1>
-<p>These components make it easier to build and use public services, registered with the Coordinating Assistant Tracker.</p>
-<p>Note: These components are EXPERIMENTAL and are likely to under go substantial change</p>
-<h2 id="register-service-554"><span id="register-service">Register Service</span> {#554}</h2>
-<p>A function that registers specified inboxes on a component as named services with the Coordinating Assistant Tracker (CAT). Returns the component, so can be dropped in where you would ordinarily use a component.</p>
-<h3 id="example-usage-555"><span id="example-usage">Example Usage:</span> {#555}</h3>
-<p>Create and activate MyComponent instance, registering its "inbox" inbox with the CAT as a service called "MyService":</p>
+<h1 id="553">Components to help build Services (EXPERIMENTAL)</h1>
+<p>These components make it easier to build and use public services,
+registered with the Coordinating Assistant Tracker.</p>
+<p>Note: These components are EXPERIMENTAL and are likely to under go
+substantial change</p>
+<h2 id="554"><span id="register-service">Register Service</span></h2>
+<p>A function that registers specified inboxes on a component as named
+services with the Coordinating Assistant Tracker (CAT). Returns the
+component, so can be dropped in where you would ordinarily use a
+component.</p>
+<h3 id="555"><span id="example-usage">Example Usage:</span></h3>
+<p>Create and activate MyComponent instance, registering its "inbox"
+inbox with the CAT as a service called "MyService":</p>
 <pre class="literal-block"><code>RegisterService( MyComponent(), {&quot;MyService&quot;:&quot;inbox&quot;} ).activate()</code></pre>
-<h3 id="how-does-it-work-556"><span id="how-does-it-work">How does it work?</span> {#556}</h3>
-<p>This method registers the component you provide with the CAT. It register the inboxes on it that you specify using the names that you specify.</p>
-<h2 id="subscibe-to-service-557"><span id="subscibe-to-service">Subscibe To Service</span> {#557}</h2>
-<p>A component that connects to a public service and sends a fixed format message to it requesting to subscribe to a set of 'things' it provides.</p>
-<h3 id="example-usage-558"><span id="id1">Example Usage:</span> {#558}</h3>
-<p>Subscribe to a (fictional) "TV Channels Service", asking for three channels. The tv channel data is then recorded:</p>
+<h3 id="556"><span id="how-does-it-work">How does it work?</span></h3>
+<p>This method registers the component you provide with the CAT. It
+register the inboxes on it that you specify using the names that you
+specify.</p>
+<h2 id="557"><span id="subscibe-to-service">Subscibe To
+Service</span></h2>
+<p>A component that connects to a public service and sends a fixed
+format message to it requesting to subscribe to a set of 'things' it
+provides.</p>
+<h3 id="558"><span id="id1">Example Usage:</span></h3>
+<p>Subscribe to a (fictional) "TV Channels Service", asking for three
+channels. The tv channel data is then recorded:</p>
 <pre class="literal-block"><code>pipeline(
     SubscribeTo( &quot;TV Channels Service&quot;, [&quot;BBC ONE&quot;, &quot;BBC TWO&quot;, &quot;ITV&quot;] ),
     RecordChannels(),
     ).run()</code></pre>
 <p>The message sent to the "TV Channels Service" will be:</p>
 <pre class="literal-block"><code>(&quot;ADD&quot;, [&quot;BBC ONE&quot;, &quot;BBC TWO&quot;, &quot;ITV&quot;], ( &lt;theSubscribeToComponent&gt;, &quot;inbox&quot; ) )</code></pre>
-<h3 id="how-does-it-work-559"><span id="id2">How does it work?</span> {#559}</h3>
+<h3 id="559"><span id="id2">How does it work?</span></h3>
 <p>Describe more detail here</p>
-<h2 id="connect-to-service-560"><span id="connect-to-service">Connect To Service</span> {#560}</h2>
-<p>A component that connects to a public service. Any data you send to its inbox gets sent to the service.</p>
-<h3 id="example-usage-561"><span id="id3">Example Usage</span> {#561}</h3>
+<h2 id="560"><span id="connect-to-service">Connect To
+Service</span></h2>
+<p>A component that connects to a public service. Any data you send to
+its inbox gets sent to the service.</p>
+<h3 id="561"><span id="id3">Example Usage</span></h3>
 <pre class="literal-block"><code>pipeline( MyComponentThatSendMessagesToService(),
         ConnectTo(&quot;Name of service&quot;),
         ).run()</code></pre>
-<h3 id="how-does-it-work-562"><span id="id4">How does it work?</span> {#562}</h3>
+<h3 id="562"><span id="id4">How does it work?</span></h3>
 <p>Describe in more detail here.</p>
 <hr />
 <section>
-<h1 id="kamaelia.experimental.services.registerservice"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Experimental.html" class="reference">Experimental</a>.<a href="/Components/pydoc/Kamaelia.Experimental.Services.html" class="reference">Services</a>.<a href="/Components/pydoc/Kamaelia.Experimental.Services.RegisterService.html" class="reference">RegisterService</a></h1>
+<h1 id="kamaelia.experimental.services.registerservice"><a
+href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a
+href="/Components/pydoc/Kamaelia.Experimental.html"
+class="reference">Experimental</a>.<a
+href="/Components/pydoc/Kamaelia.Experimental.Services.html"
+class="reference">Services</a>.<a
+href="/Components/pydoc/Kamaelia.Experimental.Services.RegisterService.html"
+class="reference">RegisterService</a></h1>
 <h2 id="symbol-RegisterService">prefab: RegisterService</h2>
-<h1 id="kamaelia.experimental.services.subscribe"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Experimental.html" class="reference">Experimental</a>.<a href="/Components/pydoc/Kamaelia.Experimental.Services.html" class="reference">Services</a>.<a href="/Components/pydoc/Kamaelia.Experimental.Services.Subscribe.html" class="reference">Subscribe</a></h1>
-<h2 id="symbol-Subscribe">class Subscribe(<a href="/Docs/Axon/Axon.Component.component.html" class="reference">Axon.Component.component</a>)</h2>
-<p>Subscribes to a service, and forwards what it receives to its outbox. Also forwards anything that arrives at its inbox to its outbox.</p>
+<h1 id="kamaelia.experimental.services.subscribe"><a
+href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a
+href="/Components/pydoc/Kamaelia.Experimental.html"
+class="reference">Experimental</a>.<a
+href="/Components/pydoc/Kamaelia.Experimental.Services.html"
+class="reference">Services</a>.<a
+href="/Components/pydoc/Kamaelia.Experimental.Services.Subscribe.html"
+class="reference">Subscribe</a></h1>
+<h2 id="symbol-Subscribe">class Subscribe(<a
+href="/Docs/Axon/Axon.Component.component.html"
+class="reference">Axon.Component.component</a>)</h2>
+<p>Subscribes to a service, and forwards what it receives to its outbox.
+Also forwards anything that arrives at its inbox to its outbox.</p>
 <p>Unsubscribes when shutdown.</p>
 <h3 id="inboxes"><span id="symbol-Subscribe.Inboxes">Inboxes</span></h3>
-<h3 id="outboxes"><span id="symbol-Subscribe.Outboxes">Outboxes</span></h3>
+<h3 id="outboxes"><span
+id="symbol-Subscribe.Outboxes">Outboxes</span></h3>
 <ul>
 <li><strong>outbox</strong> :</li>
 <li><strong>signal</strong> : shutdown signalling</li>
@@ -97,39 +141,69 @@
 <div class="container">
 <div class="boxright">
 <p><strong>Warning!</strong></p>
-<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+<p>You should be using the inbox/outbox interface, not these methods
+(except construction). This documentation is designed as a roadmap as to
+their functionalilty for maintainers and new component developers.</p>
 </div>
 </div>
-<h4 id="init__self-servicename-requests"><span id="symbol-Subscribe.__init__">__init__(self, servicename, *requests)</span></h4>
-<p>Subscribe to the specified service, wiring to it, then sending the specified messages. Requests are of the form ("ADD", request, destination)</p>
-<h4 id="mainself"><span id="symbol-Subscribe.main">main(self)</span></h4>
-<h4 id="shutdownself"><span id="symbol-Subscribe.shutdown">shutdown(self)</span></h4>
+<h4 id="init__self-servicename-requests"><span
+id="symbol-Subscribe.__init__">__init__(self, servicename,
+*requests)</span></h4>
+<p>Subscribe to the specified service, wiring to it, then sending the
+specified messages. Requests are of the form ("ADD", request,
+destination)</p>
+<h4 id="mainself"><span
+id="symbol-Subscribe.main">main(self)</span></h4>
+<h4 id="shutdownself"><span
+id="symbol-Subscribe.shutdown">shutdown(self)</span></h4>
 <section>
 
 </section>
-<h1 id="kamaelia.experimental.services.toservice"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Experimental.html" class="reference">Experimental</a>.<a href="/Components/pydoc/Kamaelia.Experimental.Services.html" class="reference">Services</a>.<a href="/Components/pydoc/Kamaelia.Experimental.Services.ToService.html" class="reference">ToService</a></h1>
-<h2 id="symbol-ToService">class ToService(<a href="/Docs/Axon/Axon.Component.component.html" class="reference">Axon.Component.component</a>)</h2>
-<h3 id="inboxes-1"><span id="symbol-ToService.Inboxes">Inboxes</span></h3>
-<h3 id="outboxes-1"><span id="symbol-ToService.Outboxes">Outboxes</span></h3>
+<h1 id="kamaelia.experimental.services.toservice"><a
+href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a
+href="/Components/pydoc/Kamaelia.Experimental.html"
+class="reference">Experimental</a>.<a
+href="/Components/pydoc/Kamaelia.Experimental.Services.html"
+class="reference">Services</a>.<a
+href="/Components/pydoc/Kamaelia.Experimental.Services.ToService.html"
+class="reference">ToService</a></h1>
+<h2 id="symbol-ToService">class ToService(<a
+href="/Docs/Axon/Axon.Component.component.html"
+class="reference">Axon.Component.component</a>)</h2>
+<h3 id="inboxes-1"><span
+id="symbol-ToService.Inboxes">Inboxes</span></h3>
+<h3 id="outboxes-1"><span
+id="symbol-ToService.Outboxes">Outboxes</span></h3>
 <h3 id="methods-defined-here-1">Methods defined here</h3>
 <div class="container">
 <div class="boxright">
 <p><strong>Warning!</strong></p>
-<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+<p>You should be using the inbox/outbox interface, not these methods
+(except construction). This documentation is designed as a roadmap as to
+their functionalilty for maintainers and new component developers.</p>
 </div>
 </div>
-<h4 id="init__self-toservice"><span id="symbol-ToService.__init__">__init__(self, toService)</span></h4>
-<h4 id="mainself-1"><span id="symbol-ToService.main">main(self)</span></h4>
-<h4 id="shutdownself-1"><span id="symbol-ToService.shutdown">shutdown(self)</span></h4>
+<h4 id="init__self-toservice"><span
+id="symbol-ToService.__init__">__init__(self, toService)</span></h4>
+<h4 id="mainself-1"><span
+id="symbol-ToService.main">main(self)</span></h4>
+<h4 id="shutdownself-1"><span
+id="symbol-ToService.shutdown">shutdown(self)</span></h4>
 <section>
 
 </section>
 </section>
 </div>
 <h1 id="feedback">Feedback</h1>
-<p>Got a problem with the documentation? Something unclear that could be clearer? Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
-<p>Please leave you feedback <a href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701" class="reference">here</a> in reply to the documentation thread in the Kamaelia blog.</p>
-<p><em>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</em></p>
+<p>Got a problem with the documentation? Something unclear that could be
+clearer? Want to help improve it? Constructive criticism is very welcome
+- especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback <a
+href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701"
+class="reference">here</a> in reply to the documentation thread in the
+Kamaelia blog.</p>
+<p><em>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38
+UTC/GMT</em></p>
 
 </div> <!-- end section -->
 </div> <!-- end page container -->

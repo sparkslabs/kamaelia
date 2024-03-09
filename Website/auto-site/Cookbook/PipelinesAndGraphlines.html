@@ -15,19 +15,30 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
-<h1 id="cookbook-pipelines-and-graphlines">Cookbook : Pipelines and Graphlines</h1>
+<h1 id="cookbook-pipelines-and-graphlines">Cookbook : Pipelines and
+Graphlines</h1>
 <div class="boxright">
-<p><strong>Discussion</strong> Please discuss this on <a href="http://backend.kamaelia.org/Cookbook/PipelinesAndGraphlinesDiscuss">the discussion page</a> for this page</p>
+<p><strong>Discussion</strong> Please discuss this on <a
+href="http://backend.kamaelia.org/Cookbook/PipelinesAndGraphlinesDiscuss">the
+discussion page</a> for this page</p>
 </div>
-<p>Fairly early on you'll want a quick an easy way to link your components together. To actually build a useful system you need to set up linkages to get data from one component's outbox to another component's inbox. <a href="/Cookbook/Pipelines"><strong>Pipelines</strong></a> and <a href="/Cookbook/Graphlines"><strong>Graphlines</strong></a> are the two simplest and most common ways of doing this.<br />
+<p>Fairly early on you'll want a quick an easy way to link your
+components together. To actually build a useful system you need to set
+up linkages to get data from one component's outbox to another
+component's inbox. <a
+href="/Cookbook/Pipelines"><strong>Pipelines</strong></a> and <a
+href="/Cookbook/Graphlines"><strong>Graphlines</strong></a> are the two
+simplest and most common ways of doing this.<br />
 <br />
 </p>
 <div class="boxright">
-<p>Find out more about using Pipelines <a href="/Cookbook/Pipelines">here</a></p>
+<p>Find out more about using Pipelines <a
+href="/Cookbook/Pipelines">here</a></p>
 </div>
-<p>Pipeline and Graphline are, themselves, components. Pipeline wires components together in a long chain. For example:<br />
+<p>Pipeline and Graphline are, themselves, components. Pipeline wires
+components together in a long chain. For example:<br />
 </p>
 <blockquote>
 <pre><code>from Kamaelia.Chassis.Pipeline import Pipeline
@@ -43,9 +54,11 @@ Pipeline( RateControlledFileReader(&quot;myaudio.mp3&quot;,readmode=&quot;bytes&
         ).run()</code></pre>
 </blockquote>
 <div class="boxright">
-<p>Find out more about Graphlines <a href="/Cookbook/Graphlines">here</a></p>
+<p>Find out more about Graphlines <a
+href="/Cookbook/Graphlines">here</a></p>
 </div>
-<p>Whereas a Graphline wires components together in any way you want - you specify each individual link. For example:<br />
+<p>Whereas a Graphline wires components together in any way you want -
+you specify each individual link. For example:<br />
 </p>
 <pre style="margin-left: 40px;"><code>from Kamaelia.UI.Pygame.Button import Button
 from Kamaelia.UI.Pygame.Image import Image

@@ -15,11 +15,16 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
-<h2 id="what-is-a-url-file-and-how-do-i-make-one">What is a URL file and how do I make one?</h2>
+<h2 id="what-is-a-url-file-and-how-do-i-make-one">What is a URL file and
+how do I make one?</h2>
 <p><br />
-A URL file is a standard INI file for routing web content.  It is designed to route a web request to the proper WSGI application.  It is divided up into sections and each section is further subdivided into options.  An example is this section for the built-in WSGI application simple_app:<br />
+A URL file is a standard INI file for routing web content.  It is
+designed to route a web request to the proper WSGI application.  It is
+divided up into sections and each section is further subdivided into
+options.  An example is this section for the built-in WSGI application
+simple_app:<br />
 <br />
 <br />
 [simple_app]<br />
@@ -28,26 +33,52 @@ import_path: Kamaelia.Apps.WSGI.Simple<br />
 app_object: simple_app<br />
 <br />
 <br />
-This demonstrates the three most important settings in the URL file:  the regex, the import_path, and the app_object.  Except in the instance of the 404 handler, the section heading (the part in brackets) is mostly irrelevant.<br />
+This demonstrates the three most important settings in the URL file: 
+the regex, the import_path, and the app_object.  Except in the instance
+of the 404 handler, the section heading (the part in brackets) is mostly
+irrelevant.<br />
 <br />
-<strong>regex -</strong> This is the regex that is used to determine if a URL matches this application.  It is only tested against the first directory in the URI.  Therefore, this regex would match www.domain.com/simple but not www.domain.com/blah/simple.  Please note that a regex <strong>should not</strong> be entered for the 404 handler.  It is assumed to be ".*"<br />
+<strong>regex -</strong> This is the regex that is used to determine if
+a URL matches this application.  It is only tested against the first
+directory in the URI.  Therefore, this regex would match
+www.domain.com/simple but not www.domain.com/blah/simple.  Please note
+that a regex <strong>should not</strong> be entered for the 404
+handler.  It is assumed to be ".*"<br />
 <br />
-<strong>import_path -</strong> This is the path to import the module containing the WSGI application object.<br />
+<strong>import_path -</strong> This is the path to import the module
+containing the WSGI application object.<br />
 <br />
-<strong>app_object - </strong> This is the name of the application object within the module represented by import_path.  Thus, for this example, the server would pull the function simple_app out of plugins.WsgiApps.simple_app.  If this is omitted, it is assumed to be "application".<br />
+<strong>app_object - </strong> This is the name of the application
+object within the module represented by import_path.  Thus, for this
+example, the server would pull the function simple_app out of
+plugins.WsgiApps.simple_app.  If this is omitted, it is assumed to be
+"application".<br />
 <br />
-Please also note that order <em>is</em> important in the URL file.  The application listed first will be the first one that is evaluated.<br />
+Please also note that order <em>is</em> important in the URL file.  The
+application listed first will be the first one that is evaluated.<br />
 <br />
-Every URLs file must also have a 404 handler.  It will be automatically assigned a regex of ".*".  It will be evaluated last in the URL routing no matter what position it is put in the list, but it is typically a good idea to put it last in the URL list anyway.<br />
+Every URLs file must also have a 404 handler.  It will be automatically
+assigned a regex of ".*".  It will be evaluated last in the URL routing
+no matter what position it is put in the list, but it is typically a
+good idea to put it last in the URL list anyway.<br />
 <br />
-Any option in the URLs file will be passed to the WSGI application as an environment variable and will be prepended with "kp" to distinct them as Kamaelia Publish specific settings (although this will be present in Kamaelia WebServe).  Thus, some applications require their own custom settings.  Take for instance the built-in Paste application handler (assuming that you want to serve a paste system described by a config file config.ini):<br />
+Any option in the URLs file will be passed to the WSGI application as an
+environment variable and will be prepended with "kp" to distinct them as
+Kamaelia Publish specific settings (although this will be present in
+Kamaelia WebServe).  Thus, some applications require their own custom
+settings.  Take for instance the built-in Paste application handler
+(assuming that you want to serve a paste system described by a config
+file config.ini):<br />
 <br />
 [paste_app]<br />
 regex: paste<br />
 import_path:  Kamaelia.Apps.WSGI.PasteApp<br />
 paste_source: config:/path/to/config.ini<br />
 <br />
-The custom keys 'kp.regex', 'kp.import_path', and 'kp.paste_source' will be passed to the application with the values 'paste', 'Kamaelia.Apps.WSGI.Paste', and '/path/to/config.ini', respectively.<br />
+The custom keys 'kp.regex', 'kp.import_path', and 'kp.paste_source' will
+be passed to the application with the values 'paste',
+'Kamaelia.Apps.WSGI.Paste', and '/path/to/config.ini',
+respectively.<br />
 </p>
 
 </div> <!-- end section -->

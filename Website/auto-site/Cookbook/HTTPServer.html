@@ -15,32 +15,49 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
 <h1 id="cookbook-httpserver">Cookbook: HTTPServer</h1>
 <div class="boxright">
-<p>The API for HTTPServer is likely to change/improve for the better - stay tuned!</p>
+<p>The API for HTTPServer is likely to change/improve for the better -
+stay tuned!</p>
 </div>
-<p>The HTTP Server included in Kamaelia 0.5 / Megabundle 1.4 is a useful &amp; powerful mechanism, but lacks an example. Hence this page!</p>
+<p>The HTTP Server included in Kamaelia 0.5 / Megabundle 1.4 is a useful
+&amp; powerful mechanism, but lacks an example. Hence this page!</p>
 <p>Some initial points:</p>
 <ul>
-<li>Kamaelia.Protocol.HTTP.HTTPServer.HTTPServer actually implements a protocol handler rather than the server aspects. As a result it's perhaps badly named, but is designed to be used as a protocol handler for the SimpleServer component.<br />
+<li>Kamaelia.Protocol.HTTP.HTTPServer.HTTPServer actually implements a
+protocol handler rather than the server aspects. As a result it's
+perhaps badly named, but is designed to be used as a protocol handler
+for the SimpleServer component.<br />
 </li>
-<li>By itself, it can handle all sorts of aspects of the HTTP protocol, but doesn't actually know how to handle any of these sorts of requests.</li>
-<li>As a result, you create a function to handle the actual incoming requests.</li>
-<li>The code in Kamaelia.Protocol.HTTP.HTTPResourceGlue is infact an example, rather than really being something you can directly import and use.</li>
-<li>The existing handlers have no knowledge of configuration, which mean when you create them that's when you need to configure them. In the case of a webserver this changes how you create them.,<br />
+<li>By itself, it can handle all sorts of aspects of the HTTP protocol,
+but doesn't actually know how to handle any of these sorts of
+requests.</li>
+<li>As a result, you create a function to handle the actual incoming
+requests.</li>
+<li>The code in Kamaelia.Protocol.HTTP.HTTPResourceGlue is infact an
+example, rather than really being something you can directly import and
+use.</li>
+<li>The existing handlers have no knowledge of configuration, which mean
+when you create them that's when you need to configure them. In the case
+of a webserver this changes how you create them.,<br />
 </li>
 </ul>
 <h2 id="a-beginning-example">A beginning example</h2>
 <p>So, this therefore means in order to use the HTTP Server as is:<br />
 </p>
 <ul>
-<li>You need to create wrapper functions around the handlers you wish to use, so that you can configure them</li>
-<li>You need to tell the HTTPServer component when to use these handler - you do this by creating a factory function.</li>
-<li>You need to tell the SimpleServer component to use your configured HTTPServer factory to handle new connections (new requests)</li>
+<li>You need to create wrapper functions around the handlers you wish to
+use, so that you can configure them</li>
+<li>You need to tell the HTTPServer component when to use these handler
+- you do this by creating a factory function.</li>
+<li>You need to tell the SimpleServer component to use your configured
+HTTPServer factory to handle new connections (new requests)</li>
 </ul>
-<p>Also, there's one final thing: it's nice, for various reasons, to change the socket options for the server, so we do that in how we configure SimpleServer.<br />
+<p>Also, there's one final thing: it's nice, for various reasons, to
+change the socket options for the server, so we do that in how we
+configure SimpleServer.<br />
 Code:<br />
 </p>
 <blockquote>
@@ -48,7 +65,8 @@ Code:<br />
 <p><em># Import socket to get at constants for socketOptions</em><br />
 </p>
 <pre><code>import socket</code></pre>
-<p><em># Import the server framework, the HTTP protocol handling, the minimal request handler, and error handlers</em><br />
+<p><em># Import the server framework, the HTTP protocol handling, the
+minimal request handler, and error handlers</em><br />
 </p>
 <pre><code>from Kamaelia.Chassis.ConnectedServer import SimpleServer
 from Kamaelia.Protocol.HTTP.HTTPServer import HTTPServer
@@ -58,8 +76,10 @@ import Kamaelia.Protocol.HTTP.ErrorPages as ErrorPages</code></pre>
 </p>
 <pre><code>homedirectory = &quot;/srv/www/htdocs&quot;
 indexfilename = &quot;index.html&quot;</code></pre>
-<p><em># This allows for configuring the request handlers in a nicer way. This is candidate<br />
-# for merging into the mainline code. Effectively this is a factory that creates functions<br />
+<p><em># This allows for configuring the request handlers in a nicer
+way. This is candidate<br />
+# for merging into the mainline code. Effectively this is a factory that
+creates functions<br />
 # capable of choosing which request handler to use.</em><br />
 </p>
 <pre><code>def requestHandlers(URLHandlers):
@@ -76,14 +96,16 @@ indexfilename = &quot;index.html&quot;</code></pre>
         return ErrorPages.websiteErrorPage(404, &quot;No resource handlers could be found for the requested URL&quot;)
 
     return createRequestHandler</code></pre>
-<p><em># This factory allows us to configure the minimal request handler.</em><br />
+<p><em># This factory allows us to configure the minimal request
+handler.</em><br />
 </p>
 <pre><code>def servePage(request):
     return Minimal(request=request,
                    homedirectory=homedirectory,
                    indexfilename=indexfilename)</code></pre>
 <p><br />
-<em># A factory to create configured HTTPServer components - ie HTTP Protocol handling components</em><br />
+<em># A factory to create configured HTTPServer components - ie HTTP
+Protocol handling components</em><br />
 </p>
 <pre><code>def HTTPProtocol():
     return HTTPServer(requestHandlers([
@@ -95,22 +117,34 @@ indexfilename = &quot;index.html&quot;</code></pre>
              port=8082,
              socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  ).run()</code></pre>
 </blockquote>
-<h2 id="writing-your-own-first-response-handler">Writing your own first response handler</h2>
-<p>OK, so that's all well and good, and shows how to run the Kamaelia webserver as, well, a webserver, but how do we integrate with other components? Well this requires you to start think about requests and responses - specifically you need to learn how to write a request handler!<br />
+<h2 id="writing-your-own-first-response-handler">Writing your own first
+response handler</h2>
+<p>OK, so that's all well and good, and shows how to run the Kamaelia
+webserver as, well, a webserver, but how do we integrate with other
+components? Well this requires you to start think about requests and
+responses - specifically you need to learn how to write a request
+handler!<br />
 <br />
 Fortunately this is relatively simple - you do this:<br />
 </p>
 <ul>
-<li>Your handler is created by a function call with the request in - ie YourHandler(request)</li>
+<li>Your handler is created by a function call with the request in - ie
+YourHandler(request)</li>
 <li>This is expected to return a component.</li>
-<li>Your component then runs and any responses sent to your outbox are either sent to the user or used to control what is sent to the user.</li>
+<li>Your component then runs and any responses sent to your outbox are
+either sent to the user or used to control what is sent to the
+user.</li>
 </ul>
-<p>Specifically there's three key kinds of messages you'll probably send:<br />
+<p>Specifically there's three key kinds of messages you'll probably
+send:<br />
 </p>
 <ul>
-<li>An initial message to denote the page type you're seding (eg text/html)</li>
-<li>Data messages. (ie page data) You MUST yield after every message you send at present or you risk your data not being served.</li>
-<li>A shutdown message when your handler has completed producing data!<br />
+<li>An initial message to denote the page type you're seding (eg
+text/html)</li>
+<li>Data messages. (ie page data) You MUST yield after every message you
+send at present or you risk your data not being served.</li>
+<li>A shutdown message when your handler has completed producing
+data!<br />
 </li>
 </ul>
 <p>So, given all that, this is what a handler actually looks like:<br />
@@ -134,7 +168,8 @@ Fortunately this is relatively simple - you do this:<br />
         self.send(Axon.Ipc.producerFinished(self), &quot;signal&quot;)
         yield 1</code></pre>
 </blockquote>
-<p>So, that's your handler. To integrate this into our example from above:<br />
+<p>So, that's your handler. To integrate this into our example from
+above:<br />
 <br />
 </p>
 <blockquote>
@@ -145,7 +180,8 @@ Fortunately this is relatively simple - you do this:<br />
 
 # We need to import Axon - Kamaelia&#39;s core component system - to write Kamaelia components!
 import Axon</code></pre>
-<p><em># Import the server framework, the HTTP protocol handling, the minimal request handler, and error handlers</em><br />
+<p><em># Import the server framework, the HTTP protocol handling, the
+minimal request handler, and error handlers</em><br />
 </p>
 <pre><code>from Kamaelia.Chassis.ConnectedServer import SimpleServer
 from Kamaelia.Protocol.HTTP.HTTPServer import HTTPServer
@@ -155,8 +191,10 @@ import Kamaelia.Protocol.HTTP.ErrorPages as ErrorPages</code></pre>
 </p>
 <pre><code>homedirectory = &quot;/srv/www/htdocs&quot;
 indexfilename = &quot;index.html&quot;</code></pre>
-<p><em># This allows for configuring the request handlers in a nicer way. This is candidate<br />
-# for merging into the mainline code. Effectively this is a factory that creates functions<br />
+<p><em># This allows for configuring the request handlers in a nicer
+way. This is candidate<br />
+# for merging into the mainline code. Effectively this is a factory that
+creates functions<br />
 # capable of choosing which request handler to use.</em><br />
 </p>
 <pre><code>def requestHandlers(URLHandlers):
@@ -196,7 +234,8 @@ def servePage(request):
                    homedirectory=homedirectory,
                    indexfilename=indexfilename)</code></pre>
 <p><br />
-<em># A factory to create configured HTTPServer components - ie HTTP Protocol handling components</em><br />
+<em># A factory to create configured HTTPServer components - ie HTTP
+Protocol handling components</em><br />
 </p>
 <pre><code>def HTTPProtocol():
     return HTTPServer(requestHandlers([
@@ -209,22 +248,31 @@ def servePage(request):
              port=8082,
              socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  ).run()</code></pre>
 </blockquote>
-<p>As you can see we added in the code as expected, and added in the handler into the method at the end.<br />
+<p>As you can see we added in the code as expected, and added in the
+handler into the method at the end.<br />
 </p>
 <ul>
-<li><strong>Note:</strong> the order of handlers <strong>does</strong> matter (which is why a list is used) - the first hander who's prefix matches is the handler used to handle the request.<br />
+<li><strong>Note:</strong> the order of handlers <strong>does</strong>
+matter (which is why a list is used) - the first hander who's prefix
+matches is the handler used to handle the request.<br />
 </li>
 </ul>
-<h2 id="writing-a-response-handler-to-use-a-pipeline">Writing a response handler to use a Pipeline</h2>
-<p>This turns out to be quite simple if you have 2 components which can be reused.<br />
+<h2 id="writing-a-response-handler-to-use-a-pipeline">Writing a response
+handler to use a Pipeline</h2>
+<p>This turns out to be quite simple if you have 2 components which can
+be reused.<br />
 </p>
 <ul>
-<li>One takes an argument (eg a request dictionary) and sends it out its outbox "outbox" (this enables it to start off a Pipeline)</li>
-<li>One that takes the first value it sees, and stuffs it into an HTML response and sends that out its outbox.</li>
+<li>One takes an argument (eg a request dictionary) and sends it out its
+outbox "outbox" (this enables it to start off a Pipeline)</li>
+<li>One that takes the first value it sees, and stuffs it into an HTML
+response and sends that out its outbox.</li>
 </ul>
 <p>These are both quite simple to write.<br />
 <br />
-<strong>One takes an argument (eg a request dictionary) and sends it out its outbox "outbox" (this enables it to start off a Pipeline)</strong><br />
+<strong>One takes an argument (eg a request dictionary) and sends it out
+its outbox "outbox" (this enables it to start off a
+Pipeline)</strong><br />
 </p>
 <blockquote>
 <pre><code>class Cat(Axon.Component.component):
@@ -236,7 +284,8 @@ def servePage(request):
         self.send(Axon.Ipc.producerFinished(self), &quot;signal&quot;)
         yield 1</code></pre>
 </blockquote>
-<p><strong>One that takes the first value it sees, and stuffs it into an HTML response and sends that out its outbox.</strong><br />
+<p><strong>One that takes the first value it sees, and stuffs it into an
+HTML response and sends that out its outbox.</strong><br />
 </p>
 <blockquote>
 <pre><code>class ExampleWrapper(Axon.Component.component):
@@ -274,7 +323,8 @@ def servePage(request):
         self.send(Axon.Ipc.producerFinished(self), &quot;signal&quot;)
         yield 1</code></pre>
 </blockquote>
-<p>Given these two components, which can be reused to your hearts content, we can produce a simple "Echo" handler as follows:<br />
+<p>Given these two components, which can be reused to your hearts
+content, we can produce a simple "Echo" handler as follows:<br />
 </p>
 <blockquote>
 <pre><code>from Kamaelia.Chassis.Pipeline import Pipeline
@@ -295,7 +345,8 @@ Putting this into our example, and how it modifies our server.…<br />
 
 # We need to import Axon - Kamaelia&#39;s core component system - to write Kamaelia components!
 import Axon</code></pre>
-<p><em># Import the server framework, the HTTP protocol handling, the minimal request handler, and error handlers</em><br />
+<p><em># Import the server framework, the HTTP protocol handling, the
+minimal request handler, and error handlers</em><br />
 </p>
 <pre><code>from Kamaelia.Chassis.ConnectedServer import SimpleServer
 from Kamaelia.Protocol.HTTP.HTTPServer import HTTPServer
@@ -307,8 +358,10 @@ from Kamaelia.Chassis.Pipeline import Pipeline</code></pre>
 </p>
 <pre><code>homedirectory = &quot;/srv/www/htdocs&quot;
 indexfilename = &quot;index.html&quot;</code></pre>
-<p><em># This allows for configuring the request handlers in a nicer way. This is candidate<br />
-# for merging into the mainline code. Effectively this is a factory that creates functions<br />
+<p><em># This allows for configuring the request handlers in a nicer
+way. This is candidate<br />
+# for merging into the mainline code. Effectively this is a factory that
+creates functions<br />
 # capable of choosing which request handler to use.</em><br />
 </p>
 <pre><code>def requestHandlers(URLHandlers):
@@ -395,7 +448,8 @@ class ExampleWrapper(Axon.Component.component):
 
 def EchoHandler(request):
     return Pipeline ( Cat(request), ExampleWrapper() )</code></pre>
-<p><em># A factory to create configured HTTPServer components - ie HTTP Protocol handling components</em><br />
+<p><em># A factory to create configured HTTPServer components - ie HTTP
+Protocol handling components</em><br />
 </p>
 <pre><code>def HTTPProtocol():
     return HTTPServer(requestHandlers([
@@ -410,7 +464,10 @@ def EchoHandler(request):
              socketOptions=(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  ).run()</code></pre>
 </blockquote>
 <h2 id="final-comments">Final Comments</h2>
-<p>Some of the API on this is likely to be revamped slightly based on writing this cookbook page. Specifically a number of functions and components on this page are likely to migrate into the codebase! (making your life easier)<br />
+<p>Some of the API on this is likely to be revamped slightly based on
+writing this cookbook page. Specifically a number of functions and
+components on this page are likely to migrate into the codebase! (making
+your life easier)<br />
 <br />
 <br />
 <br />

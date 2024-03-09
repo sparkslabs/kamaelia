@@ -15,17 +15,30 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
 <section>
-<h2 id="axon.threadedcomponent.threadedcomponent"><a href="/Docs/Axon/Axon.html" class="reference">Axon</a>.<a href="/Docs/Axon/Axon.ThreadedComponent.html" class="reference">ThreadedComponent</a>.<a href="/Docs/Axon/Axon.ThreadedComponent.threadedcomponent.html" class="reference">threadedcomponent</a></h2>
-<p>For examples and more explanations, see the <a href="/Docs/Axon/Axon.ThreadedComponent.html" class="reference">module level docs.</a></p>
+<h2 id="axon.threadedcomponent.threadedcomponent"><a
+href="/Docs/Axon/Axon.html" class="reference">Axon</a>.<a
+href="/Docs/Axon/Axon.ThreadedComponent.html"
+class="reference">ThreadedComponent</a>.<a
+href="/Docs/Axon/Axon.ThreadedComponent.threadedcomponent.html"
+class="reference">threadedcomponent</a></h2>
+<p>For examples and more explanations, see the <a
+href="/Docs/Axon/Axon.ThreadedComponent.html" class="reference">module
+level docs.</a></p>
 <hr />
-<h2 id="symbol-threadedcomponent">class threadedcomponent(<a href="/Docs/Axon/Axon.Component.component.html" class="reference">Axon.Component.component</a>)</h2>
+<h2 id="symbol-threadedcomponent">class threadedcomponent(<a
+href="/Docs/Axon/Axon.Component.component.html"
+class="reference">Axon.Component.component</a>)</h2>
 <section>
 <p>threadedcomponent([queuelengths]) -&gt; new threadedcomponent</p>
-<p>Base class for a version of an Axon component that runs main() in a separate thread (meaning it can, for example, block). Subclass to make your own.</p>
-<p>Internal queues buffer data between the thread and the Axon inboxes and outboxes of the component. Set the default queue length at initialisation (default=1000).</p>
+<p>Base class for a version of an Axon component that runs main() in a
+separate thread (meaning it can, for example, block). Subclass to make
+your own.</p>
+<p>Internal queues buffer data between the thread and the Axon inboxes
+and outboxes of the component. Set the default queue length at
+initialisation (default=1000).</p>
 <p>A simple example:</p>
 <pre class="literal-block"><code>class IncrementByN(Axon.ThreadedComponent.threadedcomponent):
 
@@ -51,111 +64,215 @@
                 self.pause()</code></pre>
 </section>
 <h3 id="methods-defined-here">Methods defined here</h3>
-<h4 id="init__self-queuelengths-argd"><span id="symbol-threadedcomponent.__init__">__init__(self, queuelengths, **argd)</span></h4>
-<h4 id="do_threadsafeself-cmd-argl-argd"><span id="symbol-threadedcomponent._do_threadsafe">_do_threadsafe(self, cmd, argL, argD)</span></h4>
-<p>Internal method for ensuring a method call takes place in the main scheduler's thread.</p>
-<h4 id="handlemessagefromthreadself-msg"><span id="symbol-threadedcomponent._handlemessagefromthread">_handlemessagefromthread(self, msg)</span></h4>
-<p>Unpacks a message containing a request to run a method of the form (objectToCall, argList, argDict) then calls it and places the result in the axontothreadqueue queue.</p>
-<p>Used to execute methods on behalf of the separate thread. Results are returned to it via the return queue.</p>
-<h4 id="localmainself"><span id="symbol-threadedcomponent._localmain">_localmain(self)</span></h4>
-<p>Do not overide this unless you reimplement the pass through of the boxes to the threads, and state management.</p>
-<h4 id="threadmainself"><span id="symbol-threadedcomponent._threadmain">_threadmain(self)</span></h4>
+<h4 id="init__self-queuelengths-argd"><span
+id="symbol-threadedcomponent.__init__">__init__(self, queuelengths,
+**argd)</span></h4>
+<h4 id="do_threadsafeself-cmd-argl-argd"><span
+id="symbol-threadedcomponent._do_threadsafe">_do_threadsafe(self, cmd,
+argL, argD)</span></h4>
+<p>Internal method for ensuring a method call takes place in the main
+scheduler's thread.</p>
+<h4 id="handlemessagefromthreadself-msg"><span
+id="symbol-threadedcomponent._handlemessagefromthread">_handlemessagefromthread(self,
+msg)</span></h4>
+<p>Unpacks a message containing a request to run a method of the form
+(objectToCall, argList, argDict) then calls it and places the result in
+the axontothreadqueue queue.</p>
+<p>Used to execute methods on behalf of the separate thread. Results are
+returned to it via the return queue.</p>
+<h4 id="localmainself"><span
+id="symbol-threadedcomponent._localmain">_localmain(self)</span></h4>
+<p>Do not overide this unless you reimplement the pass through of the
+boxes to the threads, and state management.</p>
+<h4 id="threadmainself"><span
+id="symbol-threadedcomponent._threadmain">_threadmain(self)</span></h4>
 <p>Exception trapping wrapper for main().</p>
-<p>Runs in the separate thread. Catches any raised exceptions and attempts to pass them back to _localmain() to be re-raised.</p>
-<h4 id="activateself-scheduler-tracker-mainmethod"><span id="symbol-threadedcomponent.activate">activate(self[, Scheduler][, Tracker][, mainmethod])</span></h4>
-<p>Call to activate this microprocess, so it can start to be executed by a scheduler. Usual usage is to simply call x.activate().</p>
-<p>See <a href="/Docs/Axon/Axon.Microprocess.microprocess.activate.html" class="reference">Axon.Microprocess.microprocess.activate</a>() for more info.</p>
-<h4 id="closedowncomponentself"><span id="symbol-threadedcomponent.closeDownComponent">closeDownComponent(self)</span></h4>
-<p>Stub method. <strong>This method is designed to be overridden.</strong></p>
-<h4 id="datareadyself-boxname"><span id="symbol-threadedcomponent.dataReady">dataReady(self[, boxname])</span></h4>
+<p>Runs in the separate thread. Catches any raised exceptions and
+attempts to pass them back to _localmain() to be re-raised.</p>
+<h4 id="activateself-scheduler-tracker-mainmethod"><span
+id="symbol-threadedcomponent.activate">activate(self[, Scheduler][,
+Tracker][, mainmethod])</span></h4>
+<p>Call to activate this microprocess, so it can start to be executed by
+a scheduler. Usual usage is to simply call x.activate().</p>
+<p>See <a href="/Docs/Axon/Axon.Microprocess.microprocess.activate.html"
+class="reference">Axon.Microprocess.microprocess.activate</a>() for more
+info.</p>
+<h4 id="closedowncomponentself"><span
+id="symbol-threadedcomponent.closeDownComponent">closeDownComponent(self)</span></h4>
+<p>Stub method. <strong>This method is designed to be
+overridden.</strong></p>
+<h4 id="datareadyself-boxname"><span
+id="symbol-threadedcomponent.dataReady">dataReady(self[,
+boxname])</span></h4>
 <p>Returns true if data is available in the requested inbox.</p>
-<p>Used by the main() method of a component to check an inbox for ready data.</p>
-<p>Call this method to periodically check whether you've been sent any messages to deal with!</p>
+<p>Used by the main() method of a component to check an inbox for ready
+data.</p>
+<p>Call this method to periodically check whether you've been sent any
+messages to deal with!</p>
 <p>You are unlikely to want to override this method.</p>
-<h4 id="forwardinboxtothreadself-box"><span id="symbol-threadedcomponent.forwardInboxToThread">forwardInboxToThread(self, box)</span></h4>
-<h4 id="initialisecomponentself"><span id="symbol-threadedcomponent.initialiseComponent">initialiseComponent(self)</span></h4>
-<p>Stub method. <strong>This method is designed to be overridden.</strong></p>
-<h4 id="linkself-source-sink-passthrough"><span id="symbol-threadedcomponent.link">link(self, source, sink[, passthrough])</span></h4>
+<h4 id="forwardinboxtothreadself-box"><span
+id="symbol-threadedcomponent.forwardInboxToThread">forwardInboxToThread(self,
+box)</span></h4>
+<h4 id="initialisecomponentself"><span
+id="symbol-threadedcomponent.initialiseComponent">initialiseComponent(self)</span></h4>
+<p>Stub method. <strong>This method is designed to be
+overridden.</strong></p>
+<h4 id="linkself-source-sink-passthrough"><span
+id="symbol-threadedcomponent.link">link(self, source, sink[,
+passthrough])</span></h4>
 <p>Creates a linkage from one inbox/outbox to another.</p>
-<p>-- source - a tuple (component, boxname) of where the link should start from -- sink - a tuple (component, boxname) of where the link should go to</p>
+<p>-- source - a tuple (component, boxname) of where the link should
+start from -- sink - a tuple (component, boxname) of where the link
+should go to</p>
 <p>Other optional arguments:</p>
 <ul>
-<li>passthrough=0 - (the default) link goes from an outbox to an inbox</li>
+<li>passthrough=0 - (the default) link goes from an outbox to an
+inbox</li>
 <li>passthrough=1 - the link goes from an inbox to another inbox</li>
 <li>passthrough=2 - the link goes from an outbox to another outbox</li>
 </ul>
 <p>See Axon.Postoffice.link(...) for more information.</p>
-<h4 id="mainself"><span id="symbol-threadedcomponent.main">main(self)</span></h4>
-<p>Override this method, writing your own main thread of control as an ordinary method. When the component is activated and the scheduler is running, this what gets executed.</p>
-<p>Write it as an ordinary method. Because it is run in a separate thread, it can block.</p>
-<p>If you do not override it, then a default main method exists instead that will:</p>
+<h4 id="mainself"><span
+id="symbol-threadedcomponent.main">main(self)</span></h4>
+<p>Override this method, writing your own main thread of control as an
+ordinary method. When the component is activated and the scheduler is
+running, this what gets executed.</p>
+<p>Write it as an ordinary method. Because it is run in a separate
+thread, it can block.</p>
+<p>If you do not override it, then a default main method exists instead
+that will:</p>
 <ol type="1">
 <li>Call self.initialiseComponent()</li>
-<li>Loop forever calling self.mainBody() repeatedly until mainBody() returns a False/zero result.</li>
+<li>Loop forever calling self.mainBody() repeatedly until mainBody()
+returns a False/zero result.</li>
 <li>Call self.closeDownComponent()</li>
 </ol>
-<h4 id="mainbodyself"><span id="symbol-threadedcomponent.mainBody">mainBody(self)</span></h4>
-<p>Stub method. <strong>This method is designed to be overridden.</strong></p>
-<h4 id="pauseself-timeout"><span id="symbol-threadedcomponent.pause">pause(self[, timeout])</span></h4>
-<p>Pauses the thread and blocks - does not return until the something happens to re-awake it, or until it times out (if the optional timeout is specified)</p>
-<p>Must only be called from within the main() method - ie. from within the separate thread.</p>
+<h4 id="mainbodyself"><span
+id="symbol-threadedcomponent.mainBody">mainBody(self)</span></h4>
+<p>Stub method. <strong>This method is designed to be
+overridden.</strong></p>
+<h4 id="pauseself-timeout"><span
+id="symbol-threadedcomponent.pause">pause(self[, timeout])</span></h4>
+<p>Pauses the thread and blocks - does not return until the something
+happens to re-awake it, or until it times out (if the optional timeout
+is specified)</p>
+<p>Must only be called from within the main() method - ie. from within
+the separate thread.</p>
 <p>Keyword arguments:</p>
 <ul>
-<li>timeout -- Optional. None, or the number of seconds after which this call should unblock itself (default=None)</li>
+<li>timeout -- Optional. None, or the number of seconds after which this
+call should unblock itself (default=None)</li>
 </ul>
-<h4 id="recvself-boxname"><span id="symbol-threadedcomponent.recv">recv(self[, boxname])</span></h4>
+<h4 id="recvself-boxname"><span
+id="symbol-threadedcomponent.recv">recv(self[, boxname])</span></h4>
 <p>returns the first piece of data in the requested inbox.</p>
-<p>Used by the main() method to recieve a message from the outside world. All comms goes via a named box/input queue</p>
-<p>You will want to call this method to actually recieve messages you've been sent. You will want to check for new messages using dataReady first though.</p>
+<p>Used by the main() method to recieve a message from the outside
+world. All comms goes via a named box/input queue</p>
+<p>You will want to call this method to actually recieve messages you've
+been sent. You will want to check for new messages using dataReady first
+though.</p>
 <p>You are unlikely to want to override this method.</p>
-<h4 id="sendself-message-boxname"><span id="symbol-threadedcomponent.send">send(self, message[, boxname])</span></h4>
+<h4 id="sendself-message-boxname"><span
+id="symbol-threadedcomponent.send">send(self, message[,
+boxname])</span></h4>
 <p>appends message to the requested outbox.</p>
-<p>Used by the main() method to send a message to the outside world. All comms goes via a named box/output queue</p>
+<p>Used by the main() method to send a message to the outside world. All
+comms goes via a named box/output queue</p>
 <p>You will want to call this method to send messages.</p>
-<p>Raises <a href="/Docs/Axon/Axon.AxonExceptions.noSpaceInBox.html" class="reference">Axon.AxonExceptions.noSpaceInBox</a> if this outbox is linked to a destination inbox that is full, or if your component is producing messages faster than Axon can pass them on.</p>
+<p>Raises <a href="/Docs/Axon/Axon.AxonExceptions.noSpaceInBox.html"
+class="reference">Axon.AxonExceptions.noSpaceInBox</a> if this outbox is
+linked to a destination inbox that is full, or if your component is
+producing messages faster than Axon can pass them on.</p>
 <p>You are unlikely to want to override this method.</p>
-<h4 id="syncself"><span id="symbol-threadedcomponent.sync">sync(self)</span></h4>
-<p>Call this from main() to synchronise with the main scheduler's thread.</p>
-<p>You may wish to do this to throttle your component's behaviour This is akin to posix.sched_yield or shoving extra "yield" statements into a component's generator.</p>
-<h4 id="unlinkself-thecomponent-thelinkage"><span id="symbol-threadedcomponent.unlink">unlink(self[, thecomponent][, thelinkage])</span></h4>
-<p>Destroys all linkages to/from the specified component or destroys the specific linkage specified.</p>
-<p>Only destroys linkage(s) that were created <em>by</em> this component itself.</p>
+<h4 id="syncself"><span
+id="symbol-threadedcomponent.sync">sync(self)</span></h4>
+<p>Call this from main() to synchronise with the main scheduler's
+thread.</p>
+<p>You may wish to do this to throttle your component's behaviour This
+is akin to posix.sched_yield or shoving extra "yield" statements into a
+component's generator.</p>
+<h4 id="unlinkself-thecomponent-thelinkage"><span
+id="symbol-threadedcomponent.unlink">unlink(self[, thecomponent][,
+thelinkage])</span></h4>
+<p>Destroys all linkages to/from the specified component or destroys the
+specific linkage specified.</p>
+<p>Only destroys linkage(s) that were created <em>by</em> this component
+itself.</p>
 <p>Keyword arguments:</p>
 <ul>
 <li>thecomponent -- None or a component object</li>
 <li>thelinakge -- None or the linkage to remove</li>
 </ul>
 <section>
-<h4 id="methods-inherited-from-axon.component.component">Methods inherited from <a href="/Docs/Axon/Axon.Component.component.html" class="reference">Axon.Component.component</a> :</h4>
+<h4 id="methods-inherited-from-axon.component.component">Methods
+inherited from <a href="/Docs/Axon/Axon.Component.component.html"
+class="reference">Axon.Component.component</a> :</h4>
 <ul>
-<li><a href="/Docs/Axon/Axon.Component.html#symbol-component.__str__" class="reference">__str__</a>(self)</li>
-<li><a href="/Docs/Axon/Axon.Component.html#symbol-component.childComponents" class="reference">childComponents</a>(self)</li>
-<li><a href="/Docs/Axon/Axon.Component.html#symbol-component.setInboxSize" class="reference">setInboxSize</a>(self, boxname, size)</li>
-<li><a href="/Docs/Axon/Axon.Component.html#symbol-component.anyReady" class="reference">anyReady</a>(self)</li>
-<li><a href="/Docs/Axon/Axon.Component.html#symbol-component.__addChild" class="reference">__addChild</a>(self, child)</li>
-<li><a href="/Docs/Axon/Axon.Component.html#symbol-component._closeDownMicroprocess" class="reference">_closeDownMicroprocess</a>(self)</li>
-<li><a href="/Docs/Axon/Axon.Component.html#symbol-component._deliver" class="reference">_deliver</a>(self, message[, boxname])</li>
-<li><a href="/Docs/Axon/Axon.Component.html#symbol-component.removeChild" class="reference">removeChild</a>(self, child)</li>
-<li><a href="/Docs/Axon/Axon.Component.html#symbol-component.Inbox" class="reference">Inbox</a>(self[, boxname])</li>
-<li><a href="/Docs/Axon/Axon.Component.html#symbol-component.addChildren" class="reference">addChildren</a>(self, *children)</li>
+<li><a href="/Docs/Axon/Axon.Component.html#symbol-component.__str__"
+class="reference">__str__</a>(self)</li>
+<li><a
+href="/Docs/Axon/Axon.Component.html#symbol-component.childComponents"
+class="reference">childComponents</a>(self)</li>
+<li><a
+href="/Docs/Axon/Axon.Component.html#symbol-component.setInboxSize"
+class="reference">setInboxSize</a>(self, boxname, size)</li>
+<li><a href="/Docs/Axon/Axon.Component.html#symbol-component.anyReady"
+class="reference">anyReady</a>(self)</li>
+<li><a href="/Docs/Axon/Axon.Component.html#symbol-component.__addChild"
+class="reference">__addChild</a>(self, child)</li>
+<li><a
+href="/Docs/Axon/Axon.Component.html#symbol-component._closeDownMicroprocess"
+class="reference">_closeDownMicroprocess</a>(self)</li>
+<li><a href="/Docs/Axon/Axon.Component.html#symbol-component._deliver"
+class="reference">_deliver</a>(self, message[, boxname])</li>
+<li><a
+href="/Docs/Axon/Axon.Component.html#symbol-component.removeChild"
+class="reference">removeChild</a>(self, child)</li>
+<li><a href="/Docs/Axon/Axon.Component.html#symbol-component.Inbox"
+class="reference">Inbox</a>(self[, boxname])</li>
+<li><a
+href="/Docs/Axon/Axon.Component.html#symbol-component.addChildren"
+class="reference">addChildren</a>(self, *children)</li>
 </ul>
-<h4 id="methods-inherited-from-axon.microprocess.microprocess">Methods inherited from <a href="/Docs/Axon/Axon.Microprocess.microprocess.html" class="reference">Axon.Microprocess.microprocess</a> :</h4>
+<h4 id="methods-inherited-from-axon.microprocess.microprocess">Methods
+inherited from <a href="/Docs/Axon/Axon.Microprocess.microprocess.html"
+class="reference">Axon.Microprocess.microprocess</a> :</h4>
 <ul>
-<li><a href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._unpause" class="reference">_unpause</a>(self)</li>
-<li><a href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._microprocessGenerator" class="reference">_microprocessGenerator</a>(self, someobject[, mainmethod])</li>
-<li><a href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._isStopped" class="reference">_isStopped</a>(self)</li>
-<li><a href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.stop" class="reference">stop</a>(self)</li>
-<li><a href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.next" class="reference">next</a>(self)</li>
-<li><a href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.unpause" class="reference">unpause</a>(self)</li>
-<li><a href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.run" class="reference">run</a>(self)</li>
-<li><a href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._isRunnable" class="reference">_isRunnable</a>(self)</li>
+<li><a
+href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._unpause"
+class="reference">_unpause</a>(self)</li>
+<li><a
+href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._microprocessGenerator"
+class="reference">_microprocessGenerator</a>(self, someobject[,
+mainmethod])</li>
+<li><a
+href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._isStopped"
+class="reference">_isStopped</a>(self)</li>
+<li><a href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.stop"
+class="reference">stop</a>(self)</li>
+<li><a href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.next"
+class="reference">next</a>(self)</li>
+<li><a
+href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.unpause"
+class="reference">unpause</a>(self)</li>
+<li><a href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess.run"
+class="reference">run</a>(self)</li>
+<li><a
+href="/Docs/Axon/Axon.Microprocess.html#symbol-microprocess._isRunnable"
+class="reference">_isRunnable</a>(self)</li>
 </ul>
 </section>
 </section>
 <h1 id="feedback">Feedback</h1>
-<p>Got a problem with the documentation? Something unclear that could be clearer? Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
-<p>Please leave you feedback <a href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701" class="reference">here</a> in reply to the documentation thread in the Kamaelia blog.</p>
-<p><em>-- Automatic documentation generator, 09 Dec 2009 at 04:00:25 UTC/GMT</em></p>
+<p>Got a problem with the documentation? Something unclear that could be
+clearer? Want to help improve it? Constructive criticism is very welcome
+- especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback <a
+href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701"
+class="reference">here</a> in reply to the documentation thread in the
+Kamaelia blog.</p>
+<p><em>-- Automatic documentation generator, 09 Dec 2009 at 04:00:25
+UTC/GMT</em></p>
 
 </div> <!-- end section -->
 </div> <!-- end page container -->

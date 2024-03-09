@@ -15,33 +15,49 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
 <div class="container">
 <section>
-<h2 id="axon.debugconfigfile"><a href="/Docs/Axon/Axon.html" class="reference">Axon</a>.<a href="/Docs/Axon/Axon.debugConfigFile.html" class="reference">debugConfigFile</a></h2>
+<h2 id="axon.debugconfigfile"><a href="/Docs/Axon/Axon.html"
+class="reference">Axon</a>.<a
+href="/Docs/Axon/Axon.debugConfigFile.html"
+class="reference">debugConfigFile</a></h2>
 </section>
-<h1 id="reading-debugging-configuration-files">Reading debugging configuration files</h1>
+<h1 id="reading-debugging-configuration-files">Reading debugging
+configuration files</h1>
 <div class="container">
 <ul>
-<li><strong><a href="/Docs/Axon/Axon.debugConfigFile.readConfig.html" class="reference">readConfig</a></strong>(filename)</li>
+<li><strong><a href="/Docs/Axon/Axon.debugConfigFile.readConfig.html"
+class="reference">readConfig</a></strong>(filename)</li>
 </ul>
 </div>
 <ul>
-<li><a href="#93" class="reference">Debugging configuration file format</a></li>
+<li><a href="#93" class="reference">Debugging configuration file
+format</a></li>
 </ul>
 <section>
-<p>The readConfig() method reads debugging configuration from the specified file.</p>
+<p>The readConfig() method reads debugging configuration from the
+specified file.</p>
 <ul>
-<li><a href="/Docs/Axon/Axon.debug.debug.html" class="reference">Axon.debug.debug</a> uses this to read configuration for itself.</li>
+<li><a href="/Docs/Axon/Axon.debug.debug.html"
+class="reference">Axon.debug.debug</a> uses this to read configuration
+for itself.</li>
 </ul>
-<p>Each call to output debugging information specifies what section it belongs to and the level of detail it represents. A configuration file specifies what sections should be expected and what maximum level of detail should be output for each.</p>
-<h2 id="debugging-configuration-file-format-93"><span id="debugging-configuration-file-format">Debugging configuration file format</span> {#93}</h2>
+<p>Each call to output debugging information specifies what section it
+belongs to and the level of detail it represents. A configuration file
+specifies what sections should be expected and what maximum level of
+detail should be output for each.</p>
+<h2 id="93"><span id="debugging-configuration-file-format">Debugging
+configuration file format</span></h2>
 <p>Debugging configuration files are simple text files.</p>
 <ul>
-<li><strong>Comments</strong> are lines beginning with a hash '#' character</li>
+<li><strong>Comments</strong> are lines beginning with a hash '#'
+character</li>
 <li><strong>Blank lines</strong> are permitted</li>
-<li><strong>Configuration lines</strong> are a space (not tab) separated triple of <em>section</em> name, <em>level</em> of detail, and <em>location</em></li>
+<li><strong>Configuration lines</strong> are a space (not tab) separated
+triple of <em>section</em> name, <em>level</em> of detail, and
+<em>location</em></li>
 </ul>
 <p>For example:</p>
 <pre class="literal-block"><code># The following tags are for debugging the debug system
@@ -52,19 +68,36 @@ debugTestClass.triple       10 default
 debugTestClass.run          1  default
 debugTestClass.__init__     5  default
 debugTestClass.randomChange 10 default</code></pre>
-<p>For a given <em>section</em>, the <em>level</em> number specifies the maximum level of detail that you want outputted. Any calls to output debugging information for that section but with a higher level number will be filtered out.</p>
-<p>The final <em>location</em> field is currently not used. It is recommended to specify "default" for the moment.</p>
+<p>For a given <em>section</em>, the <em>level</em> number specifies the
+maximum level of detail that you want outputted. Any calls to output
+debugging information for that section but with a higher level number
+will be filtered out.</p>
+<p>The final <em>location</em> field is currently not used. It is
+recommended to specify "default" for the moment.</p>
 </section>
 <hr />
-<h1 id="axon.debugconfigfile.readconfig"><a href="/Docs/Axon/Axon.html" class="reference">Axon</a>.<a href="/Docs/Axon/Axon.debugConfigFile.html" class="reference">debugConfigFile</a>.<a href="/Docs/Axon/Axon.debugConfigFile.readConfig.html" class="reference">readConfig</a></h1>
-<h2 id="readconfigfilename"><span id="symbol-readConfig">readConfig(filename)</span></h2>
+<h1 id="axon.debugconfigfile.readconfig"><a href="/Docs/Axon/Axon.html"
+class="reference">Axon</a>.<a
+href="/Docs/Axon/Axon.debugConfigFile.html"
+class="reference">debugConfigFile</a>.<a
+href="/Docs/Axon/Axon.debugConfigFile.readConfig.html"
+class="reference">readConfig</a></h1>
+<h2 id="readconfigfilename"><span
+id="symbol-readConfig">readConfig(filename)</span></h2>
 <p>Reads debug configuration from the specified file.</p>
-<p>Returns a dictionary mapping debugging section names to maximum levels of detail to be output for that section.</p>
+<p>Returns a dictionary mapping debugging section names to maximum
+levels of detail to be output for that section.</p>
 </div>
 <h1 id="feedback">Feedback</h1>
-<p>Got a problem with the documentation? Something unclear that could be clearer? Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
-<p>Please leave you feedback <a href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701" class="reference">here</a> in reply to the documentation thread in the Kamaelia blog.</p>
-<p><em>-- Automatic documentation generator, 09 Dec 2009 at 04:00:25 UTC/GMT</em></p>
+<p>Got a problem with the documentation? Something unclear that could be
+clearer? Want to help improve it? Constructive criticism is very welcome
+- especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback <a
+href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701"
+class="reference">here</a> in reply to the documentation thread in the
+Kamaelia blog.</p>
+<p><em>-- Automatic documentation generator, 09 Dec 2009 at 04:00:25
+UTC/GMT</em></p>
 
 </div> <!-- end section -->
 </div> <!-- end page container -->

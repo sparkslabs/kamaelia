@@ -15,18 +15,34 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
-<h2 id="how-do-i-get-django-working-with-kamaelia-publish">How do I get Django working with Kamaelia Publish?</h2>
+<h2 id="how-do-i-get-django-working-with-kamaelia-publish">How do I get
+Django working with Kamaelia Publish?</h2>
 <p><br />
-It is possible to get Django working with Kamaelia Publish, however Django support is highly experimental (as is Django's WSGI support).  Kamaelia Publish includes a built in application for serving Django applications located at plugins.WsgiApps.django_app.  This app (probably) requires two variables to be set in the urls file:  project_path and django_path_handling.<br />
+It is possible to get Django working with Kamaelia Publish, however
+Django support is highly experimental (as is Django's WSGI support). 
+Kamaelia Publish includes a built in application for serving Django
+applications located at plugins.WsgiApps.django_app.  This app
+(probably) requires two variables to be set in the urls file: 
+project_path and django_path_handling.<br />
 <br />
 </p>
 <ul>
-<li>project_path is essentially the directory that contains your django project</li>
-<li>django_path_handling is just a boolean value.  What you set it to isn't really important (I just use "True"), just as long as it is set to something other than an empty string.  This setting exists because django's path handling isn't very WSGI-centric.  It will essentially prepend the WSGI SCRIPT_NAME environment variable to the beginning of the WSGI PATH_INFO variable and store the result in PATH_INFO.</li>
+<li>project_path is essentially the directory that contains your django
+project</li>
+<li>django_path_handling is just a boolean value.  What you set it to
+isn't really important (I just use "True"), just as long as it is set to
+something other than an empty string.  This setting exists because
+django's path handling isn't very WSGI-centric.  It will essentially
+prepend the WSGI SCRIPT_NAME environment variable to the beginning of
+the WSGI PATH_INFO variable and store the result in PATH_INFO.</li>
 </ul>
-<h3 id="please-note-that-django-support-is-still-experimental-more-so-than-integration-with-other-frameworks-and-as-such-probably-wont-work-right-for-your-purposes.">Please note that django support is still experimental (more so than integration with other frameworks) and as such probably won't work right for your purposes.</h3>
+<h3
+id="please-note-that-django-support-is-still-experimental-more-so-than-integration-with-other-frameworks-and-as-such-probably-wont-work-right-for-your-purposes.">Please
+note that django support is still experimental (more so than integration
+with other frameworks) and as such probably won't work right for your
+purposes.</h3>
 
 </div> <!-- end section -->
 </div> <!-- end page container -->

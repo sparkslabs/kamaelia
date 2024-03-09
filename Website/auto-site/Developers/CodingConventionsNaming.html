@@ -15,26 +15,38 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
-<h1 id="developerscodingconventionsnaming">Developers/CodingConventionsNaming</h1>
+<h1
+id="developerscodingconventionsnaming">Developers/CodingConventionsNaming</h1>
 <p><br />
 </p>
 <div class="boxright">
-<p>This page consolidates <a href="http://groups.google.com/group/kamaelia/browse_frm/thread/dd2a717e1d137e98#">the discussion on the google groups regarding this topic</a>.</p>
+<p>This page consolidates <a
+href="http://groups.google.com/group/kamaelia/browse_frm/thread/dd2a717e1d137e98#">the
+discussion on the google groups regarding this topic</a>.</p>
 </div>
-<p>In many respects, a significant chunk of Kamaelia is actually about conventions around ensuring documentation is possible and natural. Matt did actually write up some documentation guidelines, which I then<br />
-editted and things got tweaked. <a href="/DocumentationGuidelines">These can be found here.</a>  Similarly, there is some basic guidance on naming of things and how they'll be used in the page describing a possible <a href="/Docs/NotationForVisualisingAxon">notation for visualising Axon/Kamaelia systems</a>.<br />
+<p>In many respects, a significant chunk of Kamaelia is actually about
+conventions around ensuring documentation is possible and natural. Matt
+did actually write up some documentation guidelines, which I then<br />
+editted and things got tweaked. <a href="/DocumentationGuidelines">These
+can be found here.</a>  Similarly, there is some basic guidance on
+naming of things and how they'll be used in the page describing a
+possible <a href="/Docs/NotationForVisualisingAxon">notation for
+visualising Axon/Kamaelia systems</a>.<br />
 <br />
-However, it may be useful to go through some basic points on conventions that get used.<br />
+However, it may be useful to go through some basic points on conventions
+that get used.<br />
 </p>
 <h2 id="whitespace">Whitespace</h2>
 <p>4 spaces.*** No tabs ***<br />
 No mixing of tabs and indents.<br />
-There's highly pragmatic reasons for this I can go into, but for now let's just say tabs have no place in Kamaelia :-)<br />
+There's highly pragmatic reasons for this I can go into, but for now
+let's just say tabs have no place in Kamaelia :-)<br />
 </p>
 <h2 id="imports">imports</h2>
-<p>First of all, divide this into 3 main sets of lines of the form:<br />
+<p>First of all, divide this into 3 main sets of lines of the
+form:<br />
 * "import Foo"<br />
 * "from Axon. import<br />
 * "from Kamaelia. import<br />
@@ -42,11 +54,15 @@ There's highly pragmatic reasons for this I can go into, but for now let's just 
 Never use:<br />
 from foo import *<br />
 </p>
-<p>Unless you *know* that all the symbols exported by foo are expected to be used. (this is _very_ rare)<br />
+<p>Unless you *know* that all the symbols exported by foo are expected
+to be used. (this is _very_ rare)<br />
 </p>
 <h2 id="naming-of-things">Naming of things</h2>
 <h3 id="naming-components">Naming Components</h3>
-<p>Components should use CamelCaseWording. (though single word names - like "Backplane" are fine). Names of things should be clear in what they do. Some of the complaints about names in the earlier thread are very valid, and worth bearing in mind.<br />
+<p>Components should use CamelCaseWording. (though single word names -
+like "Backplane" are fine). Names of things should be clear in what they
+do. Some of the complaints about names in the earlier thread are very
+valid, and worth bearing in mind.<br />
 </p>
 <h3 id="naming-boxes">Naming Boxes</h3>
 <p>Components SHOULD declare that they have the following 4 boxes:<br />
@@ -54,16 +70,24 @@ from foo import *<br />
 * control - we expect shutdown style messages here.<br />
 <br />
 * outbox - If your component produces output, it should go here.<br />
-* signal - when you want to send shutdown messages (of various kinds) they should get sent here.<br />
+* signal - when you want to send shutdown messages (of various kinds)
+they should get sent here.<br />
 <br />
 </p>
-<p>If you do not include these boxnames, the component cannot be used inside a Pipeline. The vast majority of components tend to be able to work using these default 4 names.<br />
+<p>If you do not include these boxnames, the component cannot be used
+inside a Pipeline. The vast majority of components tend to be able to
+work using these default 4 names.<br />
 <br />
 Additional boxnames should always be lower case.<br />
 <br />
-If you do not expect anyone _outside_ the component to connect to an inbox or outbox the component has, then the inbox and outbox name should start with an underscore. These sorts of boxes are usually used by a parent component to talk to subcomponents. For a visual example, see the "Notation" link above.<br />
+If you do not expect anyone _outside_ the component to connect to an
+inbox or outbox the component has, then the inbox and outbox name should
+start with an underscore. These sorts of boxes are usually used by a
+parent component to talk to subcomponents. For a visual example, see the
+"Notation" link above.<br />
 <br />
-Boxnames which are not any of the defaults should indicate what sort of thing is sent to them and why (insofar that's sensible).<br />
+Boxnames which are not any of the defaults should indicate what sort of
+thing is sent to them and why (insofar that's sensible).<br />
 <br />
 Whilst you can declare boxes this way...<br />
 <br />
@@ -71,7 +95,11 @@ class Foo(Axon.Component.component):<br />
 Inboxes = ["inbox", "control", "imageupdate"]<br />
 Outboxes = ["outbox", "signal", "debuglog"]<br />
 <br />
-... since actually the key thing is Inboxes and Outboxes needs to be an iterable that returns strings, it is preferable that it be a dictionary, so that the documentation system can pick things up - this allows someone introspecting a component to understand what each box is for:<br />
+... since actually the key thing is Inboxes and Outboxes needs to be an
+iterable that returns strings, it is preferable that it be a dictionary,
+so that the documentation system can pick things up - this allows
+someone introspecting a component to understand what each box is
+for:<br />
 <br />
 class Foo(Axon.Component.component):<br />
 Inboxes = {<br />
@@ -90,13 +118,18 @@ deliberate.<br />
 </p>
 <h2 id="use-of-boxes">Use of Boxes</h2>
 <h3 id="section"></h3>
-<p>If a box is not linked, it has no default storage. This means sending to an outbox like this:</p>
+<p>If a box is not linked, it has no default storage. This means sending
+to an outbox like this:</p>
 <p>self.send("debug message", "debug_log")<br />
 <br />
-Will not result in messages piling up - they'll be thrown away unless the box is linked up.<br />
+Will not result in messages piling up - they'll be thrown away unless
+the box is linked up.<br />
 </p>
 <h2 id="initialisation-issues">Initialisation Issues</h2>
-<p>This has evolved over the course of Kamaelia. There are 3 approaches you will see in Kamaelia's codebase. 1 should be completely eradicated by now, the other 2 are in a transition period, since one is an improvement on the other. I'll also note a bug.<br />
+<p>This has evolved over the course of Kamaelia. There are 3 approaches
+you will see in Kamaelia's codebase. 1 should be completely eradicated
+by now, the other 2 are in a transition period, since one is an
+improvement on the other. I'll also note a bug.<br />
 <br />
 Buggy/broken/never ever do:<br />
 <br />
@@ -107,7 +140,8 @@ self.arg1 = arg1<br />
 self.arg2 = arg2<br />
 self.arg3 = arg3<br />
 <br />
-Very old, deprecated to the extent I think of it as a bug: (will be broken in esoteric circumstances)<br />
+Very old, deprecated to the extent I think of it as a bug: (will be
+broken in esoteric circumstances)<br />
 <br />
 def __init__(self, logfile = "greylist.log", debuglogfile =<br />
 "greylist-debug.log"):<br />
@@ -139,9 +173,11 @@ super(MailHandler, self).__init__(**argd) &lt;---- Best<br />
 self.inbox_log = []<br />
 self.line = None<br />
 <br />
-It's worth noting that these last 2 mail handler definitions work the same way. You can still do this:<br />
+It's worth noting that these last 2 mail handler definitions work the
+same way. You can still do this:<br />
 <br />
-MailHandler(logfile = "/var/log/mail.log", debug = "/tmp/ maildebug.log")<br />
+MailHandler(logfile = "/var/log/mail.log", debug = "/tmp/
+maildebug.log")<br />
 <br />
 But the latter option also allows this:<br />
 <br />
@@ -150,9 +186,12 @@ logfile = "/var/log/mail.log"<br />
 debuglogfile = "/tmp/maildebug.log"<br />
 </p>
 <h2 id="naminguse-of-subcomponents">Naming/Use of Subcomponents</h2>
-<p>In the past this has been a matter of "just use the components you want to use as subcomponents". However, similar to initialisation above this has evolved.<br />
+<p>In the past this has been a matter of "just use the components you
+want to use as subcomponents". However, similar to initialisation above
+this has evolved.<br />
 <br />
-Suppose your component creates and uses a number of subcomponents, you could do this:<br />
+Suppose your component creates and uses a number of subcomponents, you
+could do this:<br />
 <br />
 from Kamaelia.Frob import Frobnicator<br />
 from Kamaelia.Wotsits import Cruncher<br />
@@ -166,7 +205,8 @@ self.muncher = Cruncher(...)<br />
 # and then later on link the components up inside main() once the<br />
 component is started.<br />
 <br />
-This is OK and we've done this for years, but there's something much<br />
+This is OK and we've done this for years, but there's something
+much<br />
 nicer you can do:<br />
 <br />
 import Kamaelia.Frob<br />
@@ -185,7 +225,9 @@ self.muncher = self.Cruncher(...)<br />
 # and then later on link the components up inside main() once<br />
 the component is started.<br />
 <br />
-On the surface of things, this looks like it introduces more complexity for no benefit. In practice it introduces a huge new level of abilities, which you can see used in the greylisting code.<br />
+On the surface of things, this looks like it introduces more complexity
+for no benefit. In practice it introduces a huge new level of abilities,
+which you can see used in the greylisting code.<br />
 <br />
 Snipping out the key part that benefits:<br />
 <br />
@@ -201,9 +243,18 @@ servername = config["servername"]<br />
 serverid = config["serverid"]<br />
 smtp_ip = config["smtp_ip"]<br />
 <br />
-What you'll see here is that this subclasses an existing component called (rather unimaginatively) MoreComplexServer. However, it overrides how the server listens for connections, by changing the what self.TCPS would refer to. Specifically it creates a new class called TCPS, which subclasses TCPServer in order to change how connections are handled.<br />
+What you'll see here is that this subclasses an existing component
+called (rather unimaginatively) MoreComplexServer. However, it overrides
+how the server listens for connections, by changing the what self.TCPS
+would refer to. Specifically it creates a new class called TCPS, which
+subclasses TCPServer in order to change how connections are
+handled.<br />
 <br />
-Quite literally it allows you to delve deep inside components in the tree, rummage around and change the one little detail that needs changing to support the thing you need - in this case it was to add an inactivity timeout to connected sockets created by the TCP server/listener component inside the server factory.<br />
+Quite literally it allows you to delve deep inside components in the
+tree, rummage around and change the one little detail that needs
+changing to support the thing you need - in this case it was to add an
+inactivity timeout to connected sockets created by the TCP
+server/listener component inside the server factory.<br />
 <br />
 In the example above, this would mean someone could do this:<br />
 import Kamaelia.Frob<br />
@@ -218,10 +269,13 @@ class Cruncher(Kamaelia.Wotsits.Cruncher):<br />
 class Smasher(Kamaelia.Smash.Smasher):<br />
 # local overrides<br />
 <br />
-And whilst that might seem overkill, it can certainly be useful. It's the sort of change you'd make to code though once it was all working and known useful.<br />
+And whilst that might seem overkill, it can certainly be useful. It's
+the sort of change you'd make to code though once it was all working and
+known useful.<br />
 </p>
 <h2 id="names-of-variables">Names of Variables</h2>
-<p>you should not use globals. Ever. If you must, please look at the STM<br />
+<p>you should not use globals. Ever. If you must, please look at the
+STM<br />
 code.<br />
 <br />
 variables containing things you expect to be constant should be<br />
@@ -233,7 +287,8 @@ attributes should be lowercase<br />
 If it's clearer lowercase can mean<br />
 "lowercaseStartingPhraseLikeThisIfYouMust".<br />
 <br />
-Variables should have a good clear name reflecting use. When in a list comprehension, use x,y,z (ideally) as the loop values - eg:<br />
+Variables should have a good clear name reflecting use. When in a list
+comprehension, use x,y,z (ideally) as the loop values - eg:<br />
 <br />
 items = [ (x,y) for x,y in someList if x == y ]<br />
 <br />
@@ -248,37 +303,51 @@ for person in people:<br />
 If just looping over numbers:<br />
 for i in xrange(100)<br />
 <br />
-If you are looping over a generator, waiting for it to finish (cf what happens in some pygame components), you're not actually caring what the value is. If that's the case make this explicit by using the variable name "_". eg:<br />
+If you are looping over a generator, waiting for it to finish (cf what
+happens in some pygame components), you're not actually caring what the
+value is. If that's the case make this explicit by using the variable
+name "_". eg:<br />
 </p>
 <blockquote>
 <p>for _ in self.waitBox("control"): yield 1<br />
 </p>
 </blockquote>
 <p><br />
-There are better ways of handling this now (see the greylister for an example of better practice), but this is the legacy approach and shows the one context where that name is useful.<br />
+There are better ways of handling this now (see the greylister for an
+example of better practice), but this is the legacy approach and shows
+the one context where that name is useful.<br />
 </p>
 <h2 id="naming-of-methods">Naming of Methods</h2>
 <p>Method names should follow the same rules as variables.<br />
 <br />
-Unlike "normal" python code, you should NOT need to ever do something like this:<br />
+Unlike "normal" python code, you should NOT need to ever do something
+like this:<br />
 def _shutdown(self):<br />
 <br />
-ie you should NOT ever need to have a method name with a leading underscore. The reason for this is because it is defined as bug for someone to do this...<br />
+ie you should NOT ever need to have a method name with a leading
+underscore. The reason for this is because it is defined as bug for
+someone to do this...<br />
 mycomponent = SomeComponent( .…)<br />
 mycomponent.doSomething()<br />
 <br />
 ... except in *extraordinarily* few cases.<br />
 <br />
 <br />
-Since I've referenced it a few times, the greylister is here: https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/branches/private_MPS_Scratch/Apps/Kamaelia-Grey/App/greylisting.py<br />
+Since I've referenced it a few times, the greylister is here:
+https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/branches/private_MPS_Scratch/Apps/Kamaelia-Grey/App/greylisting.py<br />
 <br />
 ... and it shows a number of points which are best practice.<br />
 <br />
-I think I'll leave this at that for now, but what haven't I covered?<br />
+I think I'll leave this at that for now, but what haven't I
+covered?<br />
 <br />
-* I haven't covered <em>behaviour</em> of initialisation, running &amp; shutdown<br />
+* I haven't covered <em>behaviour</em> of initialisation, running &amp;
+shutdown<br />
 * I haven't covered communication<br />
-* I haven't covered that the "three callback form" is now completely and utterly deprecated. It's turned out to be unnecessary in practice and tends to just make code harder to work with. Therefore modern components should NOT have the following 3 methods:<br />
+* I haven't covered that the "three callback form" is now completely and
+utterly deprecated. It's turned out to be unnecessary in practice and
+tends to just make code harder to work with. Therefore modern components
+should NOT have the following 3 methods:<br />
 def initialiseComponent(self):<br />
 def mainBody(self):<br />
 def closeDownComponent(self):<br />
@@ -292,9 +361,11 @@ def shutdown(self):<br />
 def main(self):<br />
 def stop(self): # should handle being called repeatedly safely<br />
 <br />
-Regarding the points I haven't covered here - which largely relate to <strong>behaviour.</strong><br />
+Regarding the points I haven't covered here - which largely relate to
+<strong>behaviour.</strong><br />
 </p>
-<p>Other people, please do jump in with where you feel things have worked well...<br />
+<p>Other people, please do jump in with where you feel things have
+worked well...<br />
 <br />
 </p>
 <p>Michael, May 2008</p>

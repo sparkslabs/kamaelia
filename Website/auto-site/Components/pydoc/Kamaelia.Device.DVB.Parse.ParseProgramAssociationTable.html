@@ -15,18 +15,30 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
 <div class="container">
-<h1 id="kamaelia.device.dvb.parse.parseprogramassociationtable"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Device.html" class="reference">Device</a>.<a href="/Components/pydoc/Kamaelia.Device.DVB.html" class="reference">DVB</a>.<a href="/Components/pydoc/Kamaelia.Device.DVB.Parse.html" class="reference">Parse</a>.<a href="/Components/pydoc/Kamaelia.Device.DVB.Parse.ParseProgramAssociationTable.html" class="reference">ParseProgramAssociationTable</a></h1>
+<h1 id="kamaelia.device.dvb.parse.parseprogramassociationtable"><a
+href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a
+href="/Components/pydoc/Kamaelia.Device.html"
+class="reference">Device</a>.<a
+href="/Components/pydoc/Kamaelia.Device.DVB.html"
+class="reference">DVB</a>.<a
+href="/Components/pydoc/Kamaelia.Device.DVB.Parse.html"
+class="reference">Parse</a>.<a
+href="/Components/pydoc/Kamaelia.Device.DVB.Parse.ParseProgramAssociationTable.html"
+class="reference">ParseProgramAssociationTable</a></h1>
 <section>
 <div class="container">
 <ul>
-<li><strong>component <a href="/Components/pydoc/Kamaelia.Device.DVB.Parse.ParseProgramAssociationTable.ParseProgramAssociationTable.html" class="reference">ParseProgramAssociationTable</a></strong></li>
+<li><strong>component <a
+href="/Components/pydoc/Kamaelia.Device.DVB.Parse.ParseProgramAssociationTable.ParseProgramAssociationTable.html"
+class="reference">ParseProgramAssociationTable</a></strong></li>
 </ul>
 </div>
 <ul>
-<li><a href="#504" class="reference">Parsing Program Association Tables in DVB streams</a>
+<li><a href="#504" class="reference">Parsing Program Association Tables
+in DVB streams</a>
 <ul>
 <li><a href="#505" class="reference">Example Usage</a></li>
 <li><a href="#506" class="reference">Behaviour</a></li>
@@ -34,14 +46,20 @@
 </ul></li>
 </ul>
 </section>
-<h1 id="parsing-program-association-tables-in-dvb-streams-504">Parsing Program Association Tables in DVB streams {#504}</h1>
-<p>ParseProgramAssociationTable parses a reconstructed PSI table from a DVB MPEG Transport Stream, and outputs a dictionary containing the data in the table.</p>
-<p>The purpose of the PAT and details of the fields within in are defined in the MPEG systems specification:</p>
+<h1 id="504">Parsing Program Association Tables in DVB streams</h1>
+<p>ParseProgramAssociationTable parses a reconstructed PSI table from a
+DVB MPEG Transport Stream, and outputs a dictionary containing the data
+in the table.</p>
+<p>The purpose of the PAT and details of the fields within in are
+defined in the MPEG systems specification:</p>
 <ul>
-<li>ISO/IEC 13818-1 (aka "MPEG: Systems") "GENERIC CODING OF MOVING PICTURES AND ASSOCIATED AUDIO: SYSTEMS" ISO / Motion Picture Experts Group</li>
+<li>ISO/IEC 13818-1 (aka "MPEG: Systems") "GENERIC CODING OF MOVING
+PICTURES AND ASSOCIATED AUDIO: SYSTEMS" ISO / Motion Picture Experts
+Group</li>
 </ul>
-<h2 id="example-usage-505"><span id="example-usage">Example Usage</span> {#505}</h2>
-<p>A simple pipeline to receive, parse and display the Program Association Table in a multiplex:</p>
+<h2 id="505"><span id="example-usage">Example Usage</span></h2>
+<p>A simple pipeline to receive, parse and display the Program
+Association Table in a multiplex:</p>
 <pre class="literal-block"><code>FREQUENCY = 505.833330
 feparams = {
     &quot;inversion&quot; : dvb3.frontend.INVERSION_AUTO,
@@ -59,10 +77,15 @@ Pipeline( DVB_Multiplex(FREQUENCY, [PAT_PID], feparams),
           PrettifyProgramAssociationTable(),
           ConsoleEchoer(),
         ).run()</code></pre>
-<h2 id="behaviour-506"><span id="behaviour">Behaviour</span> {#506}</h2>
-<p>Send reconstructed PSI table 'sections' to the "inbox" inbox. When all sections of the table have arrived, ParseProgramAssociationTable will parse the table and send it out of its "outbox" outbox.</p>
-<p>If the table is unchanged since last time it was parsed, then it will not be sent out. Parsed tables are only sent out when they are new or have just changed.</p>
-<p>The parsed table is sent out as a dictionary data structure, like this:</p>
+<h2 id="506"><span id="behaviour">Behaviour</span></h2>
+<p>Send reconstructed PSI table 'sections' to the "inbox" inbox. When
+all sections of the table have arrived, ParseProgramAssociationTable
+will parse the table and send it out of its "outbox" outbox.</p>
+<p>If the table is unchanged since last time it was parsed, then it will
+not be sent out. Parsed tables are only sent out when they are new or
+have just changed.</p>
+<p>The parsed table is sent out as a dictionary data structure, like
+this:</p>
 <pre class="literal-block"><code>{
     &#39;table_id&#39;         : 0
     &#39;table_type&#39;       : &#39;PAT&#39;,
@@ -77,7 +100,10 @@ Pipeline( DVB_Multiplex(FREQUENCY, [PAT_PID], feparams),
                                  }
                          },
 }</code></pre>
-<p>This is an instantaneous snapshot of the PAT for Crystal Palace MUX 1 transmission (505.8MHz) in the UK on 20th Dec 2006. If this data is sent on through a PrettifyProgramAssociationTable component, then the equivalent output is a string containing this:</p>
+<p>This is an instantaneous snapshot of the PAT for Crystal Palace MUX 1
+transmission (505.8MHz) in the UK on 20th Dec 2006. If this data is sent
+on through a PrettifyProgramAssociationTable component, then the
+equivalent output is a string containing this:</p>
 <pre class="literal-block"><code>PAT received:
 Table ID           : 0
 Table is valid for : CURRENT (valid)
@@ -89,46 +115,87 @@ For transport stream id : 4100
     For service 4164 : PMT is in PID 4164
     For service 4415 : PMT is in PID 4415
     For service 4671 : PMT is in PID 4671</code></pre>
-<p>ParseProgramAssociationTable can collect the sections of, and then parse, both 'current' and 'next' tables simultaneously.</p>
-<p>If a shutdownMicroprocess or producerFinished message is received on the "control" inbox, then it will immediately be sent on out of the "signal" outbox and the component will then immediately terminate.</p>
-<h2 id="how-does-it-work-507"><span id="how-does-it-work">How does it work?</span> {#507}</h2>
-<p>ParseProgramAssociationTable logs all the table sections it receives, until it determines it has the complete set; then it parses them.</p>
-<p>If the version number field in any table section changes, then the log is cleared, and the component starts collecting the sections again from scratch.</p>
+<p>ParseProgramAssociationTable can collect the sections of, and then
+parse, both 'current' and 'next' tables simultaneously.</p>
+<p>If a shutdownMicroprocess or producerFinished message is received on
+the "control" inbox, then it will immediately be sent on out of the
+"signal" outbox and the component will then immediately terminate.</p>
+<h2 id="507"><span id="how-does-it-work">How does it work?</span></h2>
+<p>ParseProgramAssociationTable logs all the table sections it receives,
+until it determines it has the complete set; then it parses them.</p>
+<p>If the version number field in any table section changes, then the
+log is cleared, and the component starts collecting the sections again
+from scratch.</p>
 <hr />
-<h1 id="kamaelia.device.dvb.parse.parseprogramassociationtable.parseprogramassociationtable"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Device.html" class="reference">Device</a>.<a href="/Components/pydoc/Kamaelia.Device.DVB.html" class="reference">DVB</a>.<a href="/Components/pydoc/Kamaelia.Device.DVB.Parse.html" class="reference">Parse</a>.<a href="/Components/pydoc/Kamaelia.Device.DVB.Parse.ParseProgramAssociationTable.html" class="reference">ParseProgramAssociationTable</a>.<a href="/Components/pydoc/Kamaelia.Device.DVB.Parse.ParseProgramAssociationTable.ParseProgramAssociationTable.html" class="reference">ParseProgramAssociationTable</a></h1>
-<h2 id="symbol-ParseProgramAssociationTable">class ParseProgramAssociationTable(<a href="/Docs/Axon/Axon.Component.component.html" class="reference">Axon.Component.component</a>)</h2>
-<p>ParseProgramAssociationTable() -&gt; new ParseProgramAssociationTable component.</p>
-<p>Send reconstructed PSI table sections to the "inbox" inbox. When a complete table is assembled and parsed, the result is sent out of the "outbox" outbox as a dictionary.</p>
-<p>Doesn't emit anything again until the version number of the table changes.</p>
+<h1
+id="kamaelia.device.dvb.parse.parseprogramassociationtable.parseprogramassociationtable"><a
+href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a
+href="/Components/pydoc/Kamaelia.Device.html"
+class="reference">Device</a>.<a
+href="/Components/pydoc/Kamaelia.Device.DVB.html"
+class="reference">DVB</a>.<a
+href="/Components/pydoc/Kamaelia.Device.DVB.Parse.html"
+class="reference">Parse</a>.<a
+href="/Components/pydoc/Kamaelia.Device.DVB.Parse.ParseProgramAssociationTable.html"
+class="reference">ParseProgramAssociationTable</a>.<a
+href="/Components/pydoc/Kamaelia.Device.DVB.Parse.ParseProgramAssociationTable.ParseProgramAssociationTable.html"
+class="reference">ParseProgramAssociationTable</a></h1>
+<h2 id="symbol-ParseProgramAssociationTable">class
+ParseProgramAssociationTable(<a
+href="/Docs/Axon/Axon.Component.component.html"
+class="reference">Axon.Component.component</a>)</h2>
+<p>ParseProgramAssociationTable() -&gt; new ParseProgramAssociationTable
+component.</p>
+<p>Send reconstructed PSI table sections to the "inbox" inbox. When a
+complete table is assembled and parsed, the result is sent out of the
+"outbox" outbox as a dictionary.</p>
+<p>Doesn't emit anything again until the version number of the table
+changes.</p>
 <p>Outputs both 'current' and 'next' tables.</p>
-<h3 id="inboxes"><span id="symbol-ParseProgramAssociationTable.Inboxes">Inboxes</span></h3>
+<h3 id="inboxes"><span
+id="symbol-ParseProgramAssociationTable.Inboxes">Inboxes</span></h3>
 <ul>
 <li><strong>control</strong> : Shutdown signalling</li>
-<li><strong>inbox</strong> : DVB PSI Packets containing PAT table sections</li>
+<li><strong>inbox</strong> : DVB PSI Packets containing PAT table
+sections</li>
 </ul>
-<h3 id="outboxes"><span id="symbol-ParseProgramAssociationTable.Outboxes">Outboxes</span></h3>
+<h3 id="outboxes"><span
+id="symbol-ParseProgramAssociationTable.Outboxes">Outboxes</span></h3>
 <ul>
-<li><strong>outbox</strong> : Parsed PAT table (only when it changes)</li>
+<li><strong>outbox</strong> : Parsed PAT table (only when it
+changes)</li>
 <li><strong>signal</strong> : Shutdown signalling</li>
 </ul>
 <h3 id="methods-defined-here">Methods defined here</h3>
 <div class="container">
 <div class="boxright">
 <p><strong>Warning!</strong></p>
-<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+<p>You should be using the inbox/outbox interface, not these methods
+(except construction). This documentation is designed as a roadmap as to
+their functionalilty for maintainers and new component developers.</p>
 </div>
 </div>
-<h4 id="mainself"><span id="symbol-ParseProgramAssociationTable.main">main(self)</span></h4>
-<h4 id="parsetableself-table_id-current_next-sections"><span id="symbol-ParseProgramAssociationTable.parseTable">parseTable(self, table_id, current_next, sections)</span></h4>
-<h4 id="shutdownself"><span id="symbol-ParseProgramAssociationTable.shutdown">shutdown(self)</span></h4>
+<h4 id="mainself"><span
+id="symbol-ParseProgramAssociationTable.main">main(self)</span></h4>
+<h4 id="parsetableself-table_id-current_next-sections"><span
+id="symbol-ParseProgramAssociationTable.parseTable">parseTable(self,
+table_id, current_next, sections)</span></h4>
+<h4 id="shutdownself"><span
+id="symbol-ParseProgramAssociationTable.shutdown">shutdown(self)</span></h4>
 <section>
 
 </section>
 </div>
 <h1 id="feedback">Feedback</h1>
-<p>Got a problem with the documentation? Something unclear that could be clearer? Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
-<p>Please leave you feedback <a href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701" class="reference">here</a> in reply to the documentation thread in the Kamaelia blog.</p>
-<p><em>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</em></p>
+<p>Got a problem with the documentation? Something unclear that could be
+clearer? Want to help improve it? Constructive criticism is very welcome
+- especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback <a
+href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701"
+class="reference">here</a> in reply to the documentation thread in the
+Kamaelia blog.</p>
+<p><em>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38
+UTC/GMT</em></p>
 
 </div> <!-- end section -->
 </div> <!-- end page container -->

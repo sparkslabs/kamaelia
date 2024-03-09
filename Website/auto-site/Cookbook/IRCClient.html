@@ -15,15 +15,20 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
 <h1 id="cookbook-ircclient">Cookbook: IRCClient</h1>
 <h2 id="the-interface">The Interface</h2>
-<p>The IRCClient module provides an inbox/outbox interface to IRC. Call SimpleIRCClientPrefab to obtain a connection to an IRC server.<br />
+<p>The IRCClient module provides an inbox/outbox interface to IRC. Call
+SimpleIRCClientPrefab to obtain a connection to an IRC server.<br />
 <br />
 </p>
 <h2 id="sending-messages">Sending messages</h2>
-<p>Send tuples in the form *(cmd, [arg1] [,arg2] [,arg3...])* to SimpleIRCClientPrefab's "inbox". *cmd* should be an IRC command specified in RFC 1459 or RFC 2812. The first parameter specified by the RFCs should be *arg1*, the second should be *arg2*, and so on. Example messages to "inbox"::<br />
+<p>Send tuples in the form *(cmd, [arg1] [,arg2] [,arg3...])* to
+SimpleIRCClientPrefab's "inbox". *cmd* should be an IRC command
+specified in RFC 1459 or RFC 2812. The first parameter specified by the
+RFCs should be *arg1*, the second should be *arg2*, and so on. Example
+messages to "inbox"::<br />
 <br />
 </p>
 <ul>
@@ -37,8 +42,10 @@
 <li>('BERSERKER', "Lvl. 10")</li>
 </ul>
 <p><br />
-Note that "BERSERKER" is not a recognized IRC command. IRC_Client will not<br />
-complain about this, as it treats commands uniformly, but you might get<br />
+Note that "BERSERKER" is not a recognized IRC command. IRC_Client will
+not<br />
+complain about this, as it treats commands uniformly, but you might
+get<br />
 an error 421, "ERR_UNKNOWNCOMMAND" back from the server.<br />
 <br />
 <br />
@@ -57,7 +64,8 @@ No other CTCP commands are implemented.<br />
 <br />
 </p>
 <h2 id="a-simple-client-that-logs-in">A simple client that logs in</h2>
-<p>...and spams the channel #kamtest with 10 "Hello world" messages. (It's okay because no one else is ever on this channel)<br />
+<p>...and spams the channel #kamtest with 10 "Hello world" messages.
+(It's okay because no one else is ever on this channel)<br />
 <br />
 </p>
 <blockquote>
@@ -74,13 +82,18 @@ No other CTCP commands are implemented.<br />
 Pipeline(Spammer(), SimpleIRCClientPrefab()).run()</code></pre>
 </blockquote>
 <p><br />
-Now you will want to receive messages too, so your client isn't doomed to be a spammer. Lucky for you, SimpleIRCClientPrefab transmits IRC messages it receives in the form (cmd, sender, receiver, anything else). Simply link your component up to its "outbox" to receive these messages.<br />
+Now you will want to receive messages too, so your client isn't doomed
+to be a spammer. Lucky for you, SimpleIRCClientPrefab transmits IRC
+messages it receives in the form (cmd, sender, receiver, anything else).
+Simply link your component up to its "outbox" to receive these
+messages.<br />
 <br />
 <br />
 <br />
 </p>
 <h2 id="logger">Logger</h2>
-<p>Logs in to a channel and writes all IRC traffic it hears to a text file.<br />
+<p>Logs in to a channel and writes all IRC traffic it hears to a text
+file.<br />
 </p>
 <pre><code>from Kamaelia.File.Writing import SimpleFileWriter
 from Kamaelia.Chassis.Graphline import Graphline

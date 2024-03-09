@@ -15,14 +15,23 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
 <div class="container">
-<h1 id="kamaelia.apps.grey.wakeableintrospector"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Apps.html" class="reference">Apps</a>.<a href="/Components/pydoc/Kamaelia.Apps.Grey.html" class="reference">Grey</a>.<a href="/Components/pydoc/Kamaelia.Apps.Grey.WakeableIntrospector.html" class="reference">WakeableIntrospector</a></h1>
+<h1 id="kamaelia.apps.grey.wakeableintrospector"><a
+href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a
+href="/Components/pydoc/Kamaelia.Apps.html"
+class="reference">Apps</a>.<a
+href="/Components/pydoc/Kamaelia.Apps.Grey.html"
+class="reference">Grey</a>.<a
+href="/Components/pydoc/Kamaelia.Apps.Grey.WakeableIntrospector.html"
+class="reference">WakeableIntrospector</a></h1>
 <section>
 <div class="container">
 <ul>
-<li><strong>component <a href="/Components/pydoc/Kamaelia.Apps.Grey.WakeableIntrospector.WakeableIntrospector.html" class="reference">WakeableIntrospector</a></strong></li>
+<li><strong>component <a
+href="/Components/pydoc/Kamaelia.Apps.Grey.WakeableIntrospector.WakeableIntrospector.html"
+class="reference">WakeableIntrospector</a></strong></li>
 </ul>
 </div>
 <ul>
@@ -35,43 +44,75 @@
 </ul></li>
 </ul>
 </section>
-<h1 id="on-demandwakeable-introspector-71">On Demand/Wakeable Introspector {#71}</h1>
-<p>This component grabs a list of all running/runnable components whenever it receives a message on its inbox "inbox". This list is then sorted, and noted to a logfile.</p>
-<h2 id="example-usage-72"><span id="example-usage">Example Usage</span> {#72}</h2>
-<p>This component is intended to be used with PeriodicWakeup, as follows:</p>
+<h1 id="71">On Demand/Wakeable Introspector</h1>
+<p>This component grabs a list of all running/runnable components
+whenever it receives a message on its inbox "inbox". This list is then
+sorted, and noted to a logfile.</p>
+<h2 id="72"><span id="example-usage">Example Usage</span></h2>
+<p>This component is intended to be used with PeriodicWakeup, as
+follows:</p>
 <pre class="literal-block"><code>Pipeline(
      PeriodicWakeup(interval=20),
      WakeableIntrospector(logfile=&quot;/tmp/trace&quot;),
 )</code></pre>
-<h2 id="how-does-it-work-73"><span id="how-does-it-work">How does it work?</span> {#73}</h2>
-<p>This component uses the fact that we can ask the scheduler for a list of running componenents, takes this, sorts it and dumps the result to a logfile.</p>
-<p>It then sits quietly waking for a message (any message) on the inbox "inbox".</p>
-<h2 id="termination-74"><span id="termination">Termination</span> {#74}</h2>
-<p>This component is not well behaved regarding termination, in that it does not have any shutdown conditions.</p>
-<h2 id="todo-75"><span id="todo">TODO</span> {#75}</h2>
-<p>In retrospect, it may've been nicer to split the introspection from the logging. Better termination/shutdown would be a good idea.</p>
+<h2 id="73"><span id="how-does-it-work">How does it work?</span></h2>
+<p>This component uses the fact that we can ask the scheduler for a list
+of running componenents, takes this, sorts it and dumps the result to a
+logfile.</p>
+<p>It then sits quietly waking for a message (any message) on the inbox
+"inbox".</p>
+<h2 id="74"><span id="termination">Termination</span></h2>
+<p>This component is not well behaved regarding termination, in that it
+does not have any shutdown conditions.</p>
+<h2 id="75"><span id="todo">TODO</span></h2>
+<p>In retrospect, it may've been nicer to split the introspection from
+the logging. Better termination/shutdown would be a good idea.</p>
 <hr />
-<h1 id="kamaelia.apps.grey.wakeableintrospector.wakeableintrospector"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Apps.html" class="reference">Apps</a>.<a href="/Components/pydoc/Kamaelia.Apps.Grey.html" class="reference">Grey</a>.<a href="/Components/pydoc/Kamaelia.Apps.Grey.WakeableIntrospector.html" class="reference">WakeableIntrospector</a>.<a href="/Components/pydoc/Kamaelia.Apps.Grey.WakeableIntrospector.WakeableIntrospector.html" class="reference">WakeableIntrospector</a></h1>
-<h2 id="symbol-WakeableIntrospector">class WakeableIntrospector(<a href="/Docs/Axon/Axon.Component.component.html" class="reference">Axon.Component.component</a>)</h2>
-<h3 id="inboxes"><span id="symbol-WakeableIntrospector.Inboxes">Inboxes</span></h3>
-<h3 id="outboxes"><span id="symbol-WakeableIntrospector.Outboxes">Outboxes</span></h3>
+<h1 id="kamaelia.apps.grey.wakeableintrospector.wakeableintrospector"><a
+href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a
+href="/Components/pydoc/Kamaelia.Apps.html"
+class="reference">Apps</a>.<a
+href="/Components/pydoc/Kamaelia.Apps.Grey.html"
+class="reference">Grey</a>.<a
+href="/Components/pydoc/Kamaelia.Apps.Grey.WakeableIntrospector.html"
+class="reference">WakeableIntrospector</a>.<a
+href="/Components/pydoc/Kamaelia.Apps.Grey.WakeableIntrospector.WakeableIntrospector.html"
+class="reference">WakeableIntrospector</a></h1>
+<h2 id="symbol-WakeableIntrospector">class WakeableIntrospector(<a
+href="/Docs/Axon/Axon.Component.component.html"
+class="reference">Axon.Component.component</a>)</h2>
+<h3 id="inboxes"><span
+id="symbol-WakeableIntrospector.Inboxes">Inboxes</span></h3>
+<h3 id="outboxes"><span
+id="symbol-WakeableIntrospector.Outboxes">Outboxes</span></h3>
 <h3 id="methods-defined-here">Methods defined here</h3>
 <div class="container">
 <div class="boxright">
 <p><strong>Warning!</strong></p>
-<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+<p>You should be using the inbox/outbox interface, not these methods
+(except construction). This documentation is designed as a roadmap as to
+their functionalilty for maintainers and new component developers.</p>
 </div>
 </div>
-<h4 id="mainself"><span id="symbol-WakeableIntrospector.main">main(self)</span></h4>
-<h4 id="notetologself-line"><span id="symbol-WakeableIntrospector.noteToLog">noteToLog(self, line)</span></h4>
+<h4 id="mainself"><span
+id="symbol-WakeableIntrospector.main">main(self)</span></h4>
+<h4 id="notetologself-line"><span
+id="symbol-WakeableIntrospector.noteToLog">noteToLog(self,
+line)</span></h4>
 <section>
 
 </section>
 </div>
 <h1 id="feedback">Feedback</h1>
-<p>Got a problem with the documentation? Something unclear that could be clearer? Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
-<p>Please leave you feedback <a href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701" class="reference">here</a> in reply to the documentation thread in the Kamaelia blog.</p>
-<p><em>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</em></p>
+<p>Got a problem with the documentation? Something unclear that could be
+clearer? Want to help improve it? Constructive criticism is very welcome
+- especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback <a
+href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701"
+class="reference">here</a> in reply to the documentation thread in the
+Kamaelia blog.</p>
+<p><em>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38
+UTC/GMT</em></p>
 
 </div> <!-- end section -->
 </div> <!-- end page container -->

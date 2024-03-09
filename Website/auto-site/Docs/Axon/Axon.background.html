@@ -15,16 +15,20 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
 <div class="container">
 <section>
-<h2 id="axon.background"><a href="/Docs/Axon/Axon.html" class="reference">Axon</a>.<a href="/Docs/Axon/Axon.background.html" class="reference">background</a></h2>
+<h2 id="axon.background"><a href="/Docs/Axon/Axon.html"
+class="reference">Axon</a>.<a href="/Docs/Axon/Axon.background.html"
+class="reference">background</a></h2>
 </section>
-<h1 id="running-an-axon-system-in-a-separate-thread">Running an Axon system in a separate thread</h1>
+<h1 id="running-an-axon-system-in-a-separate-thread">Running an Axon
+system in a separate thread</h1>
 <div class="container">
 <ul>
-<li><strong>class <a href="/Docs/Axon/Axon.background.background.html" class="reference">background</a></strong></li>
+<li><strong>class <a href="/Docs/Axon/Axon.background.background.html"
+class="reference">background</a></strong></li>
 </ul>
 </div>
 <ul>
@@ -32,11 +36,21 @@
 <li><a href="#60" class="reference">Behavour</a></li>
 </ul>
 <section>
-<p>The background class makes it easy to run an Axon system in a separate thread (in effect: in the background).</p>
-<p>This simplifies integration of Axon/Kamaelia code into other python code. See also <a href="/Docs/Axon/Axon.Handle.html" class="reference">Axon.Handle</a> for a simple way to wrap a component in a thread safe way to access its inboxes and outboxes.</p>
-<h2 id="example-usage-59"><span id="example-usage">Example Usage</span> {#59}</h2>
-<p>At its simplest, you could run a Kamaelia task independently in the background - such as a simple network connection, that dumps received data into a thread safe queue, after de-chunking it into lines of text.</p>
-<p>NOTE: This example can be achieved more simply by using <a href="/Docs/Axon/Axon.Handle.html" class="reference">Axon.Handle</a>. See the documentation of <a href="/Docs/Axon/Axon.Handle.html" class="reference">Axon.Handle</a> to find out more.</p>
+<p>The background class makes it easy to run an Axon system in a
+separate thread (in effect: in the background).</p>
+<p>This simplifies integration of Axon/Kamaelia code into other python
+code. See also <a href="/Docs/Axon/Axon.Handle.html"
+class="reference">Axon.Handle</a> for a simple way to wrap a component
+in a thread safe way to access its inboxes and outboxes.</p>
+<h2 id="59"><span id="example-usage">Example Usage</span></h2>
+<p>At its simplest, you could run a Kamaelia task independently in the
+background - such as a simple network connection, that dumps received
+data into a thread safe queue, after de-chunking it into lines of
+text.</p>
+<p>NOTE: This example can be achieved more simply by using <a
+href="/Docs/Axon/Axon.Handle.html" class="reference">Axon.Handle</a>.
+See the documentation of <a href="/Docs/Axon/Axon.Handle.html"
+class="reference">Axon.Handle</a> to find out more.</p>
 <ol type="1">
 <li><p>We implement a simple component to collect the data:</p>
 <pre class="literal-block"><code>from Axon.background import background
@@ -53,11 +67,14 @@ class Receiver(component):
                 self.q.put(self.recv(&quot;inbox&quot;))
             self.pause()
             yield 1</code></pre></li>
-<li><p>Then we create a background object and call its start() method:</p>
+<li><p>Then we create a background object and call its start()
+method:</p>
 <pre class="literal-block"><code>from Axon.background import background
 
 background().start()</code></pre></li>
-<li><p>Finally, we create and activate our Kamaelia pipeline of components, including the receiver component we've just written, passing it a thread-safe queue to put the data into:</p>
+<li><p>Finally, we create and activate our Kamaelia pipeline of
+components, including the receiver component we've just written, passing
+it a thread-safe queue to put the data into:</p>
 <pre class="literal-block"><code>from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Internet.TCPClient import TCPClient
 from Kamaelia.Visualisation.PhysicsGraph import chunks_to_lines
@@ -73,32 +90,54 @@ Pipeline(
 </ol>
 <p>We can now fetch items of data, from the queue when they arrive:</p>
 <pre class="literal-block"><code>received_line = queue.get()</code></pre>
-<h2 id="behavour-60"><span id="behavour">Behavour</span> {#60}</h2>
-<p>Create one of these and start it running by calling its start() method.</p>
-<p>After that, any components you activate will default to using this scheduler.</p>
+<h2 id="60"><span id="behavour">Behavour</span></h2>
+<p>Create one of these and start it running by calling its start()
+method.</p>
+<p>After that, any components you activate will default to using this
+scheduler.</p>
 <p>Only one instance can be used within a given python interpreter.</p>
-<p>The background thread is set as a "daemon" thread. This means that if your program exits, this background thread will be killed too. If it were not a daemon, then it would prevent the python interpreter terminating until the components running in it had all terminated too.</p>
+<p>The background thread is set as a "daemon" thread. This means that if
+your program exits, this background thread will be killed too. If it
+were not a daemon, then it would prevent the python interpreter
+terminating until the components running in it had all terminated
+too.</p>
 </section>
 <hr />
-<h1 id="axon.background.background"><a href="/Docs/Axon/Axon.html" class="reference">Axon</a>.<a href="/Docs/Axon/Axon.background.html" class="reference">background</a>.<a href="/Docs/Axon/Axon.background.background.html" class="reference">background</a></h1>
+<h1 id="axon.background.background"><a href="/Docs/Axon/Axon.html"
+class="reference">Axon</a>.<a href="/Docs/Axon/Axon.background.html"
+class="reference">background</a>.<a
+href="/Docs/Axon/Axon.background.background.html"
+class="reference">background</a></h1>
 <h2 id="symbol-background">class background(threading.Thread)</h2>
 <section>
-<p>A python thread which runs the Axon Scheduler. Takes the same arguments at creation that Axon.Scheduler.scheduler.run.runThreads accepts.</p>
-<p>Create one of these and start it running by calling its start() method.</p>
-<p>After that, any components you activate will default to using this scheduler.</p>
+<p>A python thread which runs the Axon Scheduler. Takes the same
+arguments at creation that Axon.Scheduler.scheduler.run.runThreads
+accepts.</p>
+<p>Create one of these and start it running by calling its start()
+method.</p>
+<p>After that, any components you activate will default to using this
+scheduler.</p>
 <p>Only one instance can be used within a given python interpreter.</p>
 </section>
 <h3 id="methods-defined-here">Methods defined here</h3>
-<h4 id="init__self-slowmo-zap"><span id="symbol-background.__init__">__init__(self[, slowmo][, zap])</span></h4>
+<h4 id="init__self-slowmo-zap"><span
+id="symbol-background.__init__">__init__(self[, slowmo][,
+zap])</span></h4>
 <h4 id="runself"><span id="symbol-background.run">run(self)</span></h4>
 <section>
 
 </section>
 </div>
 <h1 id="feedback">Feedback</h1>
-<p>Got a problem with the documentation? Something unclear that could be clearer? Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
-<p>Please leave you feedback <a href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701" class="reference">here</a> in reply to the documentation thread in the Kamaelia blog.</p>
-<p><em>-- Automatic documentation generator, 09 Dec 2009 at 04:00:25 UTC/GMT</em></p>
+<p>Got a problem with the documentation? Something unclear that could be
+clearer? Want to help improve it? Constructive criticism is very welcome
+- especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback <a
+href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701"
+class="reference">here</a> in reply to the documentation thread in the
+Kamaelia blog.</p>
+<p><em>-- Automatic documentation generator, 09 Dec 2009 at 04:00:25
+UTC/GMT</em></p>
 
 </div> <!-- end section -->
 </div> <!-- end page container -->

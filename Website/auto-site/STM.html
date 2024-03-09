@@ -15,23 +15,31 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
 <h1 id="axon-stm">Axon: STM</h1>
-<h3 data-align="right" id="software-transactional-memory">Software Transactional Memory</h3>
-<p>Support for basic in-process software transactional memory has been added to Axon - Kamaelia's core. The API chosen is the simplest that that seems minimally sufficient. As well as being added to mainline Axon (for enhancing the CAT later), it is also packaged up a standalone package since it's likely to be useful in its own right.<br />
+<h3 data-align="right" id="software-transactional-memory">Software
+Transactional Memory</h3>
+<p>Support for basic in-process software transactional memory has been
+added to Axon - Kamaelia's core. The API chosen is the simplest that
+that seems minimally sufficient. As well as being added to mainline Axon
+(for enhancing the CAT later), it is also packaged up a standalone
+package since it's likely to be useful in its own right.<br />
 </p>
 <h2 id="getting-it">Getting it</h2>
 <p>You can download the release version here:<br />
 </p>
 <blockquote>
-<p><a href="http://thwackety.com/Axon.STM-1.0.1.tar.gz" class="uri">http://thwackety.com/Axon.STM-1.0.1.tar.gz</a></p>
+<p><a href="http://thwackety.com/Axon.STM-1.0.1.tar.gz"
+class="uri">http://thwackety.com/Axon.STM-1.0.1.tar.gz</a></p>
 </blockquote>
 <h2 id="previewing-it">Previewing it</h2>
 <p>You can look at the sourcecode online here:<br />
 </p>
 <blockquote>
-<p><a href="https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/branches/private_MPS_Scratch/Bindings/STM/Axon/STM.py" class="uri">https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/branches/private_MPS_Scratch/Bindings/STM/Axon/STM.py</a><br />
+<p><a
+href="https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/branches/private_MPS_Scratch/Bindings/STM/Axon/STM.py"
+class="uri">https://kamaelia.svn.sourceforge.net/svnroot/kamaelia/branches/private_MPS_Scratch/Bindings/STM/Axon/STM.py</a><br />
 </p>
 </blockquote>
 <h2 id="installing-it">Installing it</h2>
@@ -41,31 +49,69 @@
 ~ &gt; sudo python setup.py install</code></pre>
 </blockquote>
 <h2 id="what-is-it">What IS it?</h2>
-<p>Software Transactional Memory (STM) is a technique for allowing multiple threads to share data in such a way that they know when something has gone wrong. It's been used in databases (just called transactions there really) for some time and is also very similar to version control. Indeed, you can think of STM as being like variable level version control.</p>
-<p>Note: Because this is NOT intended to be persistent, this is not an ACID store because it doesn't support the D - durability across a crash. (after all, we don't save the state to disk) (The other aspects atomicity, consistency &amp; isolation are supported though)</p>
-<p>I've written this to allow a part of Kamaelia to share &amp; manage a dictionary of atomic values simply, and as a result this code is also going into mainline Kamaelia. (Specifically into Axon Kamaelia's core)</p>
-<p>However STM is something that should hopefully be of use to others doing concurrent <em>things</em> whether or not they're using kamaelia, hence this stand alone release.</p>
-<p>This stand alone release should *not* be used alongside mainline Axon yet. (Well you can, as long as you reinstall your Axon over the top, but that's icky :-)</p>
+<p>Software Transactional Memory (STM) is a technique for allowing
+multiple threads to share data in such a way that they know when
+something has gone wrong. It's been used in databases (just called
+transactions there really) for some time and is also very similar to
+version control. Indeed, you can think of STM as being like variable
+level version control.</p>
+<p>Note: Because this is NOT intended to be persistent, this is not an
+ACID store because it doesn't support the D - durability across a crash.
+(after all, we don't save the state to disk) (The other aspects
+atomicity, consistency &amp; isolation are supported though)</p>
+<p>I've written this to allow a part of Kamaelia to share &amp; manage a
+dictionary of atomic values simply, and as a result this code is also
+going into mainline Kamaelia. (Specifically into Axon Kamaelia's
+core)</p>
+<p>However STM is something that should hopefully be of use to others
+doing concurrent <em>things</em> whether or not they're using kamaelia,
+hence this stand alone release.</p>
+<p>This stand alone release should *not* be used alongside mainline Axon
+yet. (Well you can, as long as you reinstall your Axon over the top, but
+that's icky :-)</p>
 <h2 id="why-is-it-useful">Why is it useful?</h2>
 <blockquote>
-<p><em>please skip this (or correct me :) if you understand concurrency already :-)</em><br />
+<p><em>please skip this (or correct me :) if you understand concurrency
+already :-)</em><br />
 </p>
 </blockquote>
-<p>Why do you need it? Well, in normal code, Global variables are generally shunned because it can make your code a pain to work with and a pain to be certain if it works properly. Even with linear code, you can have 2 bits of code manipulating a structure in surprising ways - but the results are repeatable. Not-properly-managed-shared-data is to threaded systems as not-properly-managed-globals are to normal code. (This code is one way of helping manage shared data)<br />
+<p>Why do you need it? Well, in normal code, Global variables are
+generally shunned because it can make your code a pain to work with and
+a pain to be certain if it works properly. Even with linear code, you
+can have 2 bits of code manipulating a structure in surprising ways -
+but the results are repeatable. Not-properly-managed-shared-data is to
+threaded systems as not-properly-managed-globals are to normal code.
+(This code is one way of helping manage shared data)<br />
 <br />
-Well, with code where you have multiple threads active, having shared data is like an even nastier version of globals. Why? Well, when you have 2 (or more) running in parallel, the results of breakage can become hard to repeat as two pieces of code "race" to update values.<br />
+Well, with code where you have multiple threads active, having shared
+data is like an even nastier version of globals. Why? Well, when you
+have 2 (or more) running in parallel, the results of breakage can become
+hard to repeat as two pieces of code "race" to update values.<br />
 <br />
-With STM you make it explicit what the values are you want to update, and only once you're happy with the updates do you publish them back to the shared storage. The neat thing is, if someone else changed things since you last looked, you get told (your commit fails), and you have to redo the work. This may sound like extra work (you have to be prepared to redo the work), but it's nicer than your code breaking :-)<br />
+With STM you make it explicit what the values are you want to update,
+and only once you're happy with the updates do you publish them back to
+the shared storage. The neat thing is, if someone else changed things
+since you last looked, you get told (your commit fails), and you have to
+redo the work. This may sound like extra work (you have to be prepared
+to redo the work), but it's nicer than your code breaking :-)<br />
 <br />
-The way you get that message is the .commit raises a <strong>ConcurrentUpdate</strong> exception.<br />
+The way you get that message is the .commit raises a
+<strong>ConcurrentUpdate</strong> exception.<br />
 <br />
-Also, it's designed to work happily in code that requires non-blocking usage - which means you may also get a <strong>BusyRetry</strong> exception under load. If you do, you should as the exception suggests retry the action that you just tried. (With or without restarting the transaction)<br />
+Also, it's designed to work happily in code that requires non-blocking
+usage - which means you may also get a <strong>BusyRetry</strong>
+exception under load. If you do, you should as the exception suggests
+retry the action that you just tried. (With or without restarting the
+transaction)<br />
 <br />
 Apologies if that sounds too noddy :)<br />
 </p>
 <h2 id="using-it">Using It</h2>
-<h3 id="accessingupdating-a-single-shared-value-in-the-store">Accessing/Updating a single shared value in the store</h3>
-<p>You can have many single vars in a store of course... If they're related though or updated as a group, see the next section.<br />
+<h3
+id="accessingupdating-a-single-shared-value-in-the-store">Accessing/Updating
+a single shared value in the store</h3>
+<p>You can have many single vars in a store of course... If they're
+related though or updated as a group, see the next section.<br />
 </p>
 <blockquote>
 <pre><code>from Axon.STM import Store
@@ -76,8 +122,11 @@ print repr(greeting.value)
 greeting.set(&quot;Hello World&quot;)
 greeting.commit()</code></pre>
 </blockquote>
-<h3 id="accessingupdating-a-collection-of-shared-values-in-the-store">Accessing/Updating a collection of shared values in the store</h3>
-<p>Likewise you can use as many collections of values from the store as you like.<br />
+<h3
+id="accessingupdating-a-collection-of-shared-values-in-the-store">Accessing/Updating
+a collection of shared values in the store</h3>
+<p>Likewise you can use as many collections of values from the store as
+you like.<br />
 </p>
 <blockquote>
 <pre><code>from Axon.STM import Store
@@ -97,7 +146,9 @@ D.commit()
 S.dump()</code></pre>
 </blockquote>
 <h2 id="what-can-possibly-go-wrong">What can (possibly) go wrong?</h2>
-<p>You can have 2 people trying to update the same values at once. An example of this would be - suppose you have the following commands being executed by 2 threads with this mix of commands:<br />
+<p>You can have 2 people trying to update the same values at once. An
+example of this would be - suppose you have the following commands being
+executed by 2 threads with this mix of commands:<br />
 </p>
 <blockquote>
 <pre><code>S = Store()
@@ -119,12 +170,25 @@ D[&quot;account_two&quot;].set(0)
 D.commit() # 3 - should fail
 S.dump()</code></pre>
 </blockquote>
-<p>You do actually want this to fail because you have concurrent updates. This will fail on the third commit, and fail by throwing a <strong>ConcurrentUpdate</strong> exception. If you get this, you should redo the transaction.<br />
+<p>You do actually want this to fail because you have concurrent
+updates. This will fail on the third commit, and fail by throwing a
+<strong>ConcurrentUpdate</strong> exception. If you get this, you should
+redo the transaction.<br />
 <br />
-The other is where there's lots of updates happening at once. Rather than the code waiting until it acquires a lock, it is possible for either the .using, .usevar or .commit methods to fail with a <strong>BusyRetry</strong> exception. This means exactly what it says on the tin - the system was busy &amp; you need to retry. In this case you do <strong>not</strong> have to redo the transaction. This is hard to replicate except under load. The reason we do this however is because most Kamaelia components are implemented as generators, which makes blocking operation ( as a .acquire() rather than .acquire(0) would be) an expensive operation.<br />
+The other is where there's lots of updates happening at once. Rather
+than the code waiting until it acquires a lock, it is possible for
+either the .using, .usevar or .commit methods to fail with a
+<strong>BusyRetry</strong> exception. This means exactly what it says on
+the tin - the system was busy &amp; you need to retry. In this case you
+do <strong>not</strong> have to redo the transaction. This is hard to
+replicate except under load. The reason we do this however is because
+most Kamaelia components are implemented as generators, which makes
+blocking operation ( as a .acquire() rather than .acquire(0) would be)
+an expensive operation.<br />
 </p>
 <h2 id="possible-extensions">Possible Extensions</h2>
-<p>It'd be fun to use this in pypy (say) to extend python such that the latter example could become something like this:<br />
+<p>It'd be fun to use this in pypy (say) to extend python such that the
+latter example could become something like this:<br />
 </p>
 <blockquote>
 <pre><code>atomically using account_one, account_two:
@@ -137,19 +201,36 @@ atomically using account_one, account_two, myaccount:
     account_one = 0
     account_two = 0</code></pre>
 </blockquote>
-<p>However that's out of scope really for this module here at present. (or at least me with the amount of time I have right now!) This module could be used to implement the above semantics though. <em>(Oh, note: I'm not even vaguely suggesting this as a modification to core python - it's just the sort of thing that strikes me as a fun thing to do :-)</em><br />
+<p>However that's out of scope really for this module here at present.
+(or at least me with the amount of time I have right now!) This module
+could be used to implement the above semantics though. <em>(Oh, note:
+I'm not even vaguely suggesting this as a modification to core python -
+it's just the sort of thing that strikes me as a fun thing to do
+:-)</em><br />
 </p>
 <h2 id="feedback">Feedback</h2>
-<p>Feedback is very welcome, preferably via email to <a href="mailto:kamaelia-list@lists.sourceforge.net" class="email">kamaelia-list@lists.sourceforge.net</a><br />
+<p>Feedback is very welcome, preferably via email to <a
+href="mailto:kamaelia-list@lists.sourceforge.net"
+class="email">kamaelia-list@lists.sourceforge.net</a><br />
 <br />
 Michael Sparks<br />
 <br />
 </p>
-<p>::: {#__ss_599591 style=“width:425px;text-align:left”} <a href="http://www.slideshare.net/kamaelian/sharing-data-and-services-safely-in-concurrent-systems-using-kamaelia-presentation?type=powerpoint" title="Sharing Data and Services Safely in Concurrent Systems using Kamaelia">Sharing Data and Services Safely in Concurrent Systems using Kamaelia</a></p>
-<div style="font-size:11px;font-family:tahoma,arial;height:26px;padding-top:2px;">
-<p>View SlideShare <a href="http://www.slideshare.net/kamaelian/sharing-data-and-services-safely-in-concurrent-systems-using-kamaelia-presentation?type=powerpoint" title="View Sharing Data and Services Safely in Concurrent Systems using Kamaelia on SlideShare">presentation</a> or <a href="http://www.slideshare.net/upload?type=powerpoint">Upload</a> your own. (tags: <a href="http://slideshare.net/tag/pyconuk">pyconuk</a> <a href="http://slideshare.net/tag/kamaelia">kamaelia</a>)</p>
+<div id="__ss_599591" style="width:425px;text-align:left">
+<p><a
+href="http://www.slideshare.net/kamaelian/sharing-data-and-services-safely-in-concurrent-systems-using-kamaelia-presentation?type=powerpoint"
+title="Sharing Data and Services Safely in Concurrent Systems using Kamaelia">Sharing
+Data and Services Safely in Concurrent Systems using Kamaelia</a></p>
+<div
+style="font-size:11px;font-family:tahoma,arial;height:26px;padding-top:2px;">
+<p>View SlideShare <a
+href="http://www.slideshare.net/kamaelian/sharing-data-and-services-safely-in-concurrent-systems-using-kamaelia-presentation?type=powerpoint"
+title="View Sharing Data and Services Safely in Concurrent Systems using Kamaelia on SlideShare">presentation</a>
+or <a href="http://www.slideshare.net/upload?type=powerpoint">Upload</a>
+your own. (tags: <a href="http://slideshare.net/tag/pyconuk">pyconuk</a>
+<a href="http://slideshare.net/tag/kamaelia">kamaelia</a>)</p>
 </div>
-<p>:::</p>
+</div>
 
 </div> <!-- end section -->
 </div> <!-- end page container -->

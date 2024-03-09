@@ -15,23 +15,41 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
 <div class="container">
-<h1 id="kamaelia.file.reading"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.File.html" class="reference">File</a>.<a href="/Components/pydoc/Kamaelia.File.Reading.html" class="reference">Reading</a></h1>
+<h1 id="kamaelia.file.reading"><a href="/Components/pydoc/Kamaelia.html"
+class="reference">Kamaelia</a>.<a
+href="/Components/pydoc/Kamaelia.File.html"
+class="reference">File</a>.<a
+href="/Components/pydoc/Kamaelia.File.Reading.html"
+class="reference">Reading</a></h1>
 <section>
 <div class="container">
 <ul>
-<li><strong>prefab <a href="/Components/pydoc/Kamaelia.File.Reading.FixedRateControlledReusableFileReader.html" class="reference">FixedRateControlledReusableFileReader</a></strong></li>
-<li><strong>component <a href="/Components/pydoc/Kamaelia.File.Reading.PromptedFileReader.html" class="reference">PromptedFileReader</a></strong></li>
-<li><strong>prefab <a href="/Components/pydoc/Kamaelia.File.Reading.RateControlledFileReader.html" class="reference">RateControlledFileReader</a></strong></li>
-<li><strong>prefab <a href="/Components/pydoc/Kamaelia.File.Reading.RateControlledReusableFileReader.html" class="reference">RateControlledReusableFileReader</a></strong></li>
-<li><strong>prefab <a href="/Components/pydoc/Kamaelia.File.Reading.ReusableFileReader.html" class="reference">ReusableFileReader</a></strong></li>
-<li><strong>component <a href="/Components/pydoc/Kamaelia.File.Reading.SimpleReader.html" class="reference">SimpleReader</a></strong></li>
+<li><strong>prefab <a
+href="/Components/pydoc/Kamaelia.File.Reading.FixedRateControlledReusableFileReader.html"
+class="reference">FixedRateControlledReusableFileReader</a></strong></li>
+<li><strong>component <a
+href="/Components/pydoc/Kamaelia.File.Reading.PromptedFileReader.html"
+class="reference">PromptedFileReader</a></strong></li>
+<li><strong>prefab <a
+href="/Components/pydoc/Kamaelia.File.Reading.RateControlledFileReader.html"
+class="reference">RateControlledFileReader</a></strong></li>
+<li><strong>prefab <a
+href="/Components/pydoc/Kamaelia.File.Reading.RateControlledReusableFileReader.html"
+class="reference">RateControlledReusableFileReader</a></strong></li>
+<li><strong>prefab <a
+href="/Components/pydoc/Kamaelia.File.Reading.ReusableFileReader.html"
+class="reference">ReusableFileReader</a></strong></li>
+<li><strong>component <a
+href="/Components/pydoc/Kamaelia.File.Reading.SimpleReader.html"
+class="reference">SimpleReader</a></strong></li>
 </ul>
 </div>
 <ul>
-<li><a href="#678" class="reference">Components for reading from files</a>
+<li><a href="#678" class="reference">Components for reading from
+files</a>
 <ul>
 <li><a href="#679" class="reference">PromptedFileReader</a>
 <ul>
@@ -53,12 +71,14 @@
 <li><a href="#689" class="reference">Example Usage</a></li>
 <li><a href="#690" class="reference">More detail</a></li>
 </ul></li>
-<li><a href="#691" class="reference">RateControlledReusableFileReader</a>
+<li><a href="#691"
+class="reference">RateControlledReusableFileReader</a>
 <ul>
 <li><a href="#692" class="reference">Example Usage</a></li>
 <li><a href="#693" class="reference">More detail</a></li>
 </ul></li>
-<li><a href="#694" class="reference">FixedRateControlledReusableFileReader</a>
+<li><a href="#694"
+class="reference">FixedRateControlledReusableFileReader</a>
 <ul>
 <li><a href="#695" class="reference">Example Usage</a></li>
 <li><a href="#696" class="reference">More detail</a></li>
@@ -67,26 +87,42 @@
 </ul></li>
 </ul>
 </section>
-<h1 id="components-for-reading-from-files-678">Components for reading from files {#678}</h1>
-<p>These components provide various ways to read from files, such as manual control of the rate at which the file is read, or reusing a file reader to read from multiple files.</p>
-<p>Key to this is a file reader component that reads data only when asked to. Control over when data flows is therefore up to another component - be that a simple component that requests data at a constant rate, or something else that only requests data when required.</p>
-<h2 id="promptedfilereader-679"><span id="promptedfilereader">PromptedFileReader</span> {#679}</h2>
-<p>This component reads bytes or lines from the specified file when prompted.</p>
-<p>Send the number of bytes/lines to the "inbox" inbox, and that data will be read and sent to the "outbox" outbox.</p>
-<h3 id="example-usage-680"><span id="example-usage">Example Usage</span> {#680}</h3>
+<h1 id="678">Components for reading from files</h1>
+<p>These components provide various ways to read from files, such as
+manual control of the rate at which the file is read, or reusing a file
+reader to read from multiple files.</p>
+<p>Key to this is a file reader component that reads data only when
+asked to. Control over when data flows is therefore up to another
+component - be that a simple component that requests data at a constant
+rate, or something else that only requests data when required.</p>
+<h2 id="679"><span
+id="promptedfilereader">PromptedFileReader</span></h2>
+<p>This component reads bytes or lines from the specified file when
+prompted.</p>
+<p>Send the number of bytes/lines to the "inbox" inbox, and that data
+will be read and sent to the "outbox" outbox.</p>
+<h3 id="680"><span id="example-usage">Example Usage</span></h3>
 <p>Reading 1000 bytes per second in 10 byte chunks from 'myfile':</p>
 <pre class="literal-block"><code>Pipeline(ByteRate_RequestControl(rate=1000,chunksize=10)
          PromptedFileReader(&quot;myfile&quot;, readmode=&quot;bytes&quot;)
         ).activate()</code></pre>
-<h3 id="more-detail-681"><span id="more-detail">More detail</span> {#681}</h3>
-<p>The component will terminate if it receives a shutdownMicroprocess message on its "control" inbox. It will pass the message on out of its "signal" outbox.</p>
-<p>If unable to read all N bytes/lines requested (perhaps because we are nearly at the end of the file) then those bytes/lines that were read successfully are still output.</p>
-<p>When the end of the file is reached, a producerFinished message is sent to the "signal" outbox.</p>
-<p>The file is opened only when the component is activated (enters its main loop).</p>
+<h3 id="681"><span id="more-detail">More detail</span></h3>
+<p>The component will terminate if it receives a shutdownMicroprocess
+message on its "control" inbox. It will pass the message on out of its
+"signal" outbox.</p>
+<p>If unable to read all N bytes/lines requested (perhaps because we are
+nearly at the end of the file) then those bytes/lines that were read
+successfully are still output.</p>
+<p>When the end of the file is reached, a producerFinished message is
+sent to the "signal" outbox.</p>
+<p>The file is opened only when the component is activated (enters its
+main loop).</p>
 <p>The file is closed when the component shuts down.</p>
-<h2 id="simplereader-682"><span id="simplereader">SimpleReader</span> {#682}</h2>
-<p>This is a simplified file reader that simply reads the given file and spits it out "outbox". It also handles maximum pipewidths, enabling rate limiting to be handled by a piped component.</p>
-<h3 id="example-usage-683"><span id="id1">Example Usage</span> {#683}</h3>
+<h2 id="682"><span id="simplereader">SimpleReader</span></h2>
+<p>This is a simplified file reader that simply reads the given file and
+spits it out "outbox". It also handles maximum pipewidths, enabling rate
+limiting to be handled by a piped component.</p>
+<h3 id="683"><span id="id1">Example Usage</span></h3>
 <p>Usage is the obvious:</p>
 <pre class="literal-block"><code>from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.File.Reading import SimpleReader
@@ -96,29 +132,46 @@ Pipeline(
     SimpleReader(&quot;/etc/fstab&quot;),
     ConsoleEchoer(),
 ).run()</code></pre>
-<h3 id="more-detail-684"><span id="id2">More detail</span> {#684}</h3>
-<p>This component will terminate if it receives a shutdownMicroprocess message on its "control" inbox. It will pass the message on out of its "signal" outbox.</p>
-<p>If unable to send the message to the recipient (due to the recipient enforcing pipewidths) then the reader pauses until the recipient is ready and resends (or a shutdown message is recieved).</p>
-<p>The file is opened only when the component is activated (enters its main loop).</p>
+<h3 id="684"><span id="id2">More detail</span></h3>
+<p>This component will terminate if it receives a shutdownMicroprocess
+message on its "control" inbox. It will pass the message on out of its
+"signal" outbox.</p>
+<p>If unable to send the message to the recipient (due to the recipient
+enforcing pipewidths) then the reader pauses until the recipient is
+ready and resends (or a shutdown message is recieved).</p>
+<p>The file is opened only when the component is activated (enters its
+main loop).</p>
 <p>The file is closed when the component shuts down.</p>
-<h2 id="ratecontrolledfilereader-685"><span id="ratecontrolledfilereader">RateControlledFileReader</span> {#685}</h2>
-<p>This component reads bytes/lines from a file at a specified rate. It is performs the same task as the ReadFileAdapter component.</p>
+<h2 id="685"><span
+id="ratecontrolledfilereader">RateControlledFileReader</span></h2>
+<p>This component reads bytes/lines from a file at a specified rate. It
+is performs the same task as the ReadFileAdapter component.</p>
 <p>You can configure the rate, and the chunk size or frequency.</p>
-<h3 id="example-usage-686"><span id="id3">Example Usage</span> {#686}</h3>
-<p>Read 10 lines per second, in 2 chunks of 5 lines, and output them to the console:</p>
+<h3 id="686"><span id="id3">Example Usage</span></h3>
+<p>Read 10 lines per second, in 2 chunks of 5 lines, and output them to
+the console:</p>
 <pre class="literal-block"><code>Pipeline(RateControlledFileReader(&quot;myfile&quot;, &quot;lines&quot;, rate=10, chunksize=5),
          ConsoleEchoer()
         ).activate()</code></pre>
-<h3 id="more-detail-687"><span id="id4">More detail</span> {#687}</h3>
-<p>This component is a composition of a PromptedFileReader component and a ByteRate_RequestControl component.</p>
-<p>The component will shut down after all data is read from the file, emitting a producerFinished message from its "signal" outbox.</p>
-<p>The component will terminate if it receives a shutdownMicroprocess message on its "control" inbox. It will pass the message on out of its "signal" outbox.</p>
+<h3 id="687"><span id="id4">More detail</span></h3>
+<p>This component is a composition of a PromptedFileReader component and
+a ByteRate_RequestControl component.</p>
+<p>The component will shut down after all data is read from the file,
+emitting a producerFinished message from its "signal" outbox.</p>
+<p>The component will terminate if it receives a shutdownMicroprocess
+message on its "control" inbox. It will pass the message on out of its
+"signal" outbox.</p>
 <p>The inbox "inbox" is not wired and therefore does nothing.</p>
-<h2 id="reusablefilereader-688"><span id="reusablefilereader">ReusableFileReader</span> {#688}</h2>
-<p>A reusable PromptedFileReader component, based on a Carousel component. Send it a new filename and it will start reading from that file. Do this as many times as you like.</p>
-<p>Send it the number of bytes/lines to read and it will output that much data, read from the file.</p>
-<h3 id="example-usage-689"><span id="id5">Example Usage</span> {#689}</h3>
-<p>Read data from a sequence of files, at 1024 bytes/second in 16 byte chunks:</p>
+<h2 id="688"><span
+id="reusablefilereader">ReusableFileReader</span></h2>
+<p>A reusable PromptedFileReader component, based on a Carousel
+component. Send it a new filename and it will start reading from that
+file. Do this as many times as you like.</p>
+<p>Send it the number of bytes/lines to read and it will output that
+much data, read from the file.</p>
+<h3 id="689"><span id="id5">Example Usage</span></h3>
+<p>Read data from a sequence of files, at 1024 bytes/second in 16 byte
+chunks:</p>
 <pre class="literal-block"><code>playlist = Chooser([&quot;file1&quot;,&quot;file2&quot;,&quot;file3&quot;, ...]
 rate = ByteRate_RequestControl(rate=1024,chunksize=16)
 reader = ReusableFileReader(&quot;bytes&quot;)
@@ -127,7 +180,8 @@ playlist.link( (reader, &quot;requestNext&quot;), (playlist,&quot;inbox&quot;) )
 playlist.link( (playlist,&quot;outbox&quot;), (reader, &quot;next&quot;) )
 
 Pipeline(ratecontrol, reader).activate()</code></pre>
-<p>Or, with the Control-Signal path linked up properly, using the JoinChooserToCarousel prefab:</p>
+<p>Or, with the Control-Signal path linked up properly, using the
+JoinChooserToCarousel prefab:</p>
 <pre class="literal-block"><code>playlist = Chooser([&quot;file1&quot;,&quot;file2&quot;,&quot;file3&quot;, ...]
 rate = ByteRate_RequestControl(rate=1024,chunksize=16)
 reader = ReusableFileReader(&quot;bytes&quot;)
@@ -135,13 +189,22 @@ reader = ReusableFileReader(&quot;bytes&quot;)
 playlistreader = JoinChooserToCarousel(playlist, reader)
 
 Pipeline(ratecontrol, playlistreader).activate()</code></pre>
-<h3 id="more-detail-690"><span id="id6">More detail</span> {#690}</h3>
-<p>Bytes or lines are read from the file on request. Send the number of bytes/lines to the "inbox" inbox, and that data will be read and sent to the "outbox" outbox.</p>
-<p>This component will terminate if it receives a shutdownMicroprocess or producerFinished message on its "control" inbox. The message will be passed on out of its "signal" outbox.</p>
-<p>No producerFinished or shutdownMicroprocess type messages are sent by this component between one file and the next.</p>
-<h2 id="ratecontrolledreusablefilereader-691"><span id="ratecontrolledreusablefilereader">RateControlledReusableFileReader</span> {#691}</h2>
-<p>A reusable file reader component, based on a Carousel component. Send it a filename and the rate you want it to run at, and it will start reading from that file at that rate. Do this as many times as you like.</p>
-<h3 id="example-usage-692"><span id="id7">Example Usage</span> {#692}</h3>
+<h3 id="690"><span id="id6">More detail</span></h3>
+<p>Bytes or lines are read from the file on request. Send the number of
+bytes/lines to the "inbox" inbox, and that data will be read and sent to
+the "outbox" outbox.</p>
+<p>This component will terminate if it receives a shutdownMicroprocess
+or producerFinished message on its "control" inbox. The message will be
+passed on out of its "signal" outbox.</p>
+<p>No producerFinished or shutdownMicroprocess type messages are sent by
+this component between one file and the next.</p>
+<h2 id="691"><span
+id="ratecontrolledreusablefilereader">RateControlledReusableFileReader</span></h2>
+<p>A reusable file reader component, based on a Carousel component. Send
+it a filename and the rate you want it to run at, and it will start
+reading from that file at that rate. Do this as many times as you
+like.</p>
+<h3 id="692"><span id="id7">Example Usage</span></h3>
 <p>Read data from a sequence of files, at different rates:</p>
 <pre class="literal-block"><code>playlist = Chooser([ (&quot;file1&quot;,{&quot;rate&quot;:1024}),
                      (&quot;file2&quot;,{&quot;rate&quot;:16}), ...])
@@ -152,20 +215,29 @@ playlist.link( (playlist,&quot;outbox&quot;), (reader, &quot;next&quot;) )
 
 reader.activate()
 playlist.activate()</code></pre>
-<p>Or, with the Control-Signal path linked up properly, using the JoinChooserToCarousel prefab:</p>
+<p>Or, with the Control-Signal path linked up properly, using the
+JoinChooserToCarousel prefab:</p>
 <pre class="literal-block"><code>playlist = Chooser([ (&quot;file1&quot;,{&quot;rate&quot;:1024}),
                      (&quot;file2&quot;,{&quot;rate&quot;:16}), ...])
 reader = RateControlledReusableFileReader(&quot;bytes&quot;)
 
 playlistreader = JoinChooserToCarousel(playlist, reader).activate()</code></pre>
-<h3 id="more-detail-693"><span id="id8">More detail</span> {#693}</h3>
-<p>The rate control is performed by a ByteRate_RequestControl component. The rate arguments should be those that are accepted by this component.</p>
-<p>This component will terminate if it receives a shutdownMicroprocess or producerFinished message on its "control" inbox. The message will be passed on out of its "signal" outbox.</p>
-<p>No producerFinished or shutdownMicroprocess type messages are sent by this component between one file and the next.</p>
-<h2 id="fixedratecontrolledreusablefilereader-694"><span id="fixedratecontrolledreusablefilereader">FixedRateControlledReusableFileReader</span> {#694}</h2>
-<p>A reusable file reader component that reads data from files at a fixed rate. It is based on a Carousel component.</p>
-<p>Send it a new filename and it will start reading from that file. Do this as many times as you like.</p>
-<h3 id="example-usage-695"><span id="id9">Example Usage</span> {#695}</h3>
+<h3 id="693"><span id="id8">More detail</span></h3>
+<p>The rate control is performed by a ByteRate_RequestControl component.
+The rate arguments should be those that are accepted by this
+component.</p>
+<p>This component will terminate if it receives a shutdownMicroprocess
+or producerFinished message on its "control" inbox. The message will be
+passed on out of its "signal" outbox.</p>
+<p>No producerFinished or shutdownMicroprocess type messages are sent by
+this component between one file and the next.</p>
+<h2 id="694"><span
+id="fixedratecontrolledreusablefilereader">FixedRateControlledReusableFileReader</span></h2>
+<p>A reusable file reader component that reads data from files at a
+fixed rate. It is based on a Carousel component.</p>
+<p>Send it a new filename and it will start reading from that file. Do
+this as many times as you like.</p>
+<h3 id="695"><span id="id9">Example Usage</span></h3>
 <p>Read data from a sequence of files, at 10 lines a second:</p>
 <pre class="literal-block"><code>playlist = Chooser([&quot;file1&quot;, &quot;file2&quot;, &quot;file3&quot;, ... ])
 reader = FixedRateControlledReusableFileReader(&quot;lines&quot;, rate=10, chunksize=1)
@@ -175,116 +247,224 @@ playlist.link( (playlist,&quot;outbox&quot;), (reader, &quot;next&quot;) )
 
 reader.activate()
 playlist.activate()</code></pre>
-<p>Or, with the Control-Signal path linked up properly, using the JoinChooserToCarousel prefab:</p>
+<p>Or, with the Control-Signal path linked up properly, using the
+JoinChooserToCarousel prefab:</p>
 <pre class="literal-block"><code>playlist = Chooser([&quot;file1&quot;, &quot;file2&quot;, &quot;file3&quot;, ... ])
 reader = FixedRateControlledReusableFileReader(&quot;lines&quot;, rate=10, chunksize=1)
 
 playlistreader = JoinChooserToCarousel(playlist, reader).activate()</code></pre>
-<h3 id="more-detail-696"><span id="id10">More detail</span> {#696}</h3>
-<p>The rate control is performed by a ByteRate_RequestControl component. The rate arguments should be those that are accepted by this component.</p>
-<p>This component will terminate if it receives a shutdownMicroprocess or producerFinished message on its "control" inbox. The message will be passed on out of its "signal" outbox.</p>
-<p>No producerFinished or shutdownMicroprocess type messages are sent by this component between one file and the next.</p>
-<h2 id="development-history-697"><span id="development-history">Development history</span> {#697}</h2>
-<p>PromptedFileReader - developed as an alternative to ReadFileAdapter - prototyped in /Sketches/filereading/ReadFileAdapter.py</p>
+<h3 id="696"><span id="id10">More detail</span></h3>
+<p>The rate control is performed by a ByteRate_RequestControl component.
+The rate arguments should be those that are accepted by this
+component.</p>
+<p>This component will terminate if it receives a shutdownMicroprocess
+or producerFinished message on its "control" inbox. The message will be
+passed on out of its "signal" outbox.</p>
+<p>No producerFinished or shutdownMicroprocess type messages are sent by
+this component between one file and the next.</p>
+<h2 id="697"><span id="development-history">Development
+history</span></h2>
+<p>PromptedFileReader - developed as an alternative to ReadFileAdapter -
+prototyped in /Sketches/filereading/ReadFileAdapter.py</p>
 <hr />
 <section>
-<h1 id="kamaelia.file.reading.fixedratecontrolledreusablefilereader"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.File.html" class="reference">File</a>.<a href="/Components/pydoc/Kamaelia.File.Reading.html" class="reference">Reading</a>.<a href="/Components/pydoc/Kamaelia.File.Reading.FixedRateControlledReusableFileReader.html" class="reference">FixedRateControlledReusableFileReader</a></h1>
-<h2 id="symbol-FixedRateControlledReusableFileReader">prefab: FixedRateControlledReusableFileReader</h2>
-<p>FixedRateControlledReusableFileReader(readmode, rateargs) -&gt; reusable file reader component</p>
-<p>A file reading component that can be reused. Based on a carousel - send a filename to the "next" or "inbox" inboxes to start reading from that file.</p>
+<h1 id="kamaelia.file.reading.fixedratecontrolledreusablefilereader"><a
+href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a
+href="/Components/pydoc/Kamaelia.File.html"
+class="reference">File</a>.<a
+href="/Components/pydoc/Kamaelia.File.Reading.html"
+class="reference">Reading</a>.<a
+href="/Components/pydoc/Kamaelia.File.Reading.FixedRateControlledReusableFileReader.html"
+class="reference">FixedRateControlledReusableFileReader</a></h1>
+<h2 id="symbol-FixedRateControlledReusableFileReader">prefab:
+FixedRateControlledReusableFileReader</h2>
+<p>FixedRateControlledReusableFileReader(readmode, rateargs) -&gt;
+reusable file reader component</p>
+<p>A file reading component that can be reused. Based on a carousel -
+send a filename to the "next" or "inbox" inboxes to start reading from
+that file.</p>
 <p>Data is read at the specified rate.</p>
-<p>Keyword arguments: - readmode = "bytes" or "lines" - rateargs = arguments for ByteRate_RequestControl component constructor</p>
-<h1 id="kamaelia.file.reading.promptedfilereader"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.File.html" class="reference">File</a>.<a href="/Components/pydoc/Kamaelia.File.Reading.html" class="reference">Reading</a>.<a href="/Components/pydoc/Kamaelia.File.Reading.PromptedFileReader.html" class="reference">PromptedFileReader</a></h1>
-<h2 id="symbol-PromptedFileReader">class PromptedFileReader(<a href="/Docs/Axon/Axon.Component.component.html" class="reference">Axon.Component.component</a>)</h2>
-<p>PromptedFileReader(filename[,readmode]) -&gt; file reading component</p>
-<p>Creates a file reader component. Reads N bytes/lines from the file when N is sent to its inbox.</p>
+<p>Keyword arguments: - readmode = "bytes" or "lines" - rateargs =
+arguments for ByteRate_RequestControl component constructor</p>
+<h1 id="kamaelia.file.reading.promptedfilereader"><a
+href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a
+href="/Components/pydoc/Kamaelia.File.html"
+class="reference">File</a>.<a
+href="/Components/pydoc/Kamaelia.File.Reading.html"
+class="reference">Reading</a>.<a
+href="/Components/pydoc/Kamaelia.File.Reading.PromptedFileReader.html"
+class="reference">PromptedFileReader</a></h1>
+<h2 id="symbol-PromptedFileReader">class PromptedFileReader(<a
+href="/Docs/Axon/Axon.Component.component.html"
+class="reference">Axon.Component.component</a>)</h2>
+<p>PromptedFileReader(filename[,readmode]) -&gt; file reading
+component</p>
+<p>Creates a file reader component. Reads N bytes/lines from the file
+when N is sent to its inbox.</p>
 <p>Keyword arguments:</p>
 <ul>
 <li>readmode -- "bytes" or "lines"</li>
 </ul>
-<h3 id="inboxes"><span id="symbol-PromptedFileReader.Inboxes">Inboxes</span></h3>
+<h3 id="inboxes"><span
+id="symbol-PromptedFileReader.Inboxes">Inboxes</span></h3>
 <ul>
 <li><strong>control</strong> : for shutdown signalling</li>
 <li><strong>inbox</strong> : requests to 'n' read bytes/lines</li>
 </ul>
-<h3 id="outboxes"><span id="symbol-PromptedFileReader.Outboxes">Outboxes</span></h3>
+<h3 id="outboxes"><span
+id="symbol-PromptedFileReader.Outboxes">Outboxes</span></h3>
 <ul>
 <li><strong>outbox</strong> : data output</li>
-<li><strong>signal</strong> : outputs 'producerFinished' after all data has been read</li>
+<li><strong>signal</strong> : outputs 'producerFinished' after all data
+has been read</li>
 </ul>
 <h3 id="methods-defined-here">Methods defined here</h3>
 <div class="container">
 <div class="boxright">
 <p><strong>Warning!</strong></p>
-<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+<p>You should be using the inbox/outbox interface, not these methods
+(except construction). This documentation is designed as a roadmap as to
+their functionalilty for maintainers and new component developers.</p>
 </div>
 </div>
-<h4 id="init__self-filename-readmode"><span id="symbol-PromptedFileReader.__init__">__init__(self, filename[, readmode])</span></h4>
-<p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</p>
-<h4 id="closedowncomponentself"><span id="symbol-PromptedFileReader.closeDownComponent">closeDownComponent(self)</span></h4>
+<h4 id="init__self-filename-readmode"><span
+id="symbol-PromptedFileReader.__init__">__init__(self, filename[,
+readmode])</span></h4>
+<p>x.__init__(...) initializes x; see x.__class__.__doc__ for
+signature</p>
+<h4 id="closedowncomponentself"><span
+id="symbol-PromptedFileReader.closeDownComponent">closeDownComponent(self)</span></h4>
 <p>Closes the file handle</p>
-<h4 id="mainself"><span id="symbol-PromptedFileReader.main">main(self)</span></h4>
+<h4 id="mainself"><span
+id="symbol-PromptedFileReader.main">main(self)</span></h4>
 <p>Main loop</p>
-<h4 id="readnbytesself-n"><span id="symbol-PromptedFileReader.readNBytes">readNBytes(self, n)</span></h4>
-<p>readNBytes(n) -&gt; string containing 'n' bytes read from the file.</p>
-<p>"EOF" raised if the end of the file is reached and there is no data to return.</p>
-<h4 id="readnlinesself-n"><span id="symbol-PromptedFileReader.readNLines">readNLines(self, n)</span></h4>
-<p>readNLines(n) -&gt; string containing 'n' lines read from the file.</p>
-<p>"EOF" raised if the end of the file is reached and there is no data to return.</p>
-<h4 id="shutdownself"><span id="symbol-PromptedFileReader.shutdown">shutdown(self)</span></h4>
+<h4 id="readnbytesself-n"><span
+id="symbol-PromptedFileReader.readNBytes">readNBytes(self,
+n)</span></h4>
+<p>readNBytes(n) -&gt; string containing 'n' bytes read from the
+file.</p>
+<p>"EOF" raised if the end of the file is reached and there is no data
+to return.</p>
+<h4 id="readnlinesself-n"><span
+id="symbol-PromptedFileReader.readNLines">readNLines(self,
+n)</span></h4>
+<p>readNLines(n) -&gt; string containing 'n' lines read from the
+file.</p>
+<p>"EOF" raised if the end of the file is reached and there is no data
+to return.</p>
+<h4 id="shutdownself"><span
+id="symbol-PromptedFileReader.shutdown">shutdown(self)</span></h4>
 <p>Returns True if a shutdownMicroprocess message is received.</p>
 <p>Also passes the message on out of the "signal" outbox.</p>
 <section>
 
 </section>
-<h1 id="kamaelia.file.reading.ratecontrolledfilereader"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.File.html" class="reference">File</a>.<a href="/Components/pydoc/Kamaelia.File.Reading.html" class="reference">Reading</a>.<a href="/Components/pydoc/Kamaelia.File.Reading.RateControlledFileReader.html" class="reference">RateControlledFileReader</a></h1>
-<h2 id="symbol-RateControlledFileReader">prefab: RateControlledFileReader</h2>
-<p>RateControlledFileReader(filename[,readmode][,**rateargs]) -&gt; constant rate file reader</p>
-<p>Creates a PromptedFileReader already linked to a ByteRate_RequestControl, to control the rate of file reading.</p>
+<h1 id="kamaelia.file.reading.ratecontrolledfilereader"><a
+href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a
+href="/Components/pydoc/Kamaelia.File.html"
+class="reference">File</a>.<a
+href="/Components/pydoc/Kamaelia.File.Reading.html"
+class="reference">Reading</a>.<a
+href="/Components/pydoc/Kamaelia.File.Reading.RateControlledFileReader.html"
+class="reference">RateControlledFileReader</a></h1>
+<h2 id="symbol-RateControlledFileReader">prefab:
+RateControlledFileReader</h2>
+<p>RateControlledFileReader(filename[,readmode][,**rateargs]) -&gt;
+constant rate file reader</p>
+<p>Creates a PromptedFileReader already linked to a
+ByteRate_RequestControl, to control the rate of file reading.</p>
 <p>Keyword arguments:</p>
 <ul>
 <li>readmode -- "bytes" or "lines"</li>
-<li>rateargs -- arguments for ByteRate_RequestControl component constructor</li>
+<li>rateargs -- arguments for ByteRate_RequestControl component
+constructor</li>
 </ul>
-<h1 id="kamaelia.file.reading.ratecontrolledreusablefilereader"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.File.html" class="reference">File</a>.<a href="/Components/pydoc/Kamaelia.File.Reading.html" class="reference">Reading</a>.<a href="/Components/pydoc/Kamaelia.File.Reading.RateControlledReusableFileReader.html" class="reference">RateControlledReusableFileReader</a></h1>
-<h2 id="symbol-RateControlledReusableFileReader">prefab: RateControlledReusableFileReader</h2>
-<p>RateControlledReusableFileReader(readmode) -&gt; rate controlled reusable file reader component.</p>
-<p>A file reading component that can be reused. Based on a Carousel - send (filename, rateargs) to the "next" inbox to start reading from that file at the specified rate.</p>
+<h1 id="kamaelia.file.reading.ratecontrolledreusablefilereader"><a
+href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a
+href="/Components/pydoc/Kamaelia.File.html"
+class="reference">File</a>.<a
+href="/Components/pydoc/Kamaelia.File.Reading.html"
+class="reference">Reading</a>.<a
+href="/Components/pydoc/Kamaelia.File.Reading.RateControlledReusableFileReader.html"
+class="reference">RateControlledReusableFileReader</a></h1>
+<h2 id="symbol-RateControlledReusableFileReader">prefab:
+RateControlledReusableFileReader</h2>
+<p>RateControlledReusableFileReader(readmode) -&gt; rate controlled
+reusable file reader component.</p>
+<p>A file reading component that can be reused. Based on a Carousel -
+send (filename, rateargs) to the "next" inbox to start reading from that
+file at the specified rate.</p>
 <ul>
-<li>rateargs are the arguments for a ByteRate_RequestControl component.</li>
+<li>rateargs are the arguments for a ByteRate_RequestControl
+component.</li>
 </ul>
 <p>Keyword arguments: - readmode = "bytes" or "lines"</p>
-<h1 id="kamaelia.file.reading.reusablefilereader"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.File.html" class="reference">File</a>.<a href="/Components/pydoc/Kamaelia.File.Reading.html" class="reference">Reading</a>.<a href="/Components/pydoc/Kamaelia.File.Reading.ReusableFileReader.html" class="reference">ReusableFileReader</a></h1>
+<h1 id="kamaelia.file.reading.reusablefilereader"><a
+href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a
+href="/Components/pydoc/Kamaelia.File.html"
+class="reference">File</a>.<a
+href="/Components/pydoc/Kamaelia.File.Reading.html"
+class="reference">Reading</a>.<a
+href="/Components/pydoc/Kamaelia.File.Reading.ReusableFileReader.html"
+class="reference">ReusableFileReader</a></h1>
 <h2 id="symbol-ReusableFileReader">prefab: ReusableFileReader</h2>
-<p>ReusableFileReader(readmode) -&gt; reusable file reader component.</p>
-<p>A file reading component that can be reused. Based on a Carousel - send a filename to the "next" inbox to start reading from that file.</p>
-<p>Must be prompted by another component - send the number of bytes/lines to read to the "inbox" inbox.</p>
+<p>ReusableFileReader(readmode) -&gt; reusable file reader
+component.</p>
+<p>A file reading component that can be reused. Based on a Carousel -
+send a filename to the "next" inbox to start reading from that file.</p>
+<p>Must be prompted by another component - send the number of
+bytes/lines to read to the "inbox" inbox.</p>
 <p>Keyword arguments: - readmode = "bytes" or "lines"</p>
-<h1 id="kamaelia.file.reading.simplereader"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.File.html" class="reference">File</a>.<a href="/Components/pydoc/Kamaelia.File.Reading.html" class="reference">Reading</a>.<a href="/Components/pydoc/Kamaelia.File.Reading.SimpleReader.html" class="reference">SimpleReader</a></h1>
-<h2 id="symbol-SimpleReader">class SimpleReader(<a href="/Docs/Axon/Axon.Component.component.html" class="reference">Axon.Component.component</a>)</h2>
-<p>SimpleReader(filename[,mode][,buffering]) -&gt; simple file reader</p>
+<h1 id="kamaelia.file.reading.simplereader"><a
+href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a
+href="/Components/pydoc/Kamaelia.File.html"
+class="reference">File</a>.<a
+href="/Components/pydoc/Kamaelia.File.Reading.html"
+class="reference">Reading</a>.<a
+href="/Components/pydoc/Kamaelia.File.Reading.SimpleReader.html"
+class="reference">SimpleReader</a></h1>
+<h2 id="symbol-SimpleReader">class SimpleReader(<a
+href="/Docs/Axon/Axon.Component.component.html"
+class="reference">Axon.Component.component</a>)</h2>
+<p>SimpleReader(filename[,mode][,buffering]) -&gt; simple file
+reader</p>
 <p>Creates a "SimpleReader" component.</p>
 <p>Arguments:</p>
 <ul>
 <li>filename -- Name of the file to read</li>
-<li>mode -- This is the python readmode. Defaults to "r". (you may way "rb" occasionally)</li>
-<li>buffering -- The python buffer size. Defaults to 1. (see <a href="http://www.python.org/doc/2.5.2/lib/built-in-funcs.html" class="uri">http://www.python.org/doc/2.5.2/lib/built-in-funcs.html</a>)</li>
+<li>mode -- This is the python readmode. Defaults to "r". (you may way
+"rb" occasionally)</li>
+<li>buffering -- The python buffer size. Defaults to 1. (see <a
+href="http://www.python.org/doc/2.5.2/lib/built-in-funcs.html"
+class="uri">http://www.python.org/doc/2.5.2/lib/built-in-funcs.html</a>)</li>
 </ul>
-<h3 id="inboxes-1"><span id="symbol-SimpleReader.Inboxes">Inboxes</span></h3>
-<h3 id="outboxes-1"><span id="symbol-SimpleReader.Outboxes">Outboxes</span></h3>
+<h3 id="inboxes-1"><span
+id="symbol-SimpleReader.Inboxes">Inboxes</span></h3>
+<h3 id="outboxes-1"><span
+id="symbol-SimpleReader.Outboxes">Outboxes</span></h3>
 <h3 id="methods-defined-here-1">Methods defined here</h3>
 <div class="container">
 <div class="boxright">
 <p><strong>Warning!</strong></p>
-<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+<p>You should be using the inbox/outbox interface, not these methods
+(except construction). This documentation is designed as a roadmap as to
+their functionalilty for maintainers and new component developers.</p>
 </div>
 </div>
-<h4 id="init__self-filename-argd"><span id="symbol-SimpleReader.__init__">__init__(self, filename, **argd)</span></h4>
-<p>x.__init__(...) initializes x; see x.__class__.__doc__ for signature</p>
-<h4 id="mainself-1"><span id="symbol-SimpleReader.main">main(self)</span></h4>
-<p>Main loop Simply opens the file, loops through it (using "for"), sending data to "outbox". If the recipient has a maximum pipewidth it handles that eventuallity resending by pausing and waiting for the recipient to be able to recieve.</p>
+<h4 id="init__self-filename-argd"><span
+id="symbol-SimpleReader.__init__">__init__(self, filename,
+**argd)</span></h4>
+<p>x.__init__(...) initializes x; see x.__class__.__doc__ for
+signature</p>
+<h4 id="mainself-1"><span
+id="symbol-SimpleReader.main">main(self)</span></h4>
+<p>Main loop Simply opens the file, loops through it (using "for"),
+sending data to "outbox". If the recipient has a maximum pipewidth it
+handles that eventuallity resending by pausing and waiting for the
+recipient to be able to recieve.</p>
 <p>Shutsdown on shutdownMicroprocess.</p>
-<h4 id="shutdownself-1"><span id="symbol-SimpleReader.shutdown">shutdown(self)</span></h4>
+<h4 id="shutdownself-1"><span
+id="symbol-SimpleReader.shutdown">shutdown(self)</span></h4>
 <p>Returns True if a shutdownMicroprocess message is received.</p>
 <p>Also passes the message on out of the "signal" outbox.</p>
 <section>
@@ -293,9 +473,15 @@ playlistreader = JoinChooserToCarousel(playlist, reader).activate()</code></pre>
 </section>
 </div>
 <h1 id="feedback">Feedback</h1>
-<p>Got a problem with the documentation? Something unclear that could be clearer? Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
-<p>Please leave you feedback <a href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701" class="reference">here</a> in reply to the documentation thread in the Kamaelia blog.</p>
-<p><em>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</em></p>
+<p>Got a problem with the documentation? Something unclear that could be
+clearer? Want to help improve it? Constructive criticism is very welcome
+- especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback <a
+href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701"
+class="reference">here</a> in reply to the documentation thread in the
+Kamaelia blog.</p>
+<p><em>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38
+UTC/GMT</em></p>
 
 </div> <!-- end section -->
 </div> <!-- end page container -->

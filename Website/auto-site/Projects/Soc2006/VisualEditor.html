@@ -15,44 +15,70 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
 <h1 id="soc-project-visual-editor">SoC Project: Visual Editor</h1>
-<p>There was one project application in this area that is summarised here. This page contains the depersonalised content, which can be consolidated as necessary. The depersonalisation is for privacy reasons, credit is here due to those who spent the time writing these descriptions.</p>
-<h3 id="project-title-kamaelia-visual-editor-graphical-ide">Project Title: Kamaelia Visual Editor, Graphical IDE</h3>
+<p>There was one project application in this area that is summarised
+here. This page contains the depersonalised content, which can be
+consolidated as necessary. The depersonalisation is for privacy reasons,
+credit is here due to those who spent the time writing these
+descriptions.</p>
+<h3 id="project-title-kamaelia-visual-editor-graphical-ide">Project
+Title: Kamaelia Visual Editor, Graphical IDE</h3>
 <p>Benefits to Kamaelia<br />
 ====================<br />
-Extremely helpful to newcomers that wants to try Kamaelia out. Also good for experienced users that quickly wants to patch something together, maybe to see how their server responds to sent data before they've written the real client.<br />
+Extremely helpful to newcomers that wants to try Kamaelia out. Also good
+for experienced users that quickly wants to patch something together,
+maybe to see how their server responds to sent data before they've
+written the real client.<br />
 <br />
 Synopsis<br />
 ========<br />
-When I found the Axon/Kamaelia Visualiser and read about that Kamaelia had an early staged program in which you could "write" code visually, I knew directly that this was something I wanted to work on. The ability to be able to create, edit and run programs visually would be an immense help to anyone new to Kamaelia.<br />
+When I found the Axon/Kamaelia Visualiser and read about that Kamaelia
+had an early staged program in which you could "write" code visually, I
+knew directly that this was something I wanted to work on. The ability
+to be able to create, edit and run programs visually would be an immense
+help to anyone new to Kamaelia.<br />
 <br />
-What I want to do could be compared to a visual IDE. I want to have that same plain white field as in the Axon Visualiser. Then some kind of GUI along the bottom or side in which you can select your "pencil". The pencils can draw components (which can be given names), dataflow links and passtrough links.<br />
+What I want to do could be compared to a visual IDE. I want to have that
+same plain white field as in the Axon Visualiser. Then some kind of GUI
+along the bottom or side in which you can select your "pencil". The
+pencils can draw components (which can be given names), dataflow links
+and passtrough links.<br />
 <br />
-In the GUI there will also be buttons to save and load the stuff you've done. There will also be a button for generating code out of your visually built project.<br />
+In the GUI there will also be buttons to save and load the stuff you've
+done. There will also be a button for generating code out of your
+visually built project.<br />
 <br />
-The Axon Visualiser will be integrated. So that you could press "Run" and see your program spring to life through the Axon Visualiser.<br />
+The Axon Visualiser will be integrated. So that you could press "Run"
+and see your program spring to life through the Axon Visualiser.<br />
 <br />
 Deliverables<br />
 ============<br />
 Will deliver:<br />
-- A module with a GUI in which you can see and edit the Kamaelia program visually.<br />
+- A module with a GUI in which you can see and edit the Kamaelia program
+visually.<br />
 - A module for saving/loading the visual Kamaelia program.<br />
-- A module that can generate useable code out of the visually built Kamaelia program.<br />
+- A module that can generate useable code out of the visually built
+Kamaelia program.<br />
 <br />
 Given Sufficient time:<br />
-- Graphical components. In the visual editor, components will (if applicable) be displayed with an image representing the component.<br />
-- A module for turning already written Kamaelia code into a visually built project.<br />
+- Graphical components. In the visual editor, components will (if
+applicable) be displayed with an image representing the component.<br />
+- A module for turning already written Kamaelia code into a visually
+built project.<br />
 <br />
 Project Details<br />
 ===============<br />
-Everything will be written in Python so it can easily work with the rest of Kamaelia. Pygame will be used to handle the input and graphics.<br />
+Everything will be written in Python so it can easily work with the rest
+of Kamaelia. Pygame will be used to handle the input and graphics.<br />
 <br />
 Project Schedule<br />
 ================<br />
-Early June: Design document written/set in stone what should be done.<br />
-Late June: Everything related to graphics/input/GUI/pygame done and added to project.<br />
+Early June: Design document written/set in stone what should be
+done.<br />
+Late June: Everything related to graphics/input/GUI/pygame done and
+added to project.<br />
 Early July: Save/load visual projects module added.<br />
 Late July: Code generation module added.<br />
 Early August: Beta release/test phase begin.<br />

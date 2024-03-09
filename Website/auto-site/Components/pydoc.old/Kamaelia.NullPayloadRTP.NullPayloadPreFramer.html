@@ -15,36 +15,47 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
-<h1 id="kamaelia.nullpayloadrtp.nullpayloadpreframer">Kamaelia.NullPayloadRTP.NullPayloadPreFramer</h1>
-<h2 id="class-nullpayloadpreframeraxon.component.component">class NullPayloadPreFramer(Axon.Component.component)</h2>
+<h1
+id="kamaelia.nullpayloadrtp.nullpayloadpreframer">Kamaelia.NullPayloadRTP.NullPayloadPreFramer</h1>
+<h2 id="class-nullpayloadpreframeraxon.component.component">class
+NullPayloadPreFramer(Axon.Component.component)</h2>
 <dl>
 <dt>Inboxes:</dt>
-<dd>control -&gt; File select, file read control, framing control recvsrc -&gt; Block/Chunks of raw disk data
+<dd>
+control -&gt; File select, file read control, framing control recvsrc
+-&gt; Block/Chunks of raw disk data
 </dd>
 <dt>Outboxes:</dt>
-<dd>activatesrc -&gt; Control messages to the file reading subsystem output -&gt; The framed data, payload ready
+<dd>
+activatesrc -&gt; Control messages to the file reading subsystem output
+-&gt; The framed data, payload ready
 </dd>
 </dl>
 <h4 id="inboxes">Inboxes</h4>
 <ul>
-<li>control : Code uses old style inbox/outbox description - no metadata available</li>
-<li>recvsrc : Code uses old style inbox/outbox description - no metadata available</li>
+<li>control : Code uses old style inbox/outbox description - no metadata
+available</li>
+<li>recvsrc : Code uses old style inbox/outbox description - no metadata
+available</li>
 </ul>
 <h4 id="outboxes">Outboxes</h4>
 <ul>
-<li>output : Code uses old style inbox/outbox description - no metadata available</li>
+<li>output : Code uses old style inbox/outbox description - no metadata
+available</li>
 </ul>
 <h2 id="methods-defined-here">Methods defined here</h2>
 <div class="boxright">
 <p><span style="font-weight:600">Warning!</span></p>
 </div>
-<h3 id="init__self-sourcename-sourcebitrate-chunksize">__init__(self, sourcename, sourcebitrate, chunksize)</h3>
+<h3 id="init__self-sourcename-sourcebitrate-chunksize">__init__(self,
+sourcename, sourcebitrate, chunksize)</h3>
 <ul>
 <li><dl>
 <dt>Name of source - at __init__</dt>
-<dd><ul>
+<dd>
+<ul>
 <li>Data Rate - at __init__</li>
 <li>Chunksize - at __init__</li>
 </ul>
@@ -62,26 +73,36 @@
 <p>Loopbody:</p>
 <h3 id="makechunkself-datatosend">makeChunk(self, datatosend)</h3>
 <p>C.makeChunk(datatosend) -&gt; chunk : network ready data</p>
-<h3 id="sendcurrentchunkself-sendpartial">sendCurrentChunk(self, sendpartial)</h3>
+<h3 id="sendcurrentchunkself-sendpartial">sendCurrentChunk(self,
+sendpartial)</h3>
 <ul>
 <li><dl>
 <dt>grab first (current chunk size) bytes</dt>
-<dd><ul>
+<dd>
+<ul>
 <li>frame chunk</li>
 <li>send chunk</li>
 </ul>
 </dd>
 </dl></li>
 </ul>
-<h3 id="updatetimestampself-datatosend">updateTimestamp(self, datatosend)</h3>
+<h3 id="updatetimestampself-datatosend">updateTimestamp(self,
+datatosend)</h3>
 <p>C.updateTimestamp(datatosend)</p>
 <blockquote>
-<p>self.timestamp stores the timestamp of the end of the most recently transmitted data, whenever we send some data this timestamp needs to be updated. This method represents the calculation involved. (calculate the time period the data covers, and increment the timestamp)</p>
+<p>self.timestamp stores the timestamp of the end of the most recently
+transmitted data, whenever we send some data this timestamp needs to be
+updated. This method represents the calculation involved. (calculate the
+time period the data covers, and increment the timestamp)</p>
 </blockquote>
 <hr />
 <h2 id="feedback">Feedback</h2>
-<p>Got a problem with the documentation? Something unclear, could be clearer? Want to help with improving? Constructive criticism, preferably in the form of suggested rewording is very welcome.</p>
-<p>Please leave the feedback <a href="http://kamaelia.sourceforge.net/cgi-bin/blog/blog.cgi?rm=addpostcomment&amp;postid=1131454685">here, in reply to the documentation thread in the Kamaelia blog</a>.</p>
+<p>Got a problem with the documentation? Something unclear, could be
+clearer? Want to help with improving? Constructive criticism, preferably
+in the form of suggested rewording is very welcome.</p>
+<p>Please leave the feedback <a
+href="http://kamaelia.sourceforge.net/cgi-bin/blog/blog.cgi?rm=addpostcomment&amp;postid=1131454685">here,
+in reply to the documentation thread in the Kamaelia blog</a>.</p>
 
 </div> <!-- end section -->
 </div> <!-- end page container -->

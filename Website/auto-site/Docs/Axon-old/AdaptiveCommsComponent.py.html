@@ -15,11 +15,13 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
-<p><span style="font-size:24pt">Axon.</span><span style="font-size:24pt;font-weight:600">AdaptiveCommsComponent.py</span></p>
+<p><span style="font-size:24pt">Axon.</span><span
+style="font-size:24pt;font-weight:600">AdaptiveCommsComponent.py</span></p>
 <p>Version: Axon 1.0</p>
-<p><span style="font-size:14pt;font-weight:600">Pydoc Style Documentation</span></p>
+<p><span style="font-size:14pt;font-weight:600">Pydoc Style
+Documentation</span></p>
 <p>class AdaptiveCommsComponent(Axon.Component.component)</p>
 <p>Method resolution order:</p>
 <ul>
@@ -29,7 +31,8 @@
 <li>Axon.Axon.AxonObject</li>
 <li>__builtin__.object</li>
 </ul>
-<p>Data and other attributes inherited from Axon.Component.component:</p>
+<p>Data and other attributes inherited from
+Axon.Component.component:</p>
 <ul>
 <li>Inboxes = ['inbox', 'control']</li>
 <li>Outboxes = ['outbox', 'signal']</li>
@@ -42,29 +45,41 @@
 </ul>
 <p><span style="font-weight:600">addInbox(self, *args)</span></p>
 <ul>
-<li>Adds a custom inbox with the name requested - or the closest name possible. (appends an integer) Returns the name of the inbox added.</li>
+<li>Adds a custom inbox with the name requested - or the closest name
+possible. (appends an integer) Returns the name of the inbox added.</li>
 </ul>
 <p><span style="font-weight:600">addOutbox(self, *args)</span></p>
 <ul>
-<li>Adds a custom outbox with the name requested - or the closest name possible. (appends an integer) Returns the name of the outbox added.</li>
+<li>Adds a custom outbox with the name requested - or the closest name
+possible. (appends an integer) Returns the name of the outbox
+added.</li>
 </ul>
-<p><span style="font-weight:600">trackResource(self, resource, inbox)</span></p>
+<p><span style="font-weight:600">trackResource(self, resource,
+inbox)</span></p>
 <ul>
 <li>Tracks a _single_ resource associated with the inbox</li>
 </ul>
-<p><span style="font-weight:600">trackResourceInformation(self, resource, inboxes, outboxes, information)</span></p>
+<p><span style="font-weight:600">trackResourceInformation(self,
+resource, inboxes, outboxes, information)</span></p>
 <ul>
-<li>Provides a lookup service associating inboxes/outboxes &amp; user information with a resource. Uses GIGO principle.</li>
+<li>Provides a lookup service associating inboxes/outboxes &amp; user
+information with a resource. Uses GIGO principle.</li>
 </ul>
-<p><span style="font-weight:600">retrieveTrackedResource(self, inbox)</span></p>
+<p><span style="font-weight:600">retrieveTrackedResource(self,
+inbox)</span></p>
 <ul>
 <li>Retrieves a single resource associated with the inbox</li>
 </ul>
-<p><span style="font-weight:600">retrieveTrackedResourceInformation(self, resource)</span></p>
+<p><span
+style="font-weight:600">retrieveTrackedResourceInformation(self,
+resource)</span></p>
 <ul>
-<li>retrieveTrackedResourceInformation(self, resource) -&gt; informationBundle ( {inboxes, outboxes,otherdata} ) (Uses GIGO principle.)</li>
+<li>retrieveTrackedResourceInformation(self, resource) -&gt;
+informationBundle ( {inboxes, outboxes,otherdata} ) (Uses GIGO
+principle.)</li>
 </ul>
-<p><span style="font-weight:600">ceaseTrackingResource(self, resource)</span></p>
+<p><span style="font-weight:600">ceaseTrackingResource(self,
+resource)</span></p>
 <ul>
 <li>Stop tracking a resource and release references to it</li>
 </ul>
@@ -76,42 +91,59 @@
 <ul>
 <li>Deletes the named outbox</li>
 </ul>
-<p><span style="font-size:14pt;font-weight:600">Testdoc Documentation</span></p>
+<p><span style="font-size:14pt;font-weight:600">Testdoc
+Documentation</span></p>
 <p><span style="font-weight:600">__init__</span></p>
 <ul>
-<li>Called with no arguments is expected, results in component superconstructor being called. performs no local initialisation</li>
+<li>Called with no arguments is expected, results in component
+superconstructor being called. performs no local initialisation</li>
 <li>Called with with arguments causes TypeError exception</li>
 </ul>
 <p><span style="font-weight:600">addInbox</span></p>
 <ul>
-<li>adding an inbox with a completely new name results in that inbox being created/added</li>
-<li>adding an inbox with an existing name results in an inbox being created/added with a similar name - same name with a suffix</li>
+<li>adding an inbox with a completely new name results in that inbox
+being created/added</li>
+<li>adding an inbox with an existing name results in an inbox being
+created/added with a similar name - same name with a suffix</li>
 </ul>
 <p><span style="font-weight:600">addOutbox</span></p>
 <ul>
-<li>adding an outbox with a completely new name results in that outbox being created/added</li>
-<li>adding an outbox with an existing name results in an outbox being created/added with a similar name - same name with a suffix</li>
+<li>adding an outbox with a completely new name results in that outbox
+being created/added</li>
+<li>adding an outbox with an existing name results in an outbox being
+created/added with a similar name - same name with a suffix</li>
 </ul>
 <p><span style="font-weight:600">deleteInbox</span></p>
 <ul>
 <li>Deletes the named inbox</li>
-<li>KeyError exception raised if you try to delete an inbox that does not exist - this includes the case of an already deleted Inbox</li>
+<li>KeyError exception raised if you try to delete an inbox that does
+not exist - this includes the case of an already deleted Inbox</li>
 </ul>
 <p><span style="font-weight:600">deleteOutbox</span></p>
 <ul>
 <li>Deletes the named outbox</li>
-<li>KeyError exception raised if you try to delete an outbox that does not exist - this includes the case of an already deleted Outbox</li>
+<li>KeyError exception raised if you try to delete an outbox that does
+not exist - this includes the case of an already deleted Outbox</li>
 </ul>
-<p><span style="font-weight:600">trackResource,retrieveTrackedResource</span></p>
+<p><span
+style="font-weight:600">trackResource,retrieveTrackedResource</span></p>
 <ul>
-<li>Adds to &amp; retrieves from the mapping of inbox -&gt; resource to a local store. This allows retrieval of the resource based on which inbox messages arrive on. Whilst designed for custom inboxes, it should work with the 'default' inboxes for a component</li>
-<li>Tracking resources using a custom dynamic inbox name should work.</li>
+<li>Adds to &amp; retrieves from the mapping of inbox -&gt; resource to
+a local store. This allows retrieval of the resource based on which
+inbox messages arrive on. Whilst designed for custom inboxes, it should
+work with the 'default' inboxes for a component</li>
+<li>Tracking resources using a custom dynamic inbox name should
+work.</li>
 <li>Tracking resources using an invalid inbox name should fail.</li>
 </ul>
-<p><span style="font-weight:600">trackResourceInformation, retrieveTrackedResourceInformation</span></p>
+<p><span style="font-weight:600">trackResourceInformation,
+retrieveTrackedResourceInformation</span></p>
 <ul>
-<li>Associates communication &amp; user aspects related to a resource. Associating default in/out boxes with a resource is valid</li>
-<li>Associates communication &amp; user aspects related to a resource. Associating dynamically created in/out boxes with a resource is the default</li>
+<li>Associates communication &amp; user aspects related to a resource.
+Associating default in/out boxes with a resource is valid</li>
+<li>Associates communication &amp; user aspects related to a resource.
+Associating dynamically created in/out boxes with a resource is the
+default</li>
 <li>Tracking invalid inboxes using a resource fails.</li>
 <li>Tracking invalid outboxes using a resource fails.</li>
 </ul>

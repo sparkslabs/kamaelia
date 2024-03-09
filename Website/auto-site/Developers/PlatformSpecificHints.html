@@ -15,20 +15,30 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
-<h1 id="developersplatform-specific-hints">Developers/Platform Specific Hints</h1>
+<h1 id="developersplatform-specific-hints">Developers/Platform Specific
+Hints</h1>
 <h3 id="mac-os-x">Mac OS X</h3>
-<p>Mac OS X ships with a case insensitive filesystem on the hard disk. Clashing filenames, eg. passThrough.py and PassThrough.py in the repository will cause subversion client to fail when trying to check out a working copy.<br />
+<p>Mac OS X ships with a case insensitive filesystem on the hard disk.
+Clashing filenames, eg. passThrough.py and PassThrough.py in the
+repository will cause subversion client to fail when trying to check out
+a working copy.<br />
 <br />
 </p>
-<p>C/pyrex code: malloc.h is in a different location: malloc/malloc.h For cross platform compatibility, use #include &lt;stdlib.h&gt; instead.</p>
+<p>C/pyrex code: malloc.h is in a different location: malloc/malloc.h
+For cross platform compatibility, use #include &lt;stdlib.h&gt;
+instead.</p>
 <p><br />
-Here is an <a href="http://developer.apple.com/technotes/tn2002/tn2071.html%20">Apple technical note</a> on porting unix (command line) apps to OS X.<br />
+Here is an <a
+href="http://developer.apple.com/technotes/tn2002/tn2071.html%20">Apple
+technical note</a> on porting unix (command line) apps to OS X.<br />
 <br />
 </p>
 <h3 id="windows-win32">Windows (win32)</h3>
-<p>The filesystem is case insensitive. Clashing filenames, eg. passThrough.py and PassThrough.py in the repository will cause subversion client to fail when trying to check out a working copy.</p>
+<p>The filesystem is case insensitive. Clashing filenames, eg.
+passThrough.py and PassThrough.py in the repository will cause
+subversion client to fail when trying to check out a working copy.</p>
 
 </div> <!-- end section -->
 </div> <!-- end page container -->

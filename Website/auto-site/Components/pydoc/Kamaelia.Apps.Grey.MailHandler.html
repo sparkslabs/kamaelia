@@ -15,14 +15,23 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
 <div class="container">
-<h1 id="kamaelia.apps.grey.mailhandler"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Apps.html" class="reference">Apps</a>.<a href="/Components/pydoc/Kamaelia.Apps.Grey.html" class="reference">Grey</a>.<a href="/Components/pydoc/Kamaelia.Apps.Grey.MailHandler.html" class="reference">MailHandler</a></h1>
+<h1 id="kamaelia.apps.grey.mailhandler"><a
+href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a
+href="/Components/pydoc/Kamaelia.Apps.html"
+class="reference">Apps</a>.<a
+href="/Components/pydoc/Kamaelia.Apps.Grey.html"
+class="reference">Grey</a>.<a
+href="/Components/pydoc/Kamaelia.Apps.Grey.MailHandler.html"
+class="reference">MailHandler</a></h1>
 <section>
 <div class="container">
 <ul>
-<li><strong>component <a href="/Components/pydoc/Kamaelia.Apps.Grey.MailHandler.MailHandler.html" class="reference">MailHandler</a></strong></li>
+<li><strong>component <a
+href="/Components/pydoc/Kamaelia.Apps.Grey.MailHandler.MailHandler.html"
+class="reference">MailHandler</a></strong></li>
 </ul>
 </div>
 <ul>
@@ -32,30 +41,49 @@
 <li><a href="#59" class="reference">Note</a></li>
 <li><a href="#60" class="reference">How does it work?</a></li>
 <li><a href="#61" class="reference">Configuration</a></li>
-<li><a href="#62" class="reference">Methods you are expected to override</a></li>
+<li><a href="#62" class="reference">Methods you are expected to
+override</a></li>
 </ul></li>
 </ul>
 </section>
-<h1 id="abstract-smtp-mailer-core-57">Abstract SMTP Mailer Core {#57}</h1>
-<p>This component effectively forms the skeleton of an SMTP server. It expects an SMTP client to connect and send various SMTP requests to it. This basic SMTP Mailer Core however, does not actually do anything in response to any of the SMTP commands it expects.</p>
-<p>Each SMTP command is actually given a dummy callback which more customised SMTP protocol handlers are expected to override. Beyond this, this component is expected to be used as a protocol handler for ServerCore.</p>
-<p>Fundamentally, this component handles the command/response structure of SMTP fairly directly, but expects the brains of the protocol to be implemented by a more intelligent subclass.</p>
-<h2 id="example-usage-58"><span id="example-usage">Example Usage</span> {#58}</h2>
+<h1 id="57">Abstract SMTP Mailer Core</h1>
+<p>This component effectively forms the skeleton of an SMTP server. It
+expects an SMTP client to connect and send various SMTP requests to it.
+This basic SMTP Mailer Core however, does not actually do anything in
+response to any of the SMTP commands it expects.</p>
+<p>Each SMTP command is actually given a dummy callback which more
+customised SMTP protocol handlers are expected to override. Beyond this,
+this component is expected to be used as a protocol handler for
+ServerCore.</p>
+<p>Fundamentally, this component handles the command/response structure
+of SMTP fairly directly, but expects the brains of the protocol to be
+implemented by a more intelligent subclass.</p>
+<h2 id="58"><span id="example-usage">Example Usage</span></h2>
 <p>Whilst this will work to a minimal extent:</p>
 <pre class="literal-block"><code>ServerCore(protocol=MailHandler, port=1025)</code></pre>
-<p>This will not actually form a very interesting SMTP, nor SMTP compliant, server since whilst it will tell you commands it doesn't understand, it will not do anything interesting.</p>
-<p>You are as noted expected to subclass MailHandler. For a better example of how to subclass MailHandler you are suggested to look at Kamaelia.Apps.ConcreteMailHandler.ConcreteMailHandler</p>
-<h2 id="note-59"><span id="note">Note</span> {#59}</h2>
-<p>This component is not complete - you are expected to subclass it to finish it off as you need. Specifically it does not implement the following:</p>
+<p>This will not actually form a very interesting SMTP, nor SMTP
+compliant, server since whilst it will tell you commands it doesn't
+understand, it will not do anything interesting.</p>
+<p>You are as noted expected to subclass MailHandler. For a better
+example of how to subclass MailHandler you are suggested to look at
+Kamaelia.Apps.ConcreteMailHandler.ConcreteMailHandler</p>
+<h2 id="59"><span id="note">Note</span></h2>
+<p>This component is not complete - you are expected to subclass it to
+finish it off as you need. Specifically it does not implement the
+following:</p>
 <blockquote>
 <ul>
 <li>It does not enforce "this command followed by that command"</li>
-<li>It does not actually do anything with any DATA a client sends you</li>
-<li>It neither performs local mail delivery nor proxying - you'd need to implement this yourself.</li>
+<li>It does not actually do anything with any DATA a client sends
+you</li>
+<li>It neither performs local mail delivery nor proxying - you'd need to
+implement this yourself.</li>
 </ul>
 </blockquote>
-<h2 id="how-does-it-work-60"><span id="how-does-it-work">How does it work?</span> {#60}</h2>
-<p>The component is expected to be connected to a client TCP connection by ServerCore, such that messages from the network arrive on inbox "inbox", and outgoing messages get sent to outbox "outbox"</p>
+<h2 id="60"><span id="how-does-it-work">How does it work?</span></h2>
+<p>The component is expected to be connected to a client TCP connection
+by ServerCore, such that messages from the network arrive on inbox
+"inbox", and outgoing messages get sent to outbox "outbox"</p>
 <p>The component will terminate if any of these is true:</p>
 <blockquote>
 <ul>
@@ -64,24 +92,31 @@
 <li>If a "socketShutdown" message arrives on inbox "control"</li>
 </ul>
 </blockquote>
-<p>The main() method divides the connection into effectively two main states:</p>
+<p>The main() method divides the connection into effectively two main
+states:</p>
 <blockquote>
 <ul>
 <li>accepting random commands prior to getting a DATA command</li>
 <li>accepting the email during a DATA command</li>
 </ul>
 </blockquote>
-<p>SMTP commands are specifically dispatched to a particular handler for that command. In this component none of the handlers do anything interesting.</p>
-<h2 id="configuration-61"><span id="configuration">Configuration</span> {#61}</h2>
+<p>SMTP commands are specifically dispatched to a particular handler for
+that command. In this component none of the handlers do anything
+interesting.</p>
+<h2 id="61"><span id="configuration">Configuration</span></h2>
 <p>The abstract mailer supports some basic config settings:</p>
 <blockquote>
 <ul>
 <li>logfile - path/filename where requests should get logged</li>
-<li>debuglogfile - path/filename to where the debug log file should do.</li>
+<li>debuglogfile - path/filename to where the debug log file should
+do.</li>
 </ul>
 </blockquote>
-<h2 id="methods-you-are-expected-to-override-62"><span id="methods-you-are-expected-to-override">Methods you are expected to override</span> {#62}</h2>
-<p>Whilst you are probably better off subclassing ConcreteMailHandler, you will probably need to override the following methods in a subclass if you subclass MailHandler directly.</p>
+<h2 id="62"><span id="methods-you-are-expected-to-override">Methods you
+are expected to override</span></h2>
+<p>Whilst you are probably better off subclassing ConcreteMailHandler,
+you will probably need to override the following methods in a subclass
+if you subclass MailHandler directly.</p>
 <blockquote>
 <ul>
 <li>handleConnect(self)</li>
@@ -100,47 +135,92 @@
 </ul>
 </blockquote>
 <hr />
-<h1 id="kamaelia.apps.grey.mailhandler.mailhandler"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Apps.html" class="reference">Apps</a>.<a href="/Components/pydoc/Kamaelia.Apps.Grey.html" class="reference">Grey</a>.<a href="/Components/pydoc/Kamaelia.Apps.Grey.MailHandler.html" class="reference">MailHandler</a>.<a href="/Components/pydoc/Kamaelia.Apps.Grey.MailHandler.MailHandler.html" class="reference">MailHandler</a></h1>
-<h2 id="symbol-MailHandler">class MailHandler(<a href="/Docs/Axon/Axon.Component.component.html" class="reference">Axon.Component.component</a>)</h2>
-<h3 id="inboxes"><span id="symbol-MailHandler.Inboxes">Inboxes</span></h3>
-<h3 id="outboxes"><span id="symbol-MailHandler.Outboxes">Outboxes</span></h3>
+<h1 id="kamaelia.apps.grey.mailhandler.mailhandler"><a
+href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a
+href="/Components/pydoc/Kamaelia.Apps.html"
+class="reference">Apps</a>.<a
+href="/Components/pydoc/Kamaelia.Apps.Grey.html"
+class="reference">Grey</a>.<a
+href="/Components/pydoc/Kamaelia.Apps.Grey.MailHandler.html"
+class="reference">MailHandler</a>.<a
+href="/Components/pydoc/Kamaelia.Apps.Grey.MailHandler.MailHandler.html"
+class="reference">MailHandler</a></h1>
+<h2 id="symbol-MailHandler">class MailHandler(<a
+href="/Docs/Axon/Axon.Component.component.html"
+class="reference">Axon.Component.component</a>)</h2>
+<h3 id="inboxes"><span
+id="symbol-MailHandler.Inboxes">Inboxes</span></h3>
+<h3 id="outboxes"><span
+id="symbol-MailHandler.Outboxes">Outboxes</span></h3>
 <h3 id="methods-defined-here">Methods defined here</h3>
 <div class="container">
 <div class="boxright">
 <p><strong>Warning!</strong></p>
-<p>You should be using the inbox/outbox interface, not these methods (except construction). This documentation is designed as a roadmap as to their functionalilty for maintainers and new component developers.</p>
+<p>You should be using the inbox/outbox interface, not these methods
+(except construction). This documentation is designed as a roadmap as to
+their functionalilty for maintainers and new component developers.</p>
 </div>
 </div>
-<h4 id="init__self-argd"><span id="symbol-MailHandler.__init__">__init__(self, **argd)</span></h4>
-<h4 id="getlineself"><span id="symbol-MailHandler.getline">getline(self)</span></h4>
-<h4 id="handlecommandself-command"><span id="symbol-MailHandler.handleCommand">handleCommand(self, command)</span></h4>
-<h4 id="handleconnectself"><span id="symbol-MailHandler.handleConnect">handleConnect(self)</span></h4>
-<h4 id="handledataself-command"><span id="symbol-MailHandler.handleData">handleData(self, command)</span></h4>
-<h4 id="handledisconnectself"><span id="symbol-MailHandler.handleDisconnect">handleDisconnect(self)</span></h4>
-<h4 id="handleehloself-command"><span id="symbol-MailHandler.handleEhlo">handleEhlo(self, command)</span></h4>
-<h4 id="handleheloself-command"><span id="symbol-MailHandler.handleHelo">handleHelo(self, command)</span></h4>
-<h4 id="handlehelpself-command"><span id="symbol-MailHandler.handleHelp">handleHelp(self, command)</span></h4>
-<h4 id="handlemailself-command"><span id="symbol-MailHandler.handleMail">handleMail(self, command)</span></h4>
-<h4 id="handlenoopself-command"><span id="symbol-MailHandler.handleNoop">handleNoop(self, command)</span></h4>
-<h4 id="handlequitself-command"><span id="symbol-MailHandler.handleQuit">handleQuit(self, command)</span></h4>
-<h4 id="handlercptself-command"><span id="symbol-MailHandler.handleRcpt">handleRcpt(self, command)</span></h4>
-<h4 id="handlersetself-command"><span id="symbol-MailHandler.handleRset">handleRset(self, command)</span></h4>
-<h4 id="handlevrfyself-command"><span id="symbol-MailHandler.handleVrfy">handleVrfy(self, command)</span></h4>
-<h4 id="lastlineself"><span id="symbol-MailHandler.lastline">lastline(self)</span></h4>
-<h4 id="logresultself"><span id="symbol-MailHandler.logResult">logResult(self)</span></h4>
-<h4 id="logging_recv_connectionself"><span id="symbol-MailHandler.logging_recv_connection">logging_recv_connection(self)</span></h4>
-<h4 id="mainself"><span id="symbol-MailHandler.main">main(self)</span></h4>
-<h4 id="netprintself-args"><span id="symbol-MailHandler.netPrint">netPrint(self, *args)</span></h4>
-<h4 id="notetodebuglogself-line"><span id="symbol-MailHandler.noteToDebugLog">noteToDebugLog(self, line)</span></h4>
-<h4 id="notetologself-line"><span id="symbol-MailHandler.noteToLog">noteToLog(self, line)</span></h4>
+<h4 id="init__self-argd"><span
+id="symbol-MailHandler.__init__">__init__(self, **argd)</span></h4>
+<h4 id="getlineself"><span
+id="symbol-MailHandler.getline">getline(self)</span></h4>
+<h4 id="handlecommandself-command"><span
+id="symbol-MailHandler.handleCommand">handleCommand(self,
+command)</span></h4>
+<h4 id="handleconnectself"><span
+id="symbol-MailHandler.handleConnect">handleConnect(self)</span></h4>
+<h4 id="handledataself-command"><span
+id="symbol-MailHandler.handleData">handleData(self, command)</span></h4>
+<h4 id="handledisconnectself"><span
+id="symbol-MailHandler.handleDisconnect">handleDisconnect(self)</span></h4>
+<h4 id="handleehloself-command"><span
+id="symbol-MailHandler.handleEhlo">handleEhlo(self, command)</span></h4>
+<h4 id="handleheloself-command"><span
+id="symbol-MailHandler.handleHelo">handleHelo(self, command)</span></h4>
+<h4 id="handlehelpself-command"><span
+id="symbol-MailHandler.handleHelp">handleHelp(self, command)</span></h4>
+<h4 id="handlemailself-command"><span
+id="symbol-MailHandler.handleMail">handleMail(self, command)</span></h4>
+<h4 id="handlenoopself-command"><span
+id="symbol-MailHandler.handleNoop">handleNoop(self, command)</span></h4>
+<h4 id="handlequitself-command"><span
+id="symbol-MailHandler.handleQuit">handleQuit(self, command)</span></h4>
+<h4 id="handlercptself-command"><span
+id="symbol-MailHandler.handleRcpt">handleRcpt(self, command)</span></h4>
+<h4 id="handlersetself-command"><span
+id="symbol-MailHandler.handleRset">handleRset(self, command)</span></h4>
+<h4 id="handlevrfyself-command"><span
+id="symbol-MailHandler.handleVrfy">handleVrfy(self, command)</span></h4>
+<h4 id="lastlineself"><span
+id="symbol-MailHandler.lastline">lastline(self)</span></h4>
+<h4 id="logresultself"><span
+id="symbol-MailHandler.logResult">logResult(self)</span></h4>
+<h4 id="logging_recv_connectionself"><span
+id="symbol-MailHandler.logging_recv_connection">logging_recv_connection(self)</span></h4>
+<h4 id="mainself"><span
+id="symbol-MailHandler.main">main(self)</span></h4>
+<h4 id="netprintself-args"><span
+id="symbol-MailHandler.netPrint">netPrint(self, *args)</span></h4>
+<h4 id="notetodebuglogself-line"><span
+id="symbol-MailHandler.noteToDebugLog">noteToDebugLog(self,
+line)</span></h4>
+<h4 id="notetologself-line"><span
+id="symbol-MailHandler.noteToLog">noteToLog(self, line)</span></h4>
 <section>
 
 </section>
 </div>
 <h1 id="feedback">Feedback</h1>
-<p>Got a problem with the documentation? Something unclear that could be clearer? Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
-<p>Please leave you feedback <a href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701" class="reference">here</a> in reply to the documentation thread in the Kamaelia blog.</p>
-<p><em>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</em></p>
+<p>Got a problem with the documentation? Something unclear that could be
+clearer? Want to help improve it? Constructive criticism is very welcome
+- especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback <a
+href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701"
+class="reference">here</a> in reply to the documentation thread in the
+Kamaelia blog.</p>
+<p><em>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38
+UTC/GMT</em></p>
 
 </div> <!-- end section -->
 </div> <!-- end page container -->

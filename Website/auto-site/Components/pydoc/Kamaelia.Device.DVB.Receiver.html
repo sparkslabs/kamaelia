@@ -15,30 +15,49 @@
 <div class="pagecontainer">
 <div class="pagesection">
 <div id="pagenote">
-<p>Feb 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
+<p>March 2024 - This site, and Kamaelia are <a href="https://github.com/sparkslabs/kamaelia/issues/15">being updated</a>. There is significant work needed, and <a href="https://github.com/sparkslabs/kamaelia/pulls">PRs</a> are welcome.
 </div>
 <div class="container">
-<h1 id="kamaelia.device.dvb.receiver"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Device.html" class="reference">Device</a>.<a href="/Components/pydoc/Kamaelia.Device.DVB.html" class="reference">DVB</a>.<a href="/Components/pydoc/Kamaelia.Device.DVB.Receiver.html" class="reference">Receiver</a></h1>
+<h1 id="kamaelia.device.dvb.receiver"><a
+href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a
+href="/Components/pydoc/Kamaelia.Device.html"
+class="reference">Device</a>.<a
+href="/Components/pydoc/Kamaelia.Device.DVB.html"
+class="reference">DVB</a>.<a
+href="/Components/pydoc/Kamaelia.Device.DVB.Receiver.html"
+class="reference">Receiver</a></h1>
 <section>
 <div class="container">
 <ul>
-<li><strong>prefab <a href="/Components/pydoc/Kamaelia.Device.DVB.Receiver.Receiver.html" class="reference">Receiver</a></strong></li>
+<li><strong>prefab <a
+href="/Components/pydoc/Kamaelia.Device.DVB.Receiver.Receiver.html"
+class="reference">Receiver</a></strong></li>
 </ul>
 </div>
 <ul>
-<li><a href="#525" class="reference">DVB-T (Digital Terrestrial TV) Tuner &amp; Demuxing Service</a>
+<li><a href="#525" class="reference">DVB-T (Digital Terrestrial TV)
+Tuner &amp; Demuxing Service</a>
 <ul>
 <li><a href="#526" class="reference">Example Usage</a></li>
 <li><a href="#527" class="reference">How does it work?</a></li>
 </ul></li>
 </ul>
 </section>
-<h1 id="dvb-t-digital-terrestrial-tv-tuner-demuxing-service-525">DVB-T (Digital Terrestrial TV) Tuner &amp; Demuxing Service {#525}</h1>
-<p>Tunes to the specified frequency, using the specified parameters, using a DVB tuner device; then demultiplexes packets by packet ID (PID) from DVB/MPEG transport streams. Provides this as a service, to which other components can subscribe as clients, requesting to receive packets with certain PIDs.</p>
-<p>This is a prefab component built out of a Tuner and DemuxerService component.</p>
-<h2 id="example-usage-526"><span id="example-usage">Example Usage</span> {#526}</h2>
-<p>(Using experimental <a href="/Components/pydoc/Kamaelia.Experimental.Services.html" class="reference">Kamaelia.Experimental.Services</a> components)</p>
-<p>Set up receiver as a named public service, then subscribe to specific PIDs for recording a stream and some event information:</p>
+<h1 id="525">DVB-T (Digital Terrestrial TV) Tuner &amp; Demuxing
+Service</h1>
+<p>Tunes to the specified frequency, using the specified parameters,
+using a DVB tuner device; then demultiplexes packets by packet ID (PID)
+from DVB/MPEG transport streams. Provides this as a service, to which
+other components can subscribe as clients, requesting to receive packets
+with certain PIDs.</p>
+<p>This is a prefab component built out of a Tuner and DemuxerService
+component.</p>
+<h2 id="526"><span id="example-usage">Example Usage</span></h2>
+<p>(Using experimental <a
+href="/Components/pydoc/Kamaelia.Experimental.Services.html"
+class="reference">Kamaelia.Experimental.Services</a> components)</p>
+<p>Set up receiver as a named public service, then subscribe to specific
+PIDs for recording a stream and some event information:</p>
 <pre class="literal-block"><code>feparams = {
     &quot;inversion&quot; : dvb3.frontend.INVERSION_AUTO,
     &quot;constellation&quot; : dvb3.frontend.QAM_16,
@@ -57,24 +76,55 @@ Pipeline( Subscribe(&quot;DEMUXER&quot;, [600,601]),
 Pipeline( Subscribe(&quot;DEMUXER&quot;, [18]),
           SimpleFileWriter(&quot;event_information_data.ts&quot;)
         ).run()</code></pre>
-<h2 id="how-does-it-work-527"><span id="how-does-it-work">How does it work?</span> {#527}</h2>
-<p>This component is a prefab combining a Tuner and a DemuxerService component.</p>
-<p>Use this component in exactly the same way as you would use the <a href="/Components/pydoc/Kamaelia.Device.DVB.DemuxerService.html" class="reference">Kamaelia.Device.DVB.DemuxerService</a> component. The only difference is that requests should be sent to the "inbox" inbox, instead of a different one.</p>
-<p>To request to be sent packets with particular PIDs, send messages of the form:</p>
+<h2 id="527"><span id="how-does-it-work">How does it work?</span></h2>
+<p>This component is a prefab combining a Tuner and a DemuxerService
+component.</p>
+<p>Use this component in exactly the same way as you would use the <a
+href="/Components/pydoc/Kamaelia.Device.DVB.DemuxerService.html"
+class="reference">Kamaelia.Device.DVB.DemuxerService</a> component. The
+only difference is that requests should be sent to the "inbox" inbox,
+instead of a different one.</p>
+<p>To request to be sent packets with particular PIDs, send messages of
+the form:</p>
 <blockquote>
-<p>("ADD", (dest_component, dest_inboxname), [pid, pid, ...]) ("REMOVE", (dest_component, dest_inboxname), [pid, pid, ...])</p>
+<p>("ADD", (dest_component, dest_inboxname), [pid, pid, ...]) ("REMOVE",
+(dest_component, dest_inboxname), [pid, pid, ...])</p>
 </blockquote>
-<p>For more details, see <a href="/Components/pydoc/Kamaelia.Device.DVB.DemuxerService.html" class="reference">Kamaelia.Device.DVB.DemuxerService</a>.</p>
-<p>Internally, the DemuxerService component is wired so that its requests for PIDs go straight back to the Tuner component. When a client makes a request, the DemuxerService therefore automatically asks the Tuner to give it only the packets it needs to satisfy all its current clients.</p>
-<p>This component will terminate if a shutdownMicroprocess or producerFinished message is sent to the "control" inbox. The message will be forwarded on out of the "signal" outbox just before termination.</p>
+<p>For more details, see <a
+href="/Components/pydoc/Kamaelia.Device.DVB.DemuxerService.html"
+class="reference">Kamaelia.Device.DVB.DemuxerService</a>.</p>
+<p>Internally, the DemuxerService component is wired so that its
+requests for PIDs go straight back to the Tuner component. When a client
+makes a request, the DemuxerService therefore automatically asks the
+Tuner to give it only the packets it needs to satisfy all its current
+clients.</p>
+<p>This component will terminate if a shutdownMicroprocess or
+producerFinished message is sent to the "control" inbox. The message
+will be forwarded on out of the "signal" outbox just before
+termination.</p>
 <hr />
-<h1 id="kamaelia.device.dvb.receiver.receiver"><a href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a href="/Components/pydoc/Kamaelia.Device.html" class="reference">Device</a>.<a href="/Components/pydoc/Kamaelia.Device.DVB.html" class="reference">DVB</a>.<a href="/Components/pydoc/Kamaelia.Device.DVB.Receiver.html" class="reference">Receiver</a>.<a href="/Components/pydoc/Kamaelia.Device.DVB.Receiver.Receiver.html" class="reference">Receiver</a></h1>
+<h1 id="kamaelia.device.dvb.receiver.receiver"><a
+href="/Components/pydoc/Kamaelia.html" class="reference">Kamaelia</a>.<a
+href="/Components/pydoc/Kamaelia.Device.html"
+class="reference">Device</a>.<a
+href="/Components/pydoc/Kamaelia.Device.DVB.html"
+class="reference">DVB</a>.<a
+href="/Components/pydoc/Kamaelia.Device.DVB.Receiver.html"
+class="reference">Receiver</a>.<a
+href="/Components/pydoc/Kamaelia.Device.DVB.Receiver.Receiver.html"
+class="reference">Receiver</a></h1>
 <h2 id="symbol-Receiver">prefab: Receiver</h2>
 </div>
 <h1 id="feedback">Feedback</h1>
-<p>Got a problem with the documentation? Something unclear that could be clearer? Want to help improve it? Constructive criticism is very welcome - especially if you can suggest a better rewording!</p>
-<p>Please leave you feedback <a href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701" class="reference">here</a> in reply to the documentation thread in the Kamaelia blog.</p>
-<p><em>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38 UTC/GMT</em></p>
+<p>Got a problem with the documentation? Something unclear that could be
+clearer? Want to help improve it? Constructive criticism is very welcome
+- especially if you can suggest a better rewording!</p>
+<p>Please leave you feedback <a
+href="../../../cgi-bin/blog/blog.cgi?rm=viewpost&amp;nodeid=1142023701"
+class="reference">here</a> in reply to the documentation thread in the
+Kamaelia blog.</p>
+<p><em>-- Automatic documentation generator, 05 Jun 2009 at 03:01:38
+UTC/GMT</em></p>
 
 </div> <!-- end section -->
 </div> <!-- end page container -->
