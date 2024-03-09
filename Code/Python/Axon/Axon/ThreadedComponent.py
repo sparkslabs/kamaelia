@@ -583,8 +583,12 @@ class threadedcomponent(Component.component):
                     self._handlemessagefromthread(msg)
               except UnHandledException as e:
                   e.args[0][1].args = e.args[0][1].args + (str(self),)  # Inject into the exception *which* component threw this exception.
+
+                  # The following probably needs to follow this form.
+                  #   tb = sys.exception().__traceback__
+                  #   raise OtherException(...).with_traceback(tb)
                   try:
-                      code = "raise e.args[0][1], None, e.args[0][2]"
+                      code = "raise e.args[0][0](None).with_traceback(e.args[0][2])"
                       exec (code)
                   except SyntaxError:
                       E = (e.args[0][1])(None)
