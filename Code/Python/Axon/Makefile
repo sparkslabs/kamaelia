@@ -1,6 +1,6 @@
 PYTHON=`which python`
 DESTDIR=/
-PROJECT=axon
+PROJECT=kamaelia-axon
 VERSION=1.13.31
 all:
 	@echo "make source - Create source package"
