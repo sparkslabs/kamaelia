@@ -497,7 +497,7 @@ class scheduler(microprocess):
 #                           print("After Run", mprocess)
                        if mprocess:
                            nextrunqueue.append(mprocess)
-                   except exception_caught:
+                   except RuntimeError:
                        del self.threads[mprocess]
                        mprocess.stop()
                        knockon = mprocess._closeDownMicroprocess()
@@ -586,7 +586,10 @@ class scheduler(microprocess):
 
       - slowmo  -- Optional. Number of seconds to wait between each cycle of executing microprocesses. (default=0 - no wait)
       """
-      for i in self.main(slowmo,canblock=True): pass
+      try:
+          for i in self.main(slowmo,canblock=True): pass
+      except RuntimeError:
+          pass
 
 microprocess.setSchedulerClass(scheduler)
 scheduler() # Initialise the class.
