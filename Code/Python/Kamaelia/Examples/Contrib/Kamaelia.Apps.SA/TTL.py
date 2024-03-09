@@ -34,7 +34,7 @@ class WellBehaved1(Axon.Component.component):
         while not self.dataReady("control"):
             if time.time() - t>0.3:
                 self.send("hello", "outbox")
-                print self
+                print(self)
                 t = time.time()
             yield 1
         self.send(self.recv("control"), "signal")
@@ -55,7 +55,7 @@ class WellBehaved2(Axon.Component.component):
         while not self.dataReady("control"):
             if time.time() - t>0.3:
                 self.send("hello", "outbox")
-                print self
+                print(self)
                 t = time.time()
             yield 1
         self.send(self.recv("control"), "signal")
@@ -70,7 +70,7 @@ class WellBehaved3(Axon.Component.component):
         while not self.dataReady("control"):
             if time.time() - t>0.3:
                 self.send("hello", "outbox")
-                print self
+                print( self )
                 t = time.time()
             yield 1
         self.send(self.recv("control"), "signal")
@@ -88,7 +88,7 @@ class WellBehaved4(Axon.Component.component):
         while not self.dataReady("control"):
             if time.time() - t>0.3:
                 self.send("hello", "outbox")
-                print self
+                print( self )
                 t = time.time()
             yield 1
         self.send(self.recv("control"), "signal")
@@ -102,7 +102,7 @@ class BadlyBehaved1(Axon.Component.component):
         t = time.time()
         while 1:
             if time.time() - t>0.3:
-                print self
+                print( self )
                 t = time.time()
             yield 1
 

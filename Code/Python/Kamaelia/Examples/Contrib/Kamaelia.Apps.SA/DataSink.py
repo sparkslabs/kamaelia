@@ -27,7 +27,7 @@ from Kamaelia.Apps.SA.DSL import DataSink
 
 class mylist(list):
     def append(self, item):
-        print "Appending", item
+        print("Appending", item)
         super(mylist, self).append(item)
 
 R = mylist()
@@ -36,4 +36,4 @@ Pipeline(
     DataSink(R)
 ).run()
 
-print R
+print(R)
