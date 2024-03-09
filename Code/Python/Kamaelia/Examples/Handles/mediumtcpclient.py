@@ -28,7 +28,7 @@ from Kamaelia.Protocol.EchoProtocol import EchoProtocol
 from Kamaelia.Internet.TCPClient import TCPClient
 from Axon.background import background
 from Axon.Handle import Handle
-import Queue
+import queue
 import time
 
 background(slowmo=0.01).start()
@@ -42,11 +42,11 @@ time.sleep(0.5)
 
 echoClient = Handle(TCPClient(host = "localhost", port = PORT)).activate()
 while True:
-    echoClient.put(raw_input(">>> "),"inbox")
+    echoClient.put(input(">>> ").encode("utf8"),"inbox")
     while 1:
         try:
-            print echoClient.get("outbox")
+            print( echoClient.get("outbox").decode("utf8"))
             break
-        except Queue.Empty:
+        except queue.Empty:
             time.sleep(0.01)
 
