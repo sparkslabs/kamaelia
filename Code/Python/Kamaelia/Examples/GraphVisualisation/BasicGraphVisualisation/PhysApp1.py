@@ -116,10 +116,11 @@ class PhysApp1(Kamaelia.UI.MH.PyGameApp, component):
              self.makeParticle(str(self.X), "randompos", "circle", 20)
              self.X += 1
           if random.randrange(0,100)<25:
-             start = self.physics.particleDict.keys()[random.randrange(0,len(self.physics.particleDict.keys()))]
+             particle_keys = list(self.physics.particleDict.keys())
+             start = particle_keys[random.randrange(0,len( particle_keys ))]
              end = start
              while end == start:
-                end = self.physics.particleDict.keys()[random.randrange(0,len(self.physics.particleDict.keys()))]
+                end = particle_keys[random.randrange(0,len( particle_keys ))]
              self.makeBond(self.physics.particleDict[start].ID, self.physics.particleDict[end].ID)
 
 
