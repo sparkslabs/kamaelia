@@ -228,7 +228,7 @@ class SingleShotHTTPClient(component):
 
         splituri["request"].append("\r\n") 
 
-        splituri["request"] = [string.join(splituri["request"], "")] # might improve performance by sending more together
+        splituri["request"] = ["".join(splituri["request"])] # might improve performance by sending more together
 
 #        print splituri["request"]
 
@@ -263,9 +263,11 @@ class SingleShotHTTPClient(component):
         self.httpparser.activate()
         self.response = ""
         if isinstance(request.requestobject["request"], str):
-            self.send(request.requestobject["request"], "_tcpoutbox")
+            send_bytes = request.requestobject["request"].encode("utf8")
+            self.send(send_bytes, "_tcpoutbox")
         else:
             for part in request.requestobject["request"]:
+                part = part.encode("utf8")
                 self.send(part, "_tcpoutbox")
 
     def shutdownKids(self):
@@ -464,7 +466,7 @@ class SimpleHTTPClient(component):
                         carouselbusy = False
 
                     self.pause()
-                self.send(string.join(filebody, ""), "outbox")
+                self.send("".join(filebody), "outbox")
 
                 filebody = [] # free up some memory used by the now unneeded list
 

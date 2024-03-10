@@ -25,7 +25,7 @@ from Axon.Handle import Handle
 from Kamaelia.Protocol.HTTP.HTTPClient import SimpleHTTPClient
 background = background().start()
 import time
-import Queue
+import queue
 
 p = Handle(SimpleHTTPClient()).activate()
 p.put("http://google.com","inbox")
@@ -37,7 +37,7 @@ def get_item(handle):
       try:
           item = handle.get("outbox")
           break
-      except Queue.Empty:
+      except queue.Empty:
           time.sleep(0.05)
    return item
 
@@ -45,6 +45,6 @@ google = get_item(p)
 slashdot = get_item(p)
 whatismyip = get_item(p)
 
-print "google is", len(google), "bytes long, and slashdot is", len(slashdot), "bytes long. Also, our IP address is:", whatismyip
+print( "google is", len(google), "bytes long, and slashdot is", len(slashdot), "bytes long. Also, our IP address is:", whatismyip)
 
 time.sleep(5)
