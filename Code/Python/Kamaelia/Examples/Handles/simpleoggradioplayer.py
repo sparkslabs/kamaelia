@@ -26,7 +26,7 @@ from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.File.ReadFileAdaptor import ReadFileAdaptor
 from Kamaelia.Internet.TCPClient import TCPClient
 import time
-import Queue
+import queue
 import ao
 background(slowmo=0.001).start()
 
@@ -48,7 +48,7 @@ def get_item(handle):
         try:
             X = handle.get("outbox")
             return X
-        except Queue.Empty:
+        except queue.Empty:
             time.sleep(0.001)
 
 # Play the ogg data in the background

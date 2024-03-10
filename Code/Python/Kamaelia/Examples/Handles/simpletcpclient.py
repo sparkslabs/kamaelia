@@ -29,13 +29,13 @@ port = 6667
 import Axon.background
 import Axon.Handle
 import time
-import Queue
+import queue
 from Kamaelia.Util.Console import ConsoleEchoer
 from Kamaelia.Internet.TCPClient import TCPClient
 Axon.background.background().start()
 
-print "what channel on freenode?"
-channel = raw_input(">>> ") # this is to prevent spammage of the default settings.
+print( "what channel on freenode?")
+channel = input(">>> ") # this is to prevent spammage of the default settings.
 
 client = Axon.Handle.Handle(TCPClient(host = host, port = port)).activate()
 time.sleep(1)
@@ -44,8 +44,8 @@ client.put("nick likefile\n","inbox")
 client.put("JOIN %s\n" % channel, "inbox")
 while True:
     try:
-        print client.get("outbox")
-    except Queue.Empty:
+        print( client.get("outbox"))
+    except queue.Empty:
         time.sleep(0.1)
 
 
