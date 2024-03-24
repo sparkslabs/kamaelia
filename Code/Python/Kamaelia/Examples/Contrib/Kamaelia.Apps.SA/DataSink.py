@@ -21,6 +21,8 @@
 This file contains an example of using Kamaelia.Apps.SA.DSL.DataSink
 '''
 
+# Checked 2024/03/24
+
 from Kamaelia.Util.DataSource import DataSource
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Apps.SA.DSL import DataSink

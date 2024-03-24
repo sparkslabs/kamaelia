@@ -22,6 +22,8 @@
 This file contains an example usage of Kamaelia.Apps.SA.Time.SingleTick
 '''
 
+# Checked 2024/03/24
+
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Util.Console import ConsoleEchoer
 from Kamaelia.Apps.SA.Time import SingleTick

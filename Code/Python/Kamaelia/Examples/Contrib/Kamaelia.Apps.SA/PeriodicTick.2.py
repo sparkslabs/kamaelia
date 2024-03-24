@@ -21,6 +21,8 @@
 This file contains an example of how to use Kamaelia.Apps.SA.Time.PeriodicTick
 '''
 
+# Checked 2024/03/24
+
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Util.Console import ConsoleEchoer
 from Kamaelia.Apps.SA.Time import PeriodicTick
