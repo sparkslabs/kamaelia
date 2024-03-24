@@ -24,18 +24,29 @@
 #
 #
 
+import Axon
+
+# Axon.Component.TraceAllSends = True
+# Axon.Component.TraceAllRecvs = True
+
 from Kamaelia.Protocol.FortuneCookieProtocol import FortuneCookieProtocol
 from Kamaelia.Chassis.ConnectedServer import SimpleServer
 from Kamaelia.Internet.TCPClient import TCPClient
 from Kamaelia.Util.Console import ConsoleEchoer
 from Kamaelia.Chassis.Pipeline import Pipeline
+from Kamaelia.Util.PureTransformer import PureTransformer
+
 import random
 
+
 clientServerTestPort=random.randint(1500,1599)
+
+# print("PORT", clientServerTestPort)
 
 SimpleServer(protocol=FortuneCookieProtocol, port=clientServerTestPort).activate()
 
 Pipeline(TCPClient("127.0.0.1",clientServerTestPort),
+         PureTransformer(lambda x: x.decode("utf8")),
          ConsoleEchoer()
         ).run()
 
