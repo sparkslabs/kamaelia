@@ -1,7 +1,7 @@
 PYTHON=`which python`
 DESTDIR=/
-PROJECT=axon
-VERSION=1.7.1
+PROJECT=kamaelia-axon
+VERSION=1.13.31
 all:
 	@echo "make source - Create source package"
 	@echo "make install - Install on local system (only during development)"
@@ -34,13 +34,19 @@ ppadeb:
 	python setup.py sdist
 	cd dist && py2dsc $(PROJECT)-* && cd deb_dist/$(PROJECT)-$(VERSION) && debuild -S && cd .. && dput ppa:sparkslabs/packages $(PROJECT)_*_source.changes
 
+pypi:
+	$(PYTHON) setup.py sdist
+	twine upload dist/*
+
 use:
-	sudo dpkg -i dist/deb_dist/python-$(PROJECT)*deb
+	sudo dpkg -i dist/deb_dist/python3-$(PROJECT)*deb
 
 purge:
-	sudo apt-get purge python-$(PROJECT)
+	sudo apt-get purge python3-$(PROJECT)
 
 clean:
+	rm -f COPYING
+	rm -f AUTHORS
 	$(PYTHON) setup.py clean
 	rm -rf build/ MANIFEST  
 	find . -name '*.pyc' -delete

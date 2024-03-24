@@ -739,7 +739,7 @@ if __name__=="__main__":
                     yield 1
                     for target in self.targets:
                         self.send(target, "changetarget")
-                        for x in xrange(5):
+                        for x in range(5):
                             self.send("HELLO ("+str(x)+") TO " + str(target), "outbox")
 
         Graphline(

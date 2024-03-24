@@ -99,7 +99,7 @@ setup(name = "kamaelia",
                   "Kamaelia.Visualisation.PhysicsGraph",
                   "Kamaelia.Visualisation.PhysicsGraph3D",
                   "Kamaelia.XML", # LAST
-                  ""],
+                  ],
 #      scripts = ['Tools/KamaeliaPresent.py'],
       long_description = """
 """

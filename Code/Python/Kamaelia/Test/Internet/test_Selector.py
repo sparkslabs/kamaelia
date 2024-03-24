@@ -39,7 +39,7 @@ class SmokeTests_Selector(unittest.TestCase):
         """main - Run with no messages, keeps running"""
         S = Selector()
         S.activate()
-        for i in xrange(1,100):
+        for i in range(1,100):
             try:
                 S.next()
             except StopIteration:
@@ -60,7 +60,7 @@ class SmokeTests_Selector(unittest.TestCase):
         S._deliver(shutdown(),"control")
 
         componentExit = False
-        for i in xrange(2000):
+        for i in range(2000):
             try:
                 S.next()
             except StopIteration:
@@ -105,10 +105,10 @@ class Readables_Selector(unittest.TestCase):
         SELECTORMODULE.select = MOCKSELECTORMODULE
         S = Selector()
         S.activate()
-        for i in xrange(100): S.next()
+        for i in range(100): S.next()
         dummyservice = (Axon.Component.component(), "inbox")
         S._deliver(newReader(S,( dummyservice, "LOOKINGFORTHIS")),"notify")
-        for i in xrange(100): S.next()
+        for i in range(100): S.next()
         func, args = MOCKSELECTORMODULE.log[0]
         self.assertEqual("select", func, "select was called in the main loop")
         self.assertEqual(["LOOKINGFORTHIS"], args[0], "The selectable was added to the list of readables")
@@ -123,10 +123,10 @@ class Readables_Selector(unittest.TestCase):
         SELECTORMODULE.select = MOCKSELECTORMODULE
         S = Selector()
         S.activate()
-        for i in xrange(100): S.next()
+        for i in range(100): S.next()
         dummyservice = (Axon.Component.component(), "inbox")
         S._deliver(newReader(S,( dummyservice, "LOOKINGFORTHIS") ),"notify")
-        for i in xrange(100): S.next()
+        for i in range(100): S.next()
         func, args = MOCKSELECTORMODULE.log[0]
         self.assertEqual("select", func, "select was called in the main loop")
         self.assertEqual(["LOOKINGFORTHIS"], args[0])#, "The selectable was added to the list of readables")
@@ -141,12 +141,12 @@ class Readables_Selector(unittest.TestCase):
         SELECTORMODULE.select = MOCKSELECTORMODULE
         S = Selector()
         S.activate()
-        for i in xrange(100): S.next()
+        for i in range(100): S.next()
         dummyservice = (Axon.Component.component(), "inbox")
         S._deliver(newReader(S,( dummyservice, "LOOKINGFORTHIS") ),"notify")
         S._deliver(newReader(S,( dummyservice, "LOOKINGFORTHISTOO") ),"notify")
         S._deliver(newReader(S,( dummyservice, "LOOKINGFORANDTHIS") ),"notify")
-        for i in xrange(100): 
+        for i in range(100): 
             S.next()
         lastfunc, lastargs = None, None
         i = 0
@@ -166,12 +166,12 @@ class Readables_Selector(unittest.TestCase):
         SELECTORMODULE.select = MOCKSELECTORMODULE
         S = Selector()
         S.activate()
-        for i in xrange(100): S.next()
+        for i in range(100): S.next()
         D = Axon.Component.component() 
         dummyservice = (D, "inbox")
         S._deliver(newReader(S,( dummyservice, "LOOKINGFORTHIS") ),"notify")
 
-        for i in xrange(100):
+        for i in range(100):
             S.next();
             try:
                S.postoffice.next()
@@ -190,7 +190,7 @@ class Readables_Selector(unittest.TestCase):
         SELECTORMODULE.select = MOCKSELECTORMODULE
         S = Selector()
         S.activate()
-        for i in xrange(100): S.next()
+        for i in range(100): S.next()
         D = Axon.Component.component()
         E = Axon.Component.component()
         F = Axon.Component.component()
@@ -201,7 +201,7 @@ class Readables_Selector(unittest.TestCase):
         dummyservice3 = (F, "inbox")
         S._deliver(newReader(S,( dummyservice3, "ANDTHENFORTHIS") ),"notify")
 
-        for i in xrange(100):
+        for i in range(100):
             S.next();
             try:
                S.postoffice.next()
@@ -220,13 +220,13 @@ class Readables_Selector(unittest.TestCase):
         SELECTORMODULE.select = MOCKSELECTORMODULE
         S = Selector()
         S.activate()
-        for i in xrange(100): S.next()
+        for i in range(100): S.next()
         D = Axon.Component.component() 
         dummyservice = (D, "inbox")
         S._deliver(newReader(S,( dummyservice, "LOOKINGFORTHIS") ),"notify")
         S._deliver(removeReader(S,"LOOKINGFORTHIS"),"notify")
 
-        for i in xrange(100):
+        for i in range(100):
             S.next();
             try:
                S.postoffice.next()
@@ -245,7 +245,7 @@ class Readables_Selector(unittest.TestCase):
         SELECTORMODULE.select = MOCKSELECTORMODULE
         S = Selector()
         S.activate()
-        for i in xrange(100): S.next()
+        for i in range(100): S.next()
         D = Axon.Component.component()
         E = Axon.Component.component()
         F = Axon.Component.component()
@@ -256,7 +256,7 @@ class Readables_Selector(unittest.TestCase):
         dummyservice3 = (F, "inbox")
         S._deliver(newWriter(S,( dummyservice3, "ANDTHENFORTHIS") ),"notify")
 
-        for i in xrange(100):
+        for i in range(100):
             S.next();
             try:
                S.postoffice.next()
@@ -275,13 +275,13 @@ class Readables_Selector(unittest.TestCase):
         SELECTORMODULE.select = MOCKSELECTORMODULE
         S = Selector()
         S.activate()
-        for i in xrange(100): S.next()
+        for i in range(100): S.next()
         D = Axon.Component.component() 
         dummyservice = (D, "inbox")
         S._deliver(newWriter(S,( dummyservice, "LOOKINGFORTHIS") ),"notify")
         S._deliver(removeWriter(S,"LOOKINGFORTHIS"),"notify")
 
-        for i in xrange(100):
+        for i in range(100):
             S.next();
             try:
                S.postoffice.next()
@@ -299,7 +299,7 @@ class Readables_Selector(unittest.TestCase):
         SELECTORMODULE.select = MOCKSELECTORMODULE
         S = Selector()
         S.activate()
-        for i in xrange(5): S.next()
+        for i in range(5): S.next()
         D = Axon.Component.component()
         E = Axon.Component.component()
         F = Axon.Component.component()
@@ -310,7 +310,7 @@ class Readables_Selector(unittest.TestCase):
         dummyservice3 = (F, "inbox")
         S._deliver(newExceptional(S,( dummyservice3, "ANDTHENFORTHIS") ),"notify")
 
-        for i in xrange(5):
+        for i in range(5):
             S.next();
             try:
                S.postoffice.next()
@@ -329,13 +329,13 @@ class Readables_Selector(unittest.TestCase):
         SELECTORMODULE.select = MOCKSELECTORMODULE
         S = Selector()
         S.activate()
-        for i in xrange(100): S.next()
+        for i in range(100): S.next()
         D = Axon.Component.component() 
         dummyservice = (D, "inbox")
         S._deliver(newExceptional(S,( dummyservice, "LOOKINGFORTHIS") ),"notify")
         S._deliver(removeExceptional(S,"LOOKINGFORTHIS"),"notify")
 
-        for i in xrange(100):
+        for i in range(100):
             S.next();
             try:
                S.postoffice.next()

@@ -48,8 +48,8 @@ class Chooser_Internal_InitialisationTests(unittest.TestCase):
       
    def test_Instantiate_ArgIterator(self):
       "__init__ - Creating, passing iterator is fine"
-      x=Chooser(xrange(0,5))
-      self.assert_(iter_eq(x.items,xrange(0,5)), "__init__ right number of items")
+      x=Chooser(range(0,5))
+      self.assert_(iter_eq(x.items,range(0,5)), "__init__ right number of items")
 
       
       

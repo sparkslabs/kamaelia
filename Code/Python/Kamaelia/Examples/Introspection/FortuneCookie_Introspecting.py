@@ -23,6 +23,7 @@
 # Simple test harness for integrating TCP clients and servers in one system, sharing selector components etc.
 #
 #
+# Checked 2024/03/24
 
 import random
 from Kamaelia.Protocol.FortuneCookieProtocol import FortuneCookieProtocol
@@ -30,13 +31,15 @@ from Kamaelia.Chassis.ConnectedServer import SimpleServer
 from Kamaelia.Internet.TCPClient import TCPClient
 from Kamaelia.Util.Console import ConsoleEchoer
 from Kamaelia.Chassis.Pipeline import Pipeline
+from Kamaelia.Util.PureTransformer import PureTransformer
 
 from Kamaelia.Util.Introspector import Introspector
 
 # Start the introspector and connect to a local visualiser
 Pipeline(
     Introspector(),
-    TCPClient("127.0.0.1", 1500),
+    PureTransformer(lambda x: x.encode("utf8")),
+    TCPClient("127.0.0.1", 1600),
 ).activate()
 
 clientServerTestPort=random.randint(1501,1599)
@@ -44,6 +47,7 @@ clientServerTestPort=random.randint(1501,1599)
 SimpleServer(protocol=FortuneCookieProtocol, port=clientServerTestPort).activate()
 
 Pipeline(TCPClient("127.0.0.1",clientServerTestPort),
+         PureTransformer(lambda x: x.decode("utf8")),
          ConsoleEchoer()
         ).run()
 

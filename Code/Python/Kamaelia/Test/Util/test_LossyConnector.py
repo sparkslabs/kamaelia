@@ -44,7 +44,7 @@ class LossyConnector_test2(unittest.TestCase):
     def deliver(self):
         self.pm.domessagedelivery()
     def runtestedcomponent(self):
-        for i in xrange(5):
+        for i in range(5):
             self.connector.next()
     def setUp(self):
         self.tester = component()
@@ -106,7 +106,7 @@ class LossyConnector_test2(unittest.TestCase):
         self.tester.send(-1)
         self.deliver()
         self.runtestedcomponent()
-        for i in xrange(100): # At this point there should always be one item in the out linkage.
+        for i in range(100): # At this point there should always be one item in the out linkage.
             self.tester.send(i)
             self.deliver()
             self.tester.send('a') # This will be dropped.

@@ -19,6 +19,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Checked: 2024/03/24
+
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Chassis.ConnectedServer import ServerCore
 from Kamaelia.Util.PureTransformer import PureTransformer
@@ -27,9 +29,11 @@ from Kamaelia.Experimental.PythonInterpreter import InterpreterTransformer
 
 def NetInterpreter(*args, **argv):
     return Pipeline(
+                PureTransformer(lambda x: x.decode("utf8")),
                 PureTransformer(lambda x: str(x).rstrip()),
                 InterpreterTransformer(),
                 PureTransformer(lambda x: str(x)+"\r\n>>> "),
+                PureTransformer(lambda x: x.encode("utf8")),
            )
 
 ServerCore(protocol=NetInterpreter, port=1236).run()

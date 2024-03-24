@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.3
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
 # Copyright 2010 British Broadcasting Corporation and Kamaelia Contributors(1)
@@ -106,9 +106,9 @@ class ConsoleReader(threadedcomponent):
    def main(self):
       """Main thread loop."""
       while not self.shutdown():       # XXXX: NOTE We check self.shutdown *AFTER* waiting for input, meaning
-         line = raw_input(self.prompt) # XXXX: NOTE the last line *will* be read. This is probably good
+         line = input(self.prompt)     # XXXX: NOTE the last line *will* be read. This is probably good
          line = line + self.eol        # XXXX: NOTE  motivation at some point for moving away from using
-         self.send(line, "outbox")     # XXXX: NOTE  raw_input.
+         self.send(line, "outbox")     # XXXX: NOTE  input.
 
    def shutdown(self):
        while self.dataReady("control"):

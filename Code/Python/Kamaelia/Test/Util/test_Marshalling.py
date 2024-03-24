@@ -56,7 +56,7 @@ def make_SmokeTests(klass,name):
                 k.activate()
 
                 # let it run for a bit, checking nothing silly comes out
-                for i in xrange(1,100):
+                for i in range(1,100):
                     k.next()
                     self.assert_(0==len(k.outboxes["outbox"]))
                     self.assert_(0==len(k.outboxes["signal"]))
@@ -108,7 +108,7 @@ class Marshalling_ActionTests(unittest.TestCase):
        for src in testData:
            component._deliver( src, "inbox" )
 
-           for _ in xrange(0,10):
+           for _ in range(0,10):
                component.next()
                
            result = component._collect("outbox")

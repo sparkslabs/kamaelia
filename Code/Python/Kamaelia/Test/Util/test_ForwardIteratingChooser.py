@@ -48,8 +48,8 @@ class ForwardIteratingChooser_Internal_InitialisationTests(unittest.TestCase):
       
    def test_Instantiate_ArgIterator(self):
       "__init__ - Creating, passing iterator is fine"
-      x=ForwardIteratingChooser(xrange(0,5))
-      self.assert_(iter_eq(x.items,xrange(1,5)), "__init__ right number of items")
+      x=ForwardIteratingChooser(range(0,5))
+      self.assert_(iter_eq(x.items,range(1,5)), "__init__ right number of items")
 
       
       

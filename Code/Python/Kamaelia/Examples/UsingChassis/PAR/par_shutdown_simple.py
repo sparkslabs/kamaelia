@@ -25,6 +25,9 @@ The purpose of this example is to show that the PAR shutsdown cleanly
 even if the message sent is a producerFinished() message. Essentially
 it's an acceptance test.
 """
+
+# Checked: 2024/03/24
+
 import os
 import time
 import Axon
@@ -42,11 +45,11 @@ class timedShutdown(Axon.ThreadedComponent.threadedcomponent):
 class ChattySlowShutdown(Axon.ThreadedComponent.threadedcomponent):
     def main(self):
         while not self.dataReady("control"):
-            print self.name, "Still waiting"
+            print( self.name, "Still waiting")
             time.sleep(1)
 
         for i in range(3):
-            print self.name, "Shutting down slowly"
+            print( self.name, "Shutting down slowly")
             time.sleep(1)
         self.send(self.recv("control"), "signal")
 
@@ -79,4 +82,4 @@ Pipeline(
         ),
 ).run()
 
-print "PAR shutdown"
+print( "PAR shutdown")

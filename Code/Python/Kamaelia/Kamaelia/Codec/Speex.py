@@ -62,7 +62,7 @@ class SpeexEncode(Axon.ThreadedComponent.threadedcomponent):
                  #print data
                  ret = speexobj.encode(data)
 
-                 if ret is not "":           # Speex objects use internal buffering
+                 if ret != "":           # Speex objects use internal buffering
                    self.send(ret, "outbox")
 #                   yield 1
             

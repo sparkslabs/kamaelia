@@ -280,7 +280,7 @@ from Axon.Ipc import ipc, WaitComplete, reactivate, newComponent, shutdownMicrop
 
 try:
     import Queue as queue
-    vrange = xrange
+    vrange = range
 except ImportError:
     import queue
     vrange = range
@@ -497,7 +497,9 @@ class scheduler(microprocess):
 #                           print("After Run", mprocess)
                        if mprocess:
                            nextrunqueue.append(mprocess)
-                   except exception_caught:
+                   except RuntimeError as e:
+#                       print("Runtime Error", e)
+#                       print("mprocess", mprocess)
                        del self.threads[mprocess]
                        mprocess.stop()
                        knockon = mprocess._closeDownMicroprocess()
@@ -586,7 +588,10 @@ class scheduler(microprocess):
 
       - slowmo  -- Optional. Number of seconds to wait between each cycle of executing microprocesses. (default=0 - no wait)
       """
-      for i in self.main(slowmo,canblock=True): pass
+      try:
+          for i in self.main(slowmo,canblock=True): pass
+      except RuntimeError:
+          pass
 
 microprocess.setSchedulerClass(scheduler)
 scheduler() # Initialise the class.

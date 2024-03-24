@@ -39,9 +39,12 @@ Let's modify the program we're writing first. We need to import the Introspector
     # ------- START OF ADDITION
     from Kamaelia.Util.Introspector import Introspector
     from Kamaelia.Internet.TCPClient import TCPClient
+    from Kamaelia.Util.PureTransformer import PureTransformer
+
 
     Pipeline(
         Introspector(),
+        PureTransformer(lambda x: x.encode("utf8")),
         TCPClient("127.0.0.1", 1600),
     ).activate()
     # ------- END OF ADDITION
@@ -50,6 +53,9 @@ Let's modify the program we're writing first. We need to import the Introspector
         ConsoleReader(),
         ConsoleEchoer(),
     ).run()
+
+
+Note: the PureTransformer is required to transform the plain text from the Introspector to bytes as required by network sockets.
 
 As you can see above those additions are made pretty literally.
 
@@ -92,10 +98,12 @@ On the right hand side you'll see a collection of 5 components:
     TCPClient_6
     ConnectedSocketAdapter_13
     Selector_12
+    PureTransformer_XXX
 
 These relate to the code:
     Pipeline(
         Introspector(),
+        PureTransformer(lambda x: x.encode("utf8")),
         TCPClient("127.0.0.1", 1600),
     ).activate()
 
@@ -161,9 +169,12 @@ As before we can embed the introspection code into this server as follows:
     from Kamaelia.Chassis.Pipeline import Pipeline
     from Kamaelia.Util.Introspector import Introspector
     from Kamaelia.Internet.TCPClient import TCPClient
+    from Kamaelia.Util.PureTransformer import PureTransformer
+
 
     Pipeline(
         Introspector(),
+	PureTransformer(lambda x: x.encode("utf8")),
         TCPClient("127.0.0.1", 1600),
     ).activate()
     # ------- END OF ADDITION
@@ -328,10 +339,12 @@ The simplest way to do this is to use a backplane. The server code looks like th
             peer = str(kwargs.get("peer", "<>"))
             peerport = str(kwargs.get("peerport", "<>"))
             return Pipeline(
+                    PureTransformer(lambda x: x.decode("utf8")),
                     PureTransformer(lambda x: "%s:%s says %s" % (peer,peerport,x)),
                     PublishTo("CHAT_ONE"),
                     # ------------
                     SubscribeTo("CHAT_ONE"),
+                    PureTransformer(lambda x: x.encode("utf8")),
                 )
 
     FastRestartServer(protocol=EchoEveryone, port=1500).run()
@@ -386,18 +399,25 @@ We then define our protocol. In this case, we grab the peer ip and peer port num
             peer = str(kwargs.get("peer", "<>"))
             peerport = str(kwargs.get("peerport", "<>"))
             return Pipeline(
+                    PureTransformer(lambda x: x.decode("utf8")),
                     PureTransformer(lambda x: "%s:%s says %s" % (peer,peerport,x)),
                     PublishTo("CHAT_ONE"),
                     # ------------
                     SubscribeTo("CHAT_ONE"),
+                    PureTransformer(lambda x: x.encode("utf8")),
                 )
+
+(NOTE: Again the PureTransformer of decode/encode are to transform text
+to/from bytes type)
 
 ie this:
             Pipeline(
+                PureTransformer(lambda x: x.decode("utf8")),
                 PureTransformer(lambda x: "%s:%s says %s" % (peer,peerport,x)),
                 PublishTo("CHAT_ONE"),
                 # ------------
                 SubscribeTo("CHAT_ONE"),
+                PureTransformer(lambda x: x.encode("utf8")),
             )
 
 This looks a little odd, so let's break it down. Anything that comes into the pipeline comes from the network connection, and anything that comes out of the Pipeline gets sent to the connection. ie
@@ -413,6 +433,7 @@ In this particular case, it's also useful to know that PublishTo does NOT pass d
 
     Inbound half - handles data from connection:
             Pipeline(
+                PureTransformer(lambda x: x.decode("utf8")),
                 PureTransformer(lambda x: "%s:%s says %s" % (peer,peerport,x)),
                 PublishTo("CHAT_ONE"),
                 # ------------
@@ -425,14 +446,17 @@ In this particular case, it's also useful to know that PublishTo does NOT pass d
                 ....
                 # ------------
                 SubscribeTo("CHAT_ONE"),
+                PureTransformer(lambda x: x.encode("utf8")),
             )
 
 Or overall:
             Pipeline(
+                PureTransformer(lambda x: x.decode("utf8")),
                 PureTransformer(lambda x: "%s:%s says %s" % (peer,peerport,x)),
                 PublishTo("CHAT_ONE"),
                 # ------------
                 SubscribeTo("CHAT_ONE"),
+                PureTransformer(lambda x: x.encode("utf8")),
             )
 
 
@@ -464,6 +488,7 @@ Well to know that we need to modify the server to be an introspecting one:
 
     Pipeline(
         Introspector(),
+        PureTransformer(lambda x: x.encode("utf8")),
         TCPClient("127.0.0.1", 1600),
     ).activate()
     # ------- END OF CODE FRAGMENT NEEDED TO CONNECT TO INTROSPECTOR ----
@@ -474,10 +499,12 @@ Well to know that we need to modify the server to be an introspecting one:
             peer = str(kwargs.get("peer", "<>"))
             peerport = str(kwargs.get("peerport", "<>"))
             return Pipeline(
+                    PureTransformer(lambda x: x.decode("utf8")),
                     PureTransformer(lambda x: "%s:%s says %s" % (peer,peerport,x)),
                     PublishTo("CHAT_ONE"),
                     # ------------
                     SubscribeTo("CHAT_ONE"),
+                    PureTransformer(lambda x: x.encode("utf8")),
                 )
 
     FastRestartServer(protocol=EchoEveryone, port=1500).run()
@@ -525,13 +552,15 @@ Well, as we can see from the AxonVisualiser, this is how things change:
 
     16.gif
 
-Before we dive into the diagram, remeber that this is what the FastRestartServer created to handle the connection when the client connected:
+Before we dive into the diagram, remember that this is what the FastRestartServer created to handle the connection when the client connected:
 
             Pipeline(
+                PureTransformer(lambda x: x.decode("utf8")),
                 PureTransformer(lambda x: "%s:%s says %s" % (peer,peerport,x)),
                 PublishTo("CHAT_ONE"),
                 # ------------
                 SubscribeTo("CHAT_ONE"),
+                PureTransformer(lambda x: x.encode("utf8")),
             )
 
 As noted before the visualiser isn't perfect - rather than pipelines being visualised as shapes containing things (ie nested), it shows everything as a flat list of links between in/out boxes.
@@ -595,3 +624,5 @@ connects:
 
 
 
+Created: 2010/09/27
+Checked: 2024/03/24

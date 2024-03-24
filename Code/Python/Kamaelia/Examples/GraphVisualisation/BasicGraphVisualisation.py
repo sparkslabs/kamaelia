@@ -22,6 +22,8 @@
 
 # Example usage of the various modules here.
 
+# Checked 2024/03/24
+
 from BasicGraphVisualisation.PhysApp1 import PhysApp1
 
 if __name__=="__main__":
@@ -29,7 +31,7 @@ if __name__=="__main__":
     N,L = 4,2
 
     nodes = []
-#    for i in xrange(N):
+#    for i in range(N):
     for i in 1,2,3:
        nodes.append((str(i), "randompos", "circle", 20))
 

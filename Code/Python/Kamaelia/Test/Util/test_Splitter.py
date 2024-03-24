@@ -67,7 +67,7 @@ def runrepeat(gen, count = 100):
    """This just runs the specified generator the specified number of times.  This
    is used to try to make sure expected behaviour has sufficient timeslots to
    succeed without taking too long."""
-   for i in xrange(count):
+   for i in range(count):
       gen.next()
    
 
@@ -113,7 +113,7 @@ class Splitter_Test(unittest.TestCase):
                  raise Timeout(i)
 
    def runCycles(self, cycles=20):
-      for _ in xrange(cycles):
+      for _ in range(cycles):
           self.execute.next()
    
    def deliverhelper(self):
@@ -173,13 +173,13 @@ class Splitter_Test(unittest.TestCase):
       they all receive expected messages."""
       boxes = 10
       boxlist = []
-      for x in xrange(boxes):
+      for x in range(boxes):
          c=component()
          boxlist.append(c)
          self.controller.send(addsink(c))
          self.deliverhelper()
          runrepeat(self.runner)
-      for i in xrange(20):
+      for i in range(20):
          self.src.send(i)
          self.deliverhelper()
          runrepeat(self.runner)
@@ -194,14 +194,14 @@ class Splitter_Test(unittest.TestCase):
       passthrough and to be to an inbox."""
       boxes = 10
       boxlist = []
-      for x in xrange(boxes):
+      for x in range(boxes):
          c=component()
          boxlist.append(c)
          self.links.append(linkage(source=c, sourcebox="outbox", sink=c, sinkbox="control"))
          self.controller.send(addsink(c,"outbox",2))
          self.deliverhelper()
          runrepeat(self.runner)
-      for i in xrange(20):
+      for i in range(20):
          self.src.send(i)
          self.deliverhelper()
          runrepeat(self.runner)
@@ -218,28 +218,28 @@ class Splitter_Test(unittest.TestCase):
       sinks and not the odd ones."""
       boxes = 10
       boxlist = {}
-      for x in xrange(boxes): 
+      for x in range(boxes): 
             C = component().activate()
             boxlist[x] = C
             self.W.send(addsink(C), "outbox")
 
       self.runCycles()
 
-      for x in xrange(1,boxes,2):
+      for x in range(1,boxes,2):
             C = boxlist[x]
             self.W.send(removesink(C), "outbox")
 
       self.runCycles()
 
-      for i in xrange(20):
+      for i in range(20):
          self.S._deliver(i, "inbox")
          self.runCycles()
 
-         for j in xrange(0,boxes,2):
+         for j in range(0,boxes,2):
             self.failUnless(boxlist[j].dataReady("inbox"))
             self.failUnless(boxlist[j].recv("inbox") == i)
             
-         for j in xrange(1,boxes,2):
+         for j in range(1,boxes,2):
              self.failIf(boxlist[j].dataReady("inbox"))
    
    def test_removeOutboxes(self):
@@ -249,27 +249,27 @@ class Splitter_Test(unittest.TestCase):
       boxes = 10
       boxlist = {}
 
-      for x in xrange(boxes): 
+      for x in range(boxes): 
             C = TestComponent().activate()
             boxlist[x] = C
             self.W.send(addsink(C,"test"), "outbox")
 
       self.runCycles()
 
-      for x in xrange(1,boxes,2):
+      for x in range(1,boxes,2):
             C = boxlist[x]
             self.W.send(removesink(C,"test"), "outbox")
 
       self.runCycles()
 
-      for i in xrange(20):
+      for i in range(20):
          self.S._deliver(i, "inbox")
          self.runCycles()
 
-         for j in xrange(0,boxes,2):
+         for j in range(0,boxes,2):
             self.failUnless(boxlist[j].dataReady("test"))
             self.failUnless(boxlist[j].recv("test") == i)   
-         for j in xrange(1,boxes,2):
+         for j in range(1,boxes,2):
             self.failIf(boxlist[j].dataReady("test"))
    
    def test_cleanup(self):
@@ -367,7 +367,7 @@ class Splitter_Test(unittest.TestCase):
    def __test_createsink_defaultbox(self):  # SMELL - internal diagnostic
       """createsink - Checks that a new sink is created and linked on calling creatsink with default box argument"""
       self.split.createsink(self.dst)
-      for i in xrange(0,10):
+      for i in range(0,10):
          self.src.send(i)
          self.deliverhelper()
          runrepeat(self.runner)
@@ -378,7 +378,7 @@ class Splitter_Test(unittest.TestCase):
    def __test_simplepassthrough_createsink(self): # SMELL - internal diagnostic
       """createsink - Checks that a new sink is created and linked on calling creatsink with arguments"""
       self.split.createsink(self.dst2,"test")
-      for i in xrange(0,10):
+      for i in range(0,10):
          self.src.send(i)
          self.deliverhelper()
          runrepeat(self.runner)
@@ -391,11 +391,11 @@ class Splitter_Test(unittest.TestCase):
       they all receive expected messages."""
       boxes = 10
       boxlist = []
-      for x in xrange(boxes):
+      for x in range(boxes):
          c=component()
          boxlist.append(c)
          self.split.createsink(c)
-      for i in xrange(20):
+      for i in range(20):
          self.src.send(i)
          self.deliverhelper()
          runrepeat(self.runner)
@@ -420,22 +420,22 @@ class PlugSplitter_Tests(unittest.TestCase):
         split.link((split, "signal"), (Dummy, "control"))
         split.activate()
 
-        for i in xrange(1,10):
+        for i in range(1,10):
             split._deliver( i, "inbox" )
-        for _ in xrange(0,100):
+        for _ in range(0,100):
             split.next()
-        for i in xrange(1,10):
+        for i in range(1,10):
             self.assert_(len(split.outboxes["outbox"]))
             self.assert_(0==len(split.outboxes["signal"]))
 #            self.assert_( i == split._collect("outbox") )
             self.assert_( i == Dummy.recv("inbox") )
-        for i in xrange(1,10):
+        for i in range(1,10):
             split._deliver( i, "inbox" )
             split.next()
             split.next()
-        for _ in xrange(0,10):
+        for _ in range(0,10):
             split.next()
-        for i in xrange(1,10):
+        for i in range(1,10):
             self.assert_(len(split.outboxes["outbox"]))
             self.assert_(0==len(split.outboxes["signal"]))
 #            self.assert_( i == split._collect("outbox") )
@@ -449,23 +449,23 @@ class PlugSplitter_Tests(unittest.TestCase):
         split.link((split, "signal"), (Dummy, "control"))
         split.activate()
 
-        for i in xrange(1,10):
+        for i in range(1,10):
             split._deliver( i, "control" )
-        for _ in xrange(0,100):
+        for _ in range(0,100):
             split.next()
-        for i in xrange(1,10):
+        for i in range(1,10):
             self.assert_(len(split.outboxes["signal"]))
             self.assert_(0==len(split.outboxes["outbox"]))
 #            self.assert_( i == split._collect("signal") )
             self.assert_( i == Dummy.recv("control") )
 
-        for i in xrange(1,10):
+        for i in range(1,10):
             split._deliver( i, "control" )
             split.next()
             split.next()
-        for _ in xrange(0,10):
+        for _ in range(0,10):
             split.next()
-        for i in xrange(1,10):
+        for i in range(1,10):
             self.assert_(len(split.outboxes["signal"]))
             self.assert_(0==len(split.outboxes["outbox"]))
 #            self.assert_( i == split._collect("signal") )
@@ -480,14 +480,14 @@ class PlugSplitter_Tests(unittest.TestCase):
             split.link((split, "signal"), (Dummy, "control"))
             split.activate()
 
-            for _ in xrange(0,10):
+            for _ in range(0,10):
                 split.next()
             self.assert_(0==len(split.outboxes["outbox"]))
             self.assert_(0==len(split.outboxes["signal"]))
 
             split._deliver( msg, "control" )
             try:
-                for _ in xrange(0,10):
+                for _ in range(0,10):
                     split.next()
                 self.fail()
             except StopIteration:
@@ -514,19 +514,19 @@ class PlugSplitter_Tests(unittest.TestCase):
 
         execute = Axon.Scheduler.scheduler.run.main()
 
-        for i in xrange(1,10):
+        for i in range(1,10):
             execute.next()
 
-        for i in xrange(1,10):
+        for i in range(1,10):
             split._deliver(i, "inbox")
             split._deliver(10+i, "control")
             execute.next()
 
-        for i in xrange(1,40):
+        for i in range(1,40):
             execute.next()
 
         # verify that the data has made it to the targets
-        for i in xrange(1,10):
+        for i in range(1,10):
             self.assert_(target1.dataReady("inbox"))
             self.assert_(target1.dataReady("control"))
             self.assert_(i == target1.recv("inbox"))
@@ -560,19 +560,19 @@ class PlugSplitter_Tests(unittest.TestCase):
 
         execute = Axon.Scheduler.scheduler.run.main()
 
-        for i in xrange(1,10):
+        for i in range(1,10):
             execute.next()
 
-        for i in xrange(1,10):
+        for i in range(1,10):
             split._deliver(i, "inbox")
             split._deliver(10+i, "control")
             execute.next()
 
-        for i in xrange(1,40):
+        for i in range(1,40):
             execute.next()
 
         # verify that the data has made it to the targets
-        for i in xrange(1,10):
+        for i in range(1,10):
             self.assert_(target1.dataReady("inbox"))
             self.assert_(target1.dataReady("control"))
             self.assert_(i == target1.recv("inbox"))
@@ -605,17 +605,17 @@ class PlugSplitter_Tests(unittest.TestCase):
 
         execute = Axon.Scheduler.scheduler.run.main()
 
-        for i in xrange(1,10):
+        for i in range(1,10):
             execute.next()
 
-        for i in xrange(1,10):
+        for i in range(1,10):
             split._deliver(i, "inbox")
             split._deliver(10+i, "control")
-            for j in xrange(1,10):
+            for j in range(1,10):
                 execute.next()
 
         # verify that the data has made it to the targets
-        for i in xrange(1,10):
+        for i in range(1,10):
             self.assert_(target1.dataReady("inbox"))
             self.assert_(target1.dataReady("control"))
             self.assert_(i == target1.recv("inbox"))
@@ -648,10 +648,10 @@ class PlugSplitter_Tests(unittest.TestCase):
 
         execute = Axon.Scheduler.scheduler.run.main()
 
-        for i in xrange(1,10):
+        for i in range(1,10):
             execute.next()
 
-        for i in xrange(1,10):
+        for i in range(1,10):
             if i == 5:
                 delmsg = removesink(target2, "inbox", "control")
                 split._deliver(delmsg, "configuration")
@@ -659,14 +659,14 @@ class PlugSplitter_Tests(unittest.TestCase):
             split._deliver(i, "inbox")
             split._deliver(10+i, "control")
 
-            for j in xrange(1,10):
+            for j in range(1,10):
                 execute.next()
 
-        for i in xrange(1,40):
+        for i in range(1,40):
             execute.next()
 
         # verify that the data has made it to the targets
-        for i in xrange(1,5):
+        for i in range(1,5):
             self.assert_(target1.dataReady("inbox"))
             self.assert_(target1.dataReady("control"))
             self.assert_(i == target1.recv("inbox"))
@@ -677,7 +677,7 @@ class PlugSplitter_Tests(unittest.TestCase):
             self.assert_(i == target2.recv("inbox"))
             self.assert_(10+i == target2.recv("control"))
 
-        for i in xrange(5,10):
+        for i in range(5,10):
             self.assert_(target1.dataReady("inbox"))
             self.assert_(target1.dataReady("control"))
             self.assert_(i == target1.recv("inbox"))
@@ -707,14 +707,14 @@ class Plug_Tests(unittest.TestCase):
 
         execute = Axon.Scheduler.scheduler.run.main()
 
-        for i in xrange(1,1000):
+        for i in range(1,1000):
             execute.next()
 
         #pass some data in
-        for i in xrange(1,10):
+        for i in range(1,10):
             splitter._deliver(i, "inbox")
             splitter._deliver(10+i, "control")
-            for i in xrange(1,100):
+            for i in range(1,100):
                 execute.next()
 
         # verify it reached the target
@@ -733,14 +733,14 @@ class Plug_Tests(unittest.TestCase):
 
         execute = Axon.Scheduler.scheduler.run.main()
 
-        for i in xrange(1,100):
+        for i in range(1,100):
             execute.next()
 
         #send shutdown msg
         msg = producerFinished()
         target._deliver(msg, "control")
 
-        for i in xrange(1,100):
+        for i in range(1,100):
             execute.next()
 
         # verify it reached the target

@@ -73,7 +73,7 @@ import Axon
 class StandaloneInterpreter(Axon.ThreadedComponent.threadedcomponent):
     def console(self):
         while 1:
-            yield raw_input("> ")
+            yield input("> ")
 
     def main(self):
         __script__ = ""

@@ -23,6 +23,8 @@
 # Simple topography viewer server - takes textual commands from a single socket
 # and renders the appropriate graph
 
+# Checked 2024/03/24
+
 from Kamaelia.Visualisation.PhysicsGraph.TopologyViewerServer import TopologyViewerServer
 
 def parseArgs(argv, extraShortArgs="", extraLongArgs=[]):
@@ -66,7 +68,7 @@ if __name__=="__main__":
     dictArgs, remargs, junk = parseArgs(sys.argv[1:])
     
     if "help" in dictArgs:
-        print dictArgs["help"]
+        print( dictArgs["help"])
         
     else:
         TopologyViewerServer(**dictArgs).run()

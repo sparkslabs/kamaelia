@@ -20,6 +20,8 @@
 # limitations under the License.
 # -------------------------------------------------------------------------
 
+# Checked 2024/03/24
+
 # first test of Physics module
 
 import Physics
@@ -140,7 +142,7 @@ if __name__=="__main__":
     N,L = 4,2
 
     nodes = []
-    for i in xrange(N):
+    for i in range(N):
        nodes.append((str(i), "randompos", "circle", 20))
 
     linkDict = {}

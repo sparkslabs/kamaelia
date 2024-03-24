@@ -67,12 +67,12 @@ import string
 #TODO: modify to handle %20 style encoding
 def splitUri(url):
     requestobject = { "raw-uri": url, "uri-protocol": "", "uri-server": "" }
-    splituri = string.split(requestobject["raw-uri"], "://")
+    splituri = requestobject["raw-uri"].split("://")
     if len(splituri) > 1:
         requestobject["uri-protocol"] = splituri[0]
         requestobject["raw-uri"] = requestobject["raw-uri"][len(splituri[0] + "://"):]
 
-    splituri = string.split(requestobject["raw-uri"], "/")
+    splituri = requestobject["raw-uri"].split( "/")
     if splituri[0] != "":
         requestobject["uri-server"] = splituri[0]
         requestobject["raw-uri"] = requestobject["raw-uri"][len(splituri[0]):]
@@ -85,16 +85,16 @@ def splitUri(url):
         else:
             requestobject["uri-server"] = ""
 
-    splituri = string.split(requestobject["uri-server"], ":")
+    splituri = requestobject["uri-server"].split( ":")
     if len(splituri) == 2:
         requestobject["uri-port"] = splituri[1]
         requestobject["uri-server"] = splituri[0]
 
-    splituri = string.split(requestobject["uri-server"], "@")
+    splituri = requestobject["uri-server"].split( "@")
     if len(splituri) == 2:
         requestobject["uri-username"] = splituri[0]
         requestobject["uri-server"] = requestobject["uri-server"][len(splituri[0] + "@"):]
-        splituri = string.split(requestobject["uri-username"], ":")
+        splituri = requestobject["uri-username"].split( ":")
         if len(splituri) == 2:
             requestobject["uri-username"] = splituri[0]
             requestobject["uri-password"] = splituri[1]
@@ -180,6 +180,7 @@ class HTTPParser(component):
         what is received to the readbuffer. This is somewhat inefficient for long lines maybe O(n^2)"""
         if self.dataReady("inbox"):
             request = self.recv('inbox')
+            request = request.decode("utf8")
             #print request, '\n'
             self.readbuffer += request
             return 1
@@ -204,7 +205,7 @@ class HTTPParser(component):
 
     def nextLine(self):
         "Fetch the next complete line in the readbuffer, if there is one"
-        lineendpos = string.find(self.readbuffer, "\n")
+        lineendpos = self.readbuffer.find("\n")
         if lineendpos == -1:
             return None
         else:
@@ -275,7 +276,7 @@ class HTTPParser(component):
                     if currentline[0] == " " or currentline[0] == "\t": #continued header
                         requestobject["headers"][previousheader] += " " + string.lstrip(currentline)
                     else:
-                        splitheader = string.split(currentline, ":")
+                        splitheader = currentline.split( ":")
 #                        print "Found header: " + splitheader[0]
                         requestobject["headers"][string.lower(splitheader[0])] = string.lstrip(currentline[len(splitheader[0]) + 1:])
                 currentline = self.nextLine()
@@ -451,7 +452,7 @@ class HTTPParser(component):
 
     def handleInitialLine(self, requestobject):
         self.debug("HTTPParser::main - initial line found")
-        splitline = string.split(self.currentline, " ")
+        splitline = self.currentline.split( " ")
 
         if self.mode == "request":
             self.handle_requestline(splitline, requestobject)

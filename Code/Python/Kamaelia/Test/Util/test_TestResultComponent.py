@@ -50,7 +50,7 @@ class TestResult_test2(unittest.TestCase):
         self.pm.registerlinkage(linkage(source = self.tester, sink = self.trcomp, sourcebox = "signal", sinkbox = "control"))
 
     def runtestsystem(self):
-        for i in xrange(5):
+        for i in range(5):
             self.trcomp.next()
             self.pm.domessagedelivery()
         
@@ -66,13 +66,13 @@ class TestResult_test2(unittest.TestCase):
         
     def test_trueInput2(self):
         "mainBody - Checks that system keeps running when true value messages are sent to the inbox. Repeated test."
-        for i in xrange(1,100):
+        for i in range(1,100):
             self.tester.send(i)
             self.runtestsystem()
 
     def test_falseInput2(self):
         "mainBody - Checks that an AssertionError is raised when false value messages are sent to the inbox after a series of true ones. Repeated test."
-        for i in xrange(1,100):
+        for i in range(1,100):
             self.tester.send(i)
             self.runtestsystem()
         self.tester.send(False)

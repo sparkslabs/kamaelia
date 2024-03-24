@@ -56,7 +56,7 @@ class Framing_Tests(unittest.TestCase):
         import random
         length = 100
         r = []
-        for x in xrange(length):
+        for x in range(length):
              r.append( chr(random.randrange(0,256)) )
         data = "".join(r)
       
@@ -69,7 +69,7 @@ class Framing_Tests(unittest.TestCase):
         import random
         length = random.randrange(100,200)
         r = []
-        for x in xrange(length):
+        for x in range(length):
              r.append( chr(random.randrange(0,256)) )
         data = "".join(r)
       
@@ -82,7 +82,7 @@ class Framing_Tests(unittest.TestCase):
         import random
         length = random.randrange(100,200)
         r = []
-        for x in xrange(length):
+        for x in range(length):
              r.append( chr(random.randrange(0,256)) )
         data = "".join(r)
 
@@ -137,7 +137,7 @@ class Framing_Tests(unittest.TestCase):
         import random
         length = random.randrange(100,200)
         r = []
-        for x in xrange(length):
+        for x in range(length):
              r.append( chr(random.randrange(0,256)) )
         data = "".join(r)
         original = (50,data)
@@ -151,7 +151,7 @@ class Framing_Tests(unittest.TestCase):
         import random
         length = random.randrange(100,200)
         r = []
-        for x in xrange(length):
+        for x in range(length):
              r.append( chr(random.randrange(0,256)) )
         data = "".join(r)
         stamp = random.randrange(0,200)
@@ -169,7 +169,7 @@ def makeTestCase(klass):
             import random
             X = klass()
             X.activate()
-            for i in xrange(random.randrange(0,2000)):
+            for i in range(random.randrange(0,2000)):
                 try:
                     X.next()
                 except StopIteration:
@@ -182,7 +182,7 @@ def makeTestCase(klass):
             X.activate()
             X._deliver(producerFinished(),"control")
             componentExit = False
-            for i in xrange(random.randrange(0,2000)):
+            for i in range(random.randrange(0,2000)):
                 try:
                     X.next()
                 except StopIteration:
@@ -197,7 +197,7 @@ def makeTestCase(klass):
             X.activate()
             X._deliver("BINGLE","control")
             componentExit = False
-            for i in xrange(random.randrange(0,2000)):
+            for i in range(random.randrange(0,2000)):
                 try:
                     X.next()
                 except StopIteration:
@@ -219,7 +219,7 @@ def makeTestCase(klass):
             X._deliver(shutdown_message,"control")
 
             componentExit = False
-            for i in xrange(random.randrange(0,2000)):
+            for i in range(random.randrange(0,2000)):
                 try:
                     X.next()
                 except StopIteration:
@@ -249,7 +249,7 @@ class FramingComponent_Tests(unittest.TestCase):
         X.link((X, "signal"),(Dummy, "control"))
         X.activate()
         X._deliver(message, "inbox")
-        for i in xrange(20): # More than sufficient cycles (should be lots less!)
+        for i in range(20): # More than sufficient cycles (should be lots less!)
             X.next()
 #        result = X._collect("outbox")
         result = Dummy.recv("inbox")
@@ -261,11 +261,11 @@ class FramingComponent_Tests(unittest.TestCase):
         X.link((X, "outbox"),(Dummy, "inbox"))
         X.link((X, "signal"),(Dummy, "control"))
         X.activate()
-        for i in xrange(100):
+        for i in range(100):
             message = (i,str(i))
             expect = str(Framing.SimpleFrame(*message))
             X._deliver(message, "inbox")
-            for i in xrange(20): # More than sufficient cycles (should be lots less!)
+            for i in range(20): # More than sufficient cycles (should be lots less!)
                 X.next()
 #            result = X._collect("outbox")
             result = Dummy.recv("inbox")
@@ -286,7 +286,7 @@ class DeFramingComponent_Tests(unittest.TestCase):
         X.activate()
         X.activate()
         X._deliver(message, "inbox")
-        for i in xrange(20): # More than sufficient cycles (should be lots less!)
+        for i in range(20): # More than sufficient cycles (should be lots less!)
             X.next()
 #        result = X._collect("outbox")
         result = Dummy.recv("inbox")
@@ -299,11 +299,11 @@ class DeFramingComponent_Tests(unittest.TestCase):
         X.link((X, "signal"),(Dummy, "control"))
         X.activate()
         X.activate()
-        for i in xrange(100):
+        for i in range(100):
             original = (i,str(i))
             message = str(Framing.SimpleFrame(*original))
             X._deliver(message, "inbox")
-            for i in xrange(20): # More than sufficient cycles (should be lots less!)
+            for i in range(20): # More than sufficient cycles (should be lots less!)
                 X.next()
 #            result = X._collect("outbox")
             result = Dummy.recv("inbox")
@@ -318,16 +318,16 @@ class DeFramingComponent_Tests(unittest.TestCase):
         X.activate()
         X.activate()
         originals = []
-        for i in xrange(1,10):
+        for i in range(1,10):
             original = (i, "a" * i)
             originals.append(original)
             message = str(Framing.SimpleFrame(*original))
             if i==5:
                 message = message[:-2]
             X._deliver(message, "inbox")
-        for i in xrange(200):
+        for i in range(200):
             X.next()
-        for i in xrange(1,10):
+        for i in range(1,10):
             if i!=5:
 #                result = X._collect("outbox")
                 result = Dummy.recv("inbox")
@@ -355,7 +355,7 @@ class DataChunker_test(unittest.TestCase):
         X.link((X, "signal"),(Dummy, "control"))
         X.activate()
         X._deliver(message, "inbox")
-        for i in xrange(20): # More than sufficient cycles (should be lots less!)
+        for i in range(20): # More than sufficient cycles (should be lots less!)
             X.next()
 #        result = X._collect("outbox")
         result = Dummy.recv("inbox")
@@ -376,7 +376,7 @@ class DataChunker_test(unittest.TestCase):
         X.link((X, "signal"),(Dummy, "control"))
         X.activate()
         X._deliver(message, "inbox")
-        for i in xrange(20): # More than sufficient cycles (should be lots less!)
+        for i in range(20): # More than sufficient cycles (should be lots less!)
             X.next()
 #        result = X._collect("outbox")
         result = Dummy.recv("inbox")
@@ -394,7 +394,7 @@ class DataDeChunker_Basictest(unittest.TestCase):
         X.link((X, "signal"),(Dummy, "control"))
         X.activate()
         X._deliver(message, "inbox")
-        for i in xrange(20): # More than sufficient cycles (should be lots less!)
+        for i in range(20): # More than sufficient cycles (should be lots less!)
             X.next()
 #        result = X._collect("outbox")
         result = Dummy.recv("inbox")
@@ -410,10 +410,10 @@ class DataDeChunker_Basictest(unittest.TestCase):
         X.link((X, "signal"),(Dummy, "control"))
         X.activate()
         X._deliver(chunk, "inbox")
-        for i in xrange(20): # More than sufficient cycles (should be lots less...)
+        for i in range(20): # More than sufficient cycles (should be lots less...)
                 X.next()
         X._deliver("junk", "flush")
-        for i in xrange(20): # More than sufficient cycles (should be lots less...)
+        for i in range(20): # More than sufficient cycles (should be lots less...)
             X.next()
 #        result = X._collect("outbox")
         result = Dummy.recv("inbox")
@@ -431,10 +431,10 @@ class DataDeChunker_Basictest(unittest.TestCase):
         X.link((X, "signal"),(Dummy, "control"))
         X.activate()
         X._deliver(chunk, "inbox")
-        for i in xrange(20): # More than sufficient cycles (should be lots less...)
+        for i in range(20): # More than sufficient cycles (should be lots less...)
                 X.next()
         X._deliver("junk", "flush")
-        for i in xrange(20): # More than sufficient cycles (should be lots less...)
+        for i in range(20): # More than sufficient cycles (should be lots less...)
             X.next()
 #        result = X._collect("outbox")
         result = Dummy.recv("inbox")
@@ -453,10 +453,10 @@ class DataDeChunker_Basictest(unittest.TestCase):
         X.link((X, "signal"),(Dummy, "control"))
         X.activate()
         X._deliver(chunk, "inbox")
-        for i in xrange(20): # More than sufficient cycles (should be lots less...)
+        for i in range(20): # More than sufficient cycles (should be lots less...)
                 X.next()
         X._deliver("junk", "flush")
-        for i in xrange(20): # More than sufficient cycles (should be lots less...)
+        for i in range(20): # More than sufficient cycles (should be lots less...)
             X.next()
 #        result = X._collect("outbox")
         result = Dummy.recv("inbox")
@@ -475,10 +475,10 @@ class DataDeChunker_Basictest(unittest.TestCase):
         X.link((X, "signal"),(Dummy, "control"))
         X.activate()
         X._deliver(chunk, "inbox")
-        for i in xrange(20): # More than sufficient cycles (should be lots less...)
+        for i in range(20): # More than sufficient cycles (should be lots less...)
                 X.next()
         X._deliver("junk", "flush")
-        for i in xrange(20): # More than sufficient cycles (should be lots less...)
+        for i in range(20): # More than sufficient cycles (should be lots less...)
             X.next()
 #        result = X._collect("outbox")
         result = Dummy.recv("inbox")
@@ -493,7 +493,7 @@ class DataDeChunker_BlocksTest(unittest.TestCase):
         X.link((X, "signal"),(Dummy, "control"))
         X.activate()
         X._deliver(message, "inbox")
-        for i in xrange(20): # More than sufficient cycles (should be lots less!)
+        for i in range(20): # More than sufficient cycles (should be lots less!)
             X.next()
 #        result = X._collect("outbox")
         result = Dummy.recv("inbox")
@@ -524,10 +524,10 @@ class DataDeChunker_BlocksTest(unittest.TestCase):
             X._deliver(block, "inbox")
 
         try:
-            for i in xrange(200): # More than sufficient cycles (should be lots less...)
+            for i in range(200): # More than sufficient cycles (should be lots less...)
                 X.next()
             X._deliver("junk", "flush")
-            for i in xrange(20): # More than sufficient cycles (should be lots less...)
+            for i in range(20): # More than sufficient cycles (should be lots less...)
                 X.next()
 #            result = X._collect("outbox")
             result = Dummy.recv("inbox")
@@ -538,7 +538,7 @@ class DataDeChunker_BlocksTest(unittest.TestCase):
     def test_DeChunk_RandomChunk_ManyBlocks(self):
         "The dechunker handles taking a chunk that's in many blocks and putting it back together"
         syncmessage = "XXXXXXXXXXXXXXXXXXXXXXX"
-        message = ("".join([str(x) for x in xrange(10,50)]) + "\n")*10
+        message = ("".join([str(x) for x in range(10,50)]) + "\n")*10
         chunk = self.makeBasicChunk(message, syncmessage)
 
         X = Framing.DataDeChunker(syncmessage=syncmessage)
@@ -550,10 +550,10 @@ class DataDeChunker_BlocksTest(unittest.TestCase):
             X._deliver(block, "inbox")
 
         try:
-            for i in xrange(2000): # More than sufficient cycles (should be lots less...)
+            for i in range(2000): # More than sufficient cycles (should be lots less...)
                 X.next()
             X._deliver("junk", "flush")
-            for i in xrange(20): # More than sufficient cycles (should be lots less...)
+            for i in range(20): # More than sufficient cycles (should be lots less...)
                 X.next()
 #            result = X._collect("outbox")
             result = Dummy.recv("inbox")
@@ -571,15 +571,15 @@ class DataDeChunker_BlocksTest(unittest.TestCase):
         X.link((X, "signal"),(Dummy, "control"))
         X.activate()
 
-        for base in xrange(10,1000,50):
-            message = ("".join([str(x) for x in xrange(base,base+50)]) + "\n")*10
+        for base in range(10,1000,50):
+            message = ("".join([str(x) for x in range(base,base+50)]) + "\n")*10
             chunk = self.makeBasicChunk(message, syncmessage)
 
             for block in self.blocks(chunk,blocksize=1):
                 X._deliver(block, "inbox")
 
             try:
-                for i in xrange(2000): # Run for a significant time period! (Chunk might be big)
+                for i in range(2000): # Run for a significant time period! (Chunk might be big)
                     X.next()
                 X._deliver("junk", "flush")
                 X.next()
@@ -599,11 +599,11 @@ class DataDeChunker_BlocksTest(unittest.TestCase):
         X.link((X, "outbox"),(Dummy, "inbox"))
         X.link((X, "signal"),(Dummy, "control"))
         X.activate()
-        message = ("".join([str(x) for x in xrange(10,60)]) + "\n")*10
+        message = ("".join([str(x) for x in range(10,60)]) + "\n")*10
         chunk = self.makeBasicChunk(message, syncmessage)
 
         blockgen = self.blocks(chunk,blocksize=20)
-        for _ in xrange(5):
+        for _ in range(5):
             blockgen.next() # throw away first 5 blocks of a chunk
 
         for block in blockgen: # This chunk, since it lacks a start should be ignored
@@ -613,15 +613,15 @@ class DataDeChunker_BlocksTest(unittest.TestCase):
         # chunk above sent to the component is ignored - which is the desired
         # behaviour we're testing
         
-        for base in xrange(10,1000,50):
-            message = ("".join([str(x) for x in xrange(base,base+50)]) + "\n")*10
+        for base in range(10,1000,50):
+            message = ("".join([str(x) for x in range(base,base+50)]) + "\n")*10
             chunk = self.makeBasicChunk(message, syncmessage)
 
             for block in self.blocks(chunk,blocksize=20):
                 X._deliver(block, "inbox")
 
             try:
-                for i in xrange(2000): # Run for a significant time period! (Chunk might be big)
+                for i in range(2000): # Run for a significant time period! (Chunk might be big)
                     X.next()
                 X._deliver("junk", "flush")
                 X.next()
@@ -637,7 +637,7 @@ class DataDeChunker_BlocksTest(unittest.TestCase):
         from Kamaelia.Chassis.Pipeline import Pipeline
         syncmessage = "XXXXXXXXXXXXXXXXXXXXXXX"
         File = open("../../Examples/SimpleGraphicalApps/Ticker/Ulysses").read()
-        chunks = [File[y:y+20] for y in xrange(0,len(File),20) ]
+        chunks = [File[y:y+20] for y in range(0,len(File),20) ]
         
         chunker = Framing.DataChunker(syncmessage=syncmessage)
         dechunker = Framing.DataDeChunker(syncmessage=syncmessage)
@@ -653,7 +653,7 @@ class DataDeChunker_BlocksTest(unittest.TestCase):
             system._deliver(chunk, "inbox")
         
         activeScheduler = system.schedulerClass.run.main()
-        for _ in xrange(2000):
+        for _ in range(2000):
            activeScheduler.next()
 
         resultchunks = []

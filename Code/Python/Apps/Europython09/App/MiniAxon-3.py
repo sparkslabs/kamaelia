@@ -39,7 +39,7 @@ class scheduler(microprocess):
         self.active = []
         self.newqueue = []
     def main(self): 
-        for i in xrange(100):
+        for i in range(100):
             for current in self.active:
                 yield 1
                 try:
