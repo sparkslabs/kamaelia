@@ -38,7 +38,7 @@ from Kamaelia.Support.Protocol.HTTP import HTTPProtocol
 
 # Our configuration
 
-homedirectory = "/srv/www/htdocs/"
+homedirectory = "/var/www/html/"
 indexfilename = "index.html"
 
 #Here we define our routing.  This tells us that the root of the server will run
