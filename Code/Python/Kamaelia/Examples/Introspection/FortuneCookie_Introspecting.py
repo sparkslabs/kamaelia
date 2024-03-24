@@ -47,6 +47,7 @@ clientServerTestPort=random.randint(1501,1599)
 SimpleServer(protocol=FortuneCookieProtocol, port=clientServerTestPort).activate()
 
 Pipeline(TCPClient("127.0.0.1",clientServerTestPort),
+         PureTransformer(lambda x: x.decode("utf8")),
          ConsoleEchoer()
         ).run()
 
