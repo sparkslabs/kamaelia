@@ -237,6 +237,11 @@ class ReadFileAdaptor(component):
                   sys.stdout.write(data.decode("utf8"))
                   sys.stdout.flush()
          return 1 # Continue looping since there may be more data
+      except EOF as e:
+         sig = producerFinished(self)
+         self.send(sig, "signal")
+         return 0 # Finish looping, we've stopped reading
+
       except Exception as e:
          print("Failure, Exception:", e)
          traceback.print_exc()
