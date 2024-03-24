@@ -1,7 +1,7 @@
 PYTHON=`which python`
 DESTDIR=/
 PROJECT=kamaelia-axon
-VERSION=1.13.31
+VERSION=1.14.32
 all:
 	@echo "make source - Create source package"
 	@echo "make install - Install on local system (only during development)"

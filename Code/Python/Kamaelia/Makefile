@@ -1,7 +1,7 @@
 PYTHON=`which python`
 DESTDIR=/
 PROJECT=kamaelia
-VERSION=1.13.31
+VERSION=1.14.32
 all:
 	@echo "make source - Create source package"
 	@echo "make install - Install on local system (only during development)"
@@ -47,6 +47,10 @@ clean:
 	$(PYTHON) setup.py clean
 	rm -rf build/ MANIFEST  
 	find . -name '*.pyc' -delete
+
+pypi:
+	$(PYTHON) setup.py sdist
+	twine upload dist/*
 
 distclean:
 	$(PYTHON) setup.py clean
