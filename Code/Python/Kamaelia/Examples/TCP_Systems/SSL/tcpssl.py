@@ -28,10 +28,10 @@ import sys
 
 
 if len(sys.argv) != 3:
-    print
-    print "Format of usage wrong, it should be this:"
-    print
-    print "    ",sys.argv[0], "host", "port"
+    print()
+    print("Format of usage wrong, it should be this:")
+    print()
+    print("    ",sys.argv[0], "host", "port")
     sys.exit(0)
 
 host = sys.argv[1]
