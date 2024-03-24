@@ -225,7 +225,7 @@ class ExtractLinks(PureTransformer):
                 for part in splitcontent:
                     if part.lower() in ["none", "nofollow"]:
                         norobots = [True]
-                        print "NOROBOTS!"
+                        print("NOROBOTS!")
         
         if norobots == [True]:
             return
@@ -314,7 +314,7 @@ if __name__ == "__main__":
     from Kamaelia.Util.UnseenOnly import UnseenOnly    
     from Kamaelia.Util.Fanout import Fanout
     
-    urlprefix = raw_input("URL matching prefix: ") # e.g. "http://www.example.com/" to only download stuff from that domain
+    urlprefix = input("URL matching prefix: ") # e.g. "http://www.example.com/" to only download stuff from that domain
     
     def suffixMatchOnly(x):
         if x[:len(urlprefix)] == urlprefix:
