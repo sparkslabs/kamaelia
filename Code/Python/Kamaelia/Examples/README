@@ -1,6 +1,11 @@
 Examples
 --------
 
+NOTE WELL: Currently there are a number of examples and directories changed
+to have a leading underscore.  These examples are considered, at least
+temporarily, disabled. They may be enabled or removed at a later date.
+
+
 This directory contains a number of subdirectories, each with a specific
 example.
    * Example 1 : Contains a simple "FortuneCookie" protocol system. Includes
