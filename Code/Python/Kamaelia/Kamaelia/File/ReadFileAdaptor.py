@@ -98,6 +98,7 @@ XXX framework.
 
 
 import sys,os
+import traceback
 from Axon.Component import component, scheduler
 from Axon.Ipc import producerFinished
 
@@ -164,7 +165,7 @@ class ReadFileAdaptor(component):
          self.bitrate                        = bitrate
          self.chunkrate                = chunkrate
          self.steptime = 1.0 / chunkrate # Internally bitrate is semantic sugar for block mode.
-         self.readsize = (bitrate/8) / chunkrate
+         self.readsize = int((bitrate/8) / chunkrate)
          self.getData = self.getDataByteLen # !!!! This sets the getData Method to
                                                    # !!!! be the getDataByteLen method!!
       else:
@@ -175,7 +176,6 @@ class ReadFileAdaptor(component):
             self.readsize = readsize                # "flibble" would get you here too.
             self.steptime = steptime
             self.getData = self.getDataByteLen  # !!!! Setting a method !
-
 
    def initialiseComponent(self):
       """Opens the appropriate file handle"""
@@ -201,6 +201,8 @@ class ReadFileAdaptor(component):
       which readmode we are in is done once, and once only"""
       data = ""
       data = self.f.read(self.readsize)
+      if self.command: # Need to turn this to bytes for python3
+          data = data.encode("utf8")
       if not data:
          raise EOF("End of Data")
       return data
@@ -232,13 +234,17 @@ class ReadFileAdaptor(component):
                assert self.debugger.note("ReadFileAdapter.main",7,"Read data, writing to outbox")
                self.send(data,"outbox") # We kinda assume people are listening...
                if self.debug:
-                  sys.stdout.write(data)
+                  sys.stdout.write(data.decode("utf8"))
                   sys.stdout.flush()
          return 1 # Continue looping since there may be more data
-      except:
+      except Exception as e:
+         print("Failure, Exception:", e)
+         traceback.print_exc()
          sig = producerFinished(self)
          self.send(sig, "signal")
          return 0 # Finish looping, we've stopped reading
+
+
 
 __kamaelia_components__  = ( ReadFileAdaptor, )
 
