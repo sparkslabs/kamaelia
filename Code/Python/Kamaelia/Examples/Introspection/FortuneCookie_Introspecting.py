@@ -23,6 +23,7 @@
 # Simple test harness for integrating TCP clients and servers in one system, sharing selector components etc.
 #
 #
+# Checked 2024/03/24
 
 import random
 from Kamaelia.Protocol.FortuneCookieProtocol import FortuneCookieProtocol
