@@ -30,13 +30,15 @@ from Kamaelia.Chassis.ConnectedServer import SimpleServer
 from Kamaelia.Internet.TCPClient import TCPClient
 from Kamaelia.Util.Console import ConsoleEchoer
 from Kamaelia.Chassis.Pipeline import Pipeline
+from Kamaelia.Util.PureTransformer import PureTransformer
 
 from Kamaelia.Util.Introspector import Introspector
 
 # Start the introspector and connect to a local visualiser
 Pipeline(
     Introspector(),
-    TCPClient("127.0.0.1", 1500),
+    PureTransformer(lambda x: x.encode("utf8")),
+    TCPClient("127.0.0.1", 1600),
 ).activate()
 
 clientServerTestPort=random.randint(1501,1599)
