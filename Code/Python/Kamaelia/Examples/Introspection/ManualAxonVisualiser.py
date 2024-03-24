@@ -40,7 +40,7 @@ class Source(Axon.Component.component):
 
 Pipeline(
         ConsoleReader(),
-        Source(["""\
+        Source([b"""\
 ADD NODE Source Source randompos component
 ADD NODE Source#inbox inbox randompos inbox
 ADD NODE Source#outbox outbox randompos outbox
