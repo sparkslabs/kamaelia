@@ -26,16 +26,21 @@ It's worth noting that these aren't "connected" peers in any shape
 or form, and they're fixed who they're sending to, etc, which is why
 it's a simple peer.
 """
+
+# Checked: 2024/03/24
+
 from Kamaelia.Util.Console import ConsoleEchoer
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Util.Chargen import Chargen
 from Kamaelia.Internet.UDP import SimplePeer
+from Kamaelia.Util.PureTransformer import PureTransformer
 
 server_addr = "127.0.0.1"
 server_port = 1600
 
 Pipeline(
     Chargen(),
+    PureTransformer(lambda x: x.encode("utf8")),
     SimplePeer(receiver_addr=server_addr, receiver_port=server_port),
 ).activate()
 
