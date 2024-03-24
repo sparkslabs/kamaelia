@@ -19,12 +19,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Checked: 2024/03/24
+
 import Axon
 from Kamaelia.Util.RateFilter import MessageRateLimit
 from Kamaelia.Util.Console import ConsoleEchoer
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Internet.TCPClient import TCPClient
 from Kamaelia.Internet.SingleServer import SingleServer
+from Kamaelia.Util.PureTransformer import PureTransformer
  
 class Cat(Axon.Component.component):
     def __init__(self, messages):
@@ -45,10 +48,12 @@ Pipeline(
          "Hello World", "Hello World", "Hello World", "Hello World",
      ]),
      MessageRateLimit(2, 1),
+     PureTransformer(lambda x: x.encode("utf8")),
      SingleServer(port=port),
 ).activate()
 
 Pipeline(
     TCPClient("127.0.0.1", port),
+    PureTransformer(lambda x: x.decode("utf8")),
     ConsoleEchoer(),
 ).run()
