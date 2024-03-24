@@ -28,9 +28,10 @@ import time
 import queue
 
 p = Handle(SimpleHTTPClient()).activate()
-p.put("http://google.com","inbox")
-p.put("http://slashdot.org","inbox")
-p.put("http://whatismyip.org","inbox")
+p.put("http://example.com","inbox")
+# p.put("http://google.com","inbox")
+# p.put("http://slashdot.org","inbox")
+# p.put("http://whatismyip.org","inbox")
 
 def get_item(handle):
    while 1:
@@ -41,10 +42,13 @@ def get_item(handle):
           time.sleep(0.05)
    return item
 
-google = get_item(p)
-slashdot = get_item(p)
-whatismyip = get_item(p)
+example = get_item(p)
 
-print( "google is", len(google), "bytes long, and slashdot is", len(slashdot), "bytes long. Also, our IP address is:", whatismyip)
+# google = get_item(p)
+# slashdot = get_item(p)
+# whatismyip = get_item(p)
+
+print( "example is", len(example), "bytes long")
+# print( "google is", len(google), "bytes long, and slashdot is", len(slashdot), "bytes long. Also, our IP address is:", whatismyip)
 
 time.sleep(5)
