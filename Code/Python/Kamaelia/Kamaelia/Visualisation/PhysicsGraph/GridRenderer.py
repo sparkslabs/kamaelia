@@ -20,6 +20,8 @@
 # limitations under the License.
 # -------------------------------------------------------------------------
 
+# Checked: 2024/03/24
+
 """\
 =============
 Grid Renderer
@@ -97,16 +99,17 @@ class GridRenderer(object):
         once it is fully rendered.
         """
         yield -1
-        for i in range((self.top // self.gridSize) * self.gridSize - self.top,
-                       surface.get_height(),
-                       self.gridSize):
+        for i in range(int((self.top // self.gridSize) * self.gridSize - self.top),
+                       int(surface.get_height()),
+                       int(self.gridSize)):
             pygame.draw.line(surface, self.colour,
                              (0,i),
                              (surface.get_width(),i) )
 
-        for i in range((self.left // self.gridSize) * self.gridSize - self.left,
-                       surface.get_width(), 
-                       self.gridSize):
+
+        for i in range( int((self.left // self.gridSize) * self.gridSize - self.left),
+                        int(surface.get_width()), 
+                        int(self.gridSize)):
             pygame.draw.line(surface, self.colour, 
                              (i, 0                   ), 
                              (i, surface.get_height()) )
