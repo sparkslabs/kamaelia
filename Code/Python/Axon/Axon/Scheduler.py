@@ -497,7 +497,9 @@ class scheduler(microprocess):
 #                           print("After Run", mprocess)
                        if mprocess:
                            nextrunqueue.append(mprocess)
-                   except RuntimeError:
+                   except RuntimeError as e:
+#                       print("Runtime Error", e)
+#                       print("mprocess", mprocess)
                        del self.threads[mprocess]
                        mprocess.stop()
                        knockon = mprocess._closeDownMicroprocess()
