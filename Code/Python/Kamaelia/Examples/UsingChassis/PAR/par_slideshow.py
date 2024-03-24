@@ -21,6 +21,8 @@
 # -------------------------------------------------------------------------
 #
 
+# Checked: 2024/03/24
+
 from Kamaelia.UI.Pygame.Button import Button
 from Kamaelia.UI.Pygame.Image import Image
 from Kamaelia.Util.Chooser import Chooser
