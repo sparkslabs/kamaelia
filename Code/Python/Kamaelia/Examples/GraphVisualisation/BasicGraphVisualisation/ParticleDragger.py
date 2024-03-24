@@ -20,6 +20,8 @@
 # limitations under the License.
 # -------------------------------------------------------------------------
 
+# Checked 2024/03/24
+
 import UI
 
 class ParticleDragger(UI.MH.DragHandler):
