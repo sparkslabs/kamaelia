@@ -22,6 +22,8 @@
 # Licensed to the BBC under a Contributor Agreement: TK
 # Adapted/cleaned up by MPS
 
+# Checked: 2024/03/24
+
 from Kamaelia.File.Append import Append
 from Kamaelia.Chassis.Pipeline import Pipeline
 from Kamaelia.Util.Console import ConsoleReader, ConsoleEchoer
