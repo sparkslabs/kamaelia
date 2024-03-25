@@ -7,6 +7,39 @@ page-status: current
 ---
 # Recent Changes
 
+## 2024/03/24 - NEW Release 1.14.32 Made
+
+1.14.32 has been tagged and released on PyPI and is building on the PPA.
+This release brings semantic versioning to both Kamaelia and Axon. Significant
+updates to Kamaelia and Axon for modern python ecosystem have been made as part
+of this.
+
+This marks the first alpha release of this ongoing "Kamaelia refresh project".
+The best guide as to the current status is in the examples directory and is best
+viewed in two halves:
+
+* Filenames or Directories beginning with a leading underscore `_` are considered "disabled".
+  Specifically they are known not to function or not to function correctly with
+  a modern python ecosystem. There can be many reasons for this, but the primary
+  one is a depenendency on an external library, codebase (or old syntax), or
+  service that no longer functions that way, or no longer exists as it once
+  did. (examples include PyMedia, OpenGL AIM, plain (non-SSL) http services
+  and so on)
+
+  Some of these may be re-enabled in newer releases. Some will likely be removed
+  in newer releases.
+
+* Filenames / Directories without a leading underscore are known to function as
+  of 24/3/24.
+
+As it stands though, this is very much a functional release - and includes
+minor updates to code not changed in 20 years to function correctly with
+python 3. (The code stll functioned correctly with python 2 before these
+changes. Code that is stable for 20 years aside from that is a remarkable
+track record for a piece of code)
+
+## Note:
+
 **Current status:** This site is currently undergoing a number of updates
 and upgrades.  After this the plan is to bring the Kamaelia codebase up to
 date relative to changes in the python eco system since the project was put
@@ -18,6 +51,9 @@ supported version.  Then the pandemic hit, and frankly, there were more
 important things to worry about.  The pandemic is still with us, but
 circumstances have changed, making updates at the moment practical and
 realistic to achieve, so this has been done.
+
+
+
 
 
 ## Upcoming changes

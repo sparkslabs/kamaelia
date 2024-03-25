@@ -23,6 +23,8 @@ What sort of systems? Network servers, clients, desktop applications,
 pygame based games, transcode systems and pipelines, digital TV systems,
 [spam eradicators](/KamaeliaGrey.html), [teaching
 tools](/SpeakAndWrite.html), and a fair amount more :)
+
+Current Release: [1.14.32 (2024/3/24)](https://github.com/sparkslabs/kamaelia/releases/tag/v1.14.32)
 :::
 :::
 
@@ -74,7 +76,7 @@ Kamaelia Documentation
 
 ### Documentation
 
-Documentation is a core asset in Kamaelia. As of Jan 2024, this is now
+Documentation is a core asset in Kamaelia. As of March 2024, this is now
 being significantly updated.
 
 While this is done you are invited to look at the [Component
@@ -128,13 +130,20 @@ Community
 
 ### Kamaelia is open source, help us improve it!
 
-### [Developer Central](/Developers/)
+### [Source](/Repository.html) 
 
-Interested in helping out? You\'re more than welcome! In this area
-you\'ll find some pages which cover some areas of interest for ongoing
-dev, our general development process, project management process,
-guidelines on contributing (eg smart questions, through to code, and
-contributor agreements)
+Kamaelia\'s source is hosted on
+[Github](https://github.com/sparkslabs/kamaelia/). 
+
+### [Release](/Releases.html)
+
+The first release of the Kamaelia \"refresh\" project has been made:
+
+* Github: [1.14.32 (2024/3/24)](https://github.com/sparkslabs/kamaelia/releases/tag/v1.14.32)
+* PyPI - 2 packages [kamaelia-axon](https://pypi.org/project/kamaelia-axon/) and [kamaelia](https://pypi.org/project/kamaelia/)
+
+These assume Python 3 only. This should be considered an alpha release.
+The older python2.7 releases are no longer supported with immediate effect.
 
 ### [Get Help (Contact)](/Contact.html)
 
@@ -144,14 +153,27 @@ repo.
 
 ### [Summer of Code](/SummerOfCode.html)
 
-We\'ve been involved with GSOC now for 3 years, and it\'s been great.
-One of the less obvious things about GSOC is that it\'s generated a
-wealth of docs and ideas which can be dived into here.
+We\'ve were involved with GSOC some time ago.  We did this for 3 years
+running in 2006, 2007 and 2008. It generated a wealth of components,
+documentation and ideas that may still be of interest and are linked
+to here. More than anything it proved that Kamaelia was accessible to
+novice developers. This content is likely to move and be updated to
+reflect the modern ecosystem, but is likely interesting in the meantime.
 
-### [Source](/Repository.html)
+### [Community Console](/Developers/)
 
-Kamaelia\'s source is hosted on
-[Github](https://github.com/sparkslabs/kamaelia/). The latest release is
+<i>(Please note - this section is somewhat out of date as of 2024, and 
+will be updated. However, it does accurately reflect how Kamaelia's
+primary development phase was managed)</i>
+
+Interested in helping out? You\'re more than welcome! In this area
+you\'ll find some pages which cover some areas of interest for ongoing
+dev, our general development process, project management process,
+guidelines on contributing (eg smart questions, through to code, and
+contributor agreements)
+
+<!--
+The latest release is
 somewhat out of data at this point and is to be used (with caution) with
 Python 2.7. That release is the [1.0.12.0
 release](/release/MonthlyReleases/Kamaelia-1.0.12.0.tar.gz). (Y.Y.M.r).
@@ -173,6 +195,8 @@ In the mean time:
 See also [getting started](/GetKamaelia.html))
 
 Other [releases](/release/) and [downloads](/downloads/).
+-->
+
 :::
 :::
 
