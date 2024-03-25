@@ -9,18 +9,27 @@ page-status: current|legacy|needsupdate|deprecated|recommended
 
 ## Current Releases
 
-### Core Library
+### 2024/03/24
 
-* Axon: 1.13.31
+* **Core Library** -- Axon: 1.14.32 (2024/03/24)
+* **Component Library** -- Kamaelia: 1.14.32 (2024/03/24)
 
-### Component Library
+## Downloads:
 
-* Kamaelia: 1.13.31
+The first release of the Kamaelia \"refresh\" project has been made:
 
+* Github: [1.14.32 (2024/3/24)](https://github.com/sparkslabs/kamaelia/releases/tag/v1.14.32)
+* PyPI - 2 packages [kamaelia-axon](https://pypi.org/project/kamaelia-axon/) and [kamaelia](https://pypi.org/project/kamaelia/)
+* Debian packages can be built from the repo
+
+These assume Python 3 only. This should be considered an alpha release.
+The older python 2.7 releases are no longer supported with immediate effect.
+
+<!--
 ### Applications
 
 * 
-
+-->
 
 ## Historical Note
 
@@ -49,8 +58,10 @@ Semantic versioning tends to deal with by default.
 
 ## Version Mapping
 
-* Kamaelia's last official release was version: 1.0.12.0
-* Axon's last official release was version: 1.7.1
+**Prior to the refresh, the last releases were**:
+
+* Kamaelia's : 1.0.12.0
+* Axon's : 1.7.1
 
 To simplify things, for both Axon & Kamaelia:
 
@@ -59,20 +70,22 @@ To simplify things, for both Axon & Kamaelia:
 * Patch version will be a count of the number of releases that are listed
   below. That count is 30 (19 + 11)
 
-That means the new release version numbers for BOTH Kamaelia and Axon going
-forward will initially be:
+The base version for the new versioning following semantic versioning
+was rationalised as follows: The new BASE release version numbers for BOTH
+Kamaelia and Axon going forward was chosen to be 1.13.31 . The reason for 31
+not 30, is because this is will be the 31st release.
 
-* 1.13.31
+Since then we've had a public release, which is 1.14.32. Later iterations
+will increase as per "Semver rationale" above.
 
-The reason for 31 not 30, is because this is will be the 31st release.
 
-## Historical Releases
+## List of Releases
 
 ### Kamaelia
 
-19 versions:
+Releases:
 
-* 0.1.1 - 2004/12/24
+* 0.1.1 - 2004/12/24 - Initial public release
 * 0.1.2 - 2005/04/01
 * 0.2.0-ep - 2005/06/25
 * 0.2.0 - 2005/07/20
@@ -91,10 +104,11 @@ The reason for 31 not 30, is because this is will be the 31st release.
 * 1.0.12.0 - 2010/12/24
 * 1.1.2.0 - 2011/01/13
 * 1.12.0 - 2015/03/01 - Collapsed version number 
+* 1.14.32 - 2024/03/24 - First alpha release of the Kamaelia refresh project, first batch of modern python ecosystem fixes
 
 ### Axon
 
-11 Releases
+Releases:
 
 * 1.0.0 - 2004/12/24
 * 1.0.4 - 2005/06/02
@@ -107,4 +121,4 @@ The reason for 31 not 30, is because this is will be the 31st release.
 * 1.6.0 - 2010/07/22 - License change to Apache 2
 * 1.7.0 - 2011/02/15
 * 1.7.1 - 2015/03/01
-
+* 1.14.32 - 2024/03/24 - First alpha release of the Kamaelia refresh project, first batch of modern python ecosystem fixes
