@@ -3,42 +3,33 @@
 import vorbissimple
 import sys
 import time
-import os
-
-debug = False
-if "DEBUG" in os.environ:
-   debug = os.environ["DEBUG"].lower() == "true"
-
-def debugPrint(*argv):
-   if debug:
-      print("PY", " ".join([str(x) for x in argv]))
 
 x=vorbissimple.vorbissimple()
 f = open("../../../Kamaelia/Examples/SupportingMediaFiles/KDE_Startup_2.ogg", "rb")
-debugPrint(sys.argv)
+print(sys.argv)
 while 1:
-   debugPrint("Loop start")
+   print("Loop start")
    try:
-      debugPrint("Trying")
+      print("Trying")
       data = x._getAudio()
-      debugPrint("Success")
+      print("Success")
       if data:
-         debugPrint("Success")
+         print("Success")
          sys.stderr.buffer.write(data)
          sys.stderr.flush()
    except vorbissimple.VSSRetry:            #   except "RETRY":
-      debugPrint("Inside VSSRetry")
+      print("Inside VSSRetry")
       #pass
    except vorbissimple.VSSNeedData:         #   except "NEEDDATA":
-      debugPrint("Inside VSSNeedData")
+      print("Inside VSSNeedData")
       d = f.read(4096)
 
       if len(d)==0:
-         debugPrint("FAILED TO GET DATA")
+         print("FAILED TO GET DATA")
          break
-      debugPrint("Got Data", len(d))
-      debugPrint("Sending Data")
+      print("Got Data", len(d))
+      print("Sending Data")
       x.sendBytesForDecode(d)
-      debugPrint("Sent Data")
+      print("Sent Data")
 
 "Also This file for real"

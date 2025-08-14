@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
       switch (decodeBuffer->status) {
          case NEEDDATA:
             readData(sourceBuffer);
-            if (sourceBuffer->bytes > 0)
+            if (sourceBuffer->_bytes > 0)
                sendBytesForDecode(oggVorbisContext, sourceBuffer);
             else
                decoding = FALSE;

@@ -17,18 +17,54 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 from distutils.core import setup
 from distutils.extension import Extension
-# from Pyrex.Distutils import build_ext
 from Cython.Distutils import build_ext
+from Cython.Build import cythonize
+
+if 1:
+    extensions = [
+        Extension("vorbissimple",
+                  ["vorbissimple.pyx"],
+                  libraries = ["vorbissimple"],
+                ),
+    ]
+else:
+    extensions = [
+          Extension("vorbissimple",
+                    ["vorbissimple.pyx"],
+                    libraries=["vorbissimple"],
+                    extra_compile_args=["-O0","-g","-fno-omit-frame-pointer","-fsanitize=address,undefined"],
+                    extra_link_args=["-fsanitize=address,undefined"]
+          )
+    ]
+
+
 
 setup(
   name = 'Vorbissimple',
-  ext_modules=[ 
-    Extension("vorbissimple",
-              ["vorbissimple.pyx"],
-              libraries = ["vorbissimple"]
-             ),
-    ],
+  ext_modules=cythonize(extensions, gdb_debug=True),
   cmdclass = {'build_ext': build_ext}
 )
+
+# =========================================================================================
+
+if 0:
+
+
+    from distutils.core import setup
+    from distutils.extension import Extension
+    # from Pyrex.Distutils import build_ext
+    from Cython.Distutils import build_ext
+
+    setup(
+      name = 'Vorbissimple',
+      ext_modules=[
+        Extension("vorbissimple",
+                  ["vorbissimple.pyx"],
+                  libraries = ["vorbissimple"]
+                ),
+        ],
+      cmdclass = {'build_ext': build_ext}
+    )

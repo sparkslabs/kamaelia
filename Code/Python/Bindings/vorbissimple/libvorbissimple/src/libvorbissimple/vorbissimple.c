@@ -22,6 +22,7 @@
 #include <math.h>
 #include <ogg/ogg.h>
 #include <vorbis/codec.h>
+#include <assert.h>
 
 #include "vorbissimple.h"
 
@@ -32,19 +33,20 @@
 ogg_vorbis_context * newOggVorbisContext(void) {
    ogg_vorbis_context * result;
    result = (ogg_vorbis_context *)malloc(sizeof(ogg_vorbis_context));
-   if (result) {
-      ogg_sync_init(&(result->oggSync)); /* Now we can read pages */
-      result->decodeState = STARTSTATE;
-      result->headerPacketsRead = 0;
-      result->streamInitialised = 0;
-      result->convsize = 0;
-      result->buffer = NULL;
-      result->bufferlen = 0;
-      result->warnClipping = FALSE;
-      /* result->oggBitstreamPage; */ /* No initialisation */
-      return result;
-   }
-   return NULL;
+   if (!result) { return NULL; }
+
+   memset(result, 0, sizeof *result);    // Zero the memory
+
+   ogg_sync_init(&(result->oggSync)); /* Now we can read pages */
+   result->decodeState = STARTSTATE;
+   result->headerPacketsRead = 0;
+   result->streamInitialised = 0;
+   result->convsize = 0;
+   result->buffer = NULL;
+   result->bufferlen = 0;
+   result->warnClipping = FALSE;
+   /* result->oggBitstreamPage; */ /* No initialisation, but memset to zero above */
+   return result;
 }
 
 /*************************************************************************
@@ -56,7 +58,7 @@ source_buffer * newSourceBuffer(FILE * fh, int buffersize) {
    result = (source_buffer *)malloc(sizeof(source_buffer));
    if (result) {
       result->fh = fh;
-      result->bytes = 0;
+      result->_bytes = 0;
       if (buffersize) {
          result->buffer = (char *)malloc(sizeof(char)*buffersize);
       } else {
@@ -74,37 +76,38 @@ source_buffer * newSourceBuffer(FILE * fh, int buffersize) {
 
 decode_buffer * newDecodeBuffer(int status) {
    /* Note, the decode buffer does not own any data of it's own, and hence
-      does not allocate or free any data */
-   decode_buffer * result;
-   result = (decode_buffer *)malloc(sizeof(decode_buffer));
-   if (result) {
-      result->status = status;
-      return result;
-   }
-   return NULL;
+      does not allocate or free any data. This is a container to reference
+      the library's buffer */
+   decode_buffer * buffer;
+   buffer = (decode_buffer *)malloc(sizeof(decode_buffer));
+   if (!buffer) { return NULL; }
+
+   buffer->buffer = NULL;
+   buffer->len = 0;
+   buffer->status = status;
+
+   return buffer;
+
 }
 
 void sendBytesForDecode(ogg_vorbis_context * ovc, source_buffer *sourceBuffer){
    char * buffer;
-   buffer=ogg_sync_buffer(&(ovc->oggSync),sourceBuffer->buffersize);
-   memcpy(buffer,sourceBuffer->buffer, (sizeof(char)*sourceBuffer->bytes));
-   ogg_sync_wrote(&(ovc->oggSync),sourceBuffer->bytes);
+   assert(sourceBuffer->_bytes >= 0 && sourceBuffer->_bytes <= sourceBuffer->buffersize);
+   
+   buffer = ogg_sync_buffer( &(ovc->oggSync), sourceBuffer->_bytes); // Get a buffer for the bytes we're sending
+
+   memcpy(buffer,sourceBuffer->buffer, (size_t)sourceBuffer->_bytes);
+   ogg_sync_wrote(&(ovc->oggSync),sourceBuffer->_bytes);
 }
 
 int checkStreamOggVorbis(ogg_vorbis_context * ovc) {
     int result;
-//printf("LVS:CSOV: HERE 1\n");
     vorbis_info_init(&(ovc->vorbisInfo));
-//printf("LVS:CSOV: HERE 2\n");
     vorbis_comment_init(&(ovc->vorbisComment));
-//printf("LVS:CSOV: HERE 3\n");
     result = readPacket(ovc);
-//printf("LVS:CSOV: HERE 4\n");
     if (result <1) return result;
-//printf("LVS:CSOV: HERE 5\n");
 
     result=vorbis_synthesis_headerin(&(ovc->vorbisInfo),&(ovc->vorbisComment),&(ovc->oggPacket));
-//printf("LVS:CSOV: HERE 6\n");
 
     if (result<0){
       return NOTOGGVORBIS;
@@ -126,57 +129,45 @@ int readPage(ogg_vorbis_context * oggVorbisContext){
 }
 
 /* Return values:
-      PACKETREAD : Packet Read
-      NEEDDATA Need Data (via readPage)
-      CORRUPTPAGE : Corrupt Page, need data
-      CORRUPTPACKET : Corrupt Packet, need data
+      PACKETREAD : Packet Read  (1)
+      NEEDDATA Need Data (via readPage)  (-1)
+      CORRUPTPAGE : Corrupt Page, need data  (-10)
+      CORRUPTPACKET : Corrupt Packet, need data (-11)
 */
-int readPacket(ogg_vorbis_context * oggVorbisContext){
+int readPacket(ogg_vorbis_context * ovc){
    int packetResult, pageResult;
    int packetRead = FALSE;
-#if 0
-//printf("DELETEME - START HERE 1\n");
-   if (! oggVorbisContext->streamInitialised) {
-//printf("DELETEME - TRYINGINITIALISATION\n");
-      int y = ogg_page_serialno(&(oggVorbisContext->oggBitstreamPage));
-//printf("DELETEME - TRYINGINITIALISATION TOO\n");
-      int x = ogg_stream_init(&(oggVorbisContext->oggStream),y);
-//printf("DELETEME - TRYINGINITIALISATION Hmmm\n");
-//      if (x<0) {printf("DELETEME - ARRGGGHHH 1\n"); }
-      oggVorbisContext->streamInitialised = TRUE;
-   }
-//printf("DELETEME - END HERE 1\n");
-#endif
 
-//printf("LVS:RPack: HERE 1\n");
-//if ( NULL != &(oggVorbisContext->oggStream)) { printf("oggVorbisContext->oggStream\n"); } 
-//if ( NULL != &(oggVorbisContext->oggPacket)) { printf("oggVorbisContext->oggPacket\n"); }
-   packetResult=ogg_stream_packetout(&(oggVorbisContext->oggStream),&(oggVorbisContext->oggPacket));
-//printf("LVS:RPack: HERE 2\n");
-   if (packetResult>0) packetRead=TRUE;
-//printf("LVS:RPack: HERE 3\n");
-   if (packetResult<0) return CORRUPTPACKET;
-//printf("LVS:RPack: HERE 4\n");
-   while (!packetRead) {
-      pageResult=readPage(oggVorbisContext);
-//printf("LVS:RPack: HERE 5\n");
-      if (pageResult<0) {
-         return pageResult;
-      }
-//printf("LVS:RPack: HERE 6\n");
-      /* We don't check the result of stuffing things in the buffer - getting stuff out will fail if this fails */
-      ogg_stream_pagein(&(oggVorbisContext->oggStream),&(oggVorbisContext->oggBitstreamPage));
-//printf("LVS:RPack: HERE 7\n");
-      packetResult=ogg_stream_packetout(&(oggVorbisContext->oggStream),&(oggVorbisContext->oggPacket));
-//printf("LVS:RPack: HERE 8\n");
-      if (packetResult>0) packetRead=TRUE;
-//printf("LVS:RPack: HERE 9\n");
-      if (packetResult<0) return CORRUPTPACKET;
-      // packetResult is 0 == need a new page - hence restart loop
-//printf("LVS:RPack: HERE 10\n");
+   assert(ovc != NULL);
+
+   /* Ensure the logical stream is initialised at least once */
+   if (!ovc->streamInitialised) {
+       pageResult = readPage(ovc);
+       if (pageResult <= 0)   /* NEEDDATA or error */
+           return pageResult;
+       /* readPage() initialises the stream when it sees the first page */
+       ogg_stream_pagein(&ovc->oggStream, &ovc->oggBitstreamPage);
    }
-//printf("LVS:RPack: HERE 11\n");
-   return PACKETREAD;
+
+   packetResult = ogg_stream_packetout(&ovc->oggStream, &ovc->oggPacket);
+   if (packetResult < 0) return CORRUPTPACKET;
+   if (packetResult > 0) return PACKETREAD;
+
+
+   /* Keep pulling pages until we get a packet or need more data */
+   for (;;) {
+       pageResult = readPage(ovc);
+       if (pageResult <= 0) {   /* NEEDDATA or error */
+           return pageResult;
+       }
+
+      /* We don't check the result of stuffing things in the buffer - getting stuff out will fail if this fails */
+       ogg_stream_pagein(&ovc->oggStream, &ovc->oggBitstreamPage);
+
+       packetResult = ogg_stream_packetout(&ovc->oggStream, &ovc->oggPacket);
+       if (packetResult < 0) return CORRUPTPACKET;
+       if (packetResult > 0) return PACKETREAD;
+   }
 }
 
 /* This function forms a state machine who's purpose in life is very simple:
@@ -197,16 +188,17 @@ int readCommentAndCodebookHeaders(ogg_vorbis_context * ovc) {
       vorbis_synthesis_headerin(&(ovc->vorbisInfo),&(ovc->vorbisComment),&(ovc->oggPacket));
       ovc->headerPacketsRead += 1;
    }
-    ovc->convsize=BUFSIZE/ovc->vorbisInfo.channels;
+
+   ovc->convsize=BUFSIZE / ( ovc->vorbisInfo.channels ? ovc->vorbisInfo.channels : 1 );
 
     /* OK, got and parsed all three headers. Initialize the Vorbis packet->PCM decoder. */
     /* First, central decode state */
-    vorbis_synthesis_init(&(ovc->vorbisDSP),&(ovc->vorbisInfo));
+   vorbis_synthesis_init(&(ovc->vorbisDSP),&(ovc->vorbisInfo));
 
    /* Second, local state for most of the decode so multiple block
      decodes can proceed in parallel. We could init multiple
      vorbis_block structures for vd here */
-    vorbis_block_init(&(ovc->vorbisDSP),&(ovc->vorbisWorkingBlock));
+   vorbis_block_init(&(ovc->vorbisDSP),&(ovc->vorbisWorkingBlock));
 
    return 1;
 }
@@ -325,30 +317,23 @@ decode_buffer * getAudio(ogg_vorbis_context * oggVorbisContext){
    int _result;
    decode_buffer * result; /* Beginning to think this might be part of context */
    result = newDecodeBuffer(NORMAL); // FIXME: Memory leak
-//printf("LVS:GA: HERE 1\n");
    switch (oggVorbisContext->decodeState) {
       case STARTSTATE:
          result->status = NEEDDATA;
          oggVorbisContext->decodeState = CHECKSTREAMOGGVORBIS;
-//printf("LVS:GA: HERE 2\n");
          break;
       case CHECKSTREAMOGGVORBIS:
          oggVorbisContext->decodeState = FAILSTATE;
-//printf("LVS:GA: HERE 3\n");
          if ( ( (_result= checkStreamOggVorbis(oggVorbisContext))>0 ) ) {
             oggVorbisContext->decodeState = READCOMMENTANDCODEBOOKHEADERS;
          }
-//printf("LVS:GA: HERE 4\n");
          if (_result == NEEDDATA) {
             oggVorbisContext->decodeState = CHECKSTREAMOGGVORBIS;
             result->status = NEEDDATA;
          }
-//printf("LVS:GA: HERE 5\n");
          break;
       case READCOMMENTANDCODEBOOKHEADERS:
-//printf("LVS:GA: HERE 6\n");
          _result = readCommentAndCodebookHeaders(oggVorbisContext);
-//printf("LVS:GA: HERE 7\n");
          switch (_result) {
             case COMMENTANDCODEBOOKHEADERSREAD:
                oggVorbisContext->decodeState = MAINDATADECODELOOP;
@@ -359,13 +344,10 @@ decode_buffer * getAudio(ogg_vorbis_context * oggVorbisContext){
             default:
                oggVorbisContext->decodeState = FAILSTATE;
                break;
-//printf("LVS:GA: HERE 8\n");
          }
          break;
       case MAINDATADECODELOOP:
-//printf("LVS:GA: HERE 9\n");
          _result = decodeDataStream(oggVorbisContext);
-//printf("LVS:GA: HERE 10\n");
          // FIXME: Needs to handle end of stream correctly
          //        currently looks at EOF
          if (_result==NEEDDATA)
@@ -378,21 +360,19 @@ decode_buffer * getAudio(ogg_vorbis_context * oggVorbisContext){
                result->status = HAVEDATA;
             }
          }
-//printf("LVS:GA: HERE 11\n");
          break;
       default:
          result->status = NEEDDATA; /* NO! it should die! */
          break;
    }
-//printf("LVS:GA: HERE 12\n");
    return result;
 }
 
 void readData(source_buffer * sourceBuffer){
-   sourceBuffer->bytes = -1;
+   sourceBuffer->_bytes = -1;
    if (!sourceBuffer->buffer) {
       fprintf(stderr, "No buffer to read data into\n");
       return;
    }
-   sourceBuffer->bytes = fread(sourceBuffer->buffer,1,sourceBuffer->buffersize, sourceBuffer->fh);
+   sourceBuffer->_bytes = fread(sourceBuffer->buffer,1,sourceBuffer->buffersize, sourceBuffer->fh);
 }

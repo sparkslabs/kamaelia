@@ -19,9 +19,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from libc.string cimport memset, memcpy
+from libcpp cimport bool
+from libc.stdint cimport uintptr_t
+
 cdef struct FILE
 cdef extern from "Python.h":
-   object PyString_FromStringAndSize(char*, int)
+   object PyBytes_FromStringAndSize(char *, int)
+   #object PyUnicode_FromStringAndSize(char *, int)
+   char * PyBytes_AsString(object)
+   Py_ssize_t PyBytes_Size(object)
+
+def printable(b):
+   return chr(b) if 32 <= b <128 else "."
+
+def printable_bytes(bs):
+   return "".join([printable(b) for b in bs])
+
 
 cdef extern from "stdlib.h":
    void free(void *ptr)
@@ -38,8 +52,8 @@ cdef extern from "vorbissimple.h":
 
    ctypedef struct source_buffer:
       FILE* fh
-      char* buffer
-      int bytes
+      unsigned char* buffer
+      int _bytes
       int buffersize
 
    ctypedef struct decode_buffer:
@@ -54,71 +68,79 @@ cdef extern from "vorbissimple.h":
    void readData(source_buffer* sourceBuffer)
    void sendBytesForDecode(ogg_vorbis_context* ovc, source_buffer* sourceBuffer)
 
+class VSSRetry(Exception):
+   pass
+
+class VSSNeedData(Exception):
+   pass
+
+bufsize = BUFSIZE
+
 cdef class vorbissimple:
    cdef ogg_vorbis_context* oggVorbisContext
    cdef source_buffer* sourceBuffer
    cdef decode_buffer* decodeBuffer
-   
+
    cdef object sourceQueue
    cdef long int sourceQueueLen
 
-   def __new__(self):
+   def __cinit__(self):
       self.sourceBuffer = newSourceBuffer(NULL,BUFSIZE)
       self.oggVorbisContext = newOggVorbisContext()
       self.decodeBuffer = NULL
-      self.sourceQueue = []
-      self.sourceQueueLen = 0
-      
+      self.sourceQueue = []  # We maintain a list of buffers to send
+      self.sourceQueueLen = 0  # We maintain a total length to send
+
    def __dealloc__(self):
       if self.decodeBuffer:
          free(self.decodeBuffer)
          self.decodeBuffer = NULL
 
-   def sendBytesForDecode(self, bytes):
-       self.sourceQueue.append(bytes)
-       self.sourceQueueLen = self.sourceQueueLen + len(bytes)
-       
+   def sendBytesForDecode(self, _bytes):
+       self.sourceQueue.append(_bytes)  # We add the bytes end and append them to our send queue
+       self.sourceQueueLen = self.sourceQueueLen + PyBytes_Size(_bytes) # We increase our total to send accordinging
+
    def __dequeueToDecoder(self):
       cdef int count
       cdef int i
-      cdef int j
+      cdef Py_ssize_t j
       cdef object fragment
-      
       # make sure we take at least 58 bytes (minimum accepted by libvorbis)
-      
       if self.sourceQueueLen < 58:
-          raise "NEEDDATA"
-      
+          raise VSSNeedData()
+
       # don't take more than there is space in the buffer
       count = min(self.sourceQueueLen, BUFSIZE)
-      
+
       # make sure we don't leave a straggling remains of <58 bytes
       if count < BUFSIZE and count > (BUFSIZE - 58):
           count = BUFSIZE - 58
-          
+
       # copy from fragments into source buffer
-      self.sourceBuffer.bytes = count
+      self.sourceBuffer._bytes = count
       self.sourceQueueLen = self.sourceQueueLen - count
+
       i=0
       while count > 0:
           fragment = self.sourceQueue[0]
-          
-          # copy from fragment
-          for j from 0 <= j < min(len(fragment), count):
-              self.sourceBuffer.buffer[i] = ord(fragment[j])
-              i=i+1
-          
-          count=count-j
-          
+          j = min(PyBytes_Size(fragment), count)
+          assert i + j <= self.sourceBuffer.buffersize # guard
+
+          memcpy(self.sourceBuffer.buffer +i ,  PyBytes_AsString(fragment), j)
+
+          i += j
+          count = count-j
+
           # if we've used the whole fragment, bin it; otherwise trim it to what's left
-          if j == len(fragment):
+          if j == PyBytes_Size(fragment):
               del self.sourceQueue[0]
           else:
               self.sourceQueue[0] = self.sourceQueue[0][j:]
 
+      assert i == self.sourceBuffer._bytes
       sendBytesForDecode(self.oggVorbisContext, self.sourceBuffer);
-      
-   def _getAudio(self):
+
+   def _getAudio(self): # FIXME: this is public API, not private
       # repeatedly try to get audio data, supplying data when requested if we
       # have some available...
       # ...until we don't have any, or the vorbis decoder says something else
@@ -126,30 +148,27 @@ cdef class vorbissimple:
          if self.decodeBuffer:
              free(self.decodeBuffer)
              self.decodeBuffer = NULL
-             
+         # else:
+             # decodeBuffer is NULL")
+
          self.decodeBuffer = getAudio(self.oggVorbisContext)
-        
-         if self.decodeBuffer.status == NEEDDATA:
-             self.__dequeueToDecoder()
+
+         if self.decodeBuffer.status == NEEDDATA: # Decoder needs data... 
+             self.__dequeueToDecoder()            # So we pass some in
          else:
              break
-
 
       if self.decodeBuffer.status == HAVEDATA:
 
          if self.decodeBuffer.len >0:
-            return PyString_FromStringAndSize(self.decodeBuffer.buffer,self.decodeBuffer.len)
+            return PyBytes_FromStringAndSize(self.decodeBuffer.buffer,self.decodeBuffer.len)
          else:
-            return ""
+            return b""
 
       if self.decodeBuffer.status == NORMAL:
-         raise "RETRY"
+         raise VSSRetry()
 
-      raise "ERROR"
-
+      raise Exception("ERROR")
    
    def fails(self):
-      raise "Failed! :-)"
-
-
-#print "test"
+      raise Exception("Failed! :-)")  # FIXME: Should not be a string exception

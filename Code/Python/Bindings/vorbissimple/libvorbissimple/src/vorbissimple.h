@@ -73,7 +73,7 @@ typedef struct {
 typedef struct {
    FILE * fh;
    char * buffer;
-   int bytes;
+   int _bytes;
    int buffersize;
 } source_buffer;
 

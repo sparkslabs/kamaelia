@@ -6,6 +6,27 @@ VERSION_0_0_1_bp - Initial version. If bugfixes specific to this version
     need to be made, make into a complete branch with the tag VERSION_0_0_1.
 
 
+Python 3 fixes - 17/8/2025
+
+Key Changes
+
+* Ensure the logical stream is initialised, not accidentally initialised
+   - This was necessary to avoid a heisenbug triggered by filename length.
+* Updated Makefiles
+* Make checking the code using the Makefile simpler
+* Build the decode buffer better
+* Pull in assert header
+* Add an assert for the buffers, and also only create buffers of the correct size
+* Safely handle situation where number of channels is invalid
+* Enable building with santised addresses - requires manual change.
+* Create a pathway for building the extension with address santisation
+* Fixed the memcpy when copying data in.
+* Updated some types to be more precise.
+* Created a debugPrint mechanism - commandline toggle-able
+* Restructure the guard around memory allocation
+* Remove latent aliasing of internal type 'bytes'
+* Zero memory for ogg_vorbis_context - which zeroes everything
+
 
 Michael.
 
