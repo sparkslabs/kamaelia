@@ -1,6 +1,6 @@
 ---
 pagename: Releases
-last-modified-date: 
+last-modified-date: 2025/8/17
 page-template: default
 page-type: text/markdown
 page-status: current|legacy|needsupdate|deprecated|recommended
@@ -8,6 +8,18 @@ page-status: current|legacy|needsupdate|deprecated|recommended
 # Releases
 
 ## Current Releases
+
+### 2025/08/17
+
+* **Core Library** -- Axon: 1.14.34 (2025/08/17)
+* **Component Library** -- Kamaelia: 1.14.34 (2025/07/17)
+
+## Downloads
+
+* Github: [1.14.34  (2025/8/17)](https://github.com/sparkslabs/kamaelia/releases/tag/v1.14.34)
+
+PyPI & Debian packages to follow
+
 
 ### 2024/03/24
 
@@ -105,6 +117,7 @@ Releases:
 * 1.1.2.0 - 2011/01/13
 * 1.12.0 - 2015/03/01 - Collapsed version number 
 * 1.14.32 - 2024/03/24 - First alpha release of the Kamaelia refresh project, first batch of modern python ecosystem fixes
+* 1.14.34 - 2025/08/17 - Fixes primarily around vorbissimple library and bindings
 
 ### Axon
 
@@ -122,3 +135,5 @@ Releases:
 * 1.7.0 - 2011/02/15
 * 1.7.1 - 2015/03/01
 * 1.14.32 - 2024/03/24 - First alpha release of the Kamaelia refresh project, first batch of modern python ecosystem fixes
+* 1.14.34 - 2025/08/17 - Fixes primarily around vorbissimple library and bindings
+

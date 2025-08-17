@@ -1,6 +1,6 @@
 ---
 pagename: index
-last-modified-date: 
+last-modified-date: 2025/08/17
 page-template: default
 page-type: text/markdown
 page-status: current|legacy|needsupdate|deprecated|recommended
@@ -24,7 +24,7 @@ pygame based games, transcode systems and pipelines, digital TV systems,
 [spam eradicators](/KamaeliaGrey.html), [teaching
 tools](/SpeakAndWrite.html), and a fair amount more :)
 
-Current Release: [1.14.32 (2024/3/24)](https://github.com/sparkslabs/kamaelia/releases/tag/v1.14.32)
+Current Release: [1.14.34 (2024/3/24)](https://github.com/sparkslabs/kamaelia/releases/tag/v1.14.34)
 :::
 :::
 

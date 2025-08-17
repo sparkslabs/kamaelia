@@ -1,11 +1,19 @@
 ---
 pagename: Recent Changes
-last-modified-date: 2024/02/11
+last-modified-date: 2024/08/17
 page-template: default
 page-type: text/markdown
 page-status: current
 ---
 # Recent Changes
+
+## 2025/08/17 - New Release 1.14.34!
+
+Update VorbisSimple Bindings
+
+The VorbisSimple bindings needed modernising for python3 and modern Cython.
+This took quite some time and involved some heisenbugs. These are now
+resolved.
 
 ## 2024/03/24 - NEW Release 1.14.32 Made
 
