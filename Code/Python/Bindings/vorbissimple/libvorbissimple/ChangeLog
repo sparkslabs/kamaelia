@@ -1,3 +1,7 @@
 
+1.14.34:
+	Maintenance Release - minor fixes and changes for modern Cython support
+
 0.0.1: 
 	Initial Release
+

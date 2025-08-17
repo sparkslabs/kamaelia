@@ -3,7 +3,7 @@ dnl Configure.ac for vorbissimple
 dnl
 
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT(vorbissimple, 0.0.1)
+AC_INIT(vorbissimple, 1.14.34)
 AC_CONFIG_SRCDIR(src/simple_decoder.c)
 AM_INIT_AUTOMAKE([no-define])
 
