@@ -3,10 +3,17 @@ Kamaelia
 
 For future (maintenance mode) Kamaelia development
 
-Note: Kamaelia is stable, and useful.
-However: Kamaelia is not  under active development at present.
+Note:
+
+* Kamaelia is stable, and useful.
+* Kamaelia is not  under active development at present.
+* Kamaelia IS maintained. Pull requests WILL be considered. Fixes are
+  welcome
+* There are approximately 1-2 releases per year at the moment as of August
+  2025
 
 The website still exists here, and still largely correct: http://kamaelia.org/
+
 
 Guild
 =====
@@ -68,3 +75,10 @@ components that exist and reimplementing them all seems a little silly :-)
 That's not been done yet though.
 
 Michael, October 2015
+
+Update  - This repo is in maintenance mode, and is currently updated at
+least once per year. There had been a delay due problems with the vorbis
+library.
+
+
+Michael, August 2025
